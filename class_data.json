@@ -40,14 +40,70 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 5,
       "logs": [
         {
-          "id": "log-init-1",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140200",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-1789739134189",
+          "time": "20:45",
+          "points": 1,
+          "reason": "Giữ trật tự và ngồi ngoan",
+          "icon": "🤫"
+        },
+        {
+          "id": "log-1789739128111",
+          "time": "20:45",
+          "points": 1,
+          "reason": "Giơ tay phát biểu sôi nổi",
+          "icon": "✋"
         }
       ]
     },
@@ -58,13 +114,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 3,
       "logs": [
         {
-          "id": "log-init-2",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -76,13 +174,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 6,
       "logs": [
         {
-          "id": "log-init-3",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -94,13 +234,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 2,
       "logs": [
         {
-          "id": "log-init-4",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -112,13 +294,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 8,
       "logs": [
         {
-          "id": "log-init-5",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -130,13 +354,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 4,
       "logs": [
         {
-          "id": "log-init-6",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -148,13 +414,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 5,
       "logs": [
         {
-          "id": "log-init-7",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -166,13 +474,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 3,
       "logs": [
         {
-          "id": "log-init-8",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -184,13 +534,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 4,
       "logs": [
         {
-          "id": "log-init-9",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -202,13 +594,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 2,
       "logs": [
         {
-          "id": "log-init-10",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -220,13 +654,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 7,
       "logs": [
         {
-          "id": "log-init-11",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -238,13 +714,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 3,
       "logs": [
         {
-          "id": "log-init-12",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -256,13 +774,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 6,
       "logs": [
         {
-          "id": "log-init-13",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -274,13 +834,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 4,
       "logs": [
         {
-          "id": "log-init-14",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -292,13 +894,55 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 5,
       "logs": [
         {
-          "id": "log-init-15",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
@@ -310,17 +954,59 @@
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 0,
+      "likes": 2,
       "logs": [
         {
-          "id": "log-init-16",
-          "time": "08:00",
+          "id": "log-reset-1789806151831",
+          "time": "15:22",
           "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151648",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806151441",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806150176",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806149054",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806143533",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "icon": "🥚"
+        },
+        {
+          "id": "log-reset-1789806140201",
+          "time": "15:22",
+          "points": 0,
+          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
           "icon": "🥚"
         }
       ]
     }
   ],
-  "lastUpdated": 1789805184817
+  "lastUpdated": 1789806151831
 }

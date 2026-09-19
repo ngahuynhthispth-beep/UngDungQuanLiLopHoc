@@ -572,7 +572,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let baseUrl = '';
-    if (serverNetworkInfo && serverNetworkInfo.primaryIp) {
+    if (serverNetworkInfo && serverNetworkInfo.publicUrl) {
+      baseUrl = serverNetworkInfo.publicUrl;
+    } else if (serverNetworkInfo && serverNetworkInfo.primaryIp) {
       baseUrl = `http://${serverNetworkInfo.primaryIp}:${serverNetworkInfo.port || 3000}`;
     } else if (window.location.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('file')) {
       baseUrl = window.location.origin;
@@ -611,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnCopySharedClassMessage.addEventListener('click', async () => {
     const className = state.data.className || 'Lớp 1A';
-    const message = `🌸 Kính gửi quý phụ huynh ${className}!\nCô gửi đường link theo dõi nề nếp và tiến trình ấp trứng học tập của các con hôm nay:\n👉 ${currentSharedParentUrl}\n(Bố mẹ bấm vào link và chọn tên con để xem số sao và việc tốt con đạt được hôm nay nhé! Trang chỉ xem, an toàn và bảo mật).`;
+    const message = `🌸 Kính gửi quý phụ huynh ${className}!\nCô gửi đường link theo dõi tiến trình ấp trứng và tự chấm điểm rèn luyện tại nhà (Đọc, Viết, Dặn dò) của các con:\n👉 ${currentSharedParentUrl}\n(Bố mẹ mở link trên điện thoại bằng 4G hoặc Wifi ở nhà bất kỳ để tự chấm cho con nhé! Bố mẹ có thể bấm "Thêm vào Màn hình chính" để cài thành app tiện dùng mỗi tối).`;
 
     try {
       await navigator.clipboard.writeText(message);

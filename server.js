@@ -44,6 +44,39 @@ function getLocalIpAddresses() {
   return addresses;
 }
 
+let publicTunnelUrl = null;
+
+function startPublicTunnel() {
+  const { spawn } = require('child_process');
+  try {
+    const tunnel = spawn('ssh', [
+      '-o', 'StrictHostKeyChecking=no',
+      '-o', 'ServerAliveInterval=30',
+      '-R', `80:localhost:${PORT}`,
+      'nokey@localhost.run'
+    ]);
+
+    tunnel.stdout.on('data', data => {
+      const text = data.toString();
+      const match = text.match(/https:\/\/[a-zA-Z0-9\.\-]+\.lhr\.life/);
+      if (match && !publicTunnelUrl) {
+        publicTunnelUrl = match[0];
+        console.log(`\n======================================================`);
+        console.log(`🌐 ĐƯỜNG LINK ONLINE CHO PHỤ HUYNH (4G/Wifi mọi nơi):`);
+        console.log(`👉 Link Zalo Phụ Huynh: ${publicTunnelUrl}/parent.html`);
+        console.log(`======================================================\n`);
+      }
+    });
+
+    tunnel.on('close', () => {
+      publicTunnelUrl = null;
+      setTimeout(startPublicTunnel, 5000);
+    });
+
+    tunnel.on('error', () => {});
+  } catch (err) {}
+}
+
 const server = http.createServer((req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,7 +99,8 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({
       ips,
       primaryIp: ips[0] || 'localhost',
-      port: PORT
+      port: PORT,
+      publicUrl: publicTunnelUrl || null
     }));
     return;
   }
@@ -218,4 +252,5 @@ server.listen(PORT, () => {
     });
   }
   console.log(`======================================================\n`);
+  startPublicTunnel();
 });
