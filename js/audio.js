@@ -92,19 +92,20 @@ class SoundEffects {
       const now = this.ctx.currentTime + index * 0.09;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, now);
-
       gain.gain.setValueAtTime(0.25, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-
       osc.connect(gain);
       gain.connect(this.ctx.destination);
-
       osc.start(now);
       osc.stop(now + 0.4);
     });
+  }
+
+  // Tiếng thăng cấp / nộp bài tập thành công
+  playLevelUp() {
+    this.playHatch();
   }
 
   // Tiếng chúc mừng cả tổ / cả lớp

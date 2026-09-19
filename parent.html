@@ -958,7 +958,11 @@
             dateStr: todayDateStr
           });
 
-          if (window.soundFx) window.soundFx.playLevelUp();
+          if (window.soundFx && typeof window.soundFx.playLevelUp === 'function') {
+            window.soundFx.playLevelUp();
+          } else if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
 
           // Refresh data
           data = await StorageManager.pullFromServer();
