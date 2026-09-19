@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Góc Phụ Huynh - Đồng Hành Rèn Luyện & Ấp Trứng Cùng Con</title>
+  <meta name="description" content="Cổng thông tin phụ huynh theo dõi tiến trình ấp trứng, tự điền điểm rèn luyện đọc, viết và dặn dò tại nhà.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Lớp 1A">
+  <meta name="theme-color" content="#FF5E7E">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐣</text></svg>">
+  <style>
+    .parent-portal-container {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 14px 14px 60px;
+    }
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .parent-hero-card {
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(255, 107, 129, 0.12);
+      margin-bottom: 18px;
+      position: relative;
+      border: 3px solid #FFE4E8;
+    }
+    .parent-pet-box {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 10px;
+    }
+    .parent-stars-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FEF3C7;
+      color: #B45309;
+      font-size: 26px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 30px;
+      margin: 8px 0;
+      border: 2px solid #FDE68A;
+    }
+    .parent-nav-tabs {
+      display: flex;
+      background: #FFFFFF;
+      padding: 6px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      border: 2px solid #F1F5F9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .parent-nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      border: none;
+      background: transparent;
+      color: #64748B;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .parent-nav-tab.active {
+      background: linear-gradient(135deg, #FF5E7E, #FFA07A);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(255, 94, 126, 0.25);
+    }
+
+    /* Homework Form Card */
+    .homework-card {
+      background: #FFFFFF;
+      border-radius: 26px;
+      padding: 20px 18px;
+      margin-bottom: 18px;
+      border: 3px solid #E0E7FF;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.08);
+      position: relative;
+    }
+    .homework-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      border-bottom: 2px dashed #E2E8F0;
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .homework-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #3730A3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .homework-date-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: #4F46E5;
+      background: #EEF2FF;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid #C7D2FE;
+    }
+    .task-block {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+    .task-block:hover {
+      border-color: #CBD5E1;
+    }
+    .task-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .task-desc {
+      font-size: 11px;
+      color: #64748B;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .task-points-pill {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 12px;
+      background: #FEF3C7;
+      color: #B45309;
+    }
+
+    /* Reading Counter */
+    .reading-counter-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .counter-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 2px solid #CBD5E1;
+      background: #FFFFFF;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1E293B;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: all 0.15s;
+    }
+    .counter-btn:active {
+      transform: scale(0.92);
+      background: #F1F5F9;
+    }
+    .counter-value-box {
+      flex: 1;
+      text-align: center;
+      background: #FFFFFF;
+      border: 2px solid #E0E7FF;
+      border-radius: 14px;
+      padding: 6px 10px;
+    }
+    .counter-number {
+      font-size: 24px;
+      font-weight: 800;
+      color: #4F46E5;
+      line-height: 1;
+    }
+    .counter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      margin-top: 2px;
+    }
+    .quick-chips {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .chip-btn {
+      flex: 1;
+      padding: 6px 2px;
+      border-radius: 10px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip-btn.active {
+      background: #EEF2FF;
+      color: #4338CA;
+      border-color: #818CF8;
+      font-weight: 800;
+    }
+
+    /* Writing Levels */
+    .writing-levels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .writing-btn {
+      padding: 10px 6px;
+      border-radius: 14px;
+      border: 2px solid #E2E8F0;
+      background: #FFFFFF;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .writing-btn:hover {
+      border-color: #CBD5E1;
+    }
+    .writing-btn.selected {
+      border-color: #FF5E7E;
+      background: #FFF5F7;
+      box-shadow: 0 4px 12px rgba(255, 94, 126, 0.15);
+    }
+    .writing-stars {
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .writing-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1E293B;
+    }
+    .writing-sub {
+      font-size: 10px;
+      color: #64748B;
+      font-weight: 600;
+    }
+
+    /* Chores Checkbox Card */
+    .chores-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: #FFFFFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: all 0.2s;
+    }
+    .chores-card.checked {
+      border-color: #10B981;
+      background: #F0FDF4;
+    }
+    .chores-checkbox {
+      width: 22px;
+      height: 22px;
+      accent-color: #10B981;
+      cursor: pointer;
+    }
+
+    /* Submit Bar */
+    .submit-bar {
+      margin-top: 14px;
+      text-align: center;
+    }
+    .total-stars-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #B45309;
+      background: #FEF3C7;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      border: 2px solid #FDE68A;
+    }
+    .btn-submit-hw {
+      width: 100%;
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: #FFFFFF;
+      border: none;
+      padding: 14px;
+      border-radius: 18px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+      transition: all 0.2s;
+    }
+    .btn-submit-hw:active {
+      transform: scale(0.97);
+    }
+    .hw-status-banner {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 12px;
+      display: none;
+      line-height: 1.4;
+    }
+
+    /* Evolution Guide */
+    .evolution-guide {
+      background: #FFFFFF;
+      border-radius: 22px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      border: 2px solid #F1F5F9;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .evo-guide-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .evo-stages-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .evo-stage-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      font-size: 12px;
+    }
+    .evo-stage-row.current {
+      background: #FEF3C7;
+      border-color: #F59E0B;
+      font-weight: 800;
+      color: #92400E;
+    }
+    .evo-stage-row.hatched {
+      border-left: 4px solid #10B981;
+    }
+
+    /* Timeline and others */
+    .timeline-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+      margin-bottom: 18px;
+    }
+    .timeline-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .log-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #E2E8F0;
+    }
+    .log-item:last-child {
+      border-bottom: none;
+    }
+    .log-icon {
+      font-size: 22px;
+      background: #F8FAFC;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .log-info {
+      flex: 1;
+    }
+    .log-reason {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-dark);
+    }
+    .log-time {
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: 600;
+    }
+    .log-points {
+      font-weight: 800;
+      font-size: 13px;
+      color: #059669;
+      background: #D1FAE5;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .btn-like-parent {
+      background: linear-gradient(135deg, #FF4B72, #FF85A1);
+      color: #FFFFFF;
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(255, 75, 114, 0.25);
+      transition: all 0.2s ease;
+    }
+    .btn-like-parent:active {
+      transform: scale(0.96);
+    }
+    .parent-class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .parent-class-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      border: 2px solid #F1F5F9;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .parent-class-card:hover {
+      border-color: #FF5E7E;
+      transform: translateY(-2px);
+    }
+    .parent-class-card.active {
+      border-color: #FF5E7E;
+      background: #FFF5F7;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Parent Header -->
+  <header class="app-header">
+    <div class="brand-section" style="width: 100%; justify-content: center; text-align: center;">
+      <div>
+        <div class="security-badge">
+          <span>🏡</span> Góc Phụ Huynh Lớp 1 Đồng Hành
+        </div>
+        <h1 style="font-size: 19px; line-height: 1.2;">LỚP 1A - VƯỜN THÚ KỲ DIỆU</h1>
+        <p style="font-size: 12px; color: #64748B; font-weight: 600;">Ấp trứng rèn luyện • Tự chấm bài về nhà</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="parent-portal-container">
+
+    <!-- Parent View Navigation Tabs -->
+    <div class="parent-nav-tabs">
+      <button id="tabViewChildBtn" class="parent-nav-tab active">
+        <span>🐣</span> Con Của Bạn
+      </button>
+      <button id="tabViewGroupsBtn" class="parent-nav-tab">
+        <span>🚩</span> Điểm 4 Tổ
+      </button>
+      <button id="tabViewClassBtn" class="parent-nav-tab">
+        <span>🌟</span> Cả Lớp
+      </button>
+    </div>
+
+    <!-- VIEW 1: Individual Child View -->
+    <div id="viewChildPanel">
+      <!-- Child Selector Dropdown -->
+      <div style="background: #FFFFFF; padding: 14px 16px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 2px solid #E2E8F0;">
+        <label style="font-size: 13px; font-weight: 800; color: #475569; display: block; margin-bottom: 6px;">
+          👨‍👩‍👧 Quý phụ huynh vui lòng chọn tên con:
+        </label>
+        <select id="selectChildDropdown" style="width: 100%; padding: 12px; border-radius: 14px; border: 2px solid #CBD5E1; font-family: inherit; font-size: 15px; font-weight: 800; color: #1E293B; background: #F8FAFC;">
+        </select>
+      </div>
+
+      <!-- Hero Card for selected child -->
+      <div class="parent-hero-card">
+        <div id="parentGroupTag" style="display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #FFF; background: #FF6B6B; margin-bottom: 8px;">
+          Tổ 1
+        </div>
+
+        <h2 id="parentStudentName" style="font-size: 24px; font-weight: 800; color: #1E293B;">Đang tải...</h2>
+        <div id="parentStageName" class="stage-title" style="display: inline-block; margin-top: 4px;">Đang ấp trứng</div>
+
+        <div class="parent-pet-box" id="parentPetAvatar">
+          <!-- SVG Pet renders here -->
+        </div>
+
+        <div class="parent-stars-badge">
+          <span>⭐</span> <span id="parentStarsTotal">0</span> <span>Ngôi Sao</span>
+        </div>
+
+        <!-- Evolution Progress -->
+        <div class="evo-progress-container" style="max-width: 340px; margin: 12px auto 6px;">
+          <div class="evo-progress-label">
+            <span id="parentEvoTitle">Tiến trình ấp trứng</span>
+            <span id="parentEvoNeeded" style="font-weight: 800; color: #E11D48;">Còn thiếu 71 ⭐ để nở</span>
+          </div>
+          <div class="evo-progress-bar" style="height: 12px; background: #F1F5F9; border-radius: 6px; overflow: hidden;">
+            <div id="parentEvoFill" class="evo-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #FF6B6B, #FFA07A); transition: width 0.4s ease;"></div>
+          </div>
+          <div id="parentEvoHatchNotice" style="font-size: 11px; color: #64748B; font-weight: 700; margin-top: 6px;">
+            🥚 Quy định lớp: Tích lũy <strong>> 70 sao</strong> thì con vật sẽ nở!
+          </div>
+        </div>
+      </div>
+
+      <!-- 📝 HOMEWORK FORM: PHIẾU RÈN LUYỆN TẠI NHÀ HÔM NAY -->
+      <div class="homework-card">
+        <div class="homework-header">
+          <div class="homework-title">
+            <span>📝</span> Phiếu Rèn Luyện Tại Nhà
+          </div>
+          <div id="homeworkDateDisplay" class="homework-date-badge">
+            Hôm nay
+          </div>
+        </div>
+
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 14px; font-weight: 600;">
+          Bố mẹ hãy đồng hành cùng bé hoàn thành 3 việc dưới đây và bấm <strong>Gửi Cho Cô</strong> để tích sao ấp trứng nhé!
+        </p>
+
+        <!-- Nhiệm vụ 1: Rèn Đọc Bài -->
+        <div class="task-block">
+          <div class="task-title">
+            <span>📖 1. Rèn Đọc Bài Ở Nhà</span>
+            <span id="readingStarsDisplay" class="task-points-pill">+1 ⭐</span>
+          </div>
+          <div class="task-desc">
+            Bố mẹ cho con đọc bài to, rõ ràng. Mỗi lượt đọc tương ứng với <strong>1 ngôi sao</strong>:
+          </div>
+
+          <div class="reading-counter-wrapper">
+            <button type="button" id="btnReadingMinus" class="counter-btn" title="Giảm số lần">−</button>
+            <div class="counter-value-box">
+              <div id="readingCountNumber" class="counter-number">1</div>
+              <div class="counter-label">lần đọc bài</div>
+            </div>
+            <button type="button" id="btnReadingPlus" class="counter-btn" title="Tăng số lần">+</button>
+          </div>
+
+          <div class="quick-chips">
+            <button type="button" class="chip-btn" data-reading="1">1 lần</button>
+            <button type="button" class="chip-btn" data-reading="2">2 lần</button>
+            <button type="button" class="chip-btn" data-reading="3">3 lần</button>
+            <button type="button" class="chip-btn" data-reading="5">5 lần</button>
+          </div>
+        </div>
+
+        <!-- Nhiệm vụ 2: Luyện Viết Bài -->
+        <div class="task-block">
+          <div class="task-title">
+            <span>✍️ 2. Luyện Viết Bài Nắn Nót</span>
+            <span id="writingStarsDisplay" class="task-points-pill">+2 ⭐</span>
+          </div>
+          <div class="task-desc">
+            Chọn 1 trong 3 mức độ nắn nót của con hôm nay:
+          </div>
+
+          <div class="writing-levels-grid">
+            <div class="writing-btn" data-stars="1">
+              <div class="writing-stars">⭐</div>
+              <div class="writing-title">Mức 1</div>
+              <div class="writing-sub">Viết xong bài</div>
+            </div>
+
+            <div class="writing-btn selected" data-stars="2">
+              <div class="writing-stars">⭐⭐</div>
+              <div class="writing-title">Mức 2</div>
+              <div class="writing-sub">Nắn nót, đúng nét</div>
+            </div>
+
+            <div class="writing-btn" data-stars="3">
+              <div class="writing-stars">⭐⭐⭐</div>
+              <div class="writing-title">Mức 3</div>
+              <div class="writing-sub">Xuất sắc, sạch đẹp</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nhiệm vụ 3: Hoàn Thành Dặn Dò -->
+        <div class="task-block">
+          <div class="task-title">
+            <span>🎒 3. Hoàn Thành Phần Dặn Dò</span>
+            <span id="choresStarsDisplay" class="task-points-pill">+5 ⭐</span>
+          </div>
+          <div class="task-desc">
+            Soạn sách vở theo thời khóa biểu, làm bài tập cô giao, chuẩn bị đồ dùng đầy đủ:
+          </div>
+
+          <label class="chores-card checked" id="choresCardLabel">
+            <input type="checkbox" id="choresCheckbox" class="chores-checkbox" checked>
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #1E293B;">
+                Con đã hoàn thành toàn bộ dặn dò của cô giáo
+              </div>
+              <div style="font-size: 11px; color: #059669; font-weight: 700;">
+                Nhận thưởng trọn vẹn +5 ⭐
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-bar">
+          <div class="total-stars-preview">
+            <span>🌟 Tổng sao rèn luyện hôm nay:</span>
+            <strong id="previewTotalHwStars" style="font-size: 18px; color: #B45309;">+8 ⭐</strong>
+          </div>
+
+          <button type="button" id="btnSubmitHomework" class="btn-submit-hw">
+            🚀 Gửi Điểm Rèn Luyện Cho Cô
+          </button>
+
+          <div id="hwStatusBanner" class="hw-status-banner"></div>
+        </div>
+      </div>
+
+      <!-- Roadmap: 6 Giai đoạn tiến hóa linh thú -->
+      <div class="evolution-guide">
+        <div class="evo-guide-title" id="toggleEvoGuideBtn">
+          <span>🐾 Bảng 6 Cấp Độ Ấp Trứng & Lớn Lên</span>
+          <span id="evoGuideChevron">▼</span>
+        </div>
+        <div class="evo-stages-grid" id="evoStagesList">
+          <div class="evo-stage-row" data-stage="0">
+            <span>🥚 Cấp 0: Trứng Thần Kỳ (0 - 20 ⭐)</span>
+            <span style="color: #64748B;">Đang ấp ủ</span>
+          </div>
+          <div class="evo-stage-row" data-stage="1">
+            <span>🥚✨ Cấp 1: Trứng Thức Giấc (21 - 45 ⭐)</span>
+            <span style="color: #64748B;">Rung rinh</span>
+          </div>
+          <div class="evo-stage-row" data-stage="2">
+            <span>🐣💥 Cấp 2: Trứng Nứt Vỏ (46 - 70 ⭐)</span>
+            <span style="color: #E11D48; font-weight: 800;">Sắp nở!</span>
+          </div>
+          <div class="evo-stage-row hatched" data-stage="3">
+            <span>🦖 Cấp 3: Rồng Con Tí Hon (71 - 100 ⭐)</span>
+            <span style="color: #059669; font-weight: 800;">🎉 ĐÃ NỞ!</span>
+          </div>
+          <div class="evo-stage-row hatched" data-stage="4">
+            <span>🐉 Cấp 4: Rồng Phép Thuật (101 - 140 ⭐)</span>
+            <span style="color: #7C3AED; font-weight: 800;">Cánh lượn</span>
+          </div>
+          <div class="evo-stage-row hatched" data-stage="5">
+            <span>👑 Cấp 5: Thần Thú Hoàng Gia (>140 ⭐)</span>
+            <span style="color: #D97706; font-weight: 800;">Tối thượng</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parent Cheer Action -->
+      <div style="margin-bottom: 18px;">
+        <button id="btnParentSendHeart" class="btn-like-parent">
+          <span>💖</span> Thả Tim Cổ Vũ Con (<span id="parentLikesCount">0</span>)
+        </button>
+      </div>
+
+      <!-- Timeline of today's accomplishments -->
+      <div class="timeline-card">
+        <div class="timeline-title">
+          <span>🌟</span> Nhật Ký Việc Tốt & Rèn Luyện Của Con
+        </div>
+        <div id="parentLogsList">
+          <p style="text-align: center; color: #94A3B8; font-size: 14px; padding: 20px 0;">
+            Chưa có hoạt động nào được ghi nhận hôm nay.
+          </p>
+        </div>
+      </div>
+
+      <!-- Teacher message note -->
+      <div style="background: #F0FDF4; border-radius: 20px; padding: 18px; border: 1px solid #BBF7D0; margin-bottom: 18px;">
+        <div style="font-weight: 800; font-size: 15px; color: #166534; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+          <span>💌</span> Lời Nhắn Từ Cô Giáo
+        </div>
+        <p style="font-size: 13px; color: #15803D; font-weight: 600; line-height: 1.6;">
+          "Học sinh lớp 1 rất nhạy bén và hào hứng khi được cô và bố mẹ động viên kịp thời. Mỗi lần con đọc bài, viết nắn nót và làm dặn dò là thêm một bước giúp quả trứng sớm nở thành linh thú rồng đáng yêu!"
+        </p>
+      </div>
+    </div>
+
+    <!-- VIEW 2: 4 Groups View -->
+    <div id="viewGroupsPanel" style="display: none;">
+      <div style="font-weight: 800; font-size: 16px; color: #334155; margin-bottom: 12px; text-align: center;">
+        🏆 BẢNG ĐIỂM THI ĐUA 4 TỔ
+      </div>
+      <div id="parentGroupsList" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Groups rendered here -->
+      </div>
+    </div>
+
+    <!-- VIEW 3: Whole Class Gallery View -->
+    <div id="viewClassPanel" style="display: none;">
+      <div style="font-weight: 800; font-size: 16px; color: #334155; margin-bottom: 12px; text-align: center;">
+        🌟 VƯỜN THÚ CỦA CẢ LỚP (Bấm vào bé để xem)
+      </div>
+      <div id="parentClassGrid" class="parent-class-grid">
+        <!-- Class gallery rendered here -->
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/audio.js"></script>
+  <script src="js/egg-evolution.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      StorageManager.init();
+      let data = await StorageManager.pullFromServer();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      let currentId = urlParams.get('id');
+
+      // Elements
+      const tabViewChildBtn = document.getElementById('tabViewChildBtn');
+      const tabViewGroupsBtn = document.getElementById('tabViewGroupsBtn');
+      const tabViewClassBtn = document.getElementById('tabViewClassBtn');
+
+      const viewChildPanel = document.getElementById('viewChildPanel');
+      const viewGroupsPanel = document.getElementById('viewGroupsPanel');
+      const viewClassPanel = document.getElementById('viewClassPanel');
+
+      const selectChildDropdown = document.getElementById('selectChildDropdown');
+      const homeworkDateDisplay = document.getElementById('homeworkDateDisplay');
+
+      // Homework Form State
+      let readingCount = 1;
+      let writingStars = 2;
+      let choresDone = true;
+      const todayDateStr = StorageManager.getTodayDateString();
+
+      homeworkDateDisplay.textContent = StorageManager.getFormattedDateVietnamese(todayDateStr);
+
+      // Populate child selector dropdown
+      function updateDropdown() {
+        selectChildDropdown.innerHTML = '';
+        data.students.forEach(s => {
+          const group = data.groups.find(g => g.id === s.group);
+          const groupName = group ? group.name.split('-')[0].trim() : `Tổ ${s.group}`;
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = `${s.name} (${groupName}) - ⭐ ${s.stars}`;
+          if (s.id === currentId) opt.selected = true;
+          selectChildDropdown.appendChild(opt);
+        });
+      }
+
+      if (!currentId && data.students.length > 0) {
+        currentId = data.students[0].id;
+      }
+      updateDropdown();
+
+      selectChildDropdown.addEventListener('change', (e) => {
+        currentId = e.target.value;
+        loadStudentHomeworkState();
+        renderChildView();
+      });
+
+      // Switch tabs
+      function switchTab(viewName) {
+        [tabViewChildBtn, tabViewGroupsBtn, tabViewClassBtn].forEach(b => b.classList.remove('active'));
+        [viewChildPanel, viewGroupsPanel, viewClassPanel].forEach(p => p.style.display = 'none');
+
+        if (viewName === 'child') {
+          tabViewChildBtn.classList.add('active');
+          viewChildPanel.style.display = 'block';
+          renderChildView();
+        } else if (viewName === 'groups') {
+          tabViewGroupsBtn.classList.add('active');
+          viewGroupsPanel.style.display = 'block';
+          renderGroupsView();
+        } else if (viewName === 'class') {
+          tabViewClassBtn.classList.add('active');
+          viewClassPanel.style.display = 'block';
+          renderClassView();
+        }
+      }
+
+      tabViewChildBtn.addEventListener('click', () => switchTab('child'));
+      tabViewGroupsBtn.addEventListener('click', () => switchTab('groups'));
+      tabViewClassBtn.addEventListener('click', () => switchTab('class'));
+
+      // Homework Form Controls
+      const readingCountNumber = document.getElementById('readingCountNumber');
+      const readingStarsDisplay = document.getElementById('readingStarsDisplay');
+      const btnReadingMinus = document.getElementById('btnReadingMinus');
+      const btnReadingPlus = document.getElementById('btnReadingPlus');
+      const chipButtons = document.querySelectorAll('.chip-btn');
+
+      const writingButtons = document.querySelectorAll('.writing-btn');
+      const writingStarsDisplay = document.getElementById('writingStarsDisplay');
+
+      const choresCheckbox = document.getElementById('choresCheckbox');
+      const choresCardLabel = document.getElementById('choresCardLabel');
+      const choresStarsDisplay = document.getElementById('choresStarsDisplay');
+
+      const previewTotalHwStars = document.getElementById('previewTotalHwStars');
+      const btnSubmitHomework = document.getElementById('btnSubmitHomework');
+      const hwStatusBanner = document.getElementById('hwStatusBanner');
+
+      function updateHomeworkUI() {
+        // Reading
+        readingCountNumber.textContent = readingCount;
+        readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
+        chipButtons.forEach(btn => {
+          btn.classList.toggle('active', parseInt(btn.dataset.reading, 10) === readingCount);
+        });
+
+        // Writing
+        writingButtons.forEach(btn => {
+          btn.classList.toggle('selected', parseInt(btn.dataset.stars, 10) === writingStars);
+        });
+        writingStarsDisplay.textContent = `+${writingStars} ⭐`;
+
+        // Chores
+        choresCheckbox.checked = choresDone;
+        choresCardLabel.classList.toggle('checked', choresDone);
+        choresStarsDisplay.textContent = choresDone ? '+5 ⭐' : '0 ⭐';
+
+        // Total
+        const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0);
+        previewTotalHwStars.textContent = `+${total} ⭐`;
+      }
+
+      // Reading handlers
+      btnReadingMinus.addEventListener('click', () => {
+        if (readingCount > 1) {
+          readingCount--;
+          updateHomeworkUI();
+        }
+      });
+      btnReadingPlus.addEventListener('click', () => {
+        if (readingCount < 10) {
+          readingCount++;
+          updateHomeworkUI();
+        }
+      });
+      chipButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          readingCount = parseInt(btn.dataset.reading, 10) || 1;
+          updateHomeworkUI();
+        });
+      });
+
+      // Writing handlers
+      writingButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          writingStars = parseInt(btn.dataset.stars, 10) || 1;
+          updateHomeworkUI();
+        });
+      });
+
+      // Chores handler
+      choresCheckbox.addEventListener('change', (e) => {
+        choresDone = e.target.checked;
+        updateHomeworkUI();
+      });
+
+      // Load existing today's homework for current student
+      function loadStudentHomeworkState() {
+        const student = data.students.find(s => s.id === currentId);
+        if (!student) return;
+
+        if (student.homeworkRecords && student.homeworkRecords[todayDateStr]) {
+          const rec = student.homeworkRecords[todayDateStr];
+          readingCount = rec.readingCount || 1;
+          writingStars = rec.writingStars || 2;
+          choresDone = !!rec.choresDone;
+
+          hwStatusBanner.style.display = 'block';
+          hwStatusBanner.style.background = '#ECFDF5';
+          hwStatusBanner.style.color = '#065F46';
+          hwStatusBanner.style.border = '1px solid #A7F3D0';
+          hwStatusBanner.innerHTML = `✅ <strong>Đã ghi nhận hôm nay:</strong> Con nhận được <strong>+${rec.totalStars} ⭐</strong>. Bố mẹ có thể điều chỉnh và gửi lại bất kỳ lúc nào!`;
+        } else {
+          readingCount = 1;
+          writingStars = 2;
+          choresDone = true;
+          hwStatusBanner.style.display = 'none';
+        }
+        updateHomeworkUI();
+      }
+
+      // Submit Homework
+      btnSubmitHomework.addEventListener('click', async () => {
+        btnSubmitHomework.disabled = true;
+        btnSubmitHomework.textContent = '⏳ Đang gửi cho cô...';
+
+        try {
+          const res = await StorageManager.submitHomework(currentId, {
+            readingCount,
+            writingStars,
+            choresDone,
+            dateStr: todayDateStr
+          });
+
+          if (window.soundFx) window.soundFx.playLevelUp();
+
+          // Refresh data
+          data = await StorageManager.pullFromServer();
+          updateDropdown();
+          renderChildView();
+
+          hwStatusBanner.style.display = 'block';
+          hwStatusBanner.style.background = '#ECFDF5';
+          hwStatusBanner.style.color = '#065F46';
+          hwStatusBanner.style.border = '1px solid #A7F3D0';
+          const rec = res && res.record ? res.record : { totalStars: (readingCount * 1 + writingStars + (choresDone ? 5 : 0)) };
+          hwStatusBanner.innerHTML = `🎉 <strong>Gửi thành công!</strong> Bé đã được cộng <strong>+${rec.totalStars} ⭐</strong> vào hồ sơ ấp trứng.`;
+
+          // Small celebration particle
+          const star = document.createElement('div');
+          star.className = 'floating-star';
+          star.textContent = '🌟';
+          star.style.left = '50%';
+          star.style.top = '50%';
+          document.body.appendChild(star);
+          setTimeout(() => star.remove(), 1200);
+
+        } catch (err) {
+          alert('Có lỗi khi lưu bài tập, bố mẹ vui lòng thử lại nhé!');
+        } finally {
+          btnSubmitHomework.disabled = false;
+          btnSubmitHomework.innerHTML = '🚀 Gửi Điểm Rèn Luyện Cho Cô';
+        }
+      });
+
+      // Render Child View
+      function renderChildView() {
+        const student = data.students.find(s => s.id === currentId);
+        if (!student) return;
+
+        const group = data.groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
+        const stage = window.EggEvolution.getStage(student.stars);
+        const milestone = window.EggEvolution.getNextMilestone(student.stars);
+
+        document.getElementById('parentStudentName').textContent = student.name;
+        document.getElementById('parentGroupTag').textContent = group.name;
+        document.getElementById('parentGroupTag').style.background = group.color;
+        document.getElementById('parentStageName').textContent = student.status === 'sleeping' ? '💤 Đang nghỉ tĩnh tâm' : stage.title;
+        document.getElementById('parentStarsTotal').textContent = student.stars;
+        document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+        document.getElementById('parentLikesCount').textContent = student.likes || 0;
+
+        // Tiến trình ấp trứng & nở (> 70 sao)
+        const parentEvoTitle = document.getElementById('parentEvoTitle');
+        const parentEvoNeeded = document.getElementById('parentEvoNeeded');
+        const parentEvoFill = document.getElementById('parentEvoFill');
+
+        if (student.stars < 71) {
+          parentEvoTitle.textContent = 'Tiến trình ấp trứng';
+          parentEvoNeeded.textContent = `Còn thiếu ${milestone.neededToHatch} ⭐ để trứng nở!`;
+          const hatchProgress = Math.min(100, Math.round((student.stars / 71) * 100));
+          parentEvoFill.style.width = `${hatchProgress}%`;
+          parentEvoFill.style.background = 'linear-gradient(90deg, #F59E0B, #EF4444)';
+        } else {
+          parentEvoTitle.textContent = '🎉 Đã nở linh thú! Tiến hóa tiếp:';
+          parentEvoNeeded.textContent = milestone.nextStage ? `Còn ${milestone.needed} ⭐ để lên cấp` : 'Đạt cấp tối thượng!';
+          parentEvoFill.style.width = `${milestone.progress}%`;
+          parentEvoFill.style.background = 'linear-gradient(90deg, #10B981, #3B82F6)';
+        }
+
+        // Highlight current stage in Roadmap
+        document.querySelectorAll('.evo-stage-row').forEach(row => {
+          const rowStage = parseInt(row.dataset.stage, 10);
+          row.classList.toggle('current', rowStage === stage.level);
+        });
+
+        // Render Logs
+        const logsContainer = document.getElementById('parentLogsList');
+        if (student.logs && student.logs.length > 0) {
+          logsContainer.innerHTML = student.logs.map(log => `
+            <div class="log-item">
+              <div class="log-icon">${log.icon || '⭐'}</div>
+              <div class="log-info">
+                <div class="log-reason">${log.reason}</div>
+                <div class="log-time">${log.time || 'Gần đây'}</div>
+              </div>
+              <div class="log-points">+${log.points} ⭐</div>
+            </div>
+          `).join('');
+        } else {
+          logsContainer.innerHTML = `
+            <p style="text-align: center; color: #94A3B8; font-size: 14px; padding: 20px 0;">
+              Chưa có hoạt động nào được ghi nhận hôm nay.
+            </p>
+          `;
+        }
+      }
+
+      // Render 4 Groups View
+      function renderGroupsView() {
+        const groupsContainer = document.getElementById('parentGroupsList');
+        groupsContainer.innerHTML = data.groups.map(g => {
+          const members = data.students.filter(s => s.group === g.id);
+          return `
+            <div style="background: #FFFFFF; border-radius: 20px; padding: 16px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 6px solid ${g.color}; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 32px;">${g.mascot}</span>
+                <div>
+                  <div style="font-weight: 800; font-size: 16px; color: #1E293B;">${g.name}</div>
+                  <div style="font-size: 12px; color: #64748B; font-weight: 600;">${members.length} thành viên</div>
+                </div>
+              </div>
+              <div style="font-size: 20px; font-weight: 800; color: #B45309; background: #FEF3C7; padding: 4px 14px; border-radius: 20px;">
+                ⭐ ${g.stars}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Class Grid
+      function renderClassView() {
+        const grid = document.getElementById('parentClassGrid');
+        grid.innerHTML = data.students.map(s => {
+          const stage = window.EggEvolution.getStage(s.stars);
+          return `
+            <div class="parent-class-card ${s.id === currentId ? 'active' : ''}" data-id="${s.id}">
+              <div style="width: 50px; height: 50px; margin: 0 auto 4px;">
+                ${window.EggEvolution.renderPetSVG(s.stars, s.status)}
+              </div>
+              <div style="font-weight: 800; font-size: 13px; color: #1E293B; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${s.name}
+              </div>
+              <div style="font-weight: 800; font-size: 12px; color: ${s.stars >= 71 ? '#059669' : '#D97706'};">
+                ⭐ ${s.stars} ${s.stars >= 71 ? '🐣' : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        grid.querySelectorAll('.parent-class-card').forEach(card => {
+          card.addEventListener('click', () => {
+            currentId = card.dataset.id;
+            selectChildDropdown.value = currentId;
+            switchTab('child');
+            loadStudentHomeworkState();
+          });
+        });
+      }
+
+      // Initial Setup
+      loadStudentHomeworkState();
+      renderChildView();
+
+      // Parent Heart Click
+      const btnHeart = document.getElementById('btnParentSendHeart');
+      btnHeart.addEventListener('click', (e) => {
+        if (window.soundFx) window.soundFx.playStar();
+        const newLikes = StorageManager.addParentLike(currentId);
+        document.getElementById('parentLikesCount').textContent = newLikes;
+
+        const heart = document.createElement('div');
+        heart.className = 'floating-star';
+        heart.textContent = '💖';
+        heart.style.left = `${e.clientX || 200}px`;
+        heart.style.top = `${e.clientY || 400}px`;
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1200);
+      });
+
+      // Toggle Evolution Guide
+      const toggleEvoGuideBtn = document.getElementById('toggleEvoGuideBtn');
+      const evoStagesList = document.getElementById('evoStagesList');
+      const evoGuideChevron = document.getElementById('evoGuideChevron');
+      toggleEvoGuideBtn.addEventListener('click', () => {
+        const isHidden = evoStagesList.style.display === 'none';
+        evoStagesList.style.display = isHidden ? 'flex' : 'none';
+        evoGuideChevron.textContent = isHidden ? '▲' : '▼';
+      });
+
+      // Periodic auto-sync
+      setInterval(async () => {
+        data = await StorageManager.pullFromServer();
+        renderChildView();
+      }, 6000);
+
+      if (StorageManager.broadcast) {
+        StorageManager.broadcast.onmessage = (e) => {
+          if (e.data && e.data.type === 'DATA_CHANGED') {
+            data = e.data.data;
+            renderChildView();
+          }
+        };
+      }
+    });
+  </script>
+</body>
+</html>

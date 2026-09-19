@@ -1,0 +1,326 @@
+{
+  "className": "Lớp 1A",
+  "schoolYear": "2026 - 2027",
+  "teacherName": "Cô Giáo",
+  "groups": [
+    {
+      "id": 1,
+      "name": "Tổ 1 - Sóc Nhanh Nhẹn",
+      "mascot": "🐿️",
+      "color": "#FF6B6B",
+      "stars": 0
+    },
+    {
+      "id": 2,
+      "name": "Tổ 2 - Thỏ Thông Thái",
+      "mascot": "🐰",
+      "color": "#4ECDC4",
+      "stars": 0
+    },
+    {
+      "id": 3,
+      "name": "Tổ 3 - Gấu Dũng Cảm",
+      "mascot": "🐻",
+      "color": "#FFA07A",
+      "stars": 0
+    },
+    {
+      "id": 4,
+      "name": "Tổ 4 - Hổ Vui Vẻ",
+      "mascot": "🐯",
+      "color": "#96CEB4",
+      "stars": 0
+    }
+  ],
+  "students": [
+    {
+      "id": "hs-1",
+      "name": "Nguyễn Bảo An",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-2",
+      "name": "Trần Minh Khôi",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-2",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-3",
+      "name": "Lê Tuệ Mẫn",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-3",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-4",
+      "name": "Phạm Gia Huy",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-4",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-5",
+      "name": "Vũ Ngọc Hân",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-5",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-6",
+      "name": "Đỗ Đức Anh",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-6",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-7",
+      "name": "Hoàng Thùy Chi",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-7",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-8",
+      "name": "Bùi Quang Dũng",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-8",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-9",
+      "name": "Đặng Mai Phương",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-9",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-10",
+      "name": "Ngô Hải Đăng",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-10",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-11",
+      "name": "Trịnh Khánh Linh",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-11",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-12",
+      "name": "Lý Quốc Bảo",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-12",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-13",
+      "name": "Dương Gia Linh",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-13",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-14",
+      "name": "Võ Minh Quân",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-14",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-15",
+      "name": "Mai Thảo My",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-15",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-16",
+      "name": "Nguyễn Tiến Đạt",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-16",
+          "time": "08:00",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu (0 ⭐)",
+          "icon": "🥚"
+        }
+      ]
+    }
+  ],
+  "lastUpdated": 1789805184817
+}

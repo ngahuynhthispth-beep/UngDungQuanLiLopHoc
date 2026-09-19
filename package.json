@@ -1,0 +1,12 @@
+{
+  "name": "ung-dung-quan-li-lop-hoc",
+  "version": "1.0.0",
+  "description": "Ứng dụng quản lý lớp học tiểu học - Ấp trứng thú cưng & Kết nối phụ huynh",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["classroom", "management", "grade1", "gamification", "eggs", "parent-portal"],
+  "author": "",
+  "license": "MIT"
+}
