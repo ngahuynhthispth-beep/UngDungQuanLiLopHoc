@@ -1,58 +1,59 @@
 // js/egg-evolution.js - Evolution system with crisp SVG visual assets
 const EggEvolution = {
-  // Quy định: > 70 sao thì con vật mới nở!
+  HATCH_THRESHOLD: 100, // Đạt từ 100 sao trở lên thì trứng sẽ nở!
+
   STAGES: [
     { 
       level: 0, 
       minStars: 0, 
-      maxStars: 20, 
+      maxStars: 35, 
       name: 'Trứng Thần Kỳ', 
-      title: 'Đang ấp trứng (0-20 ⭐)', 
+      title: 'Đang ấp trứng (0-35 ⭐)', 
       isHatched: false,
       desc: 'Quả trứng thần đang được ủ ấm trong tổ rơm, ngủ ngoan tích lũy năng lượng' 
     },
     { 
       level: 1, 
-      minStars: 21, 
-      maxStars: 45, 
+      minStars: 36, 
+      maxStars: 70, 
       name: 'Trứng Thức Giấc', 
-      title: 'Trứng cựa quậy (21-45 ⭐)', 
+      title: 'Trứng cựa quậy (36-70 ⭐)', 
       isHatched: false,
       desc: 'Trứng ấm lên rực rỡ, thỉnh thoảng lắc lư và tỏa ánh sáng tình bạn ấm áp' 
     },
     { 
       level: 2, 
-      minStars: 46, 
-      maxStars: 70, 
+      minStars: 71, 
+      maxStars: 99, 
       name: 'Trứng Nứt Vỏ', 
-      title: 'Sắp nở rồi! (46-70 ⭐)', 
+      title: 'Sắp nở rồi! (71-99 ⭐)', 
       isHatched: false,
       desc: 'Vỏ nứt tia vàng rực rỡ, bé rồng bên trong cựa mình chuẩn bị chào đời!' 
     },
     { 
       level: 3, 
-      minStars: 71, 
-      maxStars: 100, 
+      minStars: 100, 
+      maxStars: 150, 
       name: 'Rồng Con Tí Hon', 
-      title: '🎉 ĐÃ NỞ! Cấp 1 - Tí Hon (71-100 ⭐)', 
+      title: '🎉 ĐÃ NỞ! Cấp 1 - Tí Hon (100-150 ⭐)', 
       isHatched: true,
       desc: 'Trứng đã nở thành công! Rồng con chào đời vẫy cánh tí hon, cười tít mắt' 
     },
     { 
       level: 4, 
-      minStars: 101, 
-      maxStars: 140, 
+      minStars: 151, 
+      maxStars: 220, 
       name: 'Rồng Thần Phép Thuật', 
-      title: 'Cấp 2 - Dũng Mãnh (101-140 ⭐)', 
+      title: 'Cấp 2 - Dũng Mãnh (151-220 ⭐)', 
       isHatched: true,
       desc: 'Rồng con lớn nhanh, mọc thêm sừng vàng và đôi cánh thần kỳ rực sáng' 
     },
     { 
       level: 5, 
-      minStars: 141, 
+      minStars: 221, 
       maxStars: 999, 
       name: 'Thần Thú Hoàng Gia', 
-      title: 'Cấp 3 - Tối Thượng (>140 ⭐)', 
+      title: 'Cấp 3 - Tối Thượng (>220 ⭐)', 
       isHatched: true,
       desc: 'Đạt cấp độ tối thượng hoàng gia! Đội vương miện ngọc, tỏa hào quang chiến thắng' 
     }
@@ -73,8 +74,8 @@ const EggEvolution = {
     const current = this.getStage(s);
     const nextIdx = this.STAGES.findIndex(stage => stage.level === current.level) + 1;
 
-    // Tính số sao còn thiếu để NỞ TRỨNG (> 70 sao, tức là mốc 71 sao)
-    const neededToHatch = s < 71 ? (71 - s) : 0;
+    // Tính số sao còn thiếu để NỞ TRỨNG (mốc 100 sao)
+    const neededToHatch = s < 100 ? (100 - s) : 0;
 
     if (nextIdx < this.STAGES.length) {
       const nextStage = this.STAGES[nextIdx];
@@ -87,7 +88,7 @@ const EggEvolution = {
         needed: nextStage.minStars - s,
         progress: progressInStage,
         neededToHatch,
-        isHatched: s >= 71
+        isHatched: s >= 100
       };
     }
 
@@ -100,6 +101,7 @@ const EggEvolution = {
       isHatched: true
     };
   },
+
 
   // Generate scalable SVG based on stage and status
   renderPetSVG(stars, status = 'active', customColor = null) {
@@ -379,5 +381,10 @@ const EggEvolution = {
   }
 };
 
-window.EggEvolution = EggEvolution;
+if (typeof window !== 'undefined') {
+  window.EggEvolution = EggEvolution;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = EggEvolution;
+}
 

@@ -3,10 +3,9 @@ chcp 65001 > nul
 title Vườn Thú Kỳ Diệu - Lớp Học Lớp 1
 echo ====================================================
 echo   ĐANG KHỞI ĐỘNG ỨNG DỤNG LỚP HỌC - VƯỜN THÚ KỲ DIỆU
-echo   👉 Tự động mở trình duyệt web...
-echo   👉 Nhấn Ctrl + C để dừng ứng dụng khi tan học
+echo   👉 Máy chủ đang chạy và sẽ tự động mở trình duyệt...
+echo   👉 Vui lòng giữ cửa sổ này trong suốt buổi dạy!
 echo ====================================================
-timeout /t 2 /nobreak > nul
-start "" http://localhost:3000
 node server.js
 pause
+

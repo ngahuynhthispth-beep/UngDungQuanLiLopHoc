@@ -1,1052 +1,723 @@
 {
   "className": "Lớp 1A",
-  "schoolYear": "2026 - 2027",
-  "teacherName": "Cô Giáo",
+  "giftItems": [
+    {
+      "icon": "✏️",
+      "id": "g-1",
+      "name": "Bút chì siêu đẹp"
+    },
+    {
+      "icon": "🧩",
+      "id": "g-2",
+      "name": "Bộ lắp ráp Lê gô"
+    },
+    {
+      "icon": "🎀",
+      "id": "g-3",
+      "name": "Kẹp tóc công chúa"
+    },
+    {
+      "icon": "📓",
+      "id": "g-4",
+      "name": "Sổ tay mini đáng yêu"
+    },
+    {
+      "icon": "🧼",
+      "id": "g-5",
+      "name": "Cục tẩy ngộ nghĩnh"
+    },
+    {
+      "icon": "🎨",
+      "id": "g-6",
+      "name": "Tranh cát sắc màu"
+    },
+    {
+      "icon": "🎁",
+      "id": "g-7",
+      "name": "Phần quà em yêu thích"
+    }
+  ],
   "groups": [
     {
-      "id": 1,
-      "name": "Tổ 1 - Sóc Nhanh Nhẹn",
-      "mascot": "🐿️",
       "color": "#FF6B6B",
-      "stars": 16
+      "id": 1,
+      "mascot": "🐿️",
+      "name": "Tổ 1 - Sóc Nhanh Nhẹn",
+      "stars": 0
     },
     {
-      "id": 2,
-      "name": "Tổ 2 - Thỏ Thông Thái",
-      "mascot": "🐰",
       "color": "#4ECDC4",
+      "id": 2,
+      "mascot": "🐰",
+      "name": "Tổ 2 - Thỏ Thông Thái",
       "stars": 0
     },
     {
-      "id": 3,
-      "name": "Tổ 3 - Gấu Dũng Cảm",
-      "mascot": "🐻",
       "color": "#FFA07A",
+      "id": 3,
+      "mascot": "🐻",
+      "name": "Tổ 3 - Gấu Dũng Cảm",
       "stars": 0
     },
     {
-      "id": 4,
-      "name": "Tổ 4 - Hổ Vui Vẻ",
-      "mascot": "🐯",
       "color": "#96CEB4",
+      "id": 4,
+      "mascot": "🐯",
+      "name": "Tổ 4 - Hổ Vui Vẻ",
       "stars": 0
     }
   ],
+  "lastUpdated": 1790097391778,
+  "schoolYear": "2026 - 2027",
   "students": [
     {
-      "id": "hs-1",
-      "name": "Nguyễn Bảo An",
-      "group": 1,
-      "stars": 14,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 5,
-      "logs": [
-        {
-          "id": "log-hw-1789828137687",
-          "time": "21:28",
-          "points": 14,
-          "reason": "Phụ huynh ghi nhận: Đọc 7 lượt (7⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "icon": "🏠"
-        },
-        {
-          "id": "log-hw-1789828126057",
-          "time": "21:28",
-          "points": 14,
-          "reason": "Phụ huynh ghi nhận: Đọc 7 lượt (7⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "icon": "🏠"
-        },
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140200",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-1789739134189",
-          "time": "20:45",
-          "points": 1,
-          "reason": "Giữ trật tự và ngồi ngoan",
-          "icon": "🤫"
-        },
-        {
-          "id": "log-1789739128111",
-          "time": "20:45",
-          "points": 1,
-          "reason": "Giơ tay phát biểu sôi nổi",
-          "icon": "✋"
-        }
-      ],
-      "homeworkRecords": {
-        "2026-09-19": {
-          "date": "2026-09-19",
-          "readingCount": 7,
-          "readingStars": 7,
-          "writingStars": 2,
-          "choresDone": true,
-          "choresStars": 5,
-          "totalStars": 14,
-          "updatedAt": 1789828137687
-        }
-      }
-    },
-    {
-      "id": "hs-2",
-      "name": "Trần Minh Khôi",
-      "group": 1,
-      "stars": 2,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 3,
-      "logs": [
-        {
-          "id": "log-1789826533884",
-          "time": "21:02",
-          "points": 1,
-          "reason": "Giữ trật tự và ngồi ngoan",
-          "icon": "🤫"
-        },
-        {
-          "id": "log-1789826529253",
-          "time": "21:02",
-          "points": 1,
-          "reason": "Giơ tay phát biểu sôi nổi",
-          "icon": "✋"
-        },
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-3",
-      "name": "Lê Tuệ Mẫn",
-      "group": 1,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 6,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-4",
-      "name": "Phạm Gia Huy",
-      "group": 1,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 2,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-5",
-      "name": "Vũ Ngọc Hân",
-      "group": 2,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 8,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-6",
-      "name": "Đỗ Đức Anh",
-      "group": 2,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 4,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-7",
-      "name": "Hoàng Thùy Chi",
-      "group": 2,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 5,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-8",
-      "name": "Bùi Quang Dũng",
-      "group": 2,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 3,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-9",
-      "name": "Đặng Mai Phương",
-      "group": 3,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 4,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-10",
-      "name": "Ngô Hải Đăng",
-      "group": 3,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 2,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-11",
-      "name": "Trịnh Khánh Linh",
-      "group": 3,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 7,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-12",
-      "name": "Lý Quốc Bảo",
-      "group": 3,
-      "stars": 0,
-      "status": "active",
-      "sleepUntil": 0,
-      "likes": 3,
-      "logs": [
-        {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        }
-      ]
-    },
-    {
-      "id": "hs-13",
-      "name": "Dương Gia Linh",
+      "id": "hs-1790097391777-1",
+      "name": "Quốc An",
       "group": 4,
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 6,
+      "likes": 0,
       "logs": [
         {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
         }
       ]
     },
     {
-      "id": "hs-14",
-      "name": "Võ Minh Quân",
-      "group": 4,
+      "id": "hs-1790097391777-2",
+      "name": "Minh An",
+      "group": 3,
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 4,
+      "likes": 0,
       "logs": [
         {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
         }
       ]
     },
     {
-      "id": "hs-15",
-      "name": "Mai Thảo My",
-      "group": 4,
+      "id": "hs-1790097391777-3",
+      "name": "Phúc Anh",
+      "group": 3,
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 5,
+      "likes": 0,
       "logs": [
         {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
-          "icon": "🥚"
-        },
-        {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
         }
       ]
     },
     {
-      "id": "hs-16",
-      "name": "Nguyễn Tiến Đạt",
+      "id": "hs-1790097391777-4",
+      "name": "Nguyên Bình",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-5",
+      "name": "Thanh Bình",
       "group": 4,
       "stars": 0,
       "status": "active",
       "sleepUntil": 0,
-      "likes": 2,
+      "likes": 0,
       "logs": [
         {
-          "id": "log-reset-1789806151831",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-6",
+      "name": "Bảo Đăng",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806151648",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-7",
+      "name": "Yên Di",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806151441",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-8",
+      "name": "Ánh Dương",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806150176",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-9",
+      "name": "Bảo Hân",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806149054",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-10",
+      "name": "Phạm Bảo Hân",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806143533",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
-        },
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-11",
+      "name": "Công Hậu",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
         {
-          "id": "log-reset-1789806140201",
-          "time": "15:22",
+          "id": "log-init-1790097391777",
+          "time": "00:16",
           "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (0 sao)",
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-12",
+      "name": "Gia Hưng",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-13",
+      "name": "Hà Kha",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-14",
+      "name": "Minh Khang",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-15",
+      "name": "Gia Khánh",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-16",
+      "name": "Minh Khôi",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-17",
+      "name": "Đăng Khôi",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-18",
+      "name": "Minh Khuê",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-19",
+      "name": "Bảo Lam",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-20",
+      "name": "Vy Lê",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-21",
+      "name": "Bảo Long",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-22",
+      "name": "Huyền My",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-23",
+      "name": "Hoàng Ngân",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-24",
+      "name": "Minh Nhật",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-25",
+      "name": "An Nhiên",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-26",
+      "name": "Hoàng Phúc",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-27",
+      "name": "Uyên Phương",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-28",
+      "name": "Hoàng Quân",
+      "group": 4,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-29",
+      "name": "Anh Quân",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-30",
+      "name": "Tuệ Tâm",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-31",
+      "name": "Hương Thảo",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-32",
+      "name": "Anh Thư",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-33",
+      "name": "Bảo Trân",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-34",
+      "name": "Nhã Uyên",
+      "group": 2,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-35",
+      "name": "Ngọc Uyên",
+      "group": 3,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
+          "icon": "🥚"
+        }
+      ]
+    },
+    {
+      "id": "hs-1790097391777-36",
+      "name": "Hải Yến",
+      "group": 1,
+      "stars": 0,
+      "status": "active",
+      "sleepUntil": 0,
+      "likes": 0,
+      "logs": [
+        {
+          "id": "log-init-1790097391777",
+          "time": "00:16",
+          "points": 0,
+          "reason": "Bắt đầu ấp trứng kỳ diệu!",
           "icon": "🥚"
         }
       ]
     }
   ],
-  "lastUpdated": 1789828137687
+  "teacherName": "Cô Giáo"
 }

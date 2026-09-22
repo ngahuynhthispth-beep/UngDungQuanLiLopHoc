@@ -67,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const { students, groups } = state.data;
     studentsContainer.innerHTML = '';
 
+    const hatchedStudents = (students || []).filter(s => (s.stars || 0) >= 100);
+    const hatchedBadgeCount = document.getElementById('hatchedBadgeCount');
+    if (hatchedBadgeCount) hatchedBadgeCount.textContent = hatchedStudents.length;
+
     students.forEach(student => {
       const group = groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
       const stage = window.EggEvolution.getStage(student.stars);
@@ -76,6 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = `student-card ${isSleeping ? 'sleeping' : ''}`;
       card.dataset.id = student.id;
+
+      let hatchedBadgeHtml = '';
+      if (student.stars >= 100) {
+        hatchedBadgeHtml = `<div class="hatched-success-badge" title="Đã nở trứng thành công! Đang tiếp tục tích sao lớn lên">🎉 Đã Nở Linh Thú</div>`;
+      }
 
       card.innerHTML = `
         <div class="group-badge" style="background: ${group.color}">
@@ -101,24 +110,31 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="stars-display">
           <span>⭐</span> <span>${student.stars}</span>
         </div>
+        ${hatchedBadgeHtml}
 
         <div class="evo-progress-container">
           <div class="evo-progress-label">
-            <span>${student.stars >= 71 ? 'Tiến hóa' : 'Ấp trứng'}</span>
-            <span style="${student.stars < 71 ? 'color: #E11D48; font-weight: 800;' : ''}">${student.stars < 71 ? `Còn ${milestone.neededToHatch} ⭐ để nở` : (milestone.nextStage ? `Còn ${milestone.needed} ⭐` : 'Tối đa!')}</span>
+            <span>${student.stars >= 100 ? 'Tiến hóa' : 'Ấp trứng'}</span>
+            <span style="${student.stars < 100 ? 'color: #E11D48; font-weight: 800;' : ''}">${student.stars < 100 ? `Còn ${milestone.neededToHatch} ⭐ để nở` : (milestone.nextStage ? `Còn ${milestone.needed} ⭐` : 'Tối đa!')}</span>
           </div>
           <div class="evo-progress-bar">
-            <div class="evo-progress-fill" style="width: ${student.stars < 71 ? Math.min(100, Math.round((student.stars / 71) * 100)) : milestone.progress}%; background: ${student.stars >= 71 ? 'linear-gradient(90deg, #10B981, #3B82F6)' : 'linear-gradient(90deg, #F59E0B, #EF4444)'};"></div>
+            <div class="evo-progress-fill" style="width: ${student.stars < 100 ? Math.min(100, Math.round((student.stars / 100) * 100)) : milestone.progress}%; background: ${student.stars >= 100 ? 'linear-gradient(90deg, #10B981, #3B82F6)' : 'linear-gradient(90deg, #F59E0B, #EF4444)'};"></div>
           </div>
         </div>
 
         <div class="card-quick-btn-row">
-          <button class="btn-fast-reward hand fast-action" data-action="hand" data-id="${student.id}" title="Giơ tay phát biểu (+1)">
-            ✋ Phát biểu (+1)
-          </button>
-          <button class="btn-fast-reward quiet fast-action" data-action="quiet" data-id="${student.id}" title="Giữ trật tự (+1)">
-            🤫 Trật tự (+1)
-          </button>
+          ${student.stars >= 100 ? `
+            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 100 ⭐ - Bấm mở 2 phần quà!">
+              🎁 ĐÃ NỞ - MỞ 2 QUÀ NGAY (100⭐)
+            </button>
+          ` : `
+            <button class="btn-fast-reward hand fast-action" data-action="hand" data-id="${student.id}" title="Giơ tay phát biểu (+1)">
+              ✋ Phát biểu (+1)
+            </button>
+            <button class="btn-fast-reward quiet fast-action" data-action="quiet" data-id="${student.id}" title="Giữ trật tự (+1)">
+              🤫 Trật tự (+1)
+            </button>
+          `}
         </div>
       `;
 
@@ -128,27 +144,55 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action')) {
           return;
         }
+        if (student.stars >= 100) {
+          openGiftClaimModal(student.id);
+          return;
+        }
         openActionModal(student.id);
       });
 
       // Quick Fast Buttons
-      card.querySelector('.fast-action[data-action="hand"]').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const rect = e.target.getBoundingClientRect();
-        createFloatingStar(rect.left + rect.width / 2, rect.top, '✋');
-        window.soundFx.playStar();
-        StorageManager.addPointsToStudent(student.id, 1, 'Giơ tay phát biểu sôi nổi', '✋');
-        refreshData();
-      });
+      const handBtn = card.querySelector('.fast-action[data-action="hand"]');
+      if (handBtn) {
+        handBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if ((student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
+            openGiftClaimModal(student.id);
+            return;
+          }
+          const rect = e.target.getBoundingClientRect();
+          createFloatingStar(rect.left + rect.width / 2, rect.top, '✋');
+          window.soundFx.playStar();
+          StorageManager.addPointsToStudent(student.id, 1, 'Giơ tay phát biểu sôi nổi', '✋');
+          refreshData();
+        });
+      }
 
-      card.querySelector('.fast-action[data-action="quiet"]').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const rect = e.target.getBoundingClientRect();
-        createFloatingStar(rect.left + rect.width / 2, rect.top, '🤫');
-        window.soundFx.playStar();
-        StorageManager.addPointsToStudent(student.id, 1, 'Giữ trật tự và ngồi ngoan', '🤫');
-        refreshData();
-      });
+      const quietBtn = card.querySelector('.fast-action[data-action="quiet"]');
+      if (quietBtn) {
+        quietBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if ((student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
+            openGiftClaimModal(student.id);
+            return;
+          }
+          const rect = e.target.getBoundingClientRect();
+          createFloatingStar(rect.left + rect.width / 2, rect.top, '🤫');
+          window.soundFx.playStar();
+          StorageManager.addPointsToStudent(student.id, 1, 'Giữ trật tự và ngồi ngoan', '🤫');
+          refreshData();
+        });
+      }
+
+      const giftBtn = card.querySelector('.fast-action[data-action="gift"]');
+      if (giftBtn) {
+        giftBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openGiftClaimModal(student.id);
+        });
+      }
 
       // QR Parent modal
       card.querySelector('.btn-qr-parent').addEventListener('click', (e) => {
@@ -251,8 +295,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Refresh View from state ---
-  function refreshData() {
-    state.data = StorageManager.loadData();
+  function refreshData(newData) {
+    if (newData && newData.students) {
+      state.data = newData;
+    } else if (!state.data || !state.data.students) {
+      state.data = StorageManager.loadData();
+    }
+
+    const prevHatchedMap = new Set(
+      ((state.data && state.data.students) || []).filter(s => (s.stars || 0) >= 100).map(s => s.id)
+    );
+
+    // Check if any student newly hatched (>= 100 stars)
+    if (prevHatchedMap.size >= 0) {
+      const newlyHatched = (state.data.students || []).find(s => (s.stars || 0) >= 100 && !prevHatchedMap.has(s.id));
+      if (newlyHatched && prevHatchedMap.size > 0) {
+        showHatchCelebration(newlyHatched);
+      }
+    }
+
     renderStudents();
     renderGroups();
   }
@@ -317,7 +378,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const reason = btn.dataset.reason || 'Khen thưởng';
         const icon = btn.dataset.icon || '⭐';
 
-        window.soundFx.playStar();
+        const student = state.data.students.find(s => s.id === studentId);
+        if (student && (student.stars || 0) >= 100 && points > 0) {
+          actionModal.classList.remove('active');
+          showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở 2 phần quà để chuyển về 0 ⭐ bắt đầu chu kỳ mới.`, '🎁');
+          openGiftClaimModal(student.id);
+          return;
+        }
+
+        if (points < 0) {
+          if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
+          }
+        } else {
+          window.soundFx.playStar();
+        }
+
         StorageManager.addPointsToStudent(studentId, points, reason, icon);
       }
 
@@ -491,10 +567,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Determine the best URL for parent phone access
     let baseUrl = '';
-    if (serverNetworkInfo && serverNetworkInfo.primaryIp) {
+    if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+      baseUrl = new URL('.', window.location.href).href.replace(/\/$/, '');
+    } else if (serverNetworkInfo && serverNetworkInfo.publicUrl) {
+      baseUrl = serverNetworkInfo.publicUrl;
+    } else if (serverNetworkInfo && serverNetworkInfo.primaryIp) {
       baseUrl = `http://${serverNetworkInfo.primaryIp}:${serverNetworkInfo.port || 3000}`;
     } else if (window.location.origin && window.location.origin !== 'null' && !isFileProtocol) {
-      baseUrl = window.location.origin;
+      baseUrl = new URL('.', window.location.href).href.replace(/\/$/, '');
     } else {
       baseUrl = 'http://localhost:3000';
     }
@@ -572,12 +652,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let baseUrl = '';
-    if (serverNetworkInfo && serverNetworkInfo.publicUrl) {
+    if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+      baseUrl = new URL('.', window.location.href).href.replace(/\/$/, '');
+    } else if (serverNetworkInfo && serverNetworkInfo.publicUrl) {
       baseUrl = serverNetworkInfo.publicUrl;
     } else if (serverNetworkInfo && serverNetworkInfo.primaryIp) {
       baseUrl = `http://${serverNetworkInfo.primaryIp}:${serverNetworkInfo.port || 3000}`;
     } else if (window.location.origin && window.location.origin !== 'null' && !window.location.protocol.startsWith('file')) {
-      baseUrl = window.location.origin;
+      baseUrl = new URL('.', window.location.href).href.replace(/\/$/, '');
     } else {
       baseUrl = 'http://localhost:3000';
     }
@@ -1108,16 +1190,937 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- Hatch Celebration Popup for Teacher ---
+  let lastHatchedStudent = null;
+  function showHatchCelebration(student) {
+    const hatchModal = document.getElementById('hatchCelebrationModal');
+    if (!hatchModal) return;
+
+    lastHatchedStudent = student;
+    document.getElementById('hatchCelebrationStudentName').textContent = student.name;
+    document.getElementById('hatchCelebrationStars').textContent = student.stars;
+
+    const stage = window.EggEvolution.getStage(student.stars);
+    document.getElementById('hatchCelebrationStageTitle').textContent = `🦖 ${stage.title}`;
+
+    const group = (state.data.groups || []).find(g => g.id === student.group);
+    const color = group ? group.color : null;
+    document.getElementById('hatchCelebrationPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, color);
+
+    if (window.soundFx && typeof window.soundFx.playLevelUp === 'function') {
+      window.soundFx.playLevelUp();
+    } else if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+      window.soundFx.playStar();
+    }
+
+    hatchModal.classList.add('active');
+  }
+
+  const btnAckHatchCelebration = document.getElementById('btnAckHatchCelebration');
+  if (btnAckHatchCelebration) {
+    btnAckHatchCelebration.addEventListener('click', () => {
+      document.getElementById('hatchCelebrationModal').classList.remove('active');
+    });
+  }
+
+  const btnOpenGiftFromCelebration = document.getElementById('btnOpenGiftFromCelebration');
+  if (btnOpenGiftFromCelebration) {
+    btnOpenGiftFromCelebration.addEventListener('click', () => {
+      document.getElementById('hatchCelebrationModal').classList.remove('active');
+      if (lastHatchedStudent) {
+        openGiftClaimModal(lastHatchedStudent.id);
+      }
+    });
+  }
+
+  // --- Hatched List Modal (Bảng Danh Sách Trứng Đã Nở & Quà Nhận) ---
+  const btnHatchedList = document.getElementById('btnHatchedList');
+  const hatchedListModal = document.getElementById('hatchedListModal');
+  const closeHatchedListBtn = document.getElementById('closeHatchedListBtn');
+  const btnCloseHatchedListModal = document.getElementById('btnCloseHatchedListModal');
+  const hatchedTableContainer = document.getElementById('hatchedTableContainer');
+  const hatchedSummaryText = document.getElementById('hatchedSummaryText');
+
+  function openHatchedListModal() {
+    const students = state.data.students || [];
+    const hatchedList = students.filter(s => (s.stars || 0) >= 100);
+
+    hatchedList.sort((a, b) => (b.stars || 0) - (a.stars || 0));
+
+    if (hatchedList.length === 0) {
+      const sortedByStars = [...students].sort((a, b) => (b.stars || 0) - (a.stars || 0));
+      const closest = sortedByStars[0];
+      const needed = closest ? Math.max(0, 100 - closest.stars) : 100;
+
+      hatchedTableContainer.innerHTML = `
+        <div style="text-align: center; padding: 36px 20px;">
+          <div style="font-size: 44px; margin-bottom: 8px;">🥚⏳</div>
+          <div style="font-size: 16px; font-weight: 800; color: #1E293B; margin-bottom: 6px;">
+            Chưa có bé nào đạt mốc trứng nở (100 ⭐)
+          </div>
+          <p style="font-size: 13px; color: #64748B; max-width: 420px; margin: 0 auto 14px;">
+            ${closest ? `Bé đang dẫn đầu gần nở nhất là <strong>${closest.name}</strong> (${closest.stars}/100 ⭐ - chỉ còn thiếu <strong>${needed} ⭐</strong> nữa)!` : 'Cả lớp hãy cùng thi đua tích sao nhé!'}
+          </p>
+        </div>
+      `;
+      if (hatchedSummaryText) hatchedSummaryText.textContent = 'Cả lớp đang trong giai đoạn ấp trứng';
+    } else {
+      hatchedTableContainer.innerHTML = `
+        <table class="hatched-table">
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">STT</th>
+              <th>Học Sinh</th>
+              <th>Tổ</th>
+              <th>Linh Thú Đã Nở</th>
+              <th style="text-align: center;">Tổng ⭐</th>
+              <th style="text-align: center;">🎁 Quà Đã Nhận (2 Lượt)</th>
+              <th style="text-align: center; width: 110px;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${hatchedList.map((s, idx) => {
+              const group = (state.data.groups || []).find(g => g.id === s.group) || { name: `Tổ ${s.group}`, color: '#64748B' };
+              const stage = window.EggEvolution.getStage(s.stars);
+              let hatchedDateStr = 'Đã nở';
+              if (s.hatchedAt) {
+                const d = new Date(Number(s.hatchedAt));
+                hatchedDateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+              }
+
+              const gifts = s.giftHistory || [];
+              let giftColHtml = '';
+              if (gifts.length === 0) {
+                giftColHtml = `
+                  <div style="font-size: 11px; color: #DC2626; font-weight: 700; margin-bottom: 4px;">Chưa mở (còn 2 lượt)</div>
+                  <button class="btn-fast-reward btn-open-gift-for-student" data-id="${s.id}" style="padding: 3px 8px; font-size: 11px; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; margin: 0 auto;">
+                    🎁 Cho Bé Mở Quà
+                  </button>
+                `;
+              } else if (gifts.length === 1) {
+                giftColHtml = `
+                  <div><span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8;">${gifts[0].icon || '🎁'} ${gifts[0].name}</span></div>
+                  <div style="margin-top: 4px;">
+                    <button class="btn-fast-reward btn-open-gift-for-student" data-id="${s.id}" style="padding: 2px 8px; font-size: 10px; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; margin: 0 auto;">
+                      🎁 Mở lượt 2
+                    </button>
+                  </div>
+                `;
+              } else {
+                giftColHtml = `
+                  <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                    ${gifts.map(g => `<span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8;">${g.icon || '🎁'} ${g.name}</span>`).join('')}
+                    <div style="font-size: 10px; color: #059669; font-weight: 700;">✅ Đã nhận đủ 2 quà</div>
+                  </div>
+                `;
+              }
+
+              return `
+                <tr>
+                  <td style="text-align: center; font-weight: 800; color: #64748B;">${idx + 1}</td>
+                  <td>
+                    <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${s.name}</div>
+                    <div style="font-size: 11px; color: #059669; font-weight: 700;">Nở ngày: ${hatchedDateStr}</div>
+                  </td>
+                  <td>
+                    <span style="background: ${group.color}; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 10px;">
+                      ${group.name.split('-')[0].trim()}
+                    </span>
+                  </td>
+                  <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div style="width: 36px; height: 36px;">
+                        ${window.EggEvolution.renderPetSVG(s.stars, s.status, group.color)}
+                      </div>
+                      <div>
+                        <div style="font-weight: 800; font-size: 13px; color: #065F46;">${stage.title}</div>
+                        <div style="font-size: 11px; color: #64748B;">Cấp ${stage.level} • Tiếp tục tiến hóa ✨</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="text-align: center;">
+                    <span style="background: #FEF3C7; color: #B45309; font-size: 14px; font-weight: 800; padding: 4px 10px; border-radius: 12px; border: 1px solid #FDE68A;">
+                      ⭐ ${s.stars}
+                    </span>
+                  </td>
+                  <td style="text-align: center;">
+                    ${giftColHtml}
+                  </td>
+                  <td style="text-align: center;">
+                    <button class="btn-fast-reward hand btn-reward-hatched" data-id="${s.id}" style="padding: 4px 10px; font-size: 12px; margin: 0 auto;">
+                      👏 Khen Thưởng
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+
+      if (hatchedSummaryText) {
+        hatchedSummaryText.textContent = `Tổng cộng: ${hatchedList.length}/${students.length} bé đã nở linh thú`;
+      }
+
+      hatchedTableContainer.querySelectorAll('.btn-reward-hatched').forEach(btn => {
+        btn.addEventListener('click', () => {
+          hatchedListModal.classList.remove('active');
+          openActionModal(btn.dataset.id);
+        });
+      });
+
+      hatchedTableContainer.querySelectorAll('.btn-open-gift-for-student').forEach(btn => {
+        btn.addEventListener('click', () => {
+          hatchedListModal.classList.remove('active');
+          openGiftClaimModal(btn.dataset.id);
+        });
+      });
+    }
+
+    hatchedListModal.classList.add('active');
+  }
+
+  if (btnHatchedList) {
+    btnHatchedList.addEventListener('click', openHatchedListModal);
+  }
+  if (closeHatchedListBtn) {
+    closeHatchedListBtn.addEventListener('click', () => hatchedListModal.classList.remove('active'));
+  }
+  if (btnCloseHatchedListModal) {
+    btnCloseHatchedListModal.addEventListener('click', () => hatchedListModal.classList.remove('active'));
+  }
+
+  // --- BẢNG TỔNG HỢP QUÀ TẶNG ĐÃ QUAY (MODAL CHO GIÁO VIÊN) ---
+  const btnGiftSummary = document.getElementById('btnGiftSummary');
+  const giftSummaryModal = document.getElementById('giftSummaryModal');
+  const closeGiftSummaryBtn = document.getElementById('closeGiftSummaryBtn');
+  const btnCloseGiftSummaryModal = document.getElementById('btnCloseGiftSummaryModal');
+  const btnCopyGiftSummary = document.getElementById('btnCopyGiftSummary');
+  const giftSummaryTableContainer = document.getElementById('giftSummaryTableContainer');
+  const giftSummaryCountText = document.getElementById('giftSummaryCountText');
+
+  function openGiftSummaryModal() {
+    const records = StorageManager.getGiftSummaryRecords();
+    if (!records || records.length === 0) {
+      giftSummaryTableContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+          <div style="font-size: 44px; margin-bottom: 8px;">🎁📋</div>
+          <div style="font-size: 16px; font-weight: 800; color: #1E293B;">Chưa có phần quà nào được ghi nhận</div>
+          <p style="font-size: 13px; color: #64748B; margin-top: 6px; max-width: 440px; margin-left: auto; margin-right: auto;">
+            Khi học sinh đạt đủ 100 ⭐ và hoàn tất quay 2 lượt quà (trên máy cô hoặc phụ huynh), hệ thống sẽ tự động lưu vào bảng này và chuyển trứng của bé về 0 ⭐ để bắt đầu chu kỳ ấp mới.
+          </p>
+        </div>
+      `;
+      if (giftSummaryCountText) giftSummaryCountText.textContent = 'Tổng cộng: 0 lượt quay';
+    } else {
+      let html = `
+        <table class="hatched-table">
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">STT</th>
+              <th>Học Sinh</th>
+              <th>Tổ</th>
+              <th>🎁 Quà Lượt 1</th>
+              <th>🎁 Quà Lượt 2</th>
+              <th style="text-align: center;">Thời Gian</th>
+              <th style="text-align: center;">Nơi Quay</th>
+              <th style="text-align: center; width: 120px;">Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      records.forEach((rec, idx) => {
+        const sourceLabel = rec.claimedBy === 'parent' 
+          ? '<span style="background: #E0E7FF; color: #4338CA; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">🏠 Phụ huynh</span>' 
+          : '<span style="background: #FCE7F3; color: #BE185D; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">👩‍🏫 Tại lớp</span>';
+
+        const isDelivered = !!rec.delivered;
+
+        html += `
+          <tr style="${isDelivered ? 'background: #F0FDF4;' : ''}">
+            <td style="text-align: center; font-weight: 800; color: #64748B;">${idx + 1}</td>
+            <td>
+              <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${rec.studentName}</div>
+            </td>
+            <td>
+              <span style="background: ${rec.groupColor || '#64748B'}; color: #FFF; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 10px;">
+                ${(rec.groupName || '').split('-')[0].trim()}
+              </span>
+            </td>
+            <td>
+              <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-weight: 700;">
+                ${rec.gift1 ? `${rec.gift1.icon || '🎁'} ${rec.gift1.name}` : 'Quà 1'}
+              </span>
+            </td>
+            <td>
+              <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-weight: 700;">
+                ${rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : 'Quà 2'}
+              </span>
+            </td>
+            <td style="text-align: center; font-size: 12px; color: #64748B;">
+              ${rec.timeStr || ''} (${rec.dateStr || ''})
+            </td>
+            <td style="text-align: center;">
+              ${sourceLabel}
+            </td>
+            <td style="text-align: center;">
+              <button class="btn-fast-reward btn-toggle-delivery" data-id="${rec.id}" style="padding: 4px 10px; font-size: 12px; margin: 0 auto; background: ${isDelivered ? '#10B981' : '#F1F5F9'}; color: ${isDelivered ? '#FFF' : '#475569'}; border: 1px solid ${isDelivered ? '#059669' : '#CBD5E1'}; cursor: pointer;">
+                ${isDelivered ? '✅ Đã phát' : '⏳ Chờ phát'}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      giftSummaryTableContainer.innerHTML = html;
+
+      const deliveredCount = records.filter(r => r.delivered).length;
+      if (giftSummaryCountText) {
+        giftSummaryCountText.textContent = `Tổng cộng: ${records.length} bé đã quay quà | Đã trao quà: ${deliveredCount}/${records.length} bé`;
+      }
+
+      giftSummaryTableContainer.querySelectorAll('.btn-toggle-delivery').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await StorageManager.toggleGiftDelivery(btn.dataset.id);
+          openGiftSummaryModal();
+        });
+      });
+    }
+
+    giftSummaryModal.classList.add('active');
+  }
+
+  if (btnGiftSummary) {
+    btnGiftSummary.addEventListener('click', openGiftSummaryModal);
+  }
+  if (closeGiftSummaryBtn) {
+    closeGiftSummaryBtn.addEventListener('click', () => giftSummaryModal.classList.remove('active'));
+  }
+  if (btnCloseGiftSummaryModal) {
+    btnCloseGiftSummaryModal.addEventListener('click', () => giftSummaryModal.classList.remove('active'));
+  }
+
+  if (btnCopyGiftSummary) {
+    btnCopyGiftSummary.addEventListener('click', async () => {
+      const records = StorageManager.getGiftSummaryRecords();
+      if (!records || records.length === 0) {
+        alert('Chưa có dữ liệu quà tặng để sao chép!');
+        return;
+      }
+      let text = '🎁 DANH SÁCH TỔNG HỢP QUÀ TẶNG TRỨNG NỞ CỦA CÁC BÉ:\n';
+      records.forEach((r, idx) => {
+        const q1 = r.gift1 ? `${r.gift1.icon || ''} ${r.gift1.name}` : 'Quà 1';
+        const q2 = r.gift2 ? `${r.gift2.icon || ''} ${r.gift2.name}` : 'Quà 2';
+        const status = r.delivered ? '[Đã trao quà]' : '[Chờ trao quà]';
+        text += `${idx + 1}. Bé ${r.studentName} (${r.groupName}): ${q1} + ${q2} - ${status}\n`;
+      });
+
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('🎉 Đã sao chép bảng tổng hợp quà thành công!\nCô có thể dán (Ctrl + V) vào Zalo hoặc ghi chú để chuẩn bị quà nhé.');
+      } catch (e) {
+        alert(text);
+      }
+    });
+  }
+
+  // ==========================================
+  // --- QUẢN LÝ CÀI ĐẶT QUÀ TẶNG (TEACHER) ---
+  // ==========================================
+  const btnOpenGiftSettings = document.getElementById('btnOpenGiftSettings');
+  const giftSettingsModal = document.getElementById('giftSettingsModal');
+  const closeGiftSettingsBtn = document.getElementById('closeGiftSettingsBtn');
+  const btnCloseGiftSettingsModal = document.getElementById('btnCloseGiftSettingsModal');
+  const giftSettingsTableBody = document.getElementById('giftSettingsTableBody');
+  const newGiftIconSelect = document.getElementById('newGiftIconSelect');
+  const newGiftNameInput = document.getElementById('newGiftNameInput');
+  const btnAddGiftItem = document.getElementById('btnAddGiftItem');
+  const btnResetDefaultGifts = document.getElementById('btnResetDefaultGifts');
+  const btnSaveGiftSettings = document.getElementById('btnSaveGiftSettings');
+
+  let currentGiftListEditing = [];
+
+  function renderGiftSettingsTable() {
+    if (!giftSettingsTableBody) return;
+    if (currentGiftListEditing.length === 0) {
+      giftSettingsTableBody.innerHTML = `
+        <tr>
+          <td colspan="4" style="text-align: center; padding: 20px; color: #94A3B8;">
+            Chưa có phần quà nào trong danh sách. Hãy thêm món quà mới ở trên!
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    giftSettingsTableBody.innerHTML = currentGiftListEditing.map((item, idx) => `
+      <tr style="border-bottom: 1px solid #F1F5F9;">
+        <td style="padding: 10px 14px; font-weight: 700; color: #64748B;">${idx + 1}</td>
+        <td style="padding: 10px 14px; font-size: 20px;">${item.icon || '🎁'}</td>
+        <td style="padding: 10px 14px; font-weight: 700; color: #1E293B;">
+          <input type="text" class="edit-gift-name-input" data-idx="${idx}" value="${item.name}" style="width: 100%; padding: 6px 10px; border: 1px solid #E2E8F0; border-radius: 8px; font-family: inherit; font-size: 13px;">
+        </td>
+        <td style="padding: 10px 14px; text-align: center;">
+          <button type="button" class="btn-remove-gift-item" data-idx="${idx}" style="background: #FEE2E2; color: #DC2626; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 800;" title="Xóa phần quà này">
+            🗑️ Xóa
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    // Bắt sự kiện xóa
+    giftSettingsTableBody.querySelectorAll('.btn-remove-gift-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const removeIdx = parseInt(btn.dataset.idx, 10);
+        currentGiftListEditing.splice(removeIdx, 1);
+        renderGiftSettingsTable();
+      });
+    });
+
+    // Bắt sự kiện sửa tên trực tiếp
+    giftSettingsTableBody.querySelectorAll('.edit-gift-name-input').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const editIdx = parseInt(input.dataset.idx, 10);
+        if (currentGiftListEditing[editIdx]) {
+          currentGiftListEditing[editIdx].name = input.value.trim();
+        }
+      });
+    });
+  }
+
+  if (btnOpenGiftSettings) {
+    btnOpenGiftSettings.addEventListener('click', () => {
+      currentGiftListEditing = JSON.parse(JSON.stringify(StorageManager.getGiftItems()));
+      renderGiftSettingsTable();
+      giftSettingsModal.classList.add('active');
+    });
+  }
+
+  if (closeGiftSettingsBtn) {
+    closeGiftSettingsBtn.addEventListener('click', () => giftSettingsModal.classList.remove('active'));
+  }
+  if (btnCloseGiftSettingsModal) {
+    btnCloseGiftSettingsModal.addEventListener('click', () => giftSettingsModal.classList.remove('active'));
+  }
+
+  if (btnAddGiftItem) {
+    btnAddGiftItem.addEventListener('click', () => {
+      const icon = newGiftIconSelect.value;
+      const name = (newGiftNameInput.value || '').trim();
+      if (!name) {
+        alert('Cô vui lòng nhập tên món quà nhé!');
+        newGiftNameInput.focus();
+        return;
+      }
+      currentGiftListEditing.push({
+        id: 'gift_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name: name,
+        icon: icon
+      });
+      newGiftNameInput.value = '';
+      renderGiftSettingsTable();
+    });
+  }
+
+  if (btnResetDefaultGifts) {
+    btnResetDefaultGifts.addEventListener('click', () => {
+      if (confirm('Cô có chắc muốn khôi phục lại danh sách quà mẫu mặc định (bút chì, lê gô, kẹp tóc, sổ tay, cục tẩy, tranh cát, quà yêu thích)?')) {
+        currentGiftListEditing = JSON.parse(JSON.stringify(StorageManager.DEFAULT_GIFTS));
+        renderGiftSettingsTable();
+      }
+    });
+  }
+
+  if (btnSaveGiftSettings) {
+    btnSaveGiftSettings.addEventListener('click', async () => {
+      if (currentGiftListEditing.length < 2) {
+        alert('Danh sách quà nên có ít nhất 2 món để các em quay thưởng cô nhé!');
+        return;
+      }
+      await StorageManager.saveGiftItems(currentGiftListEditing);
+      giftSettingsModal.classList.remove('active');
+      showSyncToast('Đã lưu danh sách quà tặng nở trứng thành công!', '🎁');
+    });
+  }
+
+  // ========================================================
+  // --- MODAL MỞ QUÀ NỞ TRỨNG (VÒNG QUAY & TÚI MÙ - 2 LƯỢT) ---
+  // ========================================================
+  const giftClaimModal = document.getElementById('giftClaimModal');
+  const closeGiftClaimBtn = document.getElementById('closeGiftClaimBtn');
+  const giftClaimStudentName = document.getElementById('giftClaimStudentName');
+  const giftClaimTurnBadge = document.getElementById('giftClaimTurnBadge');
+  const btnModeWheel = document.getElementById('btnModeWheel');
+  const btnModeBlindBag = document.getElementById('btnModeBlindBag');
+  const giftWheelArea = document.getElementById('giftWheelArea');
+  const giftBlindBagArea = document.getElementById('giftBlindBagArea');
+  const btnSpinGiftWheel = document.getElementById('btnSpinGiftWheel');
+  const blindBagsGrid = document.getElementById('blindBagsGrid');
+  const giftResultBox = document.getElementById('giftResultBox');
+  const giftResultIcon = document.getElementById('giftResultIcon');
+  const giftResultTitle = document.getElementById('giftResultTitle');
+  const giftResultDesc = document.getElementById('giftResultDesc');
+  const giftNextActionArea = document.getElementById('giftNextActionArea');
+  const giftClaimCurrentHistoryList = document.getElementById('giftClaimCurrentHistoryList');
+
+  let activeGiftStudentId = null;
+  let giftLuckyWheel = null;
+  let currentGiftMode = 'wheel'; // 'wheel' or 'blindbag'
+  let isClaimingGift = false;
+
+  function renderGiftClaimHistory(gifts) {
+    if (!giftClaimCurrentHistoryList) return;
+    if (!gifts || gifts.length === 0) {
+      giftClaimCurrentHistoryList.innerHTML = '<span style="color: #94A3B8; font-style: italic;">Chưa mở quà lượt nào.</span>';
+    } else {
+      giftClaimCurrentHistoryList.innerHTML = gifts.map((g, i) => `
+        <span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8; font-size: 13px; padding: 4px 10px;">
+          Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}
+        </span>
+      `).join(' ');
+    }
+  }
+
+  function initGiftLuckyWheel(giftItems) {
+    if (!document.getElementById('giftWheelCanvas')) return;
+    const wheelItems = giftItems.map(g => ({
+      id: g.id,
+      name: `${g.icon || '🎁'} ${g.name}`,
+      giftData: g
+    }));
+    giftLuckyWheel = new LuckyWheel('giftWheelCanvas');
+    giftLuckyWheel.setItems(wheelItems);
+  }
+
+  const BAG_COLORS = [
+    { bg: 'linear-gradient(135deg, #FF6B8B, #FF8E53)', border: '#FF6B8B' },
+    { bg: 'linear-gradient(135deg, #4FACFE, #00F2FE)', border: '#00F2FE' },
+    { bg: 'linear-gradient(135deg, #43E97B, #38F9D7)', border: '#38F9D7' },
+    { bg: 'linear-gradient(135deg, #FA709A, #FEE140)', border: '#FA709A' },
+    { bg: 'linear-gradient(135deg, #A18CD1, #FBC2EB)', border: '#A18CD1' },
+    { bg: 'linear-gradient(135deg, #F6D365, #FDA085)', border: '#FDA085' }
+  ];
+
+  function renderBlindBags(giftItems) {
+    if (!blindBagsGrid) return;
+    blindBagsGrid.innerHTML = '';
+
+    for (let i = 0; i < 6; i++) {
+      const colorScheme = BAG_COLORS[i % BAG_COLORS.length];
+      const bag = document.createElement('div');
+      bag.className = 'blind-bag-card';
+      bag.style.background = colorScheme.bg;
+      bag.style.borderColor = colorScheme.border;
+      bag.innerHTML = `
+        <div class="bag-icon">🎒</div>
+        <div class="bag-label">Túi Mù #${i + 1}</div>
+      `;
+
+      bag.addEventListener('click', () => {
+        if (bag.classList.contains('opened') || isClaimingGift) return;
+        const student = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+        if (!student) return;
+        const usedTurns = (student.giftHistory || []).length;
+        if (usedTurns >= 2) return;
+
+        bag.classList.add('opened');
+        bag.querySelector('.bag-icon').textContent = '✨';
+
+        // Chọn ngẫu nhiên 1 phần quà từ danh sách
+        const randomGift = giftItems[Math.floor(Math.random() * giftItems.length)];
+        handleGiftClaimAward(randomGift);
+      });
+
+      blindBagsGrid.appendChild(bag);
+    }
+  }
+
+  async function handleGiftClaimAward(giftData) {
+    if (isClaimingGift || !activeGiftStudentId) return;
+    isClaimingGift = true;
+
+    try {
+      if (window.soundFx && typeof window.soundFx.playHatch === 'function') {
+        window.soundFx.playHatch();
+      } else if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+        window.soundFx.playStar();
+      }
+
+      // Tạo hiệu ứng hạt sao rơi rực rỡ
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          createFloatingStar(window.innerWidth / 2 + (Math.random() * 200 - 100), window.innerHeight / 2 + (Math.random() * 100 - 50), giftData.icon || '🎁');
+        }, i * 120);
+      }
+
+      // Lưu lịch sử nhận quà cho học sinh qua StorageManager (source: teacher)
+      const updatedStudent = await StorageManager.claimStudentGift(activeGiftStudentId, giftData, 'teacher');
+      if (updatedStudent) {
+        const studentInState = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+        if (studentInState) {
+          studentInState.giftHistory = updatedStudent.giftHistory;
+        }
+      }
+
+      const gifts = (updatedStudent && updatedStudent.giftHistory) || [];
+      renderGiftClaimHistory(gifts);
+
+      // Hiển thị khung kết quả
+      giftResultBox.style.display = 'block';
+      giftResultIcon.textContent = giftData.icon || '🎁';
+      giftResultTitle.textContent = `Bé đã trúng: ${giftData.name}!`;
+
+      if (gifts.length < 2) {
+        giftClaimTurnBadge.textContent = 'Lượt mở quà: 2 / 2';
+        giftResultDesc.innerHTML = `
+          <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 4px;">
+            🎉 Tuyệt vời! Bé vẫn còn <strong>1 lượt mở quà nữa</strong>!
+          </div>
+        `;
+        giftNextActionArea.innerHTML = `
+          <button type="button" id="btnContinueGiftTurn2" class="btn-header primary" style="background: linear-gradient(135deg, #EC4899, #BE185D); padding: 10px 24px; font-size: 14px; font-weight: 800; border-radius: 20px;">
+            🎁 Mở Tiếp Lượt 2 Ngay!
+          </button>
+        `;
+
+        document.getElementById('btnContinueGiftTurn2').addEventListener('click', () => {
+          giftResultBox.style.display = 'none';
+          isClaimingGift = false;
+          // Vẽ lại 6 túi mù mới nếu đang ở mode túi mù
+          if (currentGiftMode === 'blindbag') {
+            const giftItems = StorageManager.getGiftItems();
+            renderBlindBags(giftItems);
+          }
+        });
+      } else {
+        // Đã hoàn thành cả 2 lượt quay: nút hoàn tất chuyển về 0 sao
+        giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+        giftResultDesc.innerHTML = `
+          <div style="font-size: 15px; font-weight: 800; color: #E11D48; margin-top: 6px;">
+            🌟 CHÚC MỪNG CON ĐÃ MỞ XONG 2 LƯỢT QUÀ! 🌟
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #059669; margin-top: 6px; line-height: 1.5;">
+            👉 Quà đã được lưu vào Bảng Tổng Hợp Quà của cô giáo!
+          </div>
+        `;
+        giftNextActionArea.innerHTML = `
+          <button type="button" id="btnFinishGiftClaim" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 28px; font-size: 15px; font-weight: 800; border-radius: 20px; cursor: pointer;">
+            🎉 Hoàn Tất Mở Quà & Về 0 ⭐ Bắt Đầu Chu Kỳ Mới
+          </button>
+        `;
+        document.getElementById('btnFinishGiftClaim').addEventListener('click', async () => {
+          const studentId = activeGiftStudentId;
+          const student = (state.data.students || []).find(s => s.id === studentId);
+          giftClaimModal.classList.remove('active');
+          await StorageManager.finishAndResetStudentCycle(studentId);
+          refreshData();
+          if (student) {
+            showSyncToast(`🎉 Bé <strong>${student.name}</strong> đã nhận đủ 2 quà và được chuyển về 0 ⭐ bắt đầu chu kỳ ấp mới!`, '🏆');
+          }
+        });
+
+        // Ẩn khu vực quay/mở túi khi đã xong 2 lượt
+        giftWheelArea.style.display = 'none';
+        giftBlindBagArea.style.display = 'none';
+      }
+
+      refreshData();
+    } catch (err) {
+      console.error('Lỗi khi nhận quà:', err);
+    } finally {
+      if ((updatedStudent && updatedStudent.giftHistory && updatedStudent.giftHistory.length >= 2)) {
+        isClaimingGift = false;
+      }
+    }
+  }
+
+  function openGiftClaimModal(studentId) {
+    activeGiftStudentId = studentId;
+    isClaimingGift = false;
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    const giftItems = StorageManager.getGiftItems();
+    giftClaimStudentName.textContent = student.name;
+
+    const gifts = student.giftHistory || [];
+    renderGiftClaimHistory(gifts);
+
+    // Tab default
+    currentGiftMode = 'wheel';
+    btnModeWheel.classList.add('active');
+    btnModeBlindBag.classList.remove('active');
+
+    if (gifts.length >= 2) {
+      giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+      giftWheelArea.style.display = 'none';
+      giftBlindBagArea.style.display = 'none';
+      giftResultBox.style.display = 'block';
+      giftResultIcon.textContent = '🏆';
+      giftResultTitle.textContent = `Bé ${student.name} đã mở đủ 2 phần quà!`;
+      giftResultDesc.innerHTML = `
+        <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
+          👉 Quà đã lưu trong Bảng Tổng Hợp Quà của cô giáo! Bấm nút bên dưới để đưa bé về 0 ⭐ bắt đầu chu kỳ ấp mới.
+        </div>
+      `;
+      giftNextActionArea.innerHTML = `
+        <button type="button" id="btnResetCycleFromModal" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 24px; font-size: 14px; font-weight: 800; border-radius: 20px; cursor: pointer;">
+          🎉 Hoàn Tất & Về 0 ⭐ Bắt Đầu Chu Kỳ Mới
+        </button>
+      `;
+      document.getElementById('btnResetCycleFromModal').addEventListener('click', async () => {
+        giftClaimModal.classList.remove('active');
+        await StorageManager.finishAndResetStudentCycle(student.id);
+        refreshData();
+        showSyncToast(`🎉 Bé <strong>${student.name}</strong> đã chuyển về 0 ⭐ để bắt đầu chu kỳ ấp mới!`, '✨');
+      });
+    } else {
+      giftClaimTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
+      giftResultBox.style.display = 'none';
+      giftWheelArea.style.display = 'flex';
+      giftBlindBagArea.style.display = 'none';
+
+      initGiftLuckyWheel(giftItems);
+      renderBlindBags(giftItems);
+    }
+
+    giftClaimModal.classList.add('active');
+  }
+
+  if (closeGiftClaimBtn) {
+    closeGiftClaimBtn.addEventListener('click', () => giftClaimModal.classList.remove('active'));
+  }
+
+  if (btnModeWheel && btnModeBlindBag) {
+    btnModeWheel.addEventListener('click', () => {
+      currentGiftMode = 'wheel';
+      btnModeWheel.classList.add('active');
+      btnModeBlindBag.classList.remove('active');
+      const student = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+      const gifts = (student && student.giftHistory) || [];
+      if (gifts.length < 2) {
+        giftWheelArea.style.display = 'flex';
+        giftBlindBagArea.style.display = 'none';
+        if (giftLuckyWheel) giftLuckyWheel.draw();
+      }
+    });
+
+    btnModeBlindBag.addEventListener('click', () => {
+      currentGiftMode = 'blindbag';
+      btnModeBlindBag.classList.add('active');
+      btnModeWheel.classList.remove('active');
+      const student = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+      const gifts = (student && student.giftHistory) || [];
+      if (gifts.length < 2) {
+        giftWheelArea.style.display = 'none';
+        giftBlindBagArea.style.display = 'flex';
+      }
+    });
+  }
+
+  if (btnSpinGiftWheel) {
+    btnSpinGiftWheel.addEventListener('click', () => {
+      if (!giftLuckyWheel || giftLuckyWheel.isSpinning || isClaimingGift) return;
+      const student = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+      if (!student || ((student.giftHistory || []).length >= 2)) return;
+
+      giftLuckyWheel.spin((winner) => {
+        if (winner && winner.giftData) {
+          handleGiftClaimAward(winner.giftData);
+        }
+      });
+    });
+  }
+
   // Multi-tab sync event listener
   if (StorageManager.broadcast) {
     StorageManager.broadcast.onmessage = (e) => {
       if (e.data && e.data.type === 'DATA_CHANGED') {
         state.data = e.data.data;
-        renderStudents();
-        renderGroups();
+        refreshData();
       }
     };
   }
+
+  // Toast thông báo tức thì khi phụ huynh nộp bài tập về nhà
+  function showSyncToast(htmlMessage, icon = '🎉') {
+    const container = document.getElementById('liveSyncToastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'live-sync-toast';
+    toast.innerHTML = `
+      <span style="font-size: 26px;">${icon}</span>
+      <div>${htmlMessage}</div>
+    `;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add('fade-out');
+      setTimeout(() => toast.remove(), 400);
+    }, 4500);
+  }
+
+  // Kết nối Realtime tự động với máy chủ (Server-Sent Events)
+  function setupRealtimeServerSync() {
+    if (window.location.protocol.startsWith('http') && window.EventSource) {
+      try {
+        const sse = new EventSource('/api/events');
+
+        sse.onmessage = (e) => {
+          try {
+            const payload = JSON.parse(e.data);
+            if (payload.type === 'HOMEWORK_SUBMITTED') {
+              if (payload.data && payload.data.students) {
+                state.data = payload.data;
+                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                refreshData(payload.data);
+
+                // Phát âm thanh ting ting vui nhộn
+                if (window.soundFx) window.soundFx.playStar();
+
+                // Hiện thông báo nổi góc màn hình giáo viên
+                const starsAdded = payload.diff || 0;
+                showSyncToast(
+                  `Bé <strong>${payload.studentName}</strong> vừa nộp bài tập: được tự động cộng <strong>+${starsAdded} ⭐</strong>!`,
+                  '📝'
+                );
+
+                // Hiệu ứng nháy nổi bật thẻ học sinh vừa được cộng điểm
+                const card = document.querySelector(`.student-card[data-id="${payload.studentId}"]`);
+                if (card) {
+                  card.style.transition = 'all 0.35s ease';
+                  card.style.transform = 'scale(1.08)';
+                  card.style.boxShadow = '0 0 25px #10B981';
+                  setTimeout(() => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                  }, 1500);
+                }
+              }
+            } else if (payload.type === 'CYCLE_RESET') {
+              if (payload.data && payload.data.students) {
+                state.data = payload.data;
+                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                refreshData(payload.data);
+                showSyncToast(`🎉 Bé <strong>${payload.studentName}</strong> đã hoàn thành mở quà và trở về 0 ⭐ bắt đầu chu kỳ ấp mới!`, '✨');
+              }
+            } else if (payload.type === 'DATA_CHANGED') {
+              if (payload.data && payload.data.students) {
+                state.data = payload.data;
+                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                refreshData(payload.data);
+              }
+            }
+          } catch (err) {
+            console.warn('Lỗi phân tích SSE:', err);
+          }
+        };
+
+        sse.onerror = () => {
+          // Tự động kết nối lại
+        };
+      } catch (err) {
+        console.warn('Không thể khởi tạo SSE:', err);
+      }
+    }
+
+    // Dự phòng Polling mỗi 2s để đảm bảo 100% không bao giờ trễ
+    setInterval(async () => {
+      try {
+        const remote = await StorageManager.pullFromServer();
+        if (remote && remote.students) {
+          const currentStars = (state.data && state.data.students) ? state.data.students.map(s => s.stars).join(',') : '';
+          const remoteStars = remote.students.map(s => s.stars).join(',');
+          if (currentStars !== remoteStars || remote.lastUpdated !== (state.data && state.data.lastUpdated)) {
+            refreshData(remote);
+          }
+        }
+      } catch (e) {}
+    }, 2000);
+  }
+
+  // Khởi tạo Google Firebase Realtime Cloud Sync
+  function setupFirebaseCloudSync() {
+    const badge = document.getElementById('cloudSyncStatusBadge');
+    const badgeText = document.getElementById('cloudSyncStatusText');
+
+    if (window.FirebaseSync && typeof window.FirebaseSync.init === 'function') {
+      const ok = window.FirebaseSync.init();
+      if (ok) {
+        if (badge && badgeText) {
+          badge.style.background = '#ECFDF5';
+          badge.style.color = '#065F46';
+          badge.style.border = '1px solid #6EE7B7';
+          badgeText.textContent = 'Đám Mây: Đã kết nối 24/24';
+        }
+
+        // Đảm bảo dữ liệu hiện tại được đẩy lên nếu Firebase đang trống
+        window.FirebaseSync.ensureInitialData(state.data);
+
+        // Lắng nghe thay đổi trực tiếp từ Firebase (phụ huynh nộp bài tập từ nhà)
+        window.FirebaseSync.onClassDataChange((fbData) => {
+          if (fbData && fbData.students) {
+            const oldMap = new Map((state.data.students || []).map(s => [s.id, s.stars || 0]));
+            
+            // Tìm bé vừa được cộng điểm từ nhà
+            let diffStudent = null;
+            let diffStars = 0;
+            for (const s of fbData.students) {
+              const oldStars = oldMap.get(s.id);
+              if (oldStars !== undefined && (s.stars || 0) > oldStars) {
+                diffStudent = s;
+                diffStars = (s.stars || 0) - oldStars;
+                break;
+              }
+            }
+
+            state.data = fbData;
+            localStorage.setItem(StorageManager.KEY, JSON.stringify(fbData));
+            refreshData(fbData);
+
+            if (diffStudent && diffStars > 0) {
+              if (window.soundFx) window.soundFx.playStar();
+              showSyncToast(
+                `Bé <strong>${diffStudent.name}</strong> vừa gửi điểm: được cộng <strong>+${diffStars} ⭐</strong> qua Đám Mây!`,
+                '☁️'
+              );
+              const card = document.querySelector(`.student-card[data-id="${diffStudent.id}"]`);
+              if (card) {
+                card.style.transition = 'all 0.35s ease';
+                card.style.transform = 'scale(1.08)';
+                card.style.boxShadow = '0 0 25px #10B981';
+                setTimeout(() => {
+                  card.style.transform = '';
+                  card.style.boxShadow = '';
+                }, 1500);
+              }
+            }
+          }
+        });
+      } else {
+        if (badge && badgeText) {
+          badge.style.background = '#FFFBEB';
+          badge.style.color = '#B45309';
+          badge.style.border = '1px solid #FCD34D';
+          badgeText.textContent = 'Đám Mây: Chưa kết nối';
+        }
+      }
+    }
+  }
+
+  // Tải dữ liệu mới nhất từ server ngay khi mở trang
+  StorageManager.pullFromServer().then(remote => {
+    if (remote && remote.students) {
+      state.data = remote;
+      refreshData();
+    }
+  });
+
+  setupFirebaseCloudSync();
+  setupRealtimeServerSync();
 
   // Initial render
   refreshData();

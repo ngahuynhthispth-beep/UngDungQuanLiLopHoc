@@ -61,33 +61,7 @@
       margin: 8px 0;
       border: 2px solid #FDE68A;
     }
-    .parent-nav-tabs {
-      display: flex;
-      background: #FFFFFF;
-      padding: 6px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      border: 2px solid #F1F5F9;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-    .parent-nav-tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 4px;
-      border-radius: 16px;
-      font-size: 13px;
-      font-weight: 800;
-      border: none;
-      background: transparent;
-      color: #64748B;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .parent-nav-tab.active {
-      background: linear-gradient(135deg, #FF5E7E, #FFA07A);
-      color: #FFFFFF;
-      box-shadow: 0 4px 12px rgba(255, 94, 126, 0.25);
-    }
+
 
     /* Homework Form Card */
     .homework-card {
@@ -469,29 +443,7 @@
     .btn-like-parent:active {
       transform: scale(0.96);
     }
-    .parent-class-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 12px;
-    }
-    .parent-class-card {
-      background: #FFFFFF;
-      border-radius: 18px;
-      padding: 12px 8px;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-      border: 2px solid #F1F5F9;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .parent-class-card:hover {
-      border-color: #FF5E7E;
-      transform: translateY(-2px);
-    }
-    .parent-class-card.active {
-      border-color: #FF5E7E;
-      background: #FFF5F7;
-    }
+
   </style>
 </head>
 <body>
@@ -511,30 +463,34 @@
 
   <main class="parent-portal-container">
 
-    <!-- Parent View Navigation Tabs -->
-    <div class="parent-nav-tabs">
-      <button id="tabViewChildBtn" class="parent-nav-tab active">
-        <span>🐣</span> Con Của Bạn
-      </button>
-      <button id="tabViewGroupsBtn" class="parent-nav-tab">
-        <span>🚩</span> Điểm 4 Tổ
-      </button>
-      <button id="tabViewClassBtn" class="parent-nav-tab">
-        <span>🌟</span> Cả Lớp
-      </button>
+    <!-- Real-time Live Connection Badge -->
+    <div id="connectionStatusBadge" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;">
+      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
+      <span id="connectionStatusText">🟢 Đang kết nối trực tiếp với lớp học của cô giáo</span>
     </div>
 
-    <!-- VIEW 1: Individual Child View -->
-    <div id="viewChildPanel">
-      <!-- Child Selector Dropdown -->
-      <div style="background: #FFFFFF; padding: 14px 16px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 2px solid #E2E8F0;">
-        <label style="font-size: 13px; font-weight: 800; color: #475569; display: block; margin-bottom: 6px;">
-          👨‍👩‍👧 Quý phụ huynh vui lòng chọn tên con:
+    <!-- Child Selector / Active Child Bar -->
+    <div id="childSelectorCard" style="background: #FFFFFF; padding: 12px 16px; border-radius: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 2px solid #E2E8F0;">
+      <div id="childSelectorActiveInfo" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="font-size: 14px; font-weight: 800; color: #1E293B; display: flex; align-items: center; gap: 8px;">
+          <span>👨‍👩‍👧</span>
+          <span>Phụ huynh bé: <strong id="activeChildDisplay" style="color: #FF5E7E;">...</strong></span>
+        </div>
+        <button type="button" id="btnChangeChild" style="border: 1px solid #CBD5E1; background: #F8FAFC; border-radius: 12px; font-size: 12px; font-weight: 700; color: #64748B; padding: 6px 12px; cursor: pointer;">
+          Đổi bé ▾
+        </button>
+      </div>
+      <div id="childDropdownWrapper" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #E2E8F0;">
+        <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 6px;">
+          Chọn lại tên con trong danh sách lớp:
         </label>
-        <select id="selectChildDropdown" style="width: 100%; padding: 12px; border-radius: 14px; border: 2px solid #CBD5E1; font-family: inherit; font-size: 15px; font-weight: 800; color: #1E293B; background: #F8FAFC;">
+        <select id="selectChildDropdown" style="width: 100%; padding: 10px 12px; border-radius: 14px; border: 2px solid #CBD5E1; font-family: inherit; font-size: 14px; font-weight: 800; color: #1E293B; background: #F8FAFC;">
         </select>
       </div>
+    </div>
 
+    <!-- VIEW: Individual Child View -->
+    <div id="viewChildPanel">
       <!-- Hero Card for selected child -->
       <div class="parent-hero-card">
         <div id="parentGroupTag" style="display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #FFF; background: #FF6B6B; margin-bottom: 8px;">
@@ -556,14 +512,32 @@
         <div class="evo-progress-container" style="max-width: 340px; margin: 12px auto 6px;">
           <div class="evo-progress-label">
             <span id="parentEvoTitle">Tiến trình ấp trứng</span>
-            <span id="parentEvoNeeded" style="font-weight: 800; color: #E11D48;">Còn thiếu 71 ⭐ để nở</span>
+            <span id="parentEvoNeeded" style="font-weight: 800; color: #E11D48;">Còn thiếu 100 ⭐ để nở</span>
           </div>
           <div class="evo-progress-bar" style="height: 12px; background: #F1F5F9; border-radius: 6px; overflow: hidden;">
             <div id="parentEvoFill" class="evo-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #FF6B6B, #FFA07A); transition: width 0.4s ease;"></div>
           </div>
           <div id="parentEvoHatchNotice" style="font-size: 11px; color: #64748B; font-weight: 700; margin-top: 6px;">
-            🥚 Quy định lớp: Tích lũy <strong>> 70 sao</strong> thì con vật sẽ nở!
+            🥚 Quy định lớp: Tích lũy đủ <strong>100 sao</strong> thì quả trứng sẽ nở!
           </div>
+        </div>
+
+        <!-- Hatched Celebration Banner (Trứng đã nở thành linh thú) -->
+        <div id="parentHatchedCelebrationBox" style="display: none; margin-top: 14px; background: linear-gradient(135deg, #ECFDF5, #F0FDF4); border: 2px solid #34D399; border-radius: 18px; padding: 14px 16px; text-align: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);">
+          <div style="font-size: 14px; font-weight: 800; color: #065F46; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <span>🎉</span> <span>CHÚC MỪNG QUẢ TRỨNG ĐÃ NỞ THÀNH CÔNG!</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 800; color: #047857; margin: 4px 0;" id="parentHatchedStageName">
+            🦖 Linh thú đã đồng hành cùng bé!
+          </div>
+          <p style="font-size: 12px; color: #065F46; font-weight: 600; line-height: 1.4; margin: 0;">
+            Bé hãy tiếp tục đọc bài, viết bài và rèn luyện mỗi ngày để tích thêm sao giúp linh thú ngày một lớn khôn và tiến hóa nhé!
+          </p>
+        </div>
+
+        <!-- Khung Quà Tặng Nở Trứng (Vòng quay / Túi mù - 2 lượt) -->
+        <div id="parentGiftActionContainer" style="display: none; margin-top: 14px;">
+          <!-- Render động từ renderChildView() -->
         </div>
       </div>
 
@@ -595,17 +569,18 @@
           <div class="reading-counter-wrapper">
             <button type="button" id="btnReadingMinus" class="counter-btn" title="Giảm số lần">−</button>
             <div class="counter-value-box">
-              <div id="readingCountNumber" class="counter-number">1</div>
-              <div class="counter-label">lần đọc bài</div>
+              <input type="number" id="readingCountInput" min="0" value="1" style="width: 100%; text-align: center; border: none; background: transparent; font-size: 26px; font-weight: 800; color: #4F46E5; font-family: inherit; outline: none; padding: 0; line-height: 1;" title="Bố mẹ có thể bấm trực tiếp vào số để tự gõ số lần">
+              <div class="counter-label">lần đọc bài (bấm số để gõ)</div>
             </div>
             <button type="button" id="btnReadingPlus" class="counter-btn" title="Tăng số lần">+</button>
           </div>
 
           <div class="quick-chips">
             <button type="button" class="chip-btn" data-reading="1">1 lần</button>
-            <button type="button" class="chip-btn" data-reading="2">2 lần</button>
             <button type="button" class="chip-btn" data-reading="3">3 lần</button>
             <button type="button" class="chip-btn" data-reading="5">5 lần</button>
+            <button type="button" class="chip-btn" data-reading="10">10 lần</button>
+            <button type="button" class="chip-btn" data-add="5">+5 lần</button>
           </div>
         </div>
 
@@ -686,27 +661,27 @@
         </div>
         <div class="evo-stages-grid" id="evoStagesList">
           <div class="evo-stage-row" data-stage="0">
-            <span>🥚 Cấp 0: Trứng Thần Kỳ (0 - 20 ⭐)</span>
+            <span>🥚 Cấp 0: Trứng Thần Kỳ (0 - 35 ⭐)</span>
             <span style="color: #64748B;">Đang ấp ủ</span>
           </div>
           <div class="evo-stage-row" data-stage="1">
-            <span>🥚✨ Cấp 1: Trứng Thức Giấc (21 - 45 ⭐)</span>
+            <span>🥚✨ Cấp 1: Trứng Thức Giấc (36 - 70 ⭐)</span>
             <span style="color: #64748B;">Rung rinh</span>
           </div>
           <div class="evo-stage-row" data-stage="2">
-            <span>🐣💥 Cấp 2: Trứng Nứt Vỏ (46 - 70 ⭐)</span>
+            <span>🐣💥 Cấp 2: Trứng Nứt Vỏ (71 - 99 ⭐)</span>
             <span style="color: #E11D48; font-weight: 800;">Sắp nở!</span>
           </div>
           <div class="evo-stage-row hatched" data-stage="3">
-            <span>🦖 Cấp 3: Rồng Con Tí Hon (71 - 100 ⭐)</span>
+            <span>🦖 Cấp 3: Rồng Con Tí Hon (100 - 150 ⭐)</span>
             <span style="color: #059669; font-weight: 800;">🎉 ĐÃ NỞ!</span>
           </div>
           <div class="evo-stage-row hatched" data-stage="4">
-            <span>🐉 Cấp 4: Rồng Phép Thuật (101 - 140 ⭐)</span>
+            <span>🐉 Cấp 4: Rồng Phép Thuật (151 - 220 ⭐)</span>
             <span style="color: #7C3AED; font-weight: 800;">Cánh lượn</span>
           </div>
           <div class="evo-stage-row hatched" data-stage="5">
-            <span>👑 Cấp 5: Thần Thú Hoàng Gia (>140 ⭐)</span>
+            <span>👑 Cấp 5: Thần Thú Hoàng Gia (>220 ⭐)</span>
             <span style="color: #D97706; font-weight: 800;">Tối thượng</span>
           </div>
         </div>
@@ -742,62 +717,158 @@
       </div>
     </div>
 
-    <!-- VIEW 2: 4 Groups View -->
-    <div id="viewGroupsPanel" style="display: none;">
-      <div style="font-weight: 800; font-size: 16px; color: #334155; margin-bottom: 12px; text-align: center;">
-        🏆 BẢNG ĐIỂM THI ĐUA 4 TỔ
-      </div>
-      <div id="parentGroupsList" style="display: flex; flex-direction: column; gap: 14px;">
-        <!-- Groups rendered here -->
-      </div>
-    </div>
+    <!-- MODAL MỞ QUÀ NỞ TRỨNG CHO HỌC SINH (2 LƯỢT) -->
+    <div id="parentGiftClaimModal" class="modal-backdrop">
+      <div class="modal-card" style="max-width: 540px; width: 95%; text-align: center; background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F7 100%); border: 3px solid #F472B6; box-shadow: 0 20px 40px rgba(244, 114, 182, 0.25);">
+        <button id="closeParentGiftClaimBtn" class="modal-close-btn">&times;</button>
+        
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px;">
+          <span style="font-size: 30px;">🎁</span>
+          <h2 style="margin: 0; color: #BE185D; font-size: 20px; font-weight: 800;">MỞ QUÀ TRỨNG NỞ KỲ DIỆU</h2>
+        </div>
 
-    <!-- VIEW 3: Whole Class Gallery View -->
-    <div id="viewClassPanel" style="display: none;">
-      <div style="font-weight: 800; font-size: 16px; color: #334155; margin-bottom: 12px; text-align: center;">
-        🌟 VƯỜN THÚ CỦA CẢ LỚP (Bấm vào bé để xem)
-      </div>
-      <div id="parentClassGrid" class="parent-class-grid">
-        <!-- Class gallery rendered here -->
+        <p style="font-size: 14px; color: #475569; margin-bottom: 8px;">
+          Chúc mừng bé: <strong id="parentGiftClaimStudentName" style="color: #E11D48; font-size: 16px;"></strong>
+        </p>
+
+        <!-- Badge lượt mở -->
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; padding: 4px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; margin-bottom: 12px;">
+          <span>🎯</span> <span id="parentGiftTurnBadge">Lượt mở quà: 1 / 2</span>
+        </div>
+
+        <!-- Mode Selector: Vòng Quay hoặc Túi Mù -->
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 14px;">
+          <button type="button" id="btnParentModeWheel" class="tab-btn active" style="padding: 8px 18px; font-size: 13px; border-radius: 20px;">
+            🎡 Vòng Quay May Mắn
+          </button>
+          <button type="button" id="btnParentModeBlindBag" class="tab-btn" style="padding: 8px 18px; font-size: 13px; border-radius: 20px;">
+            🎒 Túi Mù Kỳ Diệu
+          </button>
+        </div>
+
+        <!-- Khu vực Vòng Quay -->
+        <div id="parentGiftWheelArea" style="display: flex; flex-direction: column; align-items: center;">
+          <div style="position: relative; width: 280px; height: 280px; margin: 0 auto 14px;">
+            <div class="wheel-pointer" style="top: -12px;"></div>
+            <canvas id="parentGiftWheelCanvas" width="280" height="280" style="border-radius: 50%; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"></canvas>
+          </div>
+          <button type="button" id="btnParentSpinWheel" class="btn-header primary" style="background: linear-gradient(135deg, #EC4899, #BE185D); padding: 12px 32px; font-size: 16px; font-weight: 800; border-radius: 25px; box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35);">
+            🚀 BẮT ĐẦU QUAY NGAY!
+          </button>
+        </div>
+
+        <!-- Khu vực Túi Mù -->
+        <div id="parentGiftBlindBagArea" style="display: none; flex-direction: column; align-items: center;">
+          <p style="font-size: 13px; color: #DB2777; font-weight: 700; margin-bottom: 10px;">
+            👉 Con hãy chạm tay vào 1 chiếc túi mù bất kỳ để bóc quà nhé!
+          </p>
+          <div id="parentBlindBagsGrid" class="blind-bags-grid" style="width: 100%; max-width: 440px;">
+            <!-- Render 6 túi mù -->
+          </div>
+        </div>
+
+        <!-- Kết quả nhận quà -->
+        <div id="parentGiftResultBox" class="gift-reveal-box" style="display: none;">
+          <div style="font-size: 44px; margin-bottom: 4px;" id="parentGiftResultIcon">🎁</div>
+          <div style="font-size: 18px; font-weight: 800; color: #92400E;" id="parentGiftResultTitle">Bé đã trúng: ...</div>
+          <div id="parentGiftResultDesc" style="font-size: 13px; color: #B45309; font-weight: 600; margin-top: 4px;"></div>
+          <div id="parentGiftNextActionArea" style="margin-top: 14px;"></div>
+        </div>
+
+        <!-- Lịch sử quà đã mở trong đợt này -->
+        <div style="margin-top: 14px; background: #FFFFFF; border-radius: 14px; padding: 10px 14px; border: 1px solid #FBCFE8; text-align: left;">
+          <div style="font-size: 12px; font-weight: 800; color: #BE185D; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <span>📋</span> Các món quà con đã quay trúng:
+          </div>
+          <div id="parentGiftClaimHistoryList" style="font-size: 12px; color: #475569; font-weight: 600;">
+            Chưa mở quà lượt nào.
+          </div>
+        </div>
       </div>
     </div>
 
   </main>
 
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-sync.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/egg-evolution.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/wheel.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
+
+      // Khởi tạo đồng bộ Đám Mây Firebase Realtime 24/24 cho phụ huynh
+      if (window.FirebaseSync && typeof window.FirebaseSync.init === 'function') {
+        const fbOk = window.FirebaseSync.init();
+        if (fbOk) {
+          window.FirebaseSync.onClassDataChange((fbData) => {
+            if (fbData && fbData.students) {
+              data = fbData;
+              renderChildView();
+            }
+          });
+        }
+      }
+
       let data = await StorageManager.pullFromServer();
+      if (!data || !data.students) {
+        data = StorageManager.loadData();
+      }
+
+      const todayDateStr = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+
+      let readingCount = 1;
+      let writingStars = 2;
+      let choresDone = true;
 
       const urlParams = new URLSearchParams(window.location.search);
       let currentId = urlParams.get('id');
 
       // Elements
-      const tabViewChildBtn = document.getElementById('tabViewChildBtn');
-      const tabViewGroupsBtn = document.getElementById('tabViewGroupsBtn');
-      const tabViewClassBtn = document.getElementById('tabViewClassBtn');
-
-      const viewChildPanel = document.getElementById('viewChildPanel');
-      const viewGroupsPanel = document.getElementById('viewGroupsPanel');
-      const viewClassPanel = document.getElementById('viewClassPanel');
-
+      const childSelectorActiveInfo = document.getElementById('childSelectorActiveInfo');
+      const childDropdownWrapper = document.getElementById('childDropdownWrapper');
+      const activeChildDisplay = document.getElementById('activeChildDisplay');
+      const btnChangeChild = document.getElementById('btnChangeChild');
       const selectChildDropdown = document.getElementById('selectChildDropdown');
       const homeworkDateDisplay = document.getElementById('homeworkDateDisplay');
 
-      // Homework Form State
-      let readingCount = 1;
-      let writingStars = 2;
-      let choresDone = true;
-      const todayDateStr = StorageManager.getTodayDateString();
+      if (homeworkDateDisplay) {
+        const [y, m, d] = todayDateStr.split('-');
+        homeworkDateDisplay.textContent = `Hôm nay, ${d}/${m}/${y}`;
+      }
 
-      homeworkDateDisplay.textContent = StorageManager.getFormattedDateVietnamese(todayDateStr);
+      // Check saved child ID if not in URL
+      const savedChildId = localStorage.getItem('parent_portal_my_child_id');
+      if (!currentId && savedChildId && data.students.some(s => s.id === savedChildId)) {
+        currentId = savedChildId;
+      }
+      if (!currentId && data.students.length > 0) {
+        currentId = data.students[0].id;
+      }
+      if (currentId) {
+        localStorage.setItem('parent_portal_my_child_id', currentId);
+      }
 
       // Populate child selector dropdown
       function updateDropdown() {
         selectChildDropdown.innerHTML = '';
+        const currentStudent = data.students.find(s => s.id === currentId);
+        if (currentStudent) {
+          const grp = data.groups.find(g => g.id === currentStudent.group);
+          const grpName = grp ? grp.name.split('-')[0].trim() : `Tổ ${currentStudent.group}`;
+          activeChildDisplay.textContent = `${currentStudent.name} (${grpName})`;
+          childSelectorActiveInfo.style.display = 'flex';
+          childDropdownWrapper.style.display = 'none';
+          btnChangeChild.textContent = 'Đổi bé ▾';
+        } else {
+          childSelectorActiveInfo.style.display = 'none';
+          childDropdownWrapper.style.display = 'block';
+        }
+
         data.students.forEach(s => {
           const group = data.groups.find(g => g.id === s.group);
           const groupName = group ? group.name.split('-')[0].trim() : `Tổ ${s.group}`;
@@ -809,43 +880,24 @@
         });
       }
 
-      if (!currentId && data.students.length > 0) {
-        currentId = data.students[0].id;
-      }
+      btnChangeChild.addEventListener('click', () => {
+        const isHidden = childDropdownWrapper.style.display === 'none';
+        childDropdownWrapper.style.display = isHidden ? 'block' : 'none';
+        btnChangeChild.textContent = isHidden ? 'Thu gọn ▲' : 'Đổi bé ▾';
+      });
+
       updateDropdown();
 
       selectChildDropdown.addEventListener('change', (e) => {
         currentId = e.target.value;
+        localStorage.setItem('parent_portal_my_child_id', currentId);
+        updateDropdown();
         loadStudentHomeworkState();
         renderChildView();
       });
 
-      // Switch tabs
-      function switchTab(viewName) {
-        [tabViewChildBtn, tabViewGroupsBtn, tabViewClassBtn].forEach(b => b.classList.remove('active'));
-        [viewChildPanel, viewGroupsPanel, viewClassPanel].forEach(p => p.style.display = 'none');
-
-        if (viewName === 'child') {
-          tabViewChildBtn.classList.add('active');
-          viewChildPanel.style.display = 'block';
-          renderChildView();
-        } else if (viewName === 'groups') {
-          tabViewGroupsBtn.classList.add('active');
-          viewGroupsPanel.style.display = 'block';
-          renderGroupsView();
-        } else if (viewName === 'class') {
-          tabViewClassBtn.classList.add('active');
-          viewClassPanel.style.display = 'block';
-          renderClassView();
-        }
-      }
-
-      tabViewChildBtn.addEventListener('click', () => switchTab('child'));
-      tabViewGroupsBtn.addEventListener('click', () => switchTab('groups'));
-      tabViewClassBtn.addEventListener('click', () => switchTab('class'));
-
       // Homework Form Controls
-      const readingCountNumber = document.getElementById('readingCountNumber');
+      const readingCountInput = document.getElementById('readingCountInput');
       const readingStarsDisplay = document.getElementById('readingStarsDisplay');
       const btnReadingMinus = document.getElementById('btnReadingMinus');
       const btnReadingPlus = document.getElementById('btnReadingPlus');
@@ -863,11 +915,14 @@
       const hwStatusBanner = document.getElementById('hwStatusBanner');
 
       function updateHomeworkUI() {
-        // Reading
-        readingCountNumber.textContent = readingCount;
+        // Reading (không giới hạn số lần)
+        readingCount = Math.max(0, parseInt(readingCount, 10) || 0);
+        if (readingCountInput) readingCountInput.value = readingCount;
         readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
         chipButtons.forEach(btn => {
-          btn.classList.toggle('active', parseInt(btn.dataset.reading, 10) === readingCount);
+          if (btn.dataset.reading) {
+            btn.classList.toggle('active', parseInt(btn.dataset.reading, 10) === readingCount);
+          }
         });
 
         // Writing
@@ -886,22 +941,36 @@
         previewTotalHwStars.textContent = `+${total} ⭐`;
       }
 
-      // Reading handlers
+      // Reading handlers (không giới hạn)
       btnReadingMinus.addEventListener('click', () => {
-        if (readingCount > 1) {
+        if (readingCount > 0) {
           readingCount--;
           updateHomeworkUI();
         }
       });
       btnReadingPlus.addEventListener('click', () => {
-        if (readingCount < 10) {
-          readingCount++;
-          updateHomeworkUI();
-        }
+        readingCount++;
+        updateHomeworkUI();
       });
+      if (readingCountInput) {
+        readingCountInput.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value, 10);
+          readingCount = isNaN(val) ? 0 : Math.max(0, val);
+          readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
+          const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0);
+          previewTotalHwStars.textContent = `+${total} ⭐`;
+        });
+        readingCountInput.addEventListener('change', () => {
+          updateHomeworkUI();
+        });
+      }
       chipButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-          readingCount = parseInt(btn.dataset.reading, 10) || 1;
+          if (btn.dataset.reading) {
+            readingCount = parseInt(btn.dataset.reading, 10) || 0;
+          } else if (btn.dataset.add) {
+            readingCount += parseInt(btn.dataset.add, 10) || 0;
+          }
           updateHomeworkUI();
         });
       });
@@ -947,6 +1016,17 @@
 
       // Submit Homework
       btnSubmitHomework.addEventListener('click', async () => {
+        if (!currentId) {
+          alert('Vui lòng chọn học sinh trước khi gửi điểm!');
+          return;
+        }
+
+        const student = data.students.find(s => s.id === currentId);
+        if (student && (student.stars || 0) >= 100) {
+          alert('🎉 Chúc mừng bé đã đạt 100 ⭐ (Trứng đã nở)! Bắt buộc phải mở quà may mắn để chuyển về 0 ⭐ bắt đầu chu kỳ ấp mới trước khi nộp bài tập tiếp nhé.');
+          return;
+        }
+
         btnSubmitHomework.disabled = true;
         btnSubmitHomework.textContent = '⏳ Đang gửi cho cô...';
 
@@ -959,13 +1039,16 @@
           });
 
           if (window.soundFx && typeof window.soundFx.playLevelUp === 'function') {
-            window.soundFx.playLevelUp();
+            try { window.soundFx.playLevelUp(); } catch (e) {}
           } else if (window.soundFx && typeof window.soundFx.playStar === 'function') {
-            window.soundFx.playStar();
+            try { window.soundFx.playStar(); } catch (e) {}
           }
 
           // Refresh data
-          data = await StorageManager.pullFromServer();
+          const updated = await StorageManager.pullFromServer();
+          if (updated && updated.students) {
+            data = updated;
+          }
           updateDropdown();
           renderChildView();
 
@@ -986,7 +1069,13 @@
           setTimeout(() => star.remove(), 1200);
 
         } catch (err) {
-          alert('Có lỗi khi lưu bài tập, bố mẹ vui lòng thử lại nhé!');
+          console.error('Lỗi khi nộp bài tập:', err);
+          hwStatusBanner.style.display = 'block';
+          hwStatusBanner.style.background = '#FEF2F2';
+          hwStatusBanner.style.color = '#B91C1C';
+          hwStatusBanner.style.border = '2px solid #F87171';
+          hwStatusBanner.innerHTML = `❌ <strong>Chưa gửi được cho cô:</strong> ${err.message || 'Lỗi kết nối mạng'}`;
+          alert(err.message || 'Không thể kết nối đến máy tính cô giáo!');
         } finally {
           btnSubmitHomework.disabled = false;
           btnSubmitHomework.innerHTML = '🚀 Gửi Điểm Rèn Luyện Cho Cô';
@@ -1010,15 +1099,15 @@
         document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
         document.getElementById('parentLikesCount').textContent = student.likes || 0;
 
-        // Tiến trình ấp trứng & nở (> 70 sao)
+        // Tiến trình ấp trứng & nở (100 sao)
         const parentEvoTitle = document.getElementById('parentEvoTitle');
         const parentEvoNeeded = document.getElementById('parentEvoNeeded');
         const parentEvoFill = document.getElementById('parentEvoFill');
 
-        if (student.stars < 71) {
+        if (student.stars < 100) {
           parentEvoTitle.textContent = 'Tiến trình ấp trứng';
           parentEvoNeeded.textContent = `Còn thiếu ${milestone.neededToHatch} ⭐ để trứng nở!`;
-          const hatchProgress = Math.min(100, Math.round((student.stars / 71) * 100));
+          const hatchProgress = Math.min(100, Math.round((student.stars / 100) * 100));
           parentEvoFill.style.width = `${hatchProgress}%`;
           parentEvoFill.style.background = 'linear-gradient(90deg, #F59E0B, #EF4444)';
         } else {
@@ -1044,7 +1133,7 @@
                 <div class="log-reason">${log.reason}</div>
                 <div class="log-time">${log.time || 'Gần đây'}</div>
               </div>
-              <div class="log-points">+${log.points} ⭐</div>
+              <div class="log-points" style="${log.points < 0 ? 'color: #E11D48; background: #FFE4E6;' : ''}">${log.points > 0 ? '+' : ''}${log.points} ⭐</div>
             </div>
           `).join('');
         } else {
@@ -1054,58 +1143,96 @@
             </p>
           `;
         }
-      }
 
-      // Render 4 Groups View
-      function renderGroupsView() {
-        const groupsContainer = document.getElementById('parentGroupsList');
-        groupsContainer.innerHTML = data.groups.map(g => {
-          const members = data.students.filter(s => s.group === g.id);
-          return `
-            <div style="background: #FFFFFF; border-radius: 20px; padding: 16px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 6px solid ${g.color}; display: flex; align-items: center; justify-content: space-between;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <span style="font-size: 32px;">${g.mascot}</span>
-                <div>
-                  <div style="font-weight: 800; font-size: 16px; color: #1E293B;">${g.name}</div>
-                  <div style="font-size: 12px; color: #64748B; font-weight: 600;">${members.length} thành viên</div>
+        // Hatched Celebration Banner (>= 100 stars) & Quà Tặng
+        const celebrationBox = document.getElementById('parentHatchedCelebrationBox');
+        const hatchedStageName = document.getElementById('parentHatchedStageName');
+        const giftActionContainer = document.getElementById('parentGiftActionContainer');
+
+        if (student.stars >= 100) {
+          celebrationBox.style.display = 'block';
+          hatchedStageName.textContent = `🦖 Linh thú: ${stage.title} (${student.stars} ⭐)`;
+
+          const gifts = student.giftHistory || [];
+          const isTeacherSpun = gifts.some(g => g.claimedBy === 'teacher') || student.giftSessionSource === 'teacher';
+
+          if (giftActionContainer) {
+            giftActionContainer.style.display = 'block';
+            if (isTeacherSpun) {
+              giftActionContainer.innerHTML = `
+                <div style="background: #FFF1F2; border: 2px solid #FDA4AF; border-radius: 18px; padding: 16px; text-align: center; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.15);">
+                  <div style="font-size: 32px; margin-bottom: 4px;">👩‍🏫🎁✨</div>
+                  <div style="font-size: 16px; font-weight: 800; color: #BE185D;">BÉ ĐÃ ĐƯỢC CÔ GIÁO MỞ QUÀ TẠI LỚP!</div>
+                  <p style="font-size: 13px; color: #475569; margin: 6px 0 10px;">
+                    Bé đã hoàn tất mở quà cùng cô giáo trên lớp. Trang phụ huynh đã khóa tính năng mở quà để đảm bảo quyền quay duy nhất.
+                  </p>
+                  ${gifts.length > 0 ? `
+                    <div style="margin: 8px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                      ${gifts.map((g, i) => `
+                        <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 16px;">
+                          Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}
+                        </span>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                  <div style="font-size: 13px; font-weight: 700; color: #059669; margin-top: 6px;">
+                    👉 Cô giáo sẽ trao quà trực tiếp cho con tại lớp nhé! 💖
+                  </div>
                 </div>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: #B45309; background: #FEF3C7; padding: 4px 14px; border-radius: 20px;">
-                ⭐ ${g.stars}
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      // Render Class Grid
-      function renderClassView() {
-        const grid = document.getElementById('parentClassGrid');
-        grid.innerHTML = data.students.map(s => {
-          const stage = window.EggEvolution.getStage(s.stars);
-          return `
-            <div class="parent-class-card ${s.id === currentId ? 'active' : ''}" data-id="${s.id}">
-              <div style="width: 50px; height: 50px; margin: 0 auto 4px;">
-                ${window.EggEvolution.renderPetSVG(s.stars, s.status)}
-              </div>
-              <div style="font-weight: 800; font-size: 13px; color: #1E293B; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                ${s.name}
-              </div>
-              <div style="font-weight: 800; font-size: 12px; color: ${s.stars >= 71 ? '#059669' : '#D97706'};">
-                ⭐ ${s.stars} ${s.stars >= 71 ? '🐣' : ''}
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        grid.querySelectorAll('.parent-class-card').forEach(card => {
-          card.addEventListener('click', () => {
-            currentId = card.dataset.id;
-            selectChildDropdown.value = currentId;
-            switchTab('child');
-            loadStudentHomeworkState();
-          });
-        });
+              `;
+            } else if (gifts.length < 2) {
+              giftActionContainer.innerHTML = `
+                <div style="background: linear-gradient(135deg, #FDF2F8, #FFF1F2); border: 2px solid #F472B6; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.2);">
+                  <div style="font-size: 28px; margin-bottom: 2px;">🎁🎡🎒</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #BE185D;">CHÚC MỪNG TRỨNG ĐÃ NỞ!</div>
+                  <p style="font-size: 12px; color: #9D174D; font-weight: 700; margin: 4px 0 10px;">
+                    Con nhận được <strong>2 lượt mở quà may mắn</strong> (Vòng quay hoặc Túi mù)!
+                  </p>
+                  <button type="button" id="btnTriggerParentGiftModal" style="background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-size: 14px; font-weight: 800; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);">
+                    🎁 Bấm Vào Đây Mở Quà (Lượt ${gifts.length + 1} / 2)
+                  </button>
+                </div>
+              `;
+              const btnTrigger = document.getElementById('btnTriggerParentGiftModal');
+              if (btnTrigger) {
+                btnTrigger.addEventListener('click', () => openParentGiftModal(student));
+              }
+            } else {
+              giftActionContainer.innerHTML = `
+                <div style="background: linear-gradient(135deg, #ECFDF5, #F0FDF4); border: 2px solid #10B981; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);">
+                  <div style="font-size: 28px; margin-bottom: 2px;">🎉🎁🏆</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #065F46;">2 PHẦN QUÀ CON ĐÃ QUAY TRÚNG:</div>
+                  <div style="margin: 8px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                    ${gifts.map((g, i) => `
+                      <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 16px;">
+                        Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}
+                      </span>
+                    `).join('')}
+                  </div>
+                  <div style="margin-top: 10px;">
+                    <button type="button" id="btnParentResetCycleInline" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 10px 20px; font-size: 13px; font-weight: 800; border-radius: 20px;">
+                      🎉 Bắt Đầu Chu Kỳ Ấp Mới (Về 0 ⭐)
+                    </button>
+                  </div>
+                  <div style="font-size: 13px; font-weight: 800; color: #DC2626; background: #FEF2F2; border: 1px dashed #F87171; border-radius: 12px; padding: 8px 12px; margin-top: 8px;">
+                    👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+                  </div>
+                </div>
+              `;
+              const btnReset = document.getElementById('btnParentResetCycleInline');
+              if (btnReset) {
+                btnReset.addEventListener('click', async () => {
+                  await StorageManager.finishAndResetStudentCycle(currentId);
+                  data = StorageManager.loadData();
+                  renderChildView();
+                });
+              }
+            }
+          }
+        } else {
+          celebrationBox.style.display = 'none';
+          if (giftActionContainer) giftActionContainer.style.display = 'none';
+        }
       }
 
       // Initial Setup
@@ -1128,6 +1255,276 @@
         setTimeout(() => heart.remove(), 1200);
       });
 
+      // --- LOGIC MỞ QUÀ TRỨNG NỞ CHO HỌC SINH (VÒNG QUAY & TÚI MÙ) ---
+      const parentGiftClaimModal = document.getElementById('parentGiftClaimModal');
+      const closeParentGiftClaimBtn = document.getElementById('closeParentGiftClaimBtn');
+      const parentGiftClaimStudentName = document.getElementById('parentGiftClaimStudentName');
+      const parentGiftTurnBadge = document.getElementById('parentGiftTurnBadge');
+      const btnParentModeWheel = document.getElementById('btnParentModeWheel');
+      const btnParentModeBlindBag = document.getElementById('btnParentModeBlindBag');
+      const parentGiftWheelArea = document.getElementById('parentGiftWheelArea');
+      const parentGiftBlindBagArea = document.getElementById('parentGiftBlindBagArea');
+      const btnParentSpinWheel = document.getElementById('btnParentSpinWheel');
+      const parentBlindBagsGrid = document.getElementById('parentBlindBagsGrid');
+      const parentGiftResultBox = document.getElementById('parentGiftResultBox');
+      const parentGiftResultIcon = document.getElementById('parentGiftResultIcon');
+      const parentGiftResultTitle = document.getElementById('parentGiftResultTitle');
+      const parentGiftResultDesc = document.getElementById('parentGiftResultDesc');
+      const parentGiftNextActionArea = document.getElementById('parentGiftNextActionArea');
+      const parentGiftClaimHistoryList = document.getElementById('parentGiftClaimHistoryList');
+
+      let parentLuckyWheel = null;
+      let parentCurrentGiftMode = 'wheel';
+      let isParentClaiming = false;
+
+      function renderParentClaimHistory(gifts) {
+        if (!parentGiftClaimHistoryList) return;
+        if (!gifts || gifts.length === 0) {
+          parentGiftClaimHistoryList.innerHTML = '<span style="color: #94A3B8; font-style: italic;">Chưa mở quà lượt nào.</span>';
+        } else {
+          parentGiftClaimHistoryList.innerHTML = gifts.map((g, i) => `
+            <span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8; font-size: 13px; padding: 4px 10px;">
+              Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}
+            </span>
+          `).join(' ');
+        }
+      }
+
+      function initParentLuckyWheel(giftItems) {
+        if (!document.getElementById('parentGiftWheelCanvas')) return;
+        const wheelItems = giftItems.map(g => ({
+          id: g.id,
+          name: `${g.icon || '🎁'} ${g.name}`,
+          giftData: g
+        }));
+        parentLuckyWheel = new LuckyWheel('parentGiftWheelCanvas');
+        parentLuckyWheel.setItems(wheelItems);
+      }
+
+      const PARENT_BAG_COLORS = [
+        { bg: 'linear-gradient(135deg, #FF6B8B, #FF8E53)', border: '#FF6B8B' },
+        { bg: 'linear-gradient(135deg, #4FACFE, #00F2FE)', border: '#00F2FE' },
+        { bg: 'linear-gradient(135deg, #43E97B, #38F9D7)', border: '#38F9D7' },
+        { bg: 'linear-gradient(135deg, #FA709A, #FEE140)', border: '#FA709A' },
+        { bg: 'linear-gradient(135deg, #A18CD1, #FBC2EB)', border: '#A18CD1' },
+        { bg: 'linear-gradient(135deg, #F6D365, #FDA085)', border: '#FDA085' }
+      ];
+
+      function renderParentBlindBags(giftItems) {
+        if (!parentBlindBagsGrid) return;
+        parentBlindBagsGrid.innerHTML = '';
+
+        for (let i = 0; i < 6; i++) {
+          const colorScheme = PARENT_BAG_COLORS[i % PARENT_BAG_COLORS.length];
+          const bag = document.createElement('div');
+          bag.className = 'blind-bag-card';
+          bag.style.background = colorScheme.bg;
+          bag.style.borderColor = colorScheme.border;
+          bag.innerHTML = `
+            <div class="bag-icon">🎒</div>
+            <div class="bag-label">Túi Mù #${i + 1}</div>
+          `;
+
+          bag.addEventListener('click', () => {
+            if (bag.classList.contains('opened') || isParentClaiming) return;
+            const student = (data.students || []).find(s => s.id === currentId);
+            if (!student) return;
+            const used = (student.giftHistory || []).length;
+            if (used >= 2) return;
+
+            bag.classList.add('opened');
+            bag.querySelector('.bag-icon').textContent = '✨';
+
+            const randomGift = giftItems[Math.floor(Math.random() * giftItems.length)];
+            handleParentGiftAward(randomGift);
+          });
+
+          parentBlindBagsGrid.appendChild(bag);
+        }
+      }
+
+      async function handleParentGiftAward(wonGift) {
+        if (isParentClaiming || !currentId) return;
+        isParentClaiming = true;
+
+        try {
+          if (window.soundFx && typeof window.soundFx.playHatch === 'function') {
+            window.soundFx.playHatch();
+          } else if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
+
+          // Floating confetti
+          for (let i = 0; i < 8; i++) {
+            setTimeout(() => {
+              const heart = document.createElement('div');
+              heart.className = 'floating-star';
+              heart.textContent = wonGift.icon || '🎁';
+              heart.style.left = `${window.innerWidth / 2 + (Math.random() * 200 - 100)}px`;
+              heart.style.top = `${window.innerHeight / 2 + (Math.random() * 100 - 50)}px`;
+              document.body.appendChild(heart);
+              setTimeout(() => heart.remove(), 1200);
+            }, i * 120);
+          }
+
+          const updatedStudent = await StorageManager.claimStudentGift(currentId, wonGift, 'parent');
+          if (updatedStudent) {
+            const st = (data.students || []).find(s => s.id === currentId);
+            if (st) st.giftHistory = updatedStudent.giftHistory;
+          }
+
+          const gifts = (updatedStudent && updatedStudent.giftHistory) ? updatedStudent.giftHistory : [];
+          renderParentClaimHistory(gifts);
+
+          parentGiftResultBox.style.display = 'block';
+          parentGiftResultIcon.textContent = wonGift.icon || '🎁';
+          parentGiftResultTitle.textContent = `Bé đã trúng: ${wonGift.name}!`;
+
+          if (gifts.length < 2) {
+            parentGiftTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
+            parentGiftResultDesc.innerHTML = `
+              <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
+                🎉 Chúc mừng con! Con vẫn còn <strong>1 lượt mở quà nữa</strong>!
+              </div>
+            `;
+            parentGiftNextActionArea.innerHTML = `
+              <button type="button" id="btnParentContinueTurn2" class="btn-header primary" style="background: linear-gradient(135deg, #EC4899, #BE185D); padding: 10px 24px; font-size: 14px; font-weight: 800; border-radius: 20px;">
+                🎁 Mở Tiếp Lượt 2 Ngay!
+              </button>
+            `;
+
+            document.getElementById('btnParentContinueTurn2').addEventListener('click', () => {
+              parentGiftResultBox.style.display = 'none';
+              isParentClaiming = false;
+              if (parentCurrentGiftMode === 'blindbag') {
+                const giftItems = StorageManager.getGiftItems();
+                renderParentBlindBags(giftItems);
+              }
+            });
+          } else {
+            parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+            parentGiftResultDesc.innerHTML = `
+              <div style="font-size: 15px; font-weight: 800; color: #E11D48; margin-top: 6px;">
+                🌟 CHÚC MỪNG CON ĐÃ MỞ XONG 2 LƯỢT QUÀ! 🌟
+              </div>
+              <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px; line-height: 1.5;">
+                👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+              </div>
+            `;
+            parentGiftNextActionArea.innerHTML = `
+              <button type="button" id="btnParentFinishClaim" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 26px; font-size: 14px; font-weight: 800; border-radius: 20px;">
+                🎉 Hoàn Tất Mở Quà & Bắt Đầu Chu Kỳ Mới (Về 0 ⭐)
+              </button>
+            `;
+            document.getElementById('btnParentFinishClaim').addEventListener('click', async () => {
+              parentGiftClaimModal.classList.remove('active');
+              await StorageManager.finishAndResetStudentCycle(currentId);
+              data = StorageManager.loadData();
+              renderChildView();
+            });
+
+            parentGiftWheelArea.style.display = 'none';
+            parentGiftBlindBagArea.style.display = 'none';
+          }
+
+          renderChildView();
+        } catch (e) {
+          console.error('Lỗi nhận quà:', e);
+        } finally {
+          if (updatedStudent && updatedStudent.giftHistory && updatedStudent.giftHistory.length >= 2) {
+            isParentClaiming = false;
+          }
+        }
+      }
+
+      function openParentGiftModal(student) {
+        if (!student) return;
+        isParentClaiming = false;
+        const giftItems = StorageManager.getGiftItems();
+        parentGiftClaimStudentName.textContent = student.name;
+
+        const gifts = student.giftHistory || [];
+        renderParentClaimHistory(gifts);
+
+        parentCurrentGiftMode = 'wheel';
+        btnParentModeWheel.classList.add('active');
+        btnParentModeBlindBag.classList.remove('active');
+
+        if (gifts.length >= 2) {
+          parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+          parentGiftWheelArea.style.display = 'none';
+          parentGiftBlindBagArea.style.display = 'none';
+          parentGiftResultBox.style.display = 'block';
+          parentGiftResultIcon.textContent = '🏆';
+          parentGiftResultTitle.textContent = `Bé ${student.name} đã mở đủ 2 phần quà!`;
+          parentGiftResultDesc.innerHTML = `
+            <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
+              👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+            </div>
+          `;
+          parentGiftNextActionArea.innerHTML = `
+            <button type="button" class="btn-header" onclick="document.getElementById('parentGiftClaimModal').classList.remove('active')">
+              Đóng
+            </button>
+          `;
+        } else {
+          parentGiftTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
+          parentGiftResultBox.style.display = 'none';
+          parentGiftWheelArea.style.display = 'flex';
+          parentGiftBlindBagArea.style.display = 'none';
+
+          initParentLuckyWheel(giftItems);
+          renderParentBlindBags(giftItems);
+        }
+
+        parentGiftClaimModal.classList.add('active');
+      }
+
+      if (closeParentGiftClaimBtn) {
+        closeParentGiftClaimBtn.addEventListener('click', () => parentGiftClaimModal.classList.remove('active'));
+      }
+
+      if (btnParentModeWheel && btnParentModeBlindBag) {
+        btnParentModeWheel.addEventListener('click', () => {
+          parentCurrentGiftMode = 'wheel';
+          btnParentModeWheel.classList.add('active');
+          btnParentModeBlindBag.classList.remove('active');
+          const student = (data.students || []).find(s => s.id === currentId);
+          const gifts = (student && student.giftHistory) || [];
+          if (gifts.length < 2) {
+            parentGiftWheelArea.style.display = 'flex';
+            parentGiftBlindBagArea.style.display = 'none';
+            if (parentLuckyWheel) parentLuckyWheel.draw();
+          }
+        });
+
+        btnParentModeBlindBag.addEventListener('click', () => {
+          parentCurrentGiftMode = 'blindbag';
+          btnParentModeBlindBag.classList.add('active');
+          btnParentModeWheel.classList.remove('active');
+          const student = (data.students || []).find(s => s.id === currentId);
+          const gifts = (student && student.giftHistory) || [];
+          if (gifts.length < 2) {
+            parentGiftWheelArea.style.display = 'none';
+            parentGiftBlindBagArea.style.display = 'flex';
+          }
+        });
+      }
+
+      if (btnParentSpinWheel) {
+        btnParentSpinWheel.addEventListener('click', () => {
+          if (!parentLuckyWheel || parentLuckyWheel.isSpinning || isParentClaiming) return;
+          const student = (data.students || []).find(s => s.id === currentId);
+          if (!student || ((student.giftHistory || []).length >= 2)) return;
+
+          parentLuckyWheel.spin((winner) => {
+            if (winner && winner.giftData) {
+              handleParentGiftAward(winner.giftData);
+            }
+          });
+        });
+      }
+
       // Toggle Evolution Guide
       const toggleEvoGuideBtn = document.getElementById('toggleEvoGuideBtn');
       const evoStagesList = document.getElementById('evoStagesList');
@@ -1140,18 +1537,52 @@
 
       // Periodic auto-sync
       setInterval(async () => {
-        data = await StorageManager.pullFromServer();
-        renderChildView();
+        const fresh = await StorageManager.pullFromServer();
+        if (fresh && fresh.students) {
+          data = fresh;
+          renderChildView();
+        }
       }, 6000);
 
-      if (StorageManager.broadcast) {
-        StorageManager.broadcast.onmessage = (e) => {
-          if (e.data && e.data.type === 'DATA_CHANGED') {
-            data = e.data.data;
-            renderChildView();
+      // Live connection check
+      async function checkLiveConnection() {
+        const badge = document.getElementById('connectionStatusBadge');
+        const text = document.getElementById('connectionStatusText');
+
+        if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+          if (badge && text) {
+            badge.style.background = '#ECFDF5';
+            badge.style.color = '#065F46';
+            badge.style.border = '1px solid #A7F3D0';
+            text.textContent = '☁️ Kết nối Đám Mây Firebase 24/24 (Trực tiếp)';
           }
-        };
+          return;
+        }
+
+        if (!window.location.protocol.startsWith('http')) return;
+        try {
+          const res = await fetch('/api/info', { cache: 'no-store' });
+          if (res.ok) {
+            if (badge && text) {
+              badge.style.background = '#ECFDF5';
+              badge.style.color = '#065F46';
+              badge.style.border = '1px solid #A7F3D0';
+              text.textContent = '🟢 Đang kết nối trực tiếp với lớp học của cô giáo';
+            }
+          } else {
+            throw new Error();
+          }
+        } catch (e) {
+          if (badge && text) {
+            badge.style.background = '#FEF2F2';
+            badge.style.color = '#B91C1C';
+            badge.style.border = '1px solid #F87171';
+            text.textContent = '🔴 Mất kết nối tới máy cô giáo! (Vui lòng quét lại mã QR mới nhất)';
+          }
+        }
       }
+      checkLiveConnection();
+      setInterval(checkLiveConnection, 6000);
     });
   </script>
 </body>
