@@ -1209,26 +1209,59 @@ body {
   box-shadow: 0 2px 8px rgba(255, 94, 126, 0.3);
 }
 
-.compact-columns-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+.students-compact-wrapper {
   width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 12px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 1100px) {
-  .compact-columns-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Thanh trượt ngang nổi bật, dễ kéo trượt qua phải */
+.students-compact-wrapper::-webkit-scrollbar,
+.compact-columns-container::-webkit-scrollbar {
+  height: 12px;
 }
 
-@media (max-width: 640px) {
-  .compact-columns-container {
-    grid-template-columns: 1fr;
-  }
+.students-compact-wrapper::-webkit-scrollbar-track,
+.compact-columns-container::-webkit-scrollbar-track {
+  background: #E2E8F0;
+  border-radius: 10px;
+  border: 2px solid #F8FAFC;
+}
+
+.students-compact-wrapper::-webkit-scrollbar-thumb,
+.compact-columns-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #F59E0B, #FF5E7E);
+  border-radius: 10px;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.35);
+  cursor: grab;
+}
+
+.students-compact-wrapper::-webkit-scrollbar-thumb:hover,
+.compact-columns-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #D97706, #E11D48);
+}
+
+.students-compact-wrapper,
+.compact-columns-container {
+  scrollbar-width: thin;
+  scrollbar-color: #F59E0B #E2E8F0;
+}
+
+.compact-columns-container {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  min-width: 100%;
+  padding-bottom: 6px;
 }
 
 .compact-group-column {
+  flex: 0 0 295px;
+  width: 295px;
   background: rgba(255, 255, 255, 0.95);
   border: 1.5px solid #E2E8F0;
   border-radius: 16px;
@@ -1236,6 +1269,29 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
+}
+
+.btn-scroll-arrow {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.15s;
+}
+
+.btn-scroll-arrow:hover {
+  background: #F59E0B;
+  color: #FFFFFF;
+  border-color: #D97706;
+  transform: scale(1.1);
 }
 
 .compact-group-header {

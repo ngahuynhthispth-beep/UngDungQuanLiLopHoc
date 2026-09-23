@@ -127,13 +127,22 @@
         <button type="button" id="btnClearSearchStudent" style="display: none; background: none; border: none; font-size: 16px; cursor: pointer; color: #94A3B8;">&times;</button>
       </div>
 
-      <div class="view-mode-buttons" style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.9); padding: 4px 6px; border-radius: 14px; border: 1.5px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-        <button type="button" id="btnViewCompact" class="btn-view-mode active" title="Giao diện hàng dọc ngắn gọn - Dễ tìm tên và cộng điểm siêu tốc">
-          📋 Hàng Dọc Gọn
-        </button>
-        <button type="button" id="btnViewGrid" class="btn-view-mode" title="Giao diện thẻ linh thú to sinh động">
-          🔲 Thẻ Linh Thú
-        </button>
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <!-- Nút Trượt Ngang Qua Trái / Phải -->
+        <div id="scrollNavControls" style="display: flex; gap: 4px; align-items: center; background: #FFFFFF; padding: 3px 8px; border-radius: 12px; border: 1.5px solid #CBD5E1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
+          <span style="font-size: 12px; font-weight: 800; color: #64748B;">Trượt:</span>
+          <button type="button" id="btnScrollLeft" class="btn-scroll-arrow" title="Trượt sang trái">◀</button>
+          <button type="button" id="btnScrollRight" class="btn-scroll-arrow" title="Trượt sang phải (Tổ tiếp theo)">▶</button>
+        </div>
+
+        <div class="view-mode-buttons" style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.9); padding: 4px 6px; border-radius: 14px; border: 1.5px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+          <button type="button" id="btnViewCompact" class="btn-view-mode active" title="Giao diện hàng dọc ngắn gọn - Dễ tìm tên và cộng điểm siêu tốc">
+            📋 Hàng Dọc Gọn
+          </button>
+          <button type="button" id="btnViewGrid" class="btn-view-mode" title="Giao diện thẻ linh thú to sinh động">
+            🔲 Thẻ Linh Thú
+          </button>
+        </div>
       </div>
     </div>
 

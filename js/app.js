@@ -71,16 +71,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputSearchStudent = document.getElementById('inputSearchStudent');
   const btnClearSearchStudent = document.getElementById('btnClearSearchStudent');
 
+  const scrollNavControls = document.getElementById('scrollNavControls');
+  const btnScrollLeft = document.getElementById('btnScrollLeft');
+  const btnScrollRight = document.getElementById('btnScrollRight');
+
   function updateViewToggleButtons() {
     if (btnViewCompact && btnViewGrid) {
       if (currentStudentViewMode === 'compact') {
         btnViewCompact.classList.add('active');
         btnViewGrid.classList.remove('active');
+        if (scrollNavControls) scrollNavControls.style.display = 'flex';
       } else {
         btnViewGrid.classList.add('active');
         btnViewCompact.classList.remove('active');
+        if (scrollNavControls) scrollNavControls.style.display = 'none';
       }
     }
+  }
+
+  if (btnScrollLeft) {
+    btnScrollLeft.addEventListener('click', () => {
+      studentsContainer.scrollBy({ left: -310, behavior: 'smooth' });
+    });
+  }
+
+  if (btnScrollRight) {
+    btnScrollRight.addEventListener('click', () => {
+      studentsContainer.scrollBy({ left: 310, behavior: 'smooth' });
+    });
   }
 
   if (btnViewCompact) {
