@@ -84,7 +84,7 @@
   <div class="tab-navigation-bar">
     <div class="mode-switcher">
       <button id="tabStudentsBtn" class="tab-btn active">
-        <span>🐣</span> Cá Nhân (16 Bé)
+        <span>🐣</span> Cá Nhân
       </button>
       <button id="tabGroupsBtn" class="tab-btn">
         <span>🚩</span> Thi Đua 4 Tổ
@@ -119,8 +119,26 @@
 
   <!-- Main Work Area -->
   <main class="main-content">
-    <!-- View 1: Students Grid -->
-    <section id="studentsContainer" class="students-grid">
+    <!-- View Switcher & Quick Search (Hàng dọc ngắn gọn / Thẻ to) -->
+    <div class="view-controls-bar" id="studentViewControls">
+      <div class="search-input-box">
+        <span>🔍</span>
+        <input type="text" id="inputSearchStudent" placeholder="Tìm nhanh tên học sinh..." autocomplete="off">
+        <button type="button" id="btnClearSearchStudent" style="display: none; background: none; border: none; font-size: 16px; cursor: pointer; color: #94A3B8;">&times;</button>
+      </div>
+
+      <div class="view-mode-buttons" style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.9); padding: 4px 6px; border-radius: 14px; border: 1.5px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+        <button type="button" id="btnViewCompact" class="btn-view-mode active" title="Giao diện hàng dọc ngắn gọn - Dễ tìm tên và cộng điểm siêu tốc">
+          📋 Hàng Dọc Gọn
+        </button>
+        <button type="button" id="btnViewGrid" class="btn-view-mode" title="Giao diện thẻ linh thú to sinh động">
+          🔲 Thẻ Linh Thú
+        </button>
+      </div>
+    </div>
+
+    <!-- View 1: Students Container -->
+    <section id="studentsContainer" class="students-compact-wrapper">
       <!-- Generated via js/app.js -->
     </section>
 

@@ -62,6 +62,64 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => star.remove(), 1200);
   }
 
+  // --- View Mode & Search State ---
+  let currentStudentViewMode = localStorage.getItem('vltk_student_view_mode') || 'compact'; // Mặc định hàng dọc ngắn gọn
+  let currentSearchQuery = '';
+
+  const btnViewCompact = document.getElementById('btnViewCompact');
+  const btnViewGrid = document.getElementById('btnViewGrid');
+  const inputSearchStudent = document.getElementById('inputSearchStudent');
+  const btnClearSearchStudent = document.getElementById('btnClearSearchStudent');
+
+  function updateViewToggleButtons() {
+    if (btnViewCompact && btnViewGrid) {
+      if (currentStudentViewMode === 'compact') {
+        btnViewCompact.classList.add('active');
+        btnViewGrid.classList.remove('active');
+      } else {
+        btnViewGrid.classList.add('active');
+        btnViewCompact.classList.remove('active');
+      }
+    }
+  }
+
+  if (btnViewCompact) {
+    btnViewCompact.addEventListener('click', () => {
+      currentStudentViewMode = 'compact';
+      localStorage.setItem('vltk_student_view_mode', 'compact');
+      updateViewToggleButtons();
+      renderStudents();
+    });
+  }
+
+  if (btnViewGrid) {
+    btnViewGrid.addEventListener('click', () => {
+      currentStudentViewMode = 'grid';
+      localStorage.setItem('vltk_student_view_mode', 'grid');
+      updateViewToggleButtons();
+      renderStudents();
+    });
+  }
+
+  if (inputSearchStudent) {
+    inputSearchStudent.addEventListener('input', (e) => {
+      currentSearchQuery = (e.target.value || '').trim().toLowerCase();
+      if (btnClearSearchStudent) {
+        btnClearSearchStudent.style.display = currentSearchQuery ? 'block' : 'none';
+      }
+      renderStudents();
+    });
+  }
+
+  if (btnClearSearchStudent) {
+    btnClearSearchStudent.addEventListener('click', () => {
+      inputSearchStudent.value = '';
+      currentSearchQuery = '';
+      btnClearSearchStudent.style.display = 'none';
+      renderStudents();
+    });
+  }
+
   // --- Render Individual Students View ---
   function renderStudents() {
     const { students, groups } = state.data;
@@ -80,7 +138,129 @@ document.addEventListener('DOMContentLoaded', () => {
       renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
     }
 
-    students.forEach(student => {
+    updateViewToggleButtons();
+
+    // Lọc theo từ khóa tìm kiếm nhanh
+    let displayStudents = students || [];
+    if (currentSearchQuery) {
+      displayStudents = displayStudents.filter(s => (s.name || '').toLowerCase().includes(currentSearchQuery));
+    }
+
+    if (displayStudents.length === 0) {
+      studentsContainer.className = '';
+      studentsContainer.innerHTML = `
+        <div style="padding: 36px 20px; text-align: center; color: #64748B; font-size: 14px; background: #FFFFFF; border-radius: 20px; border: 2px dashed #CBD5E1; margin: 20px auto; max-width: 480px;">
+          🔍 Không tìm thấy học sinh nào khớp với "<strong>${currentSearchQuery}</strong>"
+        </div>
+      `;
+      return;
+    }
+
+    if (currentStudentViewMode === 'compact') {
+      renderCompactStudentsView(displayStudents, groups);
+    } else {
+      renderGridStudentsView(displayStudents, groups);
+    }
+  }
+
+  // Giao diện 1: Hàng Dọc Ngắn Gọn (Chia 4 cột tổ trực quan, dễ tìm và cộng điểm siêu tốc)
+  function renderCompactStudentsView(displayStudents, groups) {
+    studentsContainer.className = 'students-compact-wrapper';
+
+    const columnsContainer = document.createElement('div');
+    columnsContainer.className = 'compact-columns-container';
+
+    groups.forEach(group => {
+      const groupStudents = displayStudents.filter(s => s.group === group.id);
+      if (currentSearchQuery && groupStudents.length === 0) return;
+
+      const col = document.createElement('div');
+      col.className = 'compact-group-column';
+      col.style.borderColor = `${group.color}40`;
+      col.style.borderTop = `4px solid ${group.color}`;
+
+      col.innerHTML = `
+        <div class="compact-group-header" style="background: ${group.color};">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>${group.mascot}</span>
+            <span>${group.name.split('-')[0].trim()}</span>
+            <span style="font-size: 11px; opacity: 0.9; font-weight: 600;">(${groupStudents.length} bé)</span>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.25); padding: 1px 8px; border-radius: 12px; font-size: 12px;">
+            ⭐ ${group.stars}
+          </div>
+        </div>
+        <div class="compact-students-list"></div>
+      `;
+
+      const listContainer = col.querySelector('.compact-students-list');
+
+      groupStudents.forEach(student => {
+        const isSleeping = student.status === 'sleeping';
+        const stage = window.EggEvolution.getStage(student.stars);
+        const globalIdx = (state.data.students || []).findIndex(s => s.id === student.id) + 1;
+
+        const row = document.createElement('div');
+        row.className = `student-compact-row ${isSleeping ? 'sleeping' : ''}`;
+        row.dataset.id = student.id;
+
+        row.innerHTML = `
+          <span class="compact-stt">${globalIdx}</span>
+          <span class="compact-pet-mini" title="${isSleeping ? '💤 Đang tĩnh tâm' : stage.title}">
+            ${isSleeping ? '💤' : window.EggEvolution.renderPetSVG(student.stars, student.status, group.color)}
+          </span>
+          <div class="compact-student-info">
+            <span class="compact-student-name">${student.name}</span>
+            ${student.stars >= 100 ? `<span class="compact-hatched-tag">🎉 Nở</span>` : ''}
+          </div>
+          <div class="compact-stars-badge" title="Số sao hiện có: ${student.stars}">⭐ ${student.stars}</div>
+          <button type="button" class="btn-compact-quick-add" data-id="${student.id}" title="Cộng nhanh +3 ⭐ cho ${student.name}">
+            +3 ⭐
+          </button>
+        `;
+
+        // Click row opens action sheet modal (như hiện tại)
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.btn-compact-quick-add')) return;
+          if (student.stars >= 100) {
+            openGiftClaimModal(student.id);
+            return;
+          }
+          openActionModal(student.id);
+        });
+
+        // Click +3 button directly adds points
+        const quickAddBtn = row.querySelector('.btn-compact-quick-add');
+        if (quickAddBtn) {
+          quickAddBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if ((student.stars || 0) >= 100) {
+              showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
+              openGiftClaimModal(student.id);
+              return;
+            }
+            const rect = e.target.getBoundingClientRect();
+            createFloatingStar(rect.left + rect.width / 2, rect.top, '👀');
+            window.soundFx.playStar();
+            StorageManager.addPointsToStudent(student.id, 3, 'Tập trung chú ý nghe giảng', '👀');
+            refreshData();
+          });
+        }
+
+        listContainer.appendChild(row);
+      });
+
+      columnsContainer.appendChild(col);
+    });
+
+    studentsContainer.appendChild(columnsContainer);
+  }
+
+  // Giao diện 2: Thẻ Linh Thú To (Sinh động cho các bé ngắm tiến hóa)
+  function renderGridStudentsView(displayStudents, groups) {
+    studentsContainer.className = 'students-grid';
+
+    displayStudents.forEach(student => {
       const group = groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
       const stage = window.EggEvolution.getStage(student.stars);
       const milestone = window.EggEvolution.getNextMilestone(student.stars);
@@ -155,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Click on Card opens full reward action sheet
       card.addEventListener('click', (e) => {
-        // Prevent opening if clicked specific action buttons
         if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student')) {
           return;
         }
@@ -332,7 +511,9 @@ document.addEventListener('DOMContentLoaded', () => {
     state.activeTab = 'students';
     tabStudentsBtn.classList.add('active');
     tabGroupsBtn.classList.remove('active');
-    studentsContainer.style.display = 'grid';
+    studentsContainer.style.display = 'block';
+    const studentViewControls = document.getElementById('studentViewControls');
+    if (studentViewControls) studentViewControls.style.display = 'flex';
     groupsContainer.style.display = 'none';
   });
 
@@ -341,6 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
     tabGroupsBtn.classList.add('active');
     tabStudentsBtn.classList.remove('active');
     studentsContainer.style.display = 'none';
+    const studentViewControls = document.getElementById('studentViewControls');
+    if (studentViewControls) studentViewControls.style.display = 'none';
     groupsContainer.style.display = 'grid';
   });
 
