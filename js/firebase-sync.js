@@ -61,15 +61,24 @@
     },
 
     // Đảm bảo dữ liệu lớp học có sẵn trên Firebase khi mới kết nối lần đầu
-    async ensureInitialData(defaultData) {
-      if (!this.isInitialized || !this.db) return false;
+    async ensureInitialData(localData) {
+      if (!this.isInitialized || !this.db || !localData || !localData.students) return false;
       try {
         const ref = this.db.ref('classData');
         const snapshot = await ref.once('value');
-        if (!snapshot.exists() || !snapshot.val() || !snapshot.val().students) {
-          console.log('Đang đẩy dữ liệu khởi tạo lên Firebase...');
-          defaultData.lastUpdated = Date.now();
-          await ref.set(defaultData);
+        const remoteData = snapshot.val();
+
+        const remoteIsSample = remoteData && remoteData.students && remoteData.students.some(s => s.name === 'Đỗ Đức Anh') && remoteData.students.length === 16;
+        const localIsReal = localData.students.length > 16 || !localData.students.some(s => s.name === 'Đỗ Đức Anh');
+        const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
+          (localData.students.length > remoteData.students.length) ||
+          (remoteIsSample && localIsReal) ||
+          ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
+
+        if (needsSync) {
+          console.log('Đang đẩy dữ liệu lớp học mới nhất lên Firebase Cloud...');
+          localData.lastUpdated = Date.now();
+          await ref.set(localData);
           return true;
         }
         return false;

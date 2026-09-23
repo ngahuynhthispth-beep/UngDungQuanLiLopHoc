@@ -801,24 +801,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
 
-      // Khởi tạo đồng bộ Đám Mây Firebase Realtime 24/24 cho phụ huynh
-      if (window.FirebaseSync && typeof window.FirebaseSync.init === 'function') {
-        const fbOk = window.FirebaseSync.init();
-        if (fbOk) {
-          window.FirebaseSync.onClassDataChange((fbData) => {
-            if (fbData && fbData.students) {
-              data = fbData;
-              renderChildView();
-            }
-          });
-        }
-      }
-
-      let data = await StorageManager.pullFromServer();
-      if (!data || !data.students) {
-        data = StorageManager.loadData();
-      }
-
+      let data = StorageManager.loadData();
       const todayDateStr = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
 
       let readingCount = 1;
@@ -841,24 +824,27 @@
         homeworkDateDisplay.textContent = `Hôm nay, ${d}/${m}/${y}`;
       }
 
-      // Check saved child ID if not in URL
-      const savedChildId = localStorage.getItem('parent_portal_my_child_id');
-      if (!currentId && savedChildId && data.students.some(s => s.id === savedChildId)) {
-        currentId = savedChildId;
-      }
-      if (!currentId && data.students.length > 0) {
-        currentId = data.students[0].id;
-      }
-      if (currentId) {
-        localStorage.setItem('parent_portal_my_child_id', currentId);
+      function ensureCurrentStudentId() {
+        const savedChildId = localStorage.getItem('parent_portal_my_child_id');
+        if (!currentId || !data.students || !data.students.some(s => s.id === currentId)) {
+          if (savedChildId && data.students && data.students.some(s => s.id === savedChildId)) {
+            currentId = savedChildId;
+          } else if (data.students && data.students.length > 0) {
+            currentId = data.students[0].id;
+          }
+        }
+        if (currentId) {
+          localStorage.setItem('parent_portal_my_child_id', currentId);
+        }
       }
 
       // Populate child selector dropdown
       function updateDropdown() {
+        if (!data || !data.students) return;
         selectChildDropdown.innerHTML = '';
         const currentStudent = data.students.find(s => s.id === currentId);
         if (currentStudent) {
-          const grp = data.groups.find(g => g.id === currentStudent.group);
+          const grp = (data.groups || []).find(g => g.id === currentStudent.group);
           const grpName = grp ? grp.name.split('-')[0].trim() : `Tổ ${currentStudent.group}`;
           activeChildDisplay.textContent = `${currentStudent.name} (${grpName})`;
           childSelectorActiveInfo.style.display = 'flex';
@@ -870,7 +856,7 @@
         }
 
         data.students.forEach(s => {
-          const group = data.groups.find(g => g.id === s.group);
+          const group = (data.groups || []).find(g => g.id === s.group);
           const groupName = group ? group.name.split('-')[0].trim() : `Tổ ${s.group}`;
           const opt = document.createElement('option');
           opt.value = s.id;
@@ -880,13 +866,45 @@
         });
       }
 
+      function applyData(newData) {
+        if (!newData || !newData.students || newData.students.length === 0) return;
+        data = newData;
+        try {
+          localStorage.setItem(StorageManager.KEY, JSON.stringify(data));
+        } catch (e) {}
+        ensureCurrentStudentId();
+        updateDropdown();
+        loadStudentHomeworkState();
+        renderChildView();
+      }
+
       btnChangeChild.addEventListener('click', () => {
         const isHidden = childDropdownWrapper.style.display === 'none';
         childDropdownWrapper.style.display = isHidden ? 'block' : 'none';
         btnChangeChild.textContent = isHidden ? 'Thu gọn ▲' : 'Đổi bé ▾';
       });
 
+      ensureCurrentStudentId();
       updateDropdown();
+
+      // Khởi tạo đồng bộ Đám Mây Firebase Realtime 24/24 cho phụ huynh
+      if (window.FirebaseSync && typeof window.FirebaseSync.init === 'function') {
+        const fbOk = window.FirebaseSync.init();
+        if (fbOk) {
+          window.FirebaseSync.onClassDataChange((fbData) => {
+            if (fbData && fbData.students) {
+              applyData(fbData);
+            }
+          });
+        }
+      }
+
+      // Kéo dữ liệu từ server nội bộ nếu có
+      StorageManager.pullFromServer().then(serverData => {
+        if (serverData && serverData.students) {
+          applyData(serverData);
+        }
+      });
 
       selectChildDropdown.addEventListener('change', (e) => {
         currentId = e.target.value;
@@ -1539,8 +1557,7 @@
       setInterval(async () => {
         const fresh = await StorageManager.pullFromServer();
         if (fresh && fresh.students) {
-          data = fresh;
-          renderChildView();
+          applyData(fresh);
         }
       }, 6000);
 

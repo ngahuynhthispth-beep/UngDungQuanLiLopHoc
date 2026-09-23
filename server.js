@@ -23,6 +23,30 @@ let liveClassData = null;
 
 // Try to load initial data from file if exists
 const DATA_FILE = path.join(__dirname, 'class_data.json');
+const FIREBASE_DB_URL = 'https://quanlylophocconga-default-rtdb.asia-southeast1.firebasedatabase.app/classData.json';
+
+function syncToFirebase(data) {
+  if (!data || !data.students || data.students.length === 0) return;
+  const https = require('https');
+  try {
+    const payload = JSON.stringify(data);
+    const req = https.request(FIREBASE_DB_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      },
+      timeout: 10000
+    }, res => {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        console.log(`☁️ [Firebase Cloud] Đã tự động đồng bộ ${data.students.length} học sinh lên Đám Mây trực tuyến!`);
+      }
+    });
+    req.on('error', () => {});
+    req.write(payload);
+    req.end();
+  } catch (e) {}
+}
 
 const DEFAULT_GIFTS = [
   { id: 'g-1', name: 'Bút chì siêu đẹp', icon: '✏️' },
@@ -65,6 +89,7 @@ if (fs.existsSync(DATA_FILE)) {
     if (ensureHatchedTimestamps(liveClassData)) {
       fs.writeFileSync(DATA_FILE, JSON.stringify(liveClassData, null, 2));
     }
+    syncToFirebase(liveClassData);
   } catch (e) {
     console.error('Error reading class_data.json:', e);
   }
@@ -189,6 +214,7 @@ const server = http.createServer((req, res) => {
           const parsed = JSON.parse(body);
           liveClassData = parsed;
           fs.writeFile(DATA_FILE, JSON.stringify(parsed, null, 2), () => {});
+          syncToFirebase(liveClassData);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'saved', timestamp: Date.now() }));
           broadcastSse({ type: 'DATA_CHANGED', data: liveClassData });
@@ -280,6 +306,7 @@ const server = http.createServer((req, res) => {
 
           liveClassData.lastUpdated = Date.now();
           fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          syncToFirebase(liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 

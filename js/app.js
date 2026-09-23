@@ -809,12 +809,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoGroup = autoAssignGroupsCheckbox.checked;
     const replaceOld = replaceExistingCheckbox.checked;
 
-    StorageManager.importStudentsList(lines, autoGroup, replaceOld);
+    const updatedData = StorageManager.importStudentsList(lines, autoGroup, replaceOld);
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      window.FirebaseSync.setClassData(updatedData);
+    }
     window.soundFx.playCheer();
     pasteStudentsTextarea.value = '';
     importModal.classList.remove('active');
     refreshData();
-    alert(`🎉 Đã cập nhật thành công ${lines.length} học sinh vào lớp!`);
+    alert(`🎉 Đã cập nhật thành công ${lines.length} học sinh vào lớp và đồng bộ lên Đám Mây cho phụ huynh!`);
   });
 
   // Action 2: File upload
@@ -853,11 +856,14 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    StorageManager.importStudentsList(lines, true, true);
+    const updatedData = StorageManager.importStudentsList(lines, true, true);
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      window.FirebaseSync.setClassData(updatedData);
+    }
     window.soundFx.playCheer();
     importModal.classList.remove('active');
     refreshData();
-    alert(`🎉 Đã nhập thành công ${lines.length} học sinh từ file!`);
+    alert(`🎉 Đã nhập thành công ${lines.length} học sinh từ file và đồng bộ lên Đám Mây cho phụ huynh!`);
   });
 
   // Action 3: Download template
@@ -2054,15 +2060,38 @@ document.addEventListener('DOMContentLoaded', () => {
           badge.style.background = '#ECFDF5';
           badge.style.color = '#065F46';
           badge.style.border = '1px solid #6EE7B7';
-          badgeText.textContent = 'Đám Mây: Đã kết nối 24/24';
+          badge.style.cursor = 'pointer';
+          badgeText.textContent = 'Đám Mây: Đã kết nối 24/24 (Bấm để đồng bộ)';
+
+          if (!badge.dataset.syncClickAttached) {
+            badge.dataset.syncClickAttached = 'true';
+            badge.addEventListener('click', async () => {
+              if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+                badgeText.textContent = 'Đang đẩy lên Đám Mây...';
+                await window.FirebaseSync.setClassData(state.data);
+                badgeText.textContent = 'Đám Mây: Đã đồng bộ ✅';
+                showSyncToast('🎉 Đã đồng bộ toàn bộ danh sách 36 học sinh lên Đám Mây cho phụ huynh!', '☁️');
+                setTimeout(() => {
+                  badgeText.textContent = 'Đám Mây: Đã kết nối 24/24 (Bấm để đồng bộ)';
+                }, 3000);
+              }
+            });
+          }
         }
 
-        // Đảm bảo dữ liệu hiện tại được đẩy lên nếu Firebase đang trống
+        // Đảm bảo dữ liệu hiện tại được đẩy lên nếu Firebase đang trống hoặc đang chứa danh sách mẫu
         window.FirebaseSync.ensureInitialData(state.data);
 
         // Lắng nghe thay đổi trực tiếp từ Firebase (phụ huynh nộp bài tập từ nhà)
         window.FirebaseSync.onClassDataChange((fbData) => {
           if (fbData && fbData.students) {
+            // Không nhận dữ liệu nếu Firebase ít học sinh hơn danh sách thực tế của lớp (ví dụ 16 em mẫu vs 36 em thật)
+            if (state.data && state.data.students && state.data.students.length > fbData.students.length) {
+              console.warn('Firebase có ít học sinh hơn danh sách thực tế, đồng bộ dữ liệu thật lên Cloud...');
+              window.FirebaseSync.setClassData(state.data);
+              return;
+            }
+
             const oldMap = new Map((state.data.students || []).map(s => [s.id, s.stars || 0]));
             
             // Tìm bé vừa được cộng điểm từ nhà
