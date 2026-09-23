@@ -51,12 +51,14 @@ body {
   top: 0;
   z-index: 100;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  gap: 16px;
 }
 
 .brand-section {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -79,11 +81,40 @@ body {
   font-weight: 600;
 }
 
-/* Header Quick Controls */
+/* Header Quick Controls with Horizontal Scroll */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 4px 8px 4px;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #7052FF rgba(226, 232, 240, 0.7);
+}
+
+.header-actions::-webkit-scrollbar {
+  height: 8px;
+}
+
+.header-actions::-webkit-scrollbar-track {
+  background: rgba(226, 232, 240, 0.7);
+  border-radius: 999px;
+}
+
+.header-actions::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #7052FF, #FF6B8B);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  cursor: grab;
+}
+
+.header-actions::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #5B3AE6, #FF4B72);
 }
 
 .btn-header {
@@ -95,12 +126,14 @@ body {
   font-weight: 700;
   font-size: 14px;
   color: var(--text-dark);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .btn-header:hover {

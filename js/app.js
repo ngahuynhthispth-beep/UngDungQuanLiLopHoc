@@ -1236,6 +1236,25 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(currentSharedParentUrl, '_blank');
   });
 
+  // Nút lối tắt Lấy Link Zalo Phụ Huynh trên bảng tổng hợp
+  const btnQuickShareLink = document.getElementById('btnQuickShareLink');
+  if (btnQuickShareLink && btnShareClassLink) {
+    btnQuickShareLink.addEventListener('click', () => {
+      btnShareClassLink.click();
+    });
+  }
+
+  // Hỗ trợ cuộn chuột lăn ngang mượt mà trên thanh công cụ header
+  const headerActionsEl = document.querySelector('.header-actions');
+  if (headerActionsEl) {
+    headerActionsEl.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        headerActionsEl.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+  }
+
   // --- Zalo Certificate Export Modal ---
   async function openCardExportModal(studentId) {
     const student = state.data.students.find(s => s.id === studentId);

@@ -26,6 +26,10 @@
         📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
       </button>
 
+      <button id="btnShareClassLink" class="btn-header" style="background: linear-gradient(135deg, #7052FF, #9B51E0); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(112, 82, 255, 0.35);" title="Gửi 1 link chung cho nhóm Zalo phụ huynh (Chỉ xem)">
+        📢 <span>Link Zalo Phụ Huynh</span>
+      </button>
+
       <button id="btnWeeklyRewards" class="btn-header" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);" title="Bảng tổng kết tuần và vinh danh trao quà ấp trứng">
         🎁 <span>Tổng Kết & Trao Quà</span>
       </button>
@@ -66,10 +70,6 @@
         🎁 <span>Cài Đặt Quà</span>
       </button>
 
-      <button id="btnShareClassLink" class="btn-header" style="background: linear-gradient(135deg, #7052FF, #9B51E0); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(112, 82, 255, 0.3);" title="Gửi 1 link chung cho nhóm Zalo phụ huynh (Chỉ xem)">
-        📢 <span>Link Zalo Phụ Huynh</span>
-      </button>
-
       <button id="btnMute" class="btn-header" title="Bật/Tắt âm thanh">
         🔊 <span>Âm thanh</span>
       </button>
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- Bảng Tổng Hợp Ngắn Gọn: Sao Phụ Huynh Thưởng Tại Nhà -->
+  <!-- Bảng Tổng Hợp Ngắn Gọn: Sao Phụ Huynh Chấm Tại Nhà -->
   <section id="parentHwQuickBar" class="parent-hw-quick-bar">
     <div class="quick-bar-inner">
       <div class="quick-bar-header">
@@ -103,6 +103,9 @@
           </h2>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" id="btnQuickShareLink" class="btn-quick-action" style="background: linear-gradient(135deg, #7052FF, #9B51E0); color: #FFFFFF; font-weight: 700; border: none; box-shadow: 0 2px 8px rgba(112, 82, 255, 0.25);" title="Xem mã QR và lấy link gửi cho phụ huynh">
+            📢 Lấy Link Zalo Phụ Huynh
+          </button>
           <button type="button" id="btnToggleQuickHwBar" class="btn-quick-action" title="Thu gọn/Mở rộng bảng này">
             🔽 Thu gọn
           </button>
