@@ -960,3 +960,205 @@ body {
   margin: 2px 3px;
 }
 
+/* Custom Reward Points Bar & Stepper Controls */
+.custom-reward-bar {
+  transition: all 0.2s ease;
+}
+
+.btn-preset-pts {
+  background: #FFFFFF;
+  border: 1.5px solid #FCD34D;
+  color: #92400E;
+  font-family: var(--font-family);
+  font-weight: 800;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-preset-pts:hover {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+}
+
+.btn-preset-pts.active {
+  background: #F59E0B;
+  color: #FFFFFF;
+  border-color: #D97706;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+}
+
+.opt-points-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.opt-plus-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.4);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.reward-option-btn:hover .opt-plus-add {
+  transform: scale(1.18);
+  background: #D97706;
+}
+
+/* Parent Homework Quick Summary Bar (Gắn gọn trên trang giáo viên) */
+.parent-hw-quick-bar {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto 16px;
+  padding: 0 24px;
+}
+
+.quick-bar-inner {
+  background: #FFFFFF;
+  border: 2px solid #E0E7FF;
+  border-radius: 18px;
+  padding: 12px 18px;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.06);
+  transition: all 0.3s ease;
+}
+
+.quick-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hw-today-badge {
+  background: #EEF2FF;
+  color: #4338CA;
+  border: 1px solid #C7D2FE;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.btn-quick-action {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  color: #334155;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-quick-action:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+}
+
+.btn-quick-action.primary {
+  background: linear-gradient(135deg, #4F46E5, #6366F1);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+}
+
+.btn-quick-action.primary:hover {
+  box-shadow: 0 5px 14px rgba(79, 70, 229, 0.35);
+  transform: translateY(-1px);
+}
+
+.quick-bar-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+  transition: all 0.3s ease;
+}
+
+.quick-bar-content.collapsed {
+  display: none;
+}
+
+.quick-hw-empty {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border-radius: 12px;
+}
+
+.quick-hw-grid {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  align-items: stretch;
+}
+
+.quick-hw-badge-card {
+  background: linear-gradient(135deg, #FAF5FF, #EEF2FF);
+  border: 1.5px solid #C7D2FE;
+  border-radius: 14px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.quick-hw-badge-card:hover {
+  transform: translateY(-2px);
+  border-color: #818CF8;
+}
+
+.quick-hw-student-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: #1E293B;
+}
+
+.quick-hw-group {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4F46E5;
+  background: #E0E7FF;
+  padding: 1px 6px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.quick-hw-breakdown {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.quick-hw-stars-pill {
+  font-weight: 800;
+  font-size: 14px;
+  color: #047857;
+  background: #D1FAE5;
+  border: 1px solid #A7F3D0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+

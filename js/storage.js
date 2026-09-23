@@ -382,6 +382,16 @@ const StorageManager = {
     return data;
   },
 
+  updateStudentName(studentId, newName) {
+    const data = this.loadData();
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      student.name = (newName || '').trim();
+      this.saveData(data);
+    }
+    return data;
+  },
+
   updateStudentGroup(studentId, newGroupId) {
     const data = this.loadData();
     const student = data.students.find(s => s.id === studentId);

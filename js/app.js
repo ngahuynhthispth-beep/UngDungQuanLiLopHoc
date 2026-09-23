@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="card-top-actions">
+          <button class="btn-icon-mini btn-edit-student" title="Sửa tên học sinh" data-id="${student.id}">
+            ✏️
+          </button>
+          <button class="btn-icon-mini btn-delete-student" title="Xóa học sinh này" data-id="${student.id}" style="color: #E11D48;">
+            🗑️
+          </button>
           <button class="btn-icon-mini btn-qr-parent" title="Mã QR Phụ Huynh" data-id="${student.id}">
             📱
           </button>
@@ -137,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
               🎁 ĐÃ NỞ - MỞ 2 QUÀ NGAY (100⭐)
             </button>
           ` : `
-            <button class="btn-fast-reward hand fast-action" data-action="hand" data-id="${student.id}" title="Giơ tay phát biểu (+1)">
-              ✋ Phát biểu (+1)
+            <button class="btn-fast-reward focus fast-action" data-action="focus" data-id="${student.id}" title="Tập trung chú ý nghe giảng (+3 ⭐)">
+              👀 Chú ý (+3)
             </button>
-            <button class="btn-fast-reward quiet fast-action" data-action="quiet" data-id="${student.id}" title="Giữ trật tự (+1)">
-              🤫 Trật tự (+1)
+            <button class="btn-fast-reward hand fast-action" data-action="hand" data-id="${student.id}" title="Giơ tay phát biểu (+2 ⭐)">
+              ✋ Phát biểu (+2)
             </button>
           `}
         </div>
@@ -150,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Click on Card opens full reward action sheet
       card.addEventListener('click', (e) => {
         // Prevent opening if clicked specific action buttons
-        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action')) {
+        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student')) {
           return;
         }
         if (student.stars >= 100) {
@@ -161,6 +167,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       // Quick Fast Buttons
+      const focusBtn = card.querySelector('.fast-action[data-action="focus"]');
+      if (focusBtn) {
+        focusBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if ((student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
+            openGiftClaimModal(student.id);
+            return;
+          }
+          const rect = e.target.getBoundingClientRect();
+          createFloatingStar(rect.left + rect.width / 2, rect.top, '👀');
+          window.soundFx.playStar();
+          StorageManager.addPointsToStudent(student.id, 3, 'Tập trung chú ý nghe giảng', '👀');
+          refreshData();
+        });
+      }
+
       const handBtn = card.querySelector('.fast-action[data-action="hand"]');
       if (handBtn) {
         handBtn.addEventListener('click', (e) => {
@@ -173,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const rect = e.target.getBoundingClientRect();
           createFloatingStar(rect.left + rect.width / 2, rect.top, '✋');
           window.soundFx.playStar();
-          StorageManager.addPointsToStudent(student.id, 1, 'Giơ tay phát biểu sôi nổi', '✋');
+          StorageManager.addPointsToStudent(student.id, 2, 'Giơ tay phát biểu sôi nổi', '✋');
           refreshData();
         });
       }
@@ -190,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const rect = e.target.getBoundingClientRect();
           createFloatingStar(rect.left + rect.width / 2, rect.top, '🤫');
           window.soundFx.playStar();
-          StorageManager.addPointsToStudent(student.id, 1, 'Giữ trật tự và ngồi ngoan', '🤫');
+          StorageManager.addPointsToStudent(student.id, 2, 'Giữ trật tự và ngồi ngoan', '🤫');
           refreshData();
         });
       }
@@ -200,6 +223,24 @@ document.addEventListener('DOMContentLoaded', () => {
         giftBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           openGiftClaimModal(student.id);
+        });
+      }
+
+      // Edit student button
+      const editBtn = card.querySelector('.btn-edit-student');
+      if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditStudentModal(student.id);
+        });
+      }
+
+      // Delete student button
+      const deleteBtn = card.querySelector('.btn-delete-student');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteStudentConfirm(student.id);
         });
       }
 
@@ -325,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderStudents();
     renderGroups();
+    renderParentHwQuickBar();
   }
 
   // --- Full Action Sheet Modal for 1 Student ---
@@ -365,6 +407,64 @@ document.addEventListener('DOMContentLoaded', () => {
     actionModal.classList.remove('active');
   });
 
+  // Stepper & Custom Points Controls in Action Modal
+  const inputCustomRewardPoints = document.getElementById('inputCustomRewardPoints');
+  const btnCustomPointsMinus = document.getElementById('btnCustomPointsMinus');
+  const btnCustomPointsPlus = document.getElementById('btnCustomPointsPlus');
+  const chkKeepModalOpen = document.getElementById('chkKeepModalOpen');
+  const presetButtons = document.querySelectorAll('.btn-preset-pts');
+
+  function updateActivePreset(val) {
+    presetButtons.forEach(btn => {
+      const pts = parseInt(btn.dataset.pts, 10);
+      if (pts === val) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
+  if (btnCustomPointsMinus) {
+    btnCustomPointsMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      let cur = parseInt(inputCustomRewardPoints.value, 10) || 1;
+      if (cur > 1) {
+        cur--;
+        inputCustomRewardPoints.value = cur;
+        updateActivePreset(cur);
+      }
+    });
+  }
+
+  if (btnCustomPointsPlus) {
+    btnCustomPointsPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      let cur = parseInt(inputCustomRewardPoints.value, 10) || 1;
+      if (cur < 50) {
+        cur++;
+        inputCustomRewardPoints.value = cur;
+        updateActivePreset(cur);
+      }
+    });
+  }
+
+  if (inputCustomRewardPoints) {
+    inputCustomRewardPoints.addEventListener('input', () => {
+      let cur = parseInt(inputCustomRewardPoints.value, 10) || 1;
+      updateActivePreset(cur);
+    });
+  }
+
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const pts = parseInt(btn.dataset.pts, 10);
+      if (inputCustomRewardPoints) inputCustomRewardPoints.value = pts;
+      updateActivePreset(pts);
+    });
+  });
+
   // Reward Option buttons in modal
   document.querySelectorAll('.reward-option-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -382,8 +482,18 @@ document.addEventListener('DOMContentLoaded', () => {
           window.soundFx.playSleep();
           StorageManager.setSleeping(studentId, 2);
         }
+        actionModal.classList.remove('active');
+        refreshData();
       } else {
-        const points = parseInt(btn.dataset.points || '1', 10);
+        let points = parseInt(btn.dataset.points || '1', 10);
+        // Nếu người dùng chọn số điểm trên thanh điều khiển và đây là hành vi thưởng dương
+        if (points > 0 && inputCustomRewardPoints) {
+          const customVal = parseInt(inputCustomRewardPoints.value, 10);
+          if (customVal && customVal > 0) {
+            points = customVal;
+          }
+        }
+
         const reason = btn.dataset.reason || 'Khen thưởng';
         const icon = btn.dataset.icon || '⭐';
 
@@ -401,15 +511,222 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         } else {
           window.soundFx.playStar();
+          const rect = btn.getBoundingClientRect();
+          createFloatingStar(rect.left + rect.width / 2, rect.top, icon);
         }
 
         StorageManager.addPointsToStudent(studentId, points, reason, icon);
-      }
 
-      actionModal.classList.remove('active');
-      refreshData();
+        // Cập nhật số sao tức thì trên tiêu đề modal để cô nhìn thấy số điểm tăng liên tục
+        const updatedStudent = state.data.students.find(s => s.id === studentId);
+        const modalStudentStars = document.getElementById('modalStudentStars');
+        const modalPetPreview = document.getElementById('modalPetPreview');
+        if (modalStudentStars && updatedStudent) {
+          modalStudentStars.textContent = `${updatedStudent.stars} ⭐`;
+        }
+        if (modalPetPreview && updatedStudent) {
+          modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(updatedStudent.stars, updatedStudent.status);
+        }
+
+        if (updatedStudent && updatedStudent.stars >= 100) {
+          actionModal.classList.remove('active');
+          refreshData();
+          showSyncToast(`🎉 Chúc mừng bé <strong>${updatedStudent.name}</strong> đã nở trứng (100 ⭐)!`, '🏆');
+          openGiftClaimModal(updatedStudent.id);
+          return;
+        }
+
+        const keepOpen = chkKeepModalOpen && chkKeepModalOpen.checked;
+        if (!keepOpen) {
+          actionModal.classList.remove('active');
+        }
+        refreshData();
+      }
     });
   });
+
+  // --- Render Compact Parent Homework Summary Bar (Bảng Tổng Hợp Ngắn Gọn Trên Trang Giáo Viên) ---
+  function renderParentHwQuickBar() {
+    const quickHwContentArea = document.getElementById('quickHwContentArea');
+    const quickHwCountText = document.getElementById('quickHwCountText');
+    if (!quickHwContentArea) return;
+
+    const todayDateKey = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+    const students = (state.data && state.data.students) || [];
+    const groups = (state.data && state.data.groups) || [];
+
+    const submittedToday = students.filter(s => s.homeworkRecords && s.homeworkRecords[todayDateKey] && s.homeworkRecords[todayDateKey].totalStars > 0);
+    const totalStars = submittedToday.reduce((sum, s) => sum + (s.homeworkRecords[todayDateKey].totalStars || 0), 0);
+
+    if (quickHwCountText) {
+      quickHwCountText.textContent = `${submittedToday.length} bé (+${totalStars} ⭐)`;
+    }
+
+    if (submittedToday.length === 0) {
+      quickHwContentArea.innerHTML = `
+        <div class="quick-hw-empty">
+          ✨ Hôm nay chưa có bé nào nhận sao từ phụ huynh. Khi phụ huynh chấm điểm trên điện thoại, số sao thưởng sẽ tự động hiển thị ngay tại đây để cô nắm bắt tức thì mà không cần đi tìm!
+        </div>
+      `;
+      return;
+    }
+
+    let cardsHtml = '<div class="quick-hw-grid">';
+    submittedToday.forEach(s => {
+      const rec = s.homeworkRecords[todayDateKey];
+      const grp = groups.find(g => g.id === s.group) || { name: 'Tổ ' + s.group };
+      const timeStr = rec.submittedAt ? new Date(rec.submittedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Hôm nay';
+      cardsHtml += `
+        <div class="quick-hw-badge-card" title="Phụ huynh gửi lúc: ${timeStr}">
+          <div style="font-size: 24px;">🐣</div>
+          <div>
+            <div class="quick-hw-student-name">
+              ${s.name}
+              <span class="quick-hw-group">${grp.name.split('-')[0].trim()}</span>
+            </div>
+            <div class="quick-hw-breakdown">
+              📖 Đọc: ${rec.readingCount || 0} • ✍️ Viết: ${rec.writingStars || 0} • 🧹 Việc nhà: ${rec.choresDone || 0}
+            </div>
+          </div>
+          <div class="quick-hw-stars-pill">+${rec.totalStars} ⭐</div>
+        </div>
+      `;
+    });
+    cardsHtml += '</div>';
+
+    quickHwContentArea.innerHTML = cardsHtml;
+  }
+
+  const btnToggleQuickHwBar = document.getElementById('btnToggleQuickHwBar');
+  if (btnToggleQuickHwBar) {
+    btnToggleQuickHwBar.addEventListener('click', () => {
+      const content = document.getElementById('quickHwContentArea');
+      if (content) {
+        content.classList.toggle('collapsed');
+        btnToggleQuickHwBar.textContent = content.classList.contains('collapsed') ? '🔼 Mở rộng' : '🔽 Thu gọn';
+      }
+    });
+  }
+
+  const btnOpenFullParentHwModal = document.getElementById('btnOpenFullParentHwModal');
+  if (btnOpenFullParentHwModal) {
+    btnOpenFullParentHwModal.addEventListener('click', () => {
+      if (typeof openParentHomeworkModal === 'function') {
+        openParentHomeworkModal();
+      } else {
+        const modal = document.getElementById('parentHomeworkSummaryModal');
+        if (modal) modal.classList.add('active');
+      }
+    });
+  }
+
+  // --- Chế Độ Tự Sửa & Xóa Học Sinh Trên App ---
+  const editStudentModal = document.getElementById('editStudentModal');
+  const closeEditStudentModalBtn = document.getElementById('closeEditStudentModalBtn');
+  const btnCancelEditStudent = document.getElementById('btnCancelEditStudent');
+  const formEditStudent = document.getElementById('formEditStudent');
+  const editStudentId = document.getElementById('editStudentId');
+  const editStudentNameInput = document.getElementById('editStudentNameInput');
+  const editStudentGroupSelect = document.getElementById('editStudentGroupSelect');
+  const btnDeleteStudentInsideEdit = document.getElementById('btnDeleteStudentInsideEdit');
+  const btnModalEditStudent = document.getElementById('btnModalEditStudent');
+  const btnModalDeleteStudent = document.getElementById('btnModalDeleteStudent');
+
+  function openEditStudentModal(studentId) {
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    if (editStudentId) editStudentId.value = student.id;
+    if (editStudentNameInput) editStudentNameInput.value = student.name;
+    if (editStudentGroupSelect) editStudentGroupSelect.value = student.group || '1';
+
+    if (editStudentModal) {
+      editStudentModal.classList.add('active');
+      setTimeout(() => {
+        if (editStudentNameInput) editStudentNameInput.focus();
+      }, 100);
+    }
+  }
+
+  function closeEditStudentModal() {
+    if (editStudentModal) {
+      editStudentModal.classList.remove('active');
+    }
+  }
+
+  function deleteStudentConfirm(studentId) {
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    const confirmed = confirm(`⚠️ Cô có chắc chắn muốn xóa học sinh "${student.name}" khỏi danh sách lớp không?\n\nThao tác này sẽ đồng bộ ngay lập tức lên Đám Mây và điện thoại phụ huynh.`);
+    if (!confirmed) return;
+
+    StorageManager.deleteStudent(studentId);
+
+    if (actionModal && actionModal.classList.contains('active') && state.selectedStudentId === studentId) {
+      actionModal.classList.remove('active');
+    }
+    closeEditStudentModal();
+    refreshData();
+    showSyncToast(`🗑️ Đã xóa học sinh <strong>${student.name}</strong> thành công!`, '🗑️');
+  }
+
+  if (closeEditStudentModalBtn) {
+    closeEditStudentModalBtn.addEventListener('click', closeEditStudentModal);
+  }
+  if (btnCancelEditStudent) {
+    btnCancelEditStudent.addEventListener('click', closeEditStudentModal);
+  }
+
+  if (formEditStudent) {
+    formEditStudent.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const studentId = editStudentId ? editStudentId.value : null;
+      const newName = (editStudentNameInput ? editStudentNameInput.value : '').trim();
+      const newGroup = parseInt(editStudentGroupSelect ? editStudentGroupSelect.value : '1', 10) || 1;
+
+      if (!newName) {
+        alert('Vui lòng nhập họ và tên của học sinh!');
+        return;
+      }
+
+      StorageManager.updateStudentName(studentId, newName);
+      StorageManager.updateStudentGroup(studentId, newGroup);
+
+      closeEditStudentModal();
+
+      if (actionModal && actionModal.classList.contains('active') && state.selectedStudentId === studentId) {
+        const modalTitle = document.getElementById('actionModalTitle');
+        if (modalTitle) modalTitle.textContent = `Khen thưởng: ${newName}`;
+      }
+
+      refreshData();
+      showSyncToast(`✅ Đã cập nhật thông tin học sinh <strong>${newName}</strong>! Đã đồng bộ lên Đám Mây.`, '✏️');
+    });
+  }
+
+  if (btnDeleteStudentInsideEdit) {
+    btnDeleteStudentInsideEdit.addEventListener('click', () => {
+      const studentId = editStudentId ? editStudentId.value : null;
+      if (studentId) deleteStudentConfirm(studentId);
+    });
+  }
+
+  if (btnModalEditStudent) {
+    btnModalEditStudent.addEventListener('click', () => {
+      if (state.selectedStudentId) {
+        openEditStudentModal(state.selectedStudentId);
+      }
+    });
+  }
+
+  if (btnModalDeleteStudent) {
+    btnModalDeleteStudent.addEventListener('click', () => {
+      if (state.selectedStudentId) {
+        deleteStudentConfirm(state.selectedStudentId);
+      }
+    });
+  }
 
   // --- Button: Whole Class Reward ---
   btnAllReward.addEventListener('click', (e) => {
@@ -926,7 +1243,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </select>
           </td>
           <td style="padding: 8px 10px; font-weight: 800; color: #D97706;">⭐ ${s.stars}</td>
-          <td style="padding: 8px 10px; text-align: center;">
+          <td style="padding: 8px 10px; text-align: center; white-space: nowrap;">
+            <button class="btn-edit-student-table" data-id="${s.id}" style="background: #EEF2FF; border: none; color: #4338CA; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-right: 4px;" title="Sửa tên học sinh">
+              ✏️
+            </button>
             <button class="btn-delete-student" data-id="${s.id}" style="background: #FEE2E2; border: none; color: #DC2626; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px;" title="Xóa học sinh này">
               🗑️
             </button>
@@ -948,15 +1268,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Attach edit student
+    currentStudentsTableContainer.querySelectorAll('.btn-edit-student-table').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const studentId = btn.dataset.id;
+        openEditStudentModal(studentId);
+      });
+    });
+
     // Attach delete student
     currentStudentsTableContainer.querySelectorAll('.btn-delete-student').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const studentId = btn.dataset.id;
-        if (confirm('Cô có chắc muốn xóa học sinh này khỏi lớp?')) {
-          StorageManager.deleteStudent(studentId);
-          renderCurrentStudentsTable();
-          refreshData();
-        }
+        deleteStudentConfirm(studentId);
+        renderCurrentStudentsTable();
       });
     });
   }
