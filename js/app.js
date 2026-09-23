@@ -71,6 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const hatchedBadgeCount = document.getElementById('hatchedBadgeCount');
     if (hatchedBadgeCount) hatchedBadgeCount.textContent = hatchedStudents.length;
 
+    const todayDateKey = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+    const hwSubmittedToday = (students || []).filter(s => s.homeworkRecords && s.homeworkRecords[todayDateKey] && s.homeworkRecords[todayDateKey].totalStars > 0);
+    const hwBadgeCount = document.getElementById('hwBadgeCount');
+    if (hwBadgeCount) hwBadgeCount.textContent = hwSubmittedToday.length;
+
+    if (typeof parentHomeworkSummaryModal !== 'undefined' && parentHomeworkSummaryModal && parentHomeworkSummaryModal.classList.contains('active')) {
+      renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
+    }
+
     students.forEach(student => {
       const group = groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
       const stage = window.EggEvolution.getStage(student.stars);
@@ -1527,6 +1536,236 @@ document.addEventListener('DOMContentLoaded', () => {
         await navigator.clipboard.writeText(text);
         alert('🎉 Đã sao chép bảng tổng hợp quà thành công!\nCô có thể dán (Ctrl + V) vào Zalo hoặc ghi chú để chuẩn bị quà nhé.');
       } catch (e) {
+        alert(text);
+      }
+    });
+  }
+
+  // ========================================================
+  // --- BẢNG TỔNG HỢP ĐIỂM RÈN LUYỆN TẠI NHÀ (PHỤ HUYNH) ---
+  // ========================================================
+  const btnParentHomeworkSummary = document.getElementById('btnParentHomeworkSummary');
+  const parentHomeworkSummaryModal = document.getElementById('parentHomeworkSummaryModal');
+  const closeParentHwSummaryBtn = document.getElementById('closeParentHwSummaryBtn');
+  const btnCloseParentHwModal = document.getElementById('btnCloseParentHwModal');
+  const btnCopyParentHwMessage = document.getElementById('btnCopyParentHwMessage');
+  const parentHwDateInput = document.getElementById('parentHwDateInput');
+  const btnParentHwToday = document.getElementById('btnParentHwToday');
+  const parentHwTableContainer = document.getElementById('parentHwTableContainer');
+  const parentHwSubmittedCount = document.getElementById('parentHwSubmittedCount');
+  const parentHwTotalStudents = document.getElementById('parentHwTotalStudents');
+  const parentHwTotalStars = document.getElementById('parentHwTotalStars');
+
+  let currentHwViewDate = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+  let currentHwViewGroup = 'all';
+
+  function renderParentHomeworkSummary(dateStr, groupFilter = 'all') {
+    if (!parentHwTableContainer) return;
+    const { students, groups } = state.data;
+    const targetDate = dateStr || currentHwViewDate;
+    
+    if (parentHwDateInput) parentHwDateInput.value = targetDate;
+    if (parentHwTotalStudents) parentHwTotalStudents.textContent = (students || []).length;
+
+    // Lọc theo tổ
+    let filteredStudents = students || [];
+    if (groupFilter !== 'all') {
+      const gId = parseInt(groupFilter, 10);
+      filteredStudents = filteredStudents.filter(s => s.group === gId);
+    }
+
+    // Thu thập danh sách bé đã nộp trong ngày targetDate
+    const submissions = [];
+    let dayTotalStars = 0;
+
+    (students || []).forEach(s => {
+      const rec = s.homeworkRecords ? s.homeworkRecords[targetDate] : null;
+      if (rec && rec.totalStars > 0) {
+        dayTotalStars += (rec.totalStars || 0);
+      }
+    });
+
+    if (parentHwTotalStars) parentHwTotalStars.textContent = dayTotalStars;
+
+    filteredStudents.forEach(s => {
+      const rec = s.homeworkRecords ? s.homeworkRecords[targetDate] : null;
+      if (rec && rec.totalStars > 0) {
+        submissions.push({ student: s, record: rec });
+      }
+    });
+
+    if (parentHwSubmittedCount) {
+      parentHwSubmittedCount.textContent = (students || []).filter(s => s.homeworkRecords && s.homeworkRecords[targetDate] && s.homeworkRecords[targetDate].totalStars > 0).length;
+    }
+
+    if (submissions.length === 0) {
+      parentHwTableContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+          <div style="font-size: 44px; margin-bottom: 8px;">📝✨</div>
+          <div style="font-size: 16px; font-weight: 800; color: #1E293B;">Chưa có phụ huynh nào gửi điểm trong ngày ${targetDate}</div>
+          <p style="font-size: 13px; color: #64748B; margin-top: 6px; max-width: 460px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            Khi phụ huynh mở link Zalo trên điện thoại và tự chấm bài cho con (Đọc bài, Viết bài, Dặn dò), <strong>hệ thống sẽ tự động cộng sao vào hồ sơ ấp trứng</strong> của bé và lập tức hiển thị tại đây mà cô không cần thao tác thêm.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = `
+      <table class="hatched-table" style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead style="background: #F8FAFC; position: sticky; top: 0;">
+          <tr>
+            <th style="width: 40px; text-align: center; padding: 10px; border-bottom: 2px solid #E2E8F0;">STT</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">Họ và Tên Học Sinh</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">Tổ</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">📖 Rèn Đọc</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">✍️ Rèn Viết</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">🎒 Dặn Dò</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">⭐ Tổng Ngày</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">Trạng Thái</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    submissions.forEach((item, idx) => {
+      const { student: s, record: rec } = item;
+      const group = (groups || []).find(g => g.id === s.group) || { name: `Tổ ${s.group}`, color: '#FF6B6B' };
+      const readingText = rec.readingCount > 0 ? `${rec.readingCount} lần (+${rec.readingStars}⭐)` : 'Chưa đọc';
+      const writingText = rec.writingStars > 0 ? `+${rec.writingStars} ⭐` : 'Chưa chấm';
+      const choreHtml = rec.choresDone 
+        ? `<span style="background: #D1FAE5; color: #047857; padding: 3px 8px; border-radius: 10px; font-weight: 800; font-size: 11px;">✅ Đạt (+5⭐)</span>`
+        : `<span style="color: #94A3B8; font-size: 12px;">Chưa</span>`;
+
+      html += `
+        <tr style="border-bottom: 1px solid #F1F5F9;">
+          <td style="text-align: center; font-weight: 800; color: #64748B; padding: 10px 8px;">${idx + 1}</td>
+          <td style="padding: 10px 8px;">
+            <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${s.name}</div>
+            <div style="font-size: 11px; color: #64748B; font-weight: 600;">Tổng sao hiện có: <strong>${s.stars} ⭐</strong></div>
+          </td>
+          <td style="text-align: center; padding: 10px 8px;">
+            <span style="font-size: 11px; padding: 3px 8px; border-radius: 10px; background: ${group.color}; color: #FFF; font-weight: 800;">
+              ${group.name.split('-')[0].trim()}
+            </span>
+          </td>
+          <td style="text-align: center; padding: 10px 8px; font-weight: 700; color: #2563EB;">
+            ${readingText}
+          </td>
+          <td style="text-align: center; padding: 10px 8px; font-weight: 700; color: #7C3AED;">
+            ${writingText}
+          </td>
+          <td style="text-align: center; padding: 10px 8px;">
+            ${choreHtml}
+          </td>
+          <td style="text-align: center; padding: 10px 8px;">
+            <span style="font-size: 14px; font-weight: 900; color: #D97706; background: #FEF3C7; padding: 4px 10px; border-radius: 12px; border: 1px solid #FCD34D;">
+              +${rec.totalStars} ⭐
+            </span>
+          </td>
+          <td style="text-align: center; padding: 10px 8px;">
+            <span style="background: #ECFDF5; color: #065F46; padding: 4px 8px; border-radius: 8px; font-weight: 800; font-size: 11px; border: 1px solid #A7F3D0;">
+              ✅ Tự động cộng
+            </span>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table>`;
+    parentHwTableContainer.innerHTML = html;
+  }
+
+  function openParentHomeworkModal() {
+    currentHwViewDate = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+    currentHwViewGroup = 'all';
+    document.querySelectorAll('.btn-hw-filter').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.group === 'all');
+      btn.style.background = btn.dataset.group === 'all' ? '#4F46E5' : '#FFF';
+      btn.style.color = btn.dataset.group === 'all' ? '#FFF' : '#475569';
+    });
+    renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
+    parentHomeworkSummaryModal.classList.add('active');
+  }
+
+  if (btnParentHomeworkSummary) {
+    btnParentHomeworkSummary.addEventListener('click', openParentHomeworkModal);
+  }
+  if (closeParentHwSummaryBtn) {
+    closeParentHwSummaryBtn.addEventListener('click', () => parentHomeworkSummaryModal.classList.remove('active'));
+  }
+  if (btnCloseParentHwModal) {
+    btnCloseParentHwModal.addEventListener('click', () => parentHomeworkSummaryModal.classList.remove('active'));
+  }
+
+  if (parentHwDateInput) {
+    parentHwDateInput.addEventListener('change', (e) => {
+      if (e.target.value) {
+        currentHwViewDate = e.target.value;
+        renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
+      }
+    });
+  }
+
+  if (btnParentHwToday) {
+    btnParentHwToday.addEventListener('click', () => {
+      currentHwViewDate = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
+      if (parentHwDateInput) parentHwDateInput.value = currentHwViewDate;
+      renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
+    });
+  }
+
+  document.querySelectorAll('.btn-hw-filter').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.btn-hw-filter').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = '#FFF';
+        b.style.color = '#475569';
+      });
+      btn.classList.add('active');
+      btn.style.background = '#4F46E5';
+      btn.style.color = '#FFF';
+      currentHwViewGroup = btn.dataset.group;
+      renderParentHomeworkSummary(currentHwViewDate, currentHwViewGroup);
+    });
+  });
+
+  if (btnCopyParentHwMessage) {
+    btnCopyParentHwMessage.addEventListener('click', async () => {
+      const [y, m, d] = currentHwViewDate.split('-');
+      const submissions = [];
+      (state.data.students || []).forEach(s => {
+        const group = (state.data.groups || []).find(g => g.id === s.group) || { name: `Tổ ${s.group}` };
+        const rec = s.homeworkRecords ? s.homeworkRecords[currentHwViewDate] : null;
+        if (rec && rec.totalStars > 0) {
+          submissions.push({ student: s, group, record: rec });
+        }
+      });
+
+      if (submissions.length === 0) {
+        alert('Chưa có học sinh nào nộp điểm rèn luyện trong ngày này!');
+        return;
+      }
+
+      const className = state.data.className || 'Lớp 1A';
+      let text = `🌸 BẢNG TUYÊN DƯƠNG RÈN LUYỆN TẠI NHÀ - ${className} 🌸\n`;
+      text += `📅 Ngày ${d}/${m}/${y}\n`;
+      text += `✨ Đã có ${submissions.length}/${state.data.students.length} bé hoàn thành xuất sắc và được tự động cộng sao ấp trứng:\n\n`;
+
+      submissions.forEach((item, idx) => {
+        const r = item.record;
+        const choreText = r.choresDone ? ' • Dặn dò/Việc nhà ✅' : '';
+        text += `${idx + 1}. Bé ${item.student.name} (${item.group.name.split('-')[0].trim()}): Đọc ${r.readingCount} lần, Viết ${r.writingStars}⭐${choreText} ➔ +${r.totalStars} ⭐\n`;
+      });
+
+      const dayTotalStars = submissions.reduce((sum, item) => sum + (item.record.totalStars || 0), 0);
+      text += `\n🌟 Tổng số sao các con nhận được: +${dayTotalStars} ⭐`;
+      text += `\n❤️ Cô giáo khen ngợi tinh thần tự giác của các con và cảm ơn quý phụ huynh đã đồng hành cùng con mỗi tối!`;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('🎉 Đã sao chép báo cáo Zalo thành công!\nCô có thể dán (Ctrl + V) vào nhóm Zalo lớp để khen ngợi các con nhé.');
+      } catch (err) {
         alert(text);
       }
     });

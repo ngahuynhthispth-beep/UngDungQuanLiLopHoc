@@ -95,6 +95,77 @@ if (fs.existsSync(DATA_FILE)) {
   }
 }
 
+function pullFromFirebase() {
+  const https = require('https');
+  const req = https.get(FIREBASE_DB_URL, { timeout: 8000 }, res => {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        try {
+          const remoteData = JSON.parse(body);
+          if (!remoteData || !remoteData.students || remoteData.students.length === 0) return;
+
+          if (!liveClassData || !liveClassData.students) {
+            liveClassData = remoteData;
+            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+            return;
+          }
+
+          let hasChanges = false;
+          let diffStudentName = '';
+          let diffStars = 0;
+
+          remoteData.students.forEach(remS => {
+            const locS = liveClassData.students.find(s => s.id === remS.id);
+            if (locS) {
+              if (remS.homeworkRecords && Object.keys(remS.homeworkRecords).length > 0) {
+                const locHwStr = JSON.stringify(locS.homeworkRecords || {});
+                const remHwStr = JSON.stringify(remS.homeworkRecords);
+                if (locHwStr !== remHwStr) {
+                  locS.homeworkRecords = remS.homeworkRecords;
+                  hasChanges = true;
+                }
+              }
+              if ((remS.stars || 0) > (locS.stars || 0)) {
+                diffStudentName = locS.name;
+                diffStars = (remS.stars || 0) - (locS.stars || 0);
+                locS.stars = remS.stars;
+                hasChanges = true;
+              }
+              if (remS.giftHistory && remS.giftHistory.length > (locS.giftHistory || []).length) {
+                locS.giftHistory = remS.giftHistory;
+                hasChanges = true;
+              }
+              if (remS.logs && remS.logs.length > (locS.logs || []).length) {
+                locS.logs = remS.logs;
+                hasChanges = true;
+              }
+            }
+          });
+
+          if (hasChanges) {
+            liveClassData.lastUpdated = Date.now();
+            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+            console.log(`⚡ [Tự động cộng điểm] Đã cập nhật điểm rèn luyện phụ huynh chấm vào máy tính!`);
+            broadcastSse({
+              type: 'HOMEWORK_SUBMITTED',
+              studentName: diffStudentName || 'Học sinh',
+              diff: diffStars,
+              data: liveClassData
+            });
+          }
+        } catch (e) {}
+      });
+    }
+  });
+  req.on('error', () => {});
+}
+
+// Tự động kéo điểm từ phụ huynh về máy tính giáo viên định kỳ
+pullFromFirebase();
+setInterval(pullFromFirebase, 12000);
+
 function getLocalIpAddresses() {
   const interfaces = os.networkInterfaces();
   const addresses = [];

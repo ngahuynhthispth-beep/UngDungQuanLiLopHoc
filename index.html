@@ -22,6 +22,10 @@
 
     <!-- Quick Classroom Tools -->
     <div class="header-actions">
+      <button id="btnParentHomeworkSummary" class="btn-header" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Xem bảng tổng hợp điểm rèn luyện phụ huynh chấm tại nhà">
+        📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
+      </button>
+
       <button id="btnWeeklyRewards" class="btn-header" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);" title="Bảng tổng kết tuần và vinh danh trao quà ấp trứng">
         🎁 <span>Tổng Kết & Trao Quà</span>
       </button>
@@ -770,6 +774,78 @@
         <div id="giftClaimCurrentHistoryList" style="font-size: 12px; color: #475569; font-weight: 600;">
           Chưa mở quà lượt nào.
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Bảng Tổng Hợp Điểm Rèn Luyện Tại Nhà (Phụ Huynh Chấm) -->
+  <div id="parentHomeworkSummaryModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 940px; width: 95%;">
+      <button id="closeParentHwSummaryBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 28px;">📝</span>
+          <div>
+            <h2 class="modal-title" style="margin: 0; text-align: left;">Bảng Điểm Rèn Luyện Phụ Huynh Chấm</h2>
+            <p style="font-size: 12px; color: #64748B; margin: 2px 0 0; font-weight: 600;">
+              ✨ Điểm được <strong>tự động cộng vào sao ấp trứng</strong> ngay khi phụ huynh gửi
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" id="btnCopyParentHwMessage" class="btn-header primary" style="font-size: 13px; padding: 7px 14px; background: linear-gradient(135deg, #059669, #10B981);">
+            📋 Sao Chép Báo Cáo Zalo
+          </button>
+        </div>
+      </div>
+
+      <!-- Thống kê nhanh & Chọn ngày -->
+      <div style="background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 16px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 13px; font-weight: 800; color: #334155;">📅 Xem ngày:</label>
+          <input type="date" id="parentHwDateInput" style="padding: 6px 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 13px; font-weight: 700; color: #1E293B;">
+          <button type="button" id="btnParentHwToday" class="btn-header" style="padding: 6px 10px; font-size: 12px;">Hôm nay</button>
+        </div>
+
+        <div style="display: flex; gap: 14px; align-items: center; font-size: 13px;">
+          <div style="background: #EEF2FF; color: #4338CA; padding: 4px 12px; border-radius: 20px; font-weight: 800;">
+            👥 Đã nộp: <span id="parentHwSubmittedCount">0</span>/<span id="parentHwTotalStudents">0</span> bé
+          </div>
+          <div style="background: #ECFDF5; color: #047857; padding: 4px 12px; border-radius: 20px; font-weight: 800;">
+            ⭐ Tổng sao: +<span id="parentHwTotalStars">0</span> ⭐
+          </div>
+        </div>
+      </div>
+
+      <!-- Lọc theo tổ & Trạng thái -->
+      <div style="display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; flex-wrap: wrap;">
+        <button type="button" class="btn-hw-filter active" data-group="all" style="padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #4F46E5; color: #FFF; font-size: 12px; font-weight: 700; cursor: pointer;">
+          Tất cả các tổ
+        </button>
+        <button type="button" class="btn-hw-filter" data-group="1" style="padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFF; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer;">
+          🐿️ Tổ 1
+        </button>
+        <button type="button" class="btn-hw-filter" data-group="2" style="padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFF; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer;">
+          🐰 Tổ 2
+        </button>
+        <button type="button" class="btn-hw-filter" data-group="3" style="padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFF; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer;">
+          🐻 Tổ 3
+        </button>
+        <button type="button" class="btn-hw-filter" data-group="4" style="padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFF; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer;">
+          🐯 Tổ 4
+        </button>
+      </div>
+
+      <div id="parentHwTableContainer" style="max-height: 420px; overflow-y: auto; border: 2px solid #E2E8F0; border-radius: 16px;">
+        <!-- Render tại js/app.js -->
+      </div>
+
+      <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+        <div id="parentHwFooterNote" style="font-size: 12px; color: #059669; font-weight: 700;">
+          ⚡ Điểm cộng tự động đồng bộ thời gian thực từ Đám Mây Firebase
+        </div>
+        <button id="btnCloseParentHwModal" class="btn-header">Đóng</button>
       </div>
     </div>
   </div>
