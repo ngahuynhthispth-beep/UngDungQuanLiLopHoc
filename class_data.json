@@ -67,7 +67,7 @@
       "stars": 0
     }
   ],
-  "lastUpdated": 1790843389704,
+  "lastUpdated": 1790844755972,
   "schoolYear": "2026 - 2027",
   "students": [
     {
@@ -956,11 +956,53 @@
       "id": "hs-1790097391777-11",
       "name": "Công Hậu",
       "group": 1,
-      "stars": 22,
+      "stars": 27,
       "status": "active",
       "sleepUntil": 0,
       "likes": 0,
       "logs": [
+        {
+          "icon": "⚠️",
+          "id": "log-1790844743303",
+          "points": -5,
+          "reason": "Nhắc nhở (-5 ⭐)",
+          "time": "15:52"
+        },
+        {
+          "icon": "⭐",
+          "id": "log-1790844741272",
+          "points": 5,
+          "reason": "Khen thưởng (+5 ⭐)",
+          "time": "15:52"
+        },
+        {
+          "icon": "⚠️",
+          "id": "log-1790844738923",
+          "points": -5,
+          "reason": "Nhắc nhở (-5 ⭐)",
+          "time": "15:52"
+        },
+        {
+          "icon": "⭐",
+          "id": "log-1790844737337",
+          "points": 5,
+          "reason": "Khen thưởng (+5 ⭐)",
+          "time": "15:52"
+        },
+        {
+          "icon": "⭐",
+          "id": "log-1790844721790",
+          "points": 10,
+          "reason": "Khen thưởng tích cực (+10 ⭐)",
+          "time": "15:52"
+        },
+        {
+          "icon": "⚠️",
+          "id": "log-1790844720349",
+          "points": -10,
+          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
+          "time": "15:52"
+        },
         {
           "icon": "👀",
           "id": "log-1790757577348",

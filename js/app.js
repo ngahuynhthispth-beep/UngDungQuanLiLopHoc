@@ -1670,6 +1670,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Mở app thành Cửa Sổ Mini nổi (dành riêng cho khi đang chiếu PowerPoint bài giảng)
+  const btnOpenMiniWindow = document.getElementById('btnOpenMiniWindow');
+  if (btnOpenMiniWindow) {
+    btnOpenMiniWindow.addEventListener('click', () => {
+      const width = 430;
+      const height = 760;
+      const left = Math.max(10, (window.screen.availWidth || 1366) - width - 20);
+      const top = 30;
+      const miniWin = window.open(
+        window.location.href,
+        'MiniClassroomWindow',
+        `width=${width},height=${height},left=${left},top=${top},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=yes`
+      );
+      if (miniWin) {
+        miniWin.focus();
+      }
+    });
+  }
+
   // Tự động đóng menu tiện ích trên mobile khi cô bấm vào một chức năng (để modal mở ra không bị che)
   if (headerActionsMenu) {
     headerActionsMenu.querySelectorAll('.btn-header').forEach(btn => {
