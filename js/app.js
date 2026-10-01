@@ -64,7 +64,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- View Mode & Search State ---
   let currentStudentViewMode = localStorage.getItem('vltk_student_view_mode') || 'compact'; // Mặc định hàng dọc ngắn gọn
+  if (window.innerWidth <= 768) {
+    currentStudentViewMode = 'compact';
+  }
   let currentSearchQuery = '';
+  let currentGroupFilter = 'all'; // Mặc định hiển thị tất cả các tổ
 
   const btnViewCompact = document.getElementById('btnViewCompact');
   const btnViewGrid = document.getElementById('btnViewGrid');
@@ -138,10 +142,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Hàm áp dụng điểm linh hoạt: Dùng chung cho nút cộng/trừ nhanh mức 10, tự đánh số và modal ---
+  function applyStudentPoints(studentId, points, reason = 'Khen thưởng', icon = '⭐', targetEl = null) {
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    if (points > 0 && (student.stars || 0) >= 100) {
+      showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
+      openGiftClaimModal(student.id);
+      return;
+    }
+
+    if (targetEl) {
+      const rect = targetEl.getBoundingClientRect();
+      createFloatingStar(rect.left + rect.width / 2, rect.top, points > 0 ? (icon || '⭐') : '⚠️');
+    }
+
+    if (points < 0) {
+      if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+        window.soundFx.playPenalty();
+      }
+    } else {
+      window.soundFx.playStar();
+    }
+
+    const sign = points > 0 ? `+${points}` : `${points}`;
+    showSyncToast(`${points > 0 ? '🌟' : '⚠️'} Bé <strong>${student.name}</strong>: ${sign} ⭐ (${reason})`, points > 0 ? '✨' : '⚠️');
+
+    const res = StorageManager.addPointsToStudent(studentId, points, reason, icon);
+    refreshData(res ? res.data : null);
+
+    const updated = (state.data.students || []).find(s => s.id === studentId);
+    if (updated && updated.stars >= 100 && points > 0) {
+      showSyncToast(`🎉 Chúc mừng bé <strong>${updated.name}</strong> đã nở trứng (100 ⭐)!`, '🏆');
+      openGiftClaimModal(updated.id);
+    }
+  }
+
+  // --- Render Thanh Chọn Tổ Dạng Tab/Chips Như Danh Bạ Điện Thoại ---
+  function renderGroupFilterChips(groups, students) {
+    const container = document.getElementById('contactFilterChips');
+    if (!container) return;
+
+    const totalStudents = (students || []).length;
+    let html = `
+      <button type="button" class="btn-group-chip ${currentGroupFilter === 'all' ? 'active' : ''}" data-group="all">
+        <span class="chip-mascot">🌟</span>
+        <span class="chip-name">Tất cả</span>
+        <span class="chip-badge">${totalStudents}</span>
+      </button>
+    `;
+
+    (groups || []).forEach(group => {
+      const count = (students || []).filter(s => s.group === group.id).length;
+      const isActive = currentGroupFilter === String(group.id);
+      html += `
+        <button type="button" class="btn-group-chip ${isActive ? 'active' : ''}" data-group="${group.id}">
+          <span class="chip-mascot">${group.mascot || '🚩'}</span>
+          <span class="chip-name">${(group.name || '').split('-')[0].trim()}</span>
+          <span class="chip-badge">${count}</span>
+        </button>
+      `;
+    });
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('.btn-group-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentGroupFilter = btn.dataset.group;
+        renderStudents();
+      });
+    });
+  }
+
   // --- Render Individual Students View ---
   function renderStudents() {
     const { students, groups } = state.data;
     studentsContainer.innerHTML = '';
+
+    renderGroupFilterChips(groups || [], students || []);
 
     const hatchedStudents = (students || []).filter(s => (s.stars || 0) >= 100);
     const hatchedBadgeCount = document.getElementById('hatchedBadgeCount');
@@ -158,8 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateViewToggleButtons();
 
-    // Lọc theo từ khóa tìm kiếm nhanh
+    // Lọc theo tổ nếu giáo viên chọn tổ
     let displayStudents = students || [];
+    if (currentGroupFilter && currentGroupFilter !== 'all') {
+      const gId = parseInt(currentGroupFilter, 10);
+      displayStudents = displayStudents.filter(s => s.group === gId);
+    }
+
+    // Lọc theo từ khóa tìm kiếm nhanh
     if (currentSearchQuery) {
       displayStudents = displayStudents.filter(s => (s.name || '').toLowerCase().includes(currentSearchQuery));
     }
@@ -168,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
       studentsContainer.className = '';
       studentsContainer.innerHTML = `
         <div style="padding: 36px 20px; text-align: center; color: #64748B; font-size: 14px; background: #FFFFFF; border-radius: 20px; border: 2px dashed #CBD5E1; margin: 20px auto; max-width: 480px;">
-          🔍 Không tìm thấy học sinh nào khớp với "<strong>${currentSearchQuery}</strong>"
+          🔍 Không tìm thấy học sinh nào khớp với bộ lọc hiện tại.
         </div>
       `;
       return;
@@ -181,16 +266,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Giao diện 1: Hàng Dọc Ngắn Gọn (Chia 4 cột tổ trực quan, dễ tìm và cộng điểm siêu tốc)
+  // Giao diện 1: Danh Bạ Điện Thoại Ngắn Gọn (Dễ tìm tên và cho điểm siêu tốc)
   function renderCompactStudentsView(displayStudents, groups) {
     studentsContainer.className = 'students-compact-wrapper';
 
     const columnsContainer = document.createElement('div');
     columnsContainer.className = 'compact-columns-container';
 
-    groups.forEach(group => {
+    // Xác định danh sách tổ cần hiển thị
+    let targetGroups = groups || [];
+    if (currentGroupFilter && currentGroupFilter !== 'all') {
+      const gId = parseInt(currentGroupFilter, 10);
+      targetGroups = targetGroups.filter(g => g.id === gId);
+    }
+
+    targetGroups.forEach(group => {
       const groupStudents = displayStudents.filter(s => s.group === group.id);
-      if (currentSearchQuery && groupStudents.length === 0) return;
+      if (groupStudents.length === 0) return;
 
       const col = document.createElement('div');
       col.className = 'compact-group-column';
@@ -228,18 +320,41 @@ document.addEventListener('DOMContentLoaded', () => {
             ${isSleeping ? '💤' : window.EggEvolution.renderPetSVG(student.stars, student.status, group.color)}
           </span>
           <div class="compact-student-info">
-            <span class="compact-student-name">${student.name}</span>
-            ${student.stars >= 100 ? `<span class="compact-hatched-tag">🎉 Nở</span>` : ''}
+            <div class="compact-name-row">
+              <span class="compact-student-name">${student.name}</span>
+              ${student.stars >= 100 ? `<span class="compact-hatched-tag">🎉 Nở</span>` : ''}
+            </div>
+            <span class="compact-group-subtag" style="color: ${group.color};">
+              ${group.mascot} ${group.name.split('-')[0].trim()}
+            </span>
           </div>
-          <div class="compact-stars-badge" title="Số sao hiện có: ${student.stars}">⭐ ${student.stars}</div>
-          <button type="button" class="btn-compact-quick-add" data-id="${student.id}" title="Cộng nhanh +3 ⭐ cho ${student.name}">
-            +3 ⭐
-          </button>
+
+          <div class="compact-score-controls">
+            <!-- Nút giảm nhanh 10 điểm (mức 10) -->
+            <button type="button" class="btn-compact-delta btn-delta-minus10" data-id="${student.id}" title="Trừ -10 ⭐ cho ${student.name}">
+              -10
+            </button>
+
+            <!-- Badge hiển thị số sao & Chạm để tự đánh số điểm -->
+            <div class="compact-stars-badge btn-compact-open-custom" data-id="${student.id}" title="Hiện có: ${student.stars} ⭐ - Chạm để tự gõ số điểm">
+              ⭐ ${student.stars}
+            </div>
+
+            <!-- Nút tăng nhanh 10 điểm (mức 10) -->
+            <button type="button" class="btn-compact-delta btn-delta-plus10" data-id="${student.id}" title="Cộng +10 ⭐ cho ${student.name}">
+              +10
+            </button>
+
+            <!-- Nút mở nhanh bộ gõ tự nhập số hoặc hành vi -->
+            <button type="button" class="btn-compact-dial" data-id="${student.id}" title="Tự đánh số điểm hoặc khen thưởng chi tiết">
+              ⚡
+            </button>
+          </div>
         `;
 
-        // Click row opens action sheet modal (như hiện tại)
+        // Click row (ngoài các nút điểm) mở modal chi tiết
         row.addEventListener('click', (e) => {
-          if (e.target.closest('.btn-compact-quick-add')) return;
+          if (e.target.closest('.compact-score-controls')) return;
           if (student.stars >= 100) {
             openGiftClaimModal(student.id);
             return;
@@ -247,23 +362,33 @@ document.addEventListener('DOMContentLoaded', () => {
           openActionModal(student.id);
         });
 
-        // Click +3 button directly adds points
-        const quickAddBtn = row.querySelector('.btn-compact-quick-add');
-        if (quickAddBtn) {
-          quickAddBtn.addEventListener('click', (e) => {
+        // Nút trừ nhanh -10 điểm
+        const minus10Btn = row.querySelector('.btn-delta-minus10');
+        if (minus10Btn) {
+          minus10Btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if ((student.stars || 0) >= 100) {
-              showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
-              openGiftClaimModal(student.id);
-              return;
-            }
-            const rect = e.target.getBoundingClientRect();
-            createFloatingStar(rect.left + rect.width / 2, rect.top, '👀');
-            window.soundFx.playStar();
-            StorageManager.addPointsToStudent(student.id, 3, 'Tập trung chú ý nghe giảng', '👀');
-            refreshData();
+            applyStudentPoints(student.id, -10, 'Nhắc nhở rèn luyện (-10 ⭐)', '⚠️', e.target);
           });
         }
+
+        // Nút cộng nhanh +10 điểm
+        const plus10Btn = row.querySelector('.btn-delta-plus10');
+        if (plus10Btn) {
+          plus10Btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyStudentPoints(student.id, 10, 'Khen thưởng tích cực (+10 ⭐)', '⭐', e.target);
+          });
+        }
+
+        // Chạm vào badge số sao hoặc nút ⚡ để mở nhanh bàn phím tự đánh số điểm
+        const customScoreBtn = row.querySelector('.btn-compact-open-custom');
+        const dialBtn = row.querySelector('.btn-compact-dial');
+        const openCustomFn = (e) => {
+          e.stopPropagation();
+          openQuickScoreModal(student.id);
+        };
+        if (customScoreBtn) customScoreBtn.addEventListener('click', openCustomFn);
+        if (dialBtn) dialBtn.addEventListener('click', openCustomFn);
 
         listContainer.appendChild(row);
       });
@@ -273,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     studentsContainer.appendChild(columnsContainer);
   }
+
 
   // Giao diện 2: Thẻ Linh Thú To (Sinh động cho các bé ngắm tiến hóa)
   function renderGridStudentsView(displayStudents, groups) {
@@ -320,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="student-name">${student.name}</div>
         <div class="stage-title">${isSleeping ? '💤 Đang tĩnh tâm' : stage.title}</div>
 
-        <div class="stars-display">
+        <div class="stars-display card-stars-click" data-id="${student.id}" title="Hiện có: ${student.stars} ⭐ - Chạm để tự gõ số điểm" style="cursor: pointer;">
           <span>⭐</span> <span>${student.stars}</span>
         </div>
         ${hatchedBadgeHtml}
@@ -341,11 +467,17 @@ document.addEventListener('DOMContentLoaded', () => {
               🎁 ĐÃ NỞ - MỞ 2 QUÀ NGAY (100⭐)
             </button>
           ` : `
-            <button class="btn-fast-reward focus fast-action" data-action="focus" data-id="${student.id}" title="Tập trung chú ý nghe giảng (+3 ⭐)">
-              👀 Chú ý (+3)
+            <button class="btn-fast-reward fast-action" data-action="minus10" data-id="${student.id}" style="background: #FEE2E2; color: #DC2626; border: 1.5px solid #FECDD3; font-weight: 800; padding: 6px 8px;" title="Trừ -10 ⭐">
+              -10
             </button>
-            <button class="btn-fast-reward hand fast-action" data-action="hand" data-id="${student.id}" title="Giơ tay phát biểu (+2 ⭐)">
-              ✋ Phát biểu (+2)
+            <button class="btn-fast-reward focus fast-action" data-action="focus" data-id="${student.id}" title="Tập trung chú ý nghe giảng (+3 ⭐)">
+              👀 (+3)
+            </button>
+            <button class="btn-fast-reward fast-action" data-action="plus10" data-id="${student.id}" style="background: #DCFCE7; color: #16A34A; border: 1.5px solid #BBF7D0; font-weight: 800; padding: 6px 8px;" title="Cộng +10 ⭐">
+              +10
+            </button>
+            <button class="btn-fast-reward fast-action" data-action="dial" data-id="${student.id}" style="background: #EEF2FF; color: #4F46E5; border: 1.5px solid #C7D2FE; font-weight: 800; padding: 6px 8px;" title="Tự gõ số điểm">
+              ⚡ Điểm
             </button>
           `}
         </div>
@@ -353,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Click on Card opens full reward action sheet
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student')) {
+        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student') || e.target.closest('.card-stars-click')) {
           return;
         }
         if (student.stars >= 100) {
@@ -363,7 +495,40 @@ document.addEventListener('DOMContentLoaded', () => {
         openActionModal(student.id);
       });
 
+      // Chạm vào sao để tự đánh số điểm
+      const starsClickEl = card.querySelector('.card-stars-click');
+      if (starsClickEl) {
+        starsClickEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openQuickScoreModal(student.id);
+        });
+      }
+
       // Quick Fast Buttons
+      const minus10Btn = card.querySelector('.fast-action[data-action="minus10"]');
+      if (minus10Btn) {
+        minus10Btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applyStudentPoints(student.id, -10, 'Nhắc nhở rèn luyện (-10 ⭐)', '⚠️', e.target);
+        });
+      }
+
+      const plus10Btn = card.querySelector('.fast-action[data-action="plus10"]');
+      if (plus10Btn) {
+        plus10Btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          applyStudentPoints(student.id, 10, 'Khen thưởng tích cực (+10 ⭐)', '⭐', e.target);
+        });
+      }
+
+      const dialBtn = card.querySelector('.fast-action[data-action="dial"]');
+      if (dialBtn) {
+        dialBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openQuickScoreModal(student.id);
+        });
+      }
+
       const focusBtn = card.querySelector('.fast-action[data-action="focus"]');
       if (focusBtn) {
         focusBtn.addEventListener('click', (e) => {
@@ -400,6 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const quietBtn = card.querySelector('.fast-action[data-action="quiet"]');
       if (quietBtn) {
+
         quietBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           if ((student.stars || 0) >= 100) {
@@ -549,7 +715,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function refreshData(newData) {
     if (newData && newData.students) {
       state.data = newData;
-    } else if (!state.data || !state.data.students) {
+    } else {
       state.data = StorageManager.loadData();
     }
 
@@ -612,8 +778,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputCustomRewardPoints = document.getElementById('inputCustomRewardPoints');
   const btnCustomPointsMinus = document.getElementById('btnCustomPointsMinus');
   const btnCustomPointsPlus = document.getElementById('btnCustomPointsPlus');
+  const btnCustomPointsStepMinus10 = document.getElementById('btnCustomPointsStepMinus10');
+  const btnCustomPointsStepPlus10 = document.getElementById('btnCustomPointsStepPlus10');
+  const btnModalDirectMinus = document.getElementById('btnModalDirectMinus');
+  const btnModalDirectPlus = document.getElementById('btnModalDirectPlus');
+  const lblModalMinusPoints = document.getElementById('lblModalMinusPoints');
+  const lblModalPlusPoints = document.getElementById('lblModalPlusPoints');
   const chkKeepModalOpen = document.getElementById('chkKeepModalOpen');
   const presetButtons = document.querySelectorAll('.btn-preset-pts');
+
+  function updateActionModalDirectLabels(val) {
+    if (lblModalMinusPoints) lblModalMinusPoints.textContent = val;
+    if (lblModalPlusPoints) lblModalPlusPoints.textContent = val;
+  }
 
   function updateActivePreset(val) {
     presetButtons.forEach(btn => {
@@ -624,6 +801,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.classList.remove('active');
       }
     });
+    updateActionModalDirectLabels(val);
   }
 
   if (btnCustomPointsMinus) {
@@ -642,11 +820,31 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCustomPointsPlus.addEventListener('click', (e) => {
       e.preventDefault();
       let cur = parseInt(inputCustomRewardPoints.value, 10) || 1;
-      if (cur < 50) {
+      if (cur < 100) {
         cur++;
         inputCustomRewardPoints.value = cur;
         updateActivePreset(cur);
       }
+    });
+  }
+
+  if (btnCustomPointsStepMinus10) {
+    btnCustomPointsStepMinus10.addEventListener('click', (e) => {
+      e.preventDefault();
+      let cur = parseInt(inputCustomRewardPoints.value, 10) || 10;
+      cur = Math.max(1, cur - 10);
+      inputCustomRewardPoints.value = cur;
+      updateActivePreset(cur);
+    });
+  }
+
+  if (btnCustomPointsStepPlus10) {
+    btnCustomPointsStepPlus10.addEventListener('click', (e) => {
+      e.preventDefault();
+      let cur = parseInt(inputCustomRewardPoints.value, 10) || 10;
+      cur = Math.min(100, cur + 10);
+      inputCustomRewardPoints.value = cur;
+      updateActivePreset(cur);
     });
   }
 
@@ -665,6 +863,183 @@ document.addEventListener('DOMContentLoaded', () => {
       updateActivePreset(pts);
     });
   });
+
+  // Nút trừ điểm trực tiếp theo số đã nhập trong Action Modal
+  if (btnModalDirectMinus) {
+    btnModalDirectMinus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const studentId = state.selectedStudentId;
+      if (!studentId) return;
+      const val = Math.abs(parseInt(inputCustomRewardPoints.value, 10)) || 10;
+      applyStudentPoints(studentId, -val, `Nhắc nhở (-${val} ⭐)`, '⚠️', btnModalDirectMinus);
+
+      const keepOpen = chkKeepModalOpen && chkKeepModalOpen.checked;
+      if (!keepOpen && actionModal) {
+        actionModal.classList.remove('active');
+      } else {
+        const student = (state.data.students || []).find(s => s.id === studentId);
+        const modalStudentStars = document.getElementById('modalStudentStars');
+        if (modalStudentStars && student) modalStudentStars.textContent = `${student.stars} ⭐`;
+      }
+    });
+  }
+
+  // Nút cộng điểm trực tiếp theo số đã nhập trong Action Modal
+  if (btnModalDirectPlus) {
+    btnModalDirectPlus.addEventListener('click', (e) => {
+      e.preventDefault();
+      const studentId = state.selectedStudentId;
+      if (!studentId) return;
+      const val = Math.abs(parseInt(inputCustomRewardPoints.value, 10)) || 10;
+      applyStudentPoints(studentId, val, `Khen thưởng (+${val} ⭐)`, '⭐', btnModalDirectPlus);
+
+      const keepOpen = chkKeepModalOpen && chkKeepModalOpen.checked;
+      if (!keepOpen && actionModal) {
+        actionModal.classList.remove('active');
+      } else {
+        const student = (state.data.students || []).find(s => s.id === studentId);
+        const modalStudentStars = document.getElementById('modalStudentStars');
+        if (modalStudentStars && student) modalStudentStars.textContent = `${student.stars} ⭐`;
+      }
+    });
+  }
+
+  // --- Bàn Phím Chấm Điểm Siêu Tốc & Tự Đánh Số (Quick Score Modal) ---
+  const quickScoreModal = document.getElementById('quickScoreModal');
+  const closeQuickScoreModalBtn = document.getElementById('closeQuickScoreModalBtn');
+  const quickScorePetPreview = document.getElementById('quickScorePetPreview');
+  const quickScoreStudentName = document.getElementById('quickScoreStudentName');
+  const quickScoreGroupBadge = document.getElementById('quickScoreGroupBadge');
+  const quickScoreStarsBadge = document.getElementById('quickScoreStarsBadge');
+  const inputQuickScoreNumber = document.getElementById('inputQuickScoreNumber');
+  const btnQuickDec10 = document.getElementById('btnQuickDec10');
+  const btnQuickInc10 = document.getElementById('btnQuickInc10');
+  const btnQuickApplyMinus = document.getElementById('btnQuickApplyMinus');
+  const btnQuickApplyPlus = document.getElementById('btnQuickApplyPlus');
+  const labelQuickMinusVal = document.getElementById('labelQuickMinusVal');
+  const labelQuickPlusVal = document.getElementById('labelQuickPlusVal');
+  const btnSwitchToFullActionModal = document.getElementById('btnSwitchToFullActionModal');
+  const quickScoreChips = document.querySelectorAll('.btn-qs-chip');
+
+  function updateQuickScoreLabels() {
+    let val = Math.abs(parseInt(inputQuickScoreNumber.value, 10)) || 10;
+    if (val < 1) val = 1;
+    if (labelQuickMinusVal) labelQuickMinusVal.textContent = val;
+    if (labelQuickPlusVal) labelQuickPlusVal.textContent = val;
+
+    quickScoreChips.forEach(chip => {
+      const chipVal = parseInt(chip.dataset.val, 10);
+      chip.classList.toggle('active', chipVal === val);
+    });
+  }
+
+  function openQuickScoreModal(studentId) {
+    state.selectedStudentId = studentId;
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    const group = (state.data.groups || []).find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
+
+    if (quickScoreStudentName) quickScoreStudentName.textContent = student.name;
+    if (quickScoreGroupBadge) {
+      quickScoreGroupBadge.textContent = `${group.mascot || '🚩'} ${group.name.split('-')[0].trim()}`;
+      quickScoreGroupBadge.style.color = group.color;
+    }
+    if (quickScoreStarsBadge) quickScoreStarsBadge.textContent = `${student.stars} ⭐`;
+    if (quickScorePetPreview) {
+      quickScorePetPreview.innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+    }
+
+    if (inputQuickScoreNumber) {
+      inputQuickScoreNumber.value = 10;
+      updateQuickScoreLabels();
+    }
+
+    if (quickScoreModal) {
+      quickScoreModal.classList.add('active');
+      setTimeout(() => {
+        if (inputQuickScoreNumber) {
+          inputQuickScoreNumber.focus();
+          inputQuickScoreNumber.select();
+        }
+      }, 100);
+    }
+  }
+
+  if (closeQuickScoreModalBtn) {
+    closeQuickScoreModalBtn.addEventListener('click', () => {
+      if (quickScoreModal) quickScoreModal.classList.remove('active');
+    });
+  }
+
+  if (quickScoreModal) {
+    quickScoreModal.addEventListener('click', (e) => {
+      if (e.target === quickScoreModal) {
+        quickScoreModal.classList.remove('active');
+      }
+    });
+  }
+
+  if (inputQuickScoreNumber) {
+    inputQuickScoreNumber.addEventListener('input', updateQuickScoreLabels);
+  }
+
+  if (btnQuickDec10) {
+    btnQuickDec10.addEventListener('click', () => {
+      let cur = parseInt(inputQuickScoreNumber.value, 10) || 10;
+      cur = Math.max(1, cur - 10);
+      inputQuickScoreNumber.value = cur;
+      updateQuickScoreLabels();
+    });
+  }
+
+  if (btnQuickInc10) {
+    btnQuickInc10.addEventListener('click', () => {
+      let cur = parseInt(inputQuickScoreNumber.value, 10) || 10;
+      cur = Math.min(100, cur + 10);
+      inputQuickScoreNumber.value = cur;
+      updateQuickScoreLabels();
+    });
+  }
+
+  quickScoreChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const val = parseInt(chip.dataset.val, 10);
+      if (inputQuickScoreNumber) {
+        inputQuickScoreNumber.value = val;
+        updateQuickScoreLabels();
+      }
+    });
+  });
+
+  if (btnQuickApplyMinus) {
+    btnQuickApplyMinus.addEventListener('click', () => {
+      const studentId = state.selectedStudentId;
+      if (!studentId) return;
+      const pts = -(Math.abs(parseInt(inputQuickScoreNumber.value, 10)) || 10);
+      applyStudentPoints(studentId, pts, `Nhắc nhở (${pts} ⭐)`, '⚠️', btnQuickApplyMinus);
+      if (quickScoreModal) quickScoreModal.classList.remove('active');
+    });
+  }
+
+  if (btnQuickApplyPlus) {
+    btnQuickApplyPlus.addEventListener('click', () => {
+      const studentId = state.selectedStudentId;
+      if (!studentId) return;
+      const pts = Math.abs(parseInt(inputQuickScoreNumber.value, 10)) || 10;
+      applyStudentPoints(studentId, pts, `Khen thưởng (+${pts} ⭐)`, '⭐', btnQuickApplyPlus);
+      if (quickScoreModal) quickScoreModal.classList.remove('active');
+    });
+  }
+
+  if (btnSwitchToFullActionModal) {
+    btnSwitchToFullActionModal.addEventListener('click', () => {
+      const studentId = state.selectedStudentId;
+      if (quickScoreModal) quickScoreModal.classList.remove('active');
+      if (studentId) openActionModal(studentId);
+    });
+  }
+
 
   // Reward Option buttons in modal
   document.querySelectorAll('.reward-option-btn').forEach(btn => {
@@ -1253,6 +1628,57 @@ document.addEventListener('DOMContentLoaded', () => {
         headerActionsEl.scrollLeft += e.deltaY;
       }
     }, { passive: false });
+  }
+
+  // Xử lý bật/tắt mở rộng thanh công cụ tiện ích trên điện thoại
+  const btnToggleMobileTools = document.getElementById('btnToggleMobileTools');
+  const btnCloseMobileTools = document.getElementById('btnCloseMobileTools');
+  const headerActionsMenu = document.getElementById('headerActionsMenu');
+  const mobileToolsToggleArrow = document.getElementById('mobileToolsToggleArrow');
+  const mobileToolsToggleText = document.getElementById('mobileToolsToggleText');
+
+  function toggleMobileTools(forceState) {
+    if (!headerActionsMenu) return;
+    const shouldOpen = typeof forceState === 'boolean' 
+      ? forceState 
+      : !headerActionsMenu.classList.contains('show-mobile');
+    
+    if (shouldOpen) {
+      headerActionsMenu.classList.add('show-mobile');
+      if (btnToggleMobileTools) btnToggleMobileTools.classList.add('active');
+      if (mobileToolsToggleArrow) mobileToolsToggleArrow.textContent = '▴';
+      if (mobileToolsToggleText) mobileToolsToggleText.textContent = 'Đóng tiện ích';
+    } else {
+      headerActionsMenu.classList.remove('show-mobile');
+      if (btnToggleMobileTools) btnToggleMobileTools.classList.remove('active');
+      if (mobileToolsToggleArrow) mobileToolsToggleArrow.textContent = '▾';
+      if (mobileToolsToggleText) mobileToolsToggleText.textContent = 'Tiện ích (13)';
+    }
+  }
+
+  if (btnToggleMobileTools) {
+    btnToggleMobileTools.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMobileTools();
+    });
+  }
+
+  if (btnCloseMobileTools) {
+    btnCloseMobileTools.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMobileTools(false);
+    });
+  }
+
+  // Tự động đóng menu tiện ích trên mobile khi cô bấm vào một chức năng (để modal mở ra không bị che)
+  if (headerActionsMenu) {
+    headerActionsMenu.querySelectorAll('.btn-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          toggleMobileTools(false);
+        }
+      });
+    });
   }
 
   // --- Zalo Certificate Export Modal ---

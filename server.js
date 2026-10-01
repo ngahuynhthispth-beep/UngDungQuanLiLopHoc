@@ -197,7 +197,8 @@ function startPublicTunnel() {
       if (match && !publicTunnelUrl) {
         publicTunnelUrl = match[0];
         console.log(`\n======================================================`);
-        console.log(`🌐 ĐƯỜNG LINK ONLINE CHO PHỤ HUYNH (4G/Wifi mọi nơi):`);
+        console.log(`🌐 ĐƯỜNG LINK ONLINE (4G/Wifi mọi nơi):`);
+        console.log(`👉 Link Giáo viên trên điện thoại: ${publicTunnelUrl}`);
         console.log(`👉 Link Zalo Phụ Huynh: ${publicTunnelUrl}/parent.html`);
         console.log(`======================================================\n`);
       }
@@ -700,6 +701,10 @@ server.listen(PORT, () => {
   console.log(`🚀 ỨNG DỤNG LỚP HỌC ĐANG CHẠY:`);
   console.log(`👉 Máy giáo viên: http://localhost:${PORT}`);
   if (ips.length > 0) {
+    console.log(`📱 Giáo viên dùng trên điện thoại (cùng Wifi):`);
+    ips.forEach(ip => {
+      console.log(`   http://${ip}:${PORT}`);
+    });
     console.log(`📱 Phụ huynh xem trên điện thoại (cùng Wifi):`);
     ips.forEach(ip => {
       console.log(`   http://${ip}:${PORT}/parent.html`);

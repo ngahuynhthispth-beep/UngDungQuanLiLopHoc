@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vườn Thú Kỳ Diệu - Quản Lý Lớp Học Lớp 1</title>
   <meta name="description" content="Ứng dụng quản lý lớp học tiểu học thông minh, ấp trứng nở linh thú, thao tác 1 chạm siêu tốc, kết nối phụ huynh thời gian thực.">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/main.css?v=20261001-5">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
 </head>
 <body>
@@ -13,15 +13,24 @@
   <!-- App Header -->
   <header class="app-header">
     <div class="brand-section">
-      <div class="brand-icon">🐣</div>
-      <div class="brand-info">
-        <h1>LỚP 1A - VƯỜN THÚ KỲ DIỆU</h1>
-        <p>Thao tác 1 chạm • Ấp trứng rồng • Gắn kết Phụ Huynh</p>
+      <div class="brand-logo-wrap">
+        <div class="brand-icon">🐣</div>
+        <div class="brand-info">
+          <h1>LỚP 1A - VƯỜN THÚ KỲ DIỆU</h1>
+          <p class="brand-tagline">Thao tác 1 chạm • Ấp trứng rồng • Gắn kết Phụ Huynh</p>
+        </div>
+      </div>
+      <div class="mobile-header-toggles">
+        <button type="button" id="btnToggleMobileTools" class="btn-toggle-mobile-tools" title="Bấm để mở hoặc thu gọn 14 nút tiện ích lớp học">
+          <span class="icon-toggle">🛠️</span>
+          <span id="mobileToolsToggleText">Tiện ích (13)</span>
+          <span id="mobileToolsToggleArrow">▾</span>
+        </button>
       </div>
     </div>
 
     <!-- Quick Classroom Tools -->
-    <div class="header-actions">
+    <div class="header-actions" id="headerActionsMenu">
       <button id="btnParentHomeworkSummary" class="btn-header" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Xem bảng tổng hợp điểm rèn luyện phụ huynh chấm tại nhà">
         📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
       </button>
@@ -77,6 +86,10 @@
       <div id="cloudSyncStatusBadge" class="btn-header" style="background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; font-size: 12px; font-weight: 700; cursor: pointer;" title="Bấm để đồng bộ ngay danh sách học sinh lên Đám Mây cho phụ huynh">
         ☁️ <span id="cloudSyncStatusText">Đang nối Đám Mây...</span>
       </div>
+
+      <button type="button" id="btnCloseMobileTools" class="btn-close-mobile-tools" title="Thu gọn tiện ích">
+        ▲ Thu gọn tiện ích
+      </button>
     </div>
   </header>
 
@@ -124,28 +137,35 @@
   <main class="main-content">
     <!-- View Switcher & Quick Search (Hàng dọc ngắn gọn / Thẻ to) -->
     <div class="view-controls-bar" id="studentViewControls">
-      <div class="search-input-box">
-        <span>🔍</span>
-        <input type="text" id="inputSearchStudent" placeholder="Tìm nhanh tên học sinh..." autocomplete="off">
-        <button type="button" id="btnClearSearchStudent" style="display: none; background: none; border: none; font-size: 16px; cursor: pointer; color: #94A3B8;">&times;</button>
+      <div class="search-and-modes-row" style="display: flex; gap: 8px; align-items: center; width: 100%; flex-wrap: wrap;">
+        <div class="search-input-box" style="flex: 1; min-width: 180px;">
+          <span>🔍</span>
+          <input type="text" id="inputSearchStudent" placeholder="Tìm nhanh tên học sinh..." autocomplete="off">
+          <button type="button" id="btnClearSearchStudent" style="display: none; background: none; border: none; font-size: 16px; cursor: pointer; color: #94A3B8;">&times;</button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <!-- Nút Trượt Ngang Qua Trái / Phải (Ẩn trên mobile) -->
+          <div id="scrollNavControls" style="display: flex; gap: 4px; align-items: center; background: #FFFFFF; padding: 3px 8px; border-radius: 12px; border: 1.5px solid #CBD5E1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
+            <span style="font-size: 11px; font-weight: 800; color: #64748B;">Trượt:</span>
+            <button type="button" id="btnScrollLeft" class="btn-scroll-arrow" title="Trượt sang trái">◀</button>
+            <button type="button" id="btnScrollRight" class="btn-scroll-arrow" title="Trượt sang phải (Tổ tiếp theo)">▶</button>
+          </div>
+
+          <div class="view-mode-buttons" style="display: flex; gap: 4px; background: rgba(255, 255, 255, 0.9); padding: 4px 6px; border-radius: 14px; border: 1.5px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+            <button type="button" id="btnViewCompact" class="btn-view-mode active" title="Giao diện danh bạ điện thoại - Dễ tìm tên và cho điểm siêu tốc">
+              📱 Danh Bạ Gọn
+            </button>
+            <button type="button" id="btnViewGrid" class="btn-view-mode" title="Giao diện thẻ linh thú to sinh động">
+              🔲 Thẻ Linh Thú
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-        <!-- Nút Trượt Ngang Qua Trái / Phải -->
-        <div id="scrollNavControls" style="display: flex; gap: 4px; align-items: center; background: #FFFFFF; padding: 3px 8px; border-radius: 12px; border: 1.5px solid #CBD5E1; box-shadow: 0 2px 5px rgba(0,0,0,0.03);">
-          <span style="font-size: 12px; font-weight: 800; color: #64748B;">Trượt:</span>
-          <button type="button" id="btnScrollLeft" class="btn-scroll-arrow" title="Trượt sang trái">◀</button>
-          <button type="button" id="btnScrollRight" class="btn-scroll-arrow" title="Trượt sang phải (Tổ tiếp theo)">▶</button>
-        </div>
-
-        <div class="view-mode-buttons" style="display: flex; gap: 6px; background: rgba(255, 255, 255, 0.9); padding: 4px 6px; border-radius: 14px; border: 1.5px solid #E2E8F0; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-          <button type="button" id="btnViewCompact" class="btn-view-mode active" title="Giao diện hàng dọc ngắn gọn - Dễ tìm tên và cộng điểm siêu tốc">
-            📋 Hàng Dọc Gọn
-          </button>
-          <button type="button" id="btnViewGrid" class="btn-view-mode" title="Giao diện thẻ linh thú to sinh động">
-            🔲 Thẻ Linh Thú
-          </button>
-        </div>
+      <!-- Thanh chọn tổ dạng Tab/Chips như Danh bạ điện thoại -->
+      <div class="contact-filter-chips" id="contactFilterChips">
+        <!-- Được sinh tự động từ js/app.js -->
       </div>
     </div>
 
@@ -179,30 +199,43 @@
         </div>
       </div>
 
-      <!-- Thanh điều khiển tự chọn số sao muốn cộng & Tự động lặp lại -->
+      <!-- Thanh điều khiển tự chọn số sao muốn cộng/trừ & nút mức 10 -->
       <div class="custom-reward-bar" style="background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border: 2px solid #FCD34D; border-radius: 16px; padding: 10px 14px; margin-bottom: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
           <div style="font-weight: 800; color: #92400E; font-size: 13px; display: flex; align-items: center; gap: 6px;">
-            <span>⚡</span> Mức điểm muốn cộng (Bấm dấu + / - để chỉnh):
+            <span>⚡</span> Tự đánh số điểm hoặc chỉnh nhanh mức 10:
           </div>
           <label style="font-size: 12px; font-weight: 700; color: #78350F; display: flex; align-items: center; gap: 6px; cursor: pointer;">
             <input type="checkbox" id="chkKeepModalOpen" checked style="accent-color: #D97706; width: 16px; height: 16px;">
-            Giữ mở bảng để tự cộng liên tiếp
+            Giữ mở bảng để cộng liên tiếp
           </label>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; background: #FFFFFF; border-radius: 12px; border: 2px solid #F59E0B; overflow: hidden;">
-            <button type="button" id="btnCustomPointsMinus" style="background: #F8FAFC; border: none; width: 34px; height: 34px; font-size: 18px; font-weight: 800; color: #D97706; cursor: pointer;">-</button>
-            <input type="number" id="inputCustomRewardPoints" value="3" min="1" max="50" style="width: 50px; text-align: center; border: none; font-weight: 800; font-size: 16px; color: #B45309; outline: none; font-family: inherit;">
-            <button type="button" id="btnCustomPointsPlus" style="background: #FEF3C7; border: none; width: 34px; height: 34px; font-size: 18px; font-weight: 800; color: #D97706; cursor: pointer;">+</button>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+          <div style="display: flex; align-items: center; background: #FFFFFF; border-radius: 12px; border: 2px solid #F59E0B; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+            <button type="button" id="btnCustomPointsStepMinus10" title="Giảm 10 điểm" style="background: #FEE2E2; border: none; width: 36px; height: 34px; font-size: 12px; font-weight: 800; color: #DC2626; cursor: pointer;">-10</button>
+            <button type="button" id="btnCustomPointsMinus" style="background: #F8FAFC; border: none; width: 30px; height: 34px; font-size: 16px; font-weight: 800; color: #D97706; cursor: pointer;">-</button>
+            <input type="number" id="inputCustomRewardPoints" value="10" min="1" max="100" inputmode="numeric" style="width: 52px; text-align: center; border: none; font-weight: 800; font-size: 16px; color: #B45309; outline: none; font-family: inherit;">
+            <button type="button" id="btnCustomPointsPlus" style="background: #FEF3C7; border: none; width: 30px; height: 34px; font-size: 16px; font-weight: 800; color: #D97706; cursor: pointer;">+</button>
+            <button type="button" id="btnCustomPointsStepPlus10" title="Tăng 10 điểm" style="background: #DCFCE7; border: none; width: 36px; height: 34px; font-size: 12px; font-weight: 800; color: #16A34A; cursor: pointer;">+10</button>
           </div>
           <div class="reward-presets" style="display: flex; gap: 4px; flex-wrap: wrap;">
             <button type="button" class="btn-preset-pts" data-pts="1">+1</button>
             <button type="button" class="btn-preset-pts" data-pts="2">+2</button>
-            <button type="button" class="btn-preset-pts active" data-pts="3">+3</button>
+            <button type="button" class="btn-preset-pts" data-pts="3">+3</button>
             <button type="button" class="btn-preset-pts" data-pts="5">+5</button>
-            <button type="button" class="btn-preset-pts" data-pts="10">+10</button>
+            <button type="button" class="btn-preset-pts active" data-pts="10">+10</button>
+            <button type="button" class="btn-preset-pts" data-pts="20">+20</button>
           </div>
+        </div>
+
+        <!-- 2 Nút Cho Điểm Trực Tiếp Theo Số Đã Nhập -->
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnModalDirectMinus" class="btn-modal-direct-score" style="flex: 1; padding: 9px 8px; border-radius: 10px; border: 1.5px solid #FECDD3; background: #FFF1F2; color: #E11D48; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>➖</span> Trừ Điểm Này (-<span id="lblModalMinusPoints">10</span> ⭐)
+          </button>
+          <button type="button" id="btnModalDirectPlus" class="btn-modal-direct-score" style="flex: 1; padding: 9px 8px; border-radius: 10px; border: 1.5px solid #BBF7D0; background: #F0FDF4; color: #16A34A; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+            <span>➕</span> Cộng Điểm Này (+<span id="lblModalPlusPoints">10</span> ⭐)
+          </button>
         </div>
       </div>
 
@@ -269,6 +302,12 @@
       </div>
 
       <div class="reward-options-grid">
+        <button class="reward-option-btn penalty-btn" data-action="reward" data-points="-10" data-reason="Nhắc nhở mức 10 điểm" data-icon="🚨">
+          <span class="opt-icon">🚨</span>
+          <span class="opt-label">Nhắc nhở mức 10</span>
+          <span class="opt-points">-10 ⭐</span>
+        </button>
+
         <button class="reward-option-btn penalty-btn" data-action="reward" data-points="-5" data-reason="Không tập trung chú ý" data-icon="🥱">
           <span class="opt-icon">🥱</span>
           <span class="opt-label">Không tập trung chú ý</span>
@@ -286,6 +325,73 @@
           <span class="opt-label">Nói chuyện, việc riêng</span>
           <span class="opt-points">-5 ⭐</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Quick Score & Custom Points (Bàn Phím Chấm Điểm Siêu Tốc & Tự Đánh Số) -->
+  <div id="quickScoreModal" class="modal-backdrop">
+    <div class="modal-card quick-score-card">
+      <button id="closeQuickScoreModalBtn" class="modal-close-btn">&times;</button>
+      
+      <div class="quick-score-header">
+        <div id="quickScorePetPreview" class="quick-score-pet"></div>
+        <div class="quick-score-info">
+          <h2 id="quickScoreStudentName" class="quick-score-title">Tên Học Sinh</h2>
+          <div class="quick-score-subinfo">
+            <span id="quickScoreGroupBadge" class="quick-score-group-tag">Tổ 1</span>
+            <span id="quickScoreStarsBadge" class="stars-display quick-stars-pill">0 ⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-score-body">
+        <div class="quick-score-prompt">
+          <span>✍️</span> <strong>Tự đánh số điểm hoặc chọn mức 10:</strong>
+        </div>
+
+        <!-- Ô nhập số điểm tự do & nút tăng giảm mức 10 -->
+        <div class="quick-score-input-box">
+          <button type="button" id="btnQuickDec10" class="btn-qs-step" title="Giảm 10 điểm">-10</button>
+          <input type="number" id="inputQuickScoreNumber" value="10" min="1" max="100" inputmode="numeric" placeholder="Số...">
+          <button type="button" id="btnQuickInc10" class="btn-qs-step" title="Tăng 10 điểm">+10</button>
+        </div>
+
+        <!-- Các mốc điểm chọn nhanh -->
+        <div class="quick-score-preset-row">
+          <button type="button" class="btn-qs-chip" data-val="1">1</button>
+          <button type="button" class="btn-qs-chip" data-val="2">2</button>
+          <button type="button" class="btn-qs-chip" data-val="3">3</button>
+          <button type="button" class="btn-qs-chip" data-val="5">5</button>
+          <button type="button" class="btn-qs-chip active" data-val="10">10</button>
+          <button type="button" class="btn-qs-chip" data-val="20">20</button>
+        </div>
+
+        <!-- 2 Nút Hành Động To: Trừ Điểm / Cộng Điểm -->
+        <div class="quick-score-btns-action">
+          <button type="button" id="btnQuickApplyMinus" class="btn-qs-big-action btn-qs-minus">
+            <span class="btn-qs-icon">➖</span>
+            <div class="btn-qs-text-wrap">
+              <span class="btn-qs-action-title">TRỪ ĐIỂM</span>
+              <span class="btn-qs-action-sub">-<span id="labelQuickMinusVal">10</span> ⭐</span>
+            </div>
+          </button>
+
+          <button type="button" id="btnQuickApplyPlus" class="btn-qs-big-action btn-qs-plus">
+            <span class="btn-qs-icon">➕</span>
+            <div class="btn-qs-text-wrap">
+              <span class="btn-qs-action-title">CỘNG ĐIỂM</span>
+              <span class="btn-qs-action-sub">+<span id="labelQuickPlusVal">10</span> ⭐</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Nút chuyển sang bảng chi tiết khen thưởng hành vi -->
+        <div class="quick-score-footer">
+          <button type="button" id="btnSwitchToFullActionModal" class="btn-qs-full-link">
+            📋 Xem khen thưởng theo hành vi chi tiết...
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1015,6 +1121,6 @@
   <script src="js/noise-meter.js"></script>
   <script src="js/wheel.js"></script>
   <script src="js/card-export.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20261001-5"></script>
 </body>
 </html>
