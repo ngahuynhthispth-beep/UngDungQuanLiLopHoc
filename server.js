@@ -1105,6 +1105,21 @@ const server = http.createServer((req, res) => {
   });
 });
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`\n======================================================`);
+    console.log(`ℹ️ Cổng ${PORT} đã đang được chạy bởi một tiến trình trên máy!`);
+    console.log(`🚀 Ứng dụng lớp học vẫn đang hoạt động tốt tại:`);
+    console.log(`   👉 http://localhost:${PORT}`);
+    console.log(`======================================================\n`);
+    const { exec } = require('child_process');
+    const openCmd = process.platform === 'win32' ? `start "" "http://localhost:${PORT}"` : `open http://localhost:${PORT}`;
+    exec(openCmd, () => {});
+    return;
+  }
+  console.error('Lỗi khởi động máy chủ:', err);
+});
+
 server.listen(PORT, () => {
   const ips = getLocalIpAddresses();
   console.log(`\n======================================================`);
@@ -1124,7 +1139,7 @@ server.listen(PORT, () => {
   console.log(`======================================================\n`);
 
   if (process.env.AUTO_OPEN !== 'false') {
-    const openCmd = process.platform === 'win32' ? `start "" chrome http://localhost:${PORT} || start "" msedge http://localhost:${PORT} || start http://localhost:${PORT}` :
+    const openCmd = process.platform === 'win32' ? `start "" "http://localhost:${PORT}"` :
                     process.platform === 'darwin' ? `open http://localhost:${PORT}` :
                     `xdg-open http://localhost:${PORT}`;
     const { exec } = require('child_process');
@@ -1133,3 +1148,4 @@ server.listen(PORT, () => {
 
   startPublicTunnel();
 });
+
