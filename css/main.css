@@ -1470,57 +1470,32 @@ body {
 
 .students-compact-wrapper {
   width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 12px;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 4px 2px 24px 2px;
 }
 
-/* Thanh trượt ngang nổi bật, dễ kéo trượt qua phải */
-.students-compact-wrapper::-webkit-scrollbar,
-.compact-columns-container::-webkit-scrollbar {
-  height: 12px;
-}
-
-.students-compact-wrapper::-webkit-scrollbar-track,
-.compact-columns-container::-webkit-scrollbar-track {
-  background: #E2E8F0;
-  border-radius: 10px;
-  border: 2px solid #F8FAFC;
-}
-
-.students-compact-wrapper::-webkit-scrollbar-thumb,
-.compact-columns-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(90deg, #F59E0B, #FF5E7E);
-  border-radius: 10px;
-  border: 2px solid #FFFFFF;
-  box-shadow: 0 2px 5px rgba(245, 158, 11, 0.35);
-  cursor: grab;
-}
-
-.students-compact-wrapper::-webkit-scrollbar-thumb:hover,
-.compact-columns-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(90deg, #D97706, #E11D48);
-}
-
-.students-compact-wrapper,
-.compact-columns-container {
-  scrollbar-width: thin;
-  scrollbar-color: #F59E0B #E2E8F0;
+/* Ẩn hoàn toàn nút trượt ngang vì danh sách đã là 1 cột dọc như điện thoại */
+#scrollNavControls {
+  display: none !important;
 }
 
 .compact-columns-container {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   gap: 16px;
-  width: max-content;
-  min-width: 100%;
-  padding-bottom: 6px;
+  padding-bottom: 20px;
 }
 
 .compact-group-column {
-  flex: 0 0 295px;
-  width: 295px;
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.95);
   border: 1.5px solid #E2E8F0;
   border-radius: 16px;
@@ -1635,16 +1610,19 @@ body {
 .student-compact-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
   background: #FFFFFF;
   border: 1.5px solid #E2E8F0;
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
-  min-height: 50px;
+  min-height: 52px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .student-compact-row:hover {
@@ -1661,17 +1639,17 @@ body {
 }
 
 .compact-stt {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   color: #94A3B8;
-  width: 18px;
+  width: 22px;
   text-align: center;
   flex-shrink: 0;
 }
 
 .compact-pet-mini {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1687,7 +1665,7 @@ body {
 
 .compact-student-info {
   flex: 1;
-  min-width: 0;
+  min-width: 130px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1703,11 +1681,12 @@ body {
 
 .compact-student-name {
   font-weight: 800;
-  font-size: 14px;
+  font-size: 15px;
   color: #0F172A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.2px;
 }
 
 .compact-group-subtag {
@@ -1732,8 +1711,9 @@ body {
 .compact-score-controls {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .btn-compact-delta {

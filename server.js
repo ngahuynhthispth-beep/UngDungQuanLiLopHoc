@@ -35,7 +35,6 @@ function loadQuestionsFromDisk() {
     try { fs.mkdirSync(QUESTIONS_DIR, { recursive: true }); } catch (e) {}
   }
 
-  let questions = [];
   let txtMtime = 0;
   let jsonMtime = 0;
 
@@ -46,42 +45,40 @@ function loadQuestionsFromDisk() {
     try { jsonMtime = fs.statSync(QUESTIONS_JSON_FILE).mtimeMs; } catch (e) {}
   }
 
-  // Nếu file .txt được sửa mới hơn .json (cô giáo vừa sửa bằng Notepad) -> ưu tiên đọc .txt
-  if (fs.existsSync(QUESTIONS_TXT_FILE) && (txtMtime > jsonMtime || !fs.existsSync(QUESTIONS_JSON_FILE))) {
+  // 1. Nếu file .txt được sửa mới hơn đáng kể so với .json (cô giáo vừa sửa bằng Notepad)
+  if (fs.existsSync(QUESTIONS_TXT_FILE) && (txtMtime > jsonMtime + 1500 || !fs.existsSync(QUESTIONS_JSON_FILE))) {
     try {
       const text = fs.readFileSync(QUESTIONS_TXT_FILE, 'utf8');
       const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('===') && !l.startsWith('---'));
-      if (lines.length > 0) {
-        questions = lines.map((line, idx) => {
-          const cleanContent = line.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim();
-          return {
-            id: 'q-' + (idx + 1) + '-' + (idx + 1),
-            content: cleanContent || line
-          };
-        });
-        try {
-          fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
-        } catch (e) {}
-        return questions;
-      }
+      const questions = lines.map((line, idx) => {
+        const cleanContent = line.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim();
+        return {
+          id: 'q-' + (idx + 1) + '-' + (idx + 1),
+          content: cleanContent || line
+        };
+      });
+      try {
+        fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
+      } catch (e) {}
+      return questions;
     } catch (e) {}
   }
 
-  // Đọc từ file JSON
+  // 2. Đọc từ file JSON (bao gồm cả mảng rỗng [] khi xóa hết)
   if (fs.existsSync(QUESTIONS_JSON_FILE)) {
     try {
       const parsed = JSON.parse(fs.readFileSync(QUESTIONS_JSON_FILE, 'utf8'));
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed;
       }
     } catch (e) {}
   }
 
-  // Dự phòng đọc từ file txt
+  // 3. Dự phòng đọc từ file txt
   if (fs.existsSync(QUESTIONS_TXT_FILE)) {
     try {
       const text = fs.readFileSync(QUESTIONS_TXT_FILE, 'utf8');
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('==='));
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('===') && !l.startsWith('---'));
       return lines.map((line, idx) => ({
         id: 'q-' + (idx + 1),
         content: line.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim() || line
@@ -99,15 +96,18 @@ function saveQuestionsToDisk(questions) {
   }
 
   try {
-    fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
-    const txtContent = questions.map((q, idx) => `${idx + 1}. ${typeof q === 'string' ? q : (q.content || '')}`).join('\r\n');
+    const txtContent = questions.length > 0
+      ? questions.map((q, idx) => `${idx + 1}. ${typeof q === 'string' ? q : (q.content || '')}`).join('\r\n')
+      : '';
     fs.writeFileSync(QUESTIONS_TXT_FILE, txtContent, 'utf8');
+    fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
     return true;
   } catch (err) {
     console.error('Lỗi lưu câu hỏi vào ổ đĩa:', err);
     return false;
   }
 }
+
 
 
 function syncToFirebase(data) {

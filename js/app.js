@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (currentStudentViewMode === 'compact') {
         btnViewCompact.classList.add('active');
         btnViewGrid.classList.remove('active');
-        if (scrollNavControls) scrollNavControls.style.display = 'flex';
+        if (scrollNavControls) scrollNavControls.style.display = 'none';
       } else {
         btnViewGrid.classList.add('active');
         btnViewCompact.classList.remove('active');
@@ -1475,9 +1475,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Nạp câu hỏi từ Storage/Server
   async function loadAndRefreshWheelQuestions() {
     try {
-      wheelQuestions = await StorageManager.getQuestions();
+      const q = await StorageManager.getQuestions();
+      if (Array.isArray(q)) {
+        wheelQuestions = q;
+      }
     } catch (e) {
-      wheelQuestions = StorageManager.DEFAULT_QUESTIONS || [];
+      console.warn('Lỗi nạp câu hỏi:', e);
     }
     const count = (wheelQuestions || []).length;
     if (wheelQuestionCountBadge) wheelQuestionCountBadge.textContent = count;
@@ -1665,10 +1668,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const val = inputNewQuestionContent.value.trim();
     if (!val) return;
     const clean = val.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim() || val;
-    await StorageManager.addQuestion(clean);
     inputNewQuestionContent.value = '';
-    await loadAndRefreshWheelQuestions();
-    showSyncToast('✅ Đã thêm câu hỏi mới vào vòng quay!', '➕');
+    const newQ = {
+      id: 'q-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      content: clean
+    };
+    wheelQuestions = [...(wheelQuestions || []), newQ];
+    if (wheelQuestionCountBadge) wheelQuestionCountBadge.textContent = wheelQuestions.length;
+    if (questionCountTotal) questionCountTotal.textContent = wheelQuestions.length;
+    renderQuestionsList();
+    await StorageManager.saveQuestions(wheelQuestions);
+    showSyncToast('✅ Đã thêm câu hỏi mới vào danh sách!', '➕');
   }
 
   if (btnSubmitNewQuestion) {
@@ -1688,10 +1698,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btnClearAllQuestions.addEventListener('click', async () => {
       if (confirm('Cô có chắc muốn xóa TOÀN BỘ câu hỏi không?')) {
         wheelQuestions = [];
-        await StorageManager.saveQuestions(wheelQuestions);
         usedQuestionIds.clear();
-        await loadAndRefreshWheelQuestions();
-        showSyncToast('🗑️ Đã xóa toàn bộ câu hỏi.', '🧹');
+        if (wheelQuestionCountBadge) wheelQuestionCountBadge.textContent = 0;
+        if (questionCountTotal) questionCountTotal.textContent = 0;
+        renderQuestionsList();
+        await StorageManager.saveQuestions([]);
+        showSyncToast('🗑️ Đã xóa sạch toàn bộ câu hỏi.', '🧹');
       }
     });
   }

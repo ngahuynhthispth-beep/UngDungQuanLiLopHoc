@@ -1032,7 +1032,7 @@ const StorageManager = {
         const res = await fetch('/api/questions');
         if (res.ok) {
           const json = await res.json();
-          if (json && Array.isArray(json.questions) && json.questions.length > 0) {
+          if (json && Array.isArray(json.questions)) {
             localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(json.questions));
             return json.questions;
           }
@@ -1040,16 +1040,16 @@ const StorageManager = {
       } catch (e) {}
     }
 
-    // 2. Dự phòng đọc từ LocalStorage
+    // 2. Dự phòng đọc từ LocalStorage (tôn trọng mảng rỗng [] khi cô giáo đã xóa hết)
     try {
       const stored = localStorage.getItem(this.QUESTIONS_KEY);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
 
-    // 3. Khởi tạo danh sách mặc định
+    // 3. Khởi tạo danh sách mặc định chỉ khi chưa từng có dữ liệu
     localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(this.DEFAULT_QUESTIONS));
     return [...this.DEFAULT_QUESTIONS];
   },
