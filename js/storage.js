@@ -84,7 +84,7 @@ const StorageManager = {
     };
   },
 
-  // Ghi nhận mốc thời gian khi trứng nở (>= 100 sao)
+  // Ghi nhận mốc thời gian khi trứng nở (100 sao, hoặc 150 sao đối với học sinh quá giỏi dưới 3 ngày)
   ensureHatchedTimestamps(data) {
     if (!data || !data.students) return false;
     const now = Date.now();
@@ -92,9 +92,14 @@ const StorageManager = {
 
     data.students.forEach(student => {
       const stars = Number(student.stars) || 0;
-      if (stars >= 100) {
+      const hatchReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(student) : { threshold: 100 };
+      if (stars >= hatchReq.threshold) {
         if (!student.hatchedAt) {
           student.hatchedAt = now;
+          modified = true;
+        }
+        if (!student.firstHatchedAt) {
+          student.firstHatchedAt = now;
           modified = true;
         }
       } else {
@@ -220,9 +225,11 @@ const StorageManager = {
     student.stars = Math.max(0, oldStars + points);
     const actualPoints = student.stars - oldStars;
 
-    // Cập nhật mốc thời gian trứng nở (>= 100 sao)
-    if (student.stars >= 100) {
+    // Cập nhật mốc thời gian trứng nở
+    const hatchReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(student) : { threshold: 100 };
+    if (student.stars >= hatchReq.threshold) {
       if (!student.hatchedAt) student.hatchedAt = Date.now();
+      if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
     } else {
       student.hatchedAt = null;
     }
@@ -254,7 +261,7 @@ const StorageManager = {
     }
 
     this.saveData(data);
-    return { student, group, data, actualPoints, reachedMilestone: student.stars >= 100 };
+    return { student, group, data, actualPoints, reachedMilestone: student.stars >= hatchReq.threshold };
   },
 
   addPointsToGroup(groupId, points, reason, icon = '🌟') {
@@ -264,15 +271,17 @@ const StorageManager = {
 
     group.stars = Math.max(0, group.stars + points);
 
-    // Also distribute to members in the group (tối đa 100 sao hoặc 200 sao tùy học sinh)
+    // Also distribute to members in the group (không giới hạn trần)
     const members = data.students.filter(s => s.group === groupId);
     members.forEach(s => {
-      const maxCap = s.accumulateBonus ? 200 : 100;
-      if ((s.stars || 0) >= maxCap && points > 0) return;
       const oldStars = s.stars || 0;
-      s.stars = Math.min(maxCap, Math.max(0, oldStars + points));
+      s.stars = Math.max(0, oldStars + points);
       const sActual = s.stars - oldStars;
-      if (s.stars >= 100 && !s.hatchedAt) s.hatchedAt = Date.now();
+      const sReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(s) : { threshold: 100 };
+      if (s.stars >= sReq.threshold) {
+        if (!s.hatchedAt) s.hatchedAt = Date.now();
+        if (!s.firstHatchedAt) s.firstHatchedAt = Date.now();
+      }
 
       if (!s.logs) s.logs = [];
       s.logs.unshift({
@@ -296,12 +305,14 @@ const StorageManager = {
     });
     data.students.forEach(s => {
       if (s.status === 'sleeping') s.status = 'active';
-      const maxCap = s.accumulateBonus ? 200 : 100;
-      if ((s.stars || 0) >= maxCap && points > 0) return;
       const oldStars = s.stars || 0;
-      s.stars = Math.min(maxCap, Math.max(0, oldStars + points));
+      s.stars = Math.max(0, oldStars + points);
       const sActual = s.stars - oldStars;
-      if (s.stars >= 100 && !s.hatchedAt) s.hatchedAt = Date.now();
+      const sReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(s) : { threshold: 100 };
+      if (s.stars >= sReq.threshold) {
+        if (!s.hatchedAt) s.hatchedAt = Date.now();
+        if (!s.firstHatchedAt) s.firstHatchedAt = Date.now();
+      }
 
       if (!s.logs) s.logs = [];
       s.logs.unshift({
@@ -514,13 +525,15 @@ const StorageManager = {
     return data;
   },
 
-  async submitHomework(studentId, { readingCount, writingStars, choresDone, dateStr }) {
+  async submitHomework(studentId, { readingCount, writingStars, choresDone, stickerCount = 0, dateStr }) {
     const validDate = dateStr || this.getTodayDateString();
     const rCount = Math.max(0, parseInt(readingCount, 10) || 0);
     const rStars = rCount * 1;
-    const wStars = Math.max(0, Math.min(3, parseInt(writingStars, 10) || 0));
+    const wStars = Math.max(0, parseInt(writingStars, 10) || 0);
     const cStars = choresDone ? 5 : 0;
-    const totalStars = rStars + wStars + cStars;
+    const sCount = Math.max(0, parseInt(stickerCount, 10) || 0);
+    const sStars = sCount * 5;
+    const totalStars = rStars + wStars + cStars + sStars;
 
     // 1. Ưu tiên hàng đầu: Gửi trực tiếp lên Google Firebase Đám Mây 24/24
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
@@ -529,6 +542,7 @@ const StorageManager = {
           readingCount: rCount,
           writingStars: wStars,
           choresDone: !!choresDone,
+          stickerCount: sCount,
           dateStr: validDate
         });
         if (fbResult && fbResult.data) {
@@ -555,6 +569,7 @@ const StorageManager = {
             readingCount: rCount,
             writingStars: wStars,
             choresDone: !!choresDone,
+            stickerCount: sCount,
             dateStr: validDate
           })
         });
@@ -593,13 +608,17 @@ const StorageManager = {
       writingStars: wStars,
       choresDone: !!choresDone,
       choresStars: cStars,
+      stickerCount: sCount,
+      stickerStars: sStars,
       totalStars: accumulatedTotal,
       updatedAt: Date.now()
     };
 
     student.stars = Math.max(0, (student.stars || 0) + totalStars);
-    if (student.stars >= 100) {
+    const hatchReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(student) : { threshold: 100 };
+    if (student.stars >= hatchReq.threshold) {
       if (!student.hatchedAt) student.hatchedAt = Date.now();
+      if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
     } else {
       student.hatchedAt = null;
     }
@@ -610,11 +629,12 @@ const StorageManager = {
     }
 
     if (!student.logs) student.logs = [];
+    const reasonDetail = `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐)${sCount > 0 ? `, Sticker ${sCount} cái (${sStars}⭐)` : ''}, Dặn dò (${cStars}⭐)`;
     student.logs.unshift({
       id: 'log-hw-' + Date.now(),
       time: this.getTimeString(),
       points: totalStars,
-      reason: `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐), Dặn dò (${cStars}⭐)`,
+      reason: reasonDetail,
       icon: '🏠'
     });
     if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
@@ -816,6 +836,12 @@ const StorageManager = {
       summaryEntry.completed = true;
 
       student.lastCompletedGifts = [...student.giftHistory];
+      const hatchTime = student.hatchedAt || student.firstHatchedAt || Date.now();
+      student.previousHatchedAt = hatchTime;
+      if (!student.firstHatchedAt) student.firstHatchedAt = hatchTime;
+      student.lastHatchedAt = Date.now();
+      student.hatchCount = (student.hatchCount || 0) + 1;
+
       student.stars = 0;
       student.hatchedAt = null;
       student.accumulateBonus = false;

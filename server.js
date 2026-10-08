@@ -69,6 +69,36 @@ const DEFAULT_GIFTS_200 = [
   { id: 'g200-8', name: 'Phần quà đặc biệt tự chọn', icon: '🎁' }
 ];
 
+function getStudentHatchRequirement(student) {
+  if (!student) return { threshold: 100, isFastHatcher: false, notice: '' };
+
+  const previousHatchTime = student.firstHatchedAt || 
+    (student.lastCompletedGifts && student.lastCompletedGifts[0] && student.lastCompletedGifts[0].timestamp) ||
+    student.lastHatchedAt || 
+    student.previousHatchedAt ||
+    null;
+
+  const isSecondHatch = (student.hatchCount >= 1) || 
+    (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) ||
+    (student.previousHatchedAt != null);
+
+  if (isSecondHatch && previousHatchTime) {
+    const elapsedMs = Date.now() - Number(previousHatchTime);
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000; // 3 ngày = 259,200,000 ms
+    if (elapsedMs < THREE_DAYS_MS) {
+      return {
+        threshold: 150,
+        isFastHatcher: true,
+        notice: 'Trứng đang nâng cấp mời bạn hãy tích luỹ thêm điểm để nở',
+        previousHatchTime: Number(previousHatchTime),
+        remainingTimeMs: THREE_DAYS_MS - elapsedMs
+      };
+    }
+  }
+
+  return { threshold: 100, isFastHatcher: false, notice: '', previousHatchTime: null, remainingTimeMs: 0 };
+}
+
 function ensureHatchedTimestamps(data) {
   if (!data || !data.students) return false;
   const now = Date.now();
@@ -76,9 +106,14 @@ function ensureHatchedTimestamps(data) {
 
   data.students.forEach(student => {
     const stars = Number(student.stars) || 0;
-    if (stars >= 100) {
+    const hatchReq = getStudentHatchRequirement(student);
+    if (stars >= hatchReq.threshold) {
       if (!student.hatchedAt) {
         student.hatchedAt = now;
+        modified = true;
+      }
+      if (!student.firstHatchedAt) {
+        student.firstHatchedAt = now;
         modified = true;
       }
     } else {
@@ -385,7 +420,7 @@ const server = http.createServer((req, res) => {
       req.on('data', chunk => { body += chunk; });
       req.on('end', () => {
         try {
-          const { studentId, readingCount, writingStars, choresDone, dateStr } = JSON.parse(body);
+          const { studentId, readingCount, writingStars, choresDone, stickerCount, dateStr } = JSON.parse(body);
           if (!liveClassData || !liveClassData.students) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Data not initialized' }));
@@ -405,9 +440,11 @@ const server = http.createServer((req, res) => {
           
           const rCount = Math.max(0, parseInt(readingCount, 10) || 0);
           const rStars = rCount * 1;
-          const wStars = Math.max(0, Math.min(3, parseInt(writingStars, 10) || 0));
+          const wStars = Math.max(0, parseInt(writingStars, 10) || 0);
           const cStars = choresDone ? 5 : 0;
-          const pointsEarned = rStars + wStars + cStars;
+          const sCount = Math.max(0, parseInt(stickerCount, 10) || 0);
+          const sStars = sCount * 5;
+          const pointsEarned = rStars + wStars + cStars + sStars;
 
           const prevRecord = student.homeworkRecords[validDate] || { totalStars: 0 };
           const accumulatedTotal = (prevRecord.totalStars || 0) + pointsEarned;
@@ -419,6 +456,8 @@ const server = http.createServer((req, res) => {
             writingStars: wStars,
             choresDone: !!choresDone,
             choresStars: cStars,
+            stickerCount: sCount,
+            stickerStars: sStars,
             totalStars: accumulatedTotal,
             updatedAt: Date.now()
           };
@@ -427,8 +466,13 @@ const server = http.createServer((req, res) => {
           const oldStars = student.stars || 0;
           student.stars = oldStars + pointsEarned;
           const actualAdded = pointsEarned;
-          if (student.stars >= 100) {
+
+          const hatchReq = getStudentHatchRequirement(student);
+          if (student.stars >= hatchReq.threshold) {
             if (!student.hatchedAt) student.hatchedAt = Date.now();
+            if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
+          } else {
+            student.hatchedAt = null;
           }
 
           // Cập nhật điểm cho tổ
@@ -441,11 +485,12 @@ const server = http.createServer((req, res) => {
           if (!student.logs) student.logs = [];
           const now = new Date();
           const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+          const reasonDetail = `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐)${sCount > 0 ? `, Sticker ${sCount} cái (${sStars}⭐)` : ''}, Dặn dò (${cStars}⭐)`;
           student.logs.unshift({
             id: 'log-hw-' + Date.now(),
             time: timeStr,
             points: pointsEarned,
-            reason: `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐), Dặn dò (${cStars}⭐)`,
+            reason: reasonDetail,
             icon: '🏠'
           });
           if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
@@ -583,6 +628,12 @@ const server = http.createServer((req, res) => {
 
             // Tự động hoàn điểm về 0 để bắt đầu chu kỳ mới
             student.lastCompletedGifts = [...student.giftHistory];
+            const hatchTime = student.hatchedAt || student.firstHatchedAt || Date.now();
+            student.previousHatchedAt = hatchTime;
+            if (!student.firstHatchedAt) student.firstHatchedAt = hatchTime;
+            student.lastHatchedAt = Date.now();
+            student.hatchCount = (student.hatchCount || 0) + 1;
+
             student.stars = 0;
             student.hatchedAt = null;
             student.accumulateBonus = false;

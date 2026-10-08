@@ -59,8 +59,64 @@ const EggEvolution = {
     }
   ],
 
-  getStage(stars) {
+  // Trợ giúp tính toán mốc nở trứng & chống lạm phát cho học sinh quá giỏi
+  // (Nếu nở trứng lần 1 đến lần 2 dưới 3 ngày -> mốc nở tăng lên 150 điểm)
+  getHatchRequirement(student) {
+    if (!student) return { threshold: 100, isFastHatcher: false, notice: '' };
+
+    const previousHatchTime = student.firstHatchedAt || 
+      (student.lastCompletedGifts && student.lastCompletedGifts[0] && student.lastCompletedGifts[0].timestamp) ||
+      student.lastHatchedAt || 
+      student.previousHatchedAt ||
+      null;
+
+    const isSecondHatch = (student.hatchCount >= 1) || 
+      (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) ||
+      (student.previousHatchedAt != null);
+
+    if (isSecondHatch && previousHatchTime) {
+      const elapsedMs = Date.now() - Number(previousHatchTime);
+      const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000; // 3 ngày = 259,200,000 ms
+
+      if (elapsedMs < THREE_DAYS_MS) {
+        return {
+          threshold: 150,
+          isFastHatcher: true,
+          notice: 'Trứng đang nâng cấp mời bạn hãy tích luỹ thêm điểm để nở',
+          previousHatchTime: Number(previousHatchTime),
+          remainingTimeMs: THREE_DAYS_MS - elapsedMs
+        };
+      }
+    }
+
+    return {
+      threshold: 100,
+      isFastHatcher: false,
+      notice: '',
+      previousHatchTime: previousHatchTime ? Number(previousHatchTime) : null,
+      remainingTimeMs: 0
+    };
+  },
+
+  getStage(stars, customHatchThreshold = 100) {
     const s = Math.max(0, Number(stars) || 0);
+    const targetHatch = customHatchThreshold || this.HATCH_THRESHOLD;
+
+    // Nếu học sinh thuộc diện tăng lên 150 sao mới nở và hiện tại < 150 sao: hiển thị trứng nâng cấp
+    if (targetHatch > 100 && s < targetHatch) {
+      if (s < 50) return this.STAGES[0];
+      if (s < 100) return this.STAGES[1];
+      return {
+        level: 2,
+        minStars: 100,
+        maxStars: targetHatch - 1,
+        name: 'Trứng Nâng Cấp',
+        title: `Trứng đang nâng cấp (${s}/${targetHatch} ⭐)`,
+        isHatched: false,
+        desc: 'Trứng đang nâng cấp mời bạn hãy tích luỹ thêm điểm để nở! Vỏ trứng phát sáng rực rỡ chuẩn bị bung nở'
+      };
+    }
+
     for (let i = this.STAGES.length - 1; i >= 0; i--) {
       if (s >= this.STAGES[i].minStars) {
         return this.STAGES[i];
@@ -69,13 +125,15 @@ const EggEvolution = {
     return this.STAGES[0];
   },
 
-  getNextMilestone(stars) {
+  getNextMilestone(stars, customHatchThreshold = 100) {
     const s = Math.max(0, Number(stars) || 0);
-    const current = this.getStage(s);
+    const targetHatch = customHatchThreshold || this.HATCH_THRESHOLD;
+    const current = this.getStage(s, targetHatch);
     const nextIdx = this.STAGES.findIndex(stage => stage.level === current.level) + 1;
 
-    // Tính số sao còn thiếu để NỞ TRỨNG (mốc 100 sao)
-    const neededToHatch = s < 100 ? (100 - s) : 0;
+    // Tính số sao còn thiếu để NỞ TRỨNG (mốc targetHatch sao)
+    const neededToHatch = s < targetHatch ? (targetHatch - s) : 0;
+    const isHatched = s >= targetHatch;
 
     if (nextIdx < this.STAGES.length) {
       const nextStage = this.STAGES[nextIdx];
@@ -88,7 +146,7 @@ const EggEvolution = {
         needed: nextStage.minStars - s,
         progress: progressInStage,
         neededToHatch,
-        isHatched: s >= 100
+        isHatched
       };
     }
 
@@ -102,10 +160,9 @@ const EggEvolution = {
     };
   },
 
-
   // Generate scalable SVG based on stage and status
-  renderPetSVG(stars, status = 'active', customColor = null) {
-    const stage = this.getStage(stars);
+  renderPetSVG(stars, status = 'active', customColor = null, customHatchThreshold = 100) {
+    const stage = this.getStage(stars, customHatchThreshold);
     const isSleeping = status === 'sleeping';
     const primaryColor = customColor || '#FF758C';
 

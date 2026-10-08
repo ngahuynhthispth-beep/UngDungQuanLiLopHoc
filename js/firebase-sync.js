@@ -114,7 +114,7 @@
     },
 
     // Phụ huynh nộp điểm bài tập về nhà trực tiếp lên Firebase 24/24
-    async submitHomework(studentId, { readingCount, writingStars, choresDone, dateStr }) {
+    async submitHomework(studentId, { readingCount, writingStars, choresDone, stickerCount = 0, dateStr }) {
       if (!this.isInitialized || !this.db) throw new Error('Firebase chưa kết nối');
 
       const ref = this.db.ref('classData');
@@ -135,9 +135,11 @@
 
       const rCount = Math.max(0, parseInt(readingCount, 10) || 0);
       const rStars = rCount * 1;
-      const wStars = Math.max(0, Math.min(3, parseInt(writingStars, 10) || 0));
+      const wStars = Math.max(0, parseInt(writingStars, 10) || 0);
       const cStars = choresDone ? 5 : 0;
-      const pointsEarned = rStars + wStars + cStars;
+      const sCount = Math.max(0, parseInt(stickerCount, 10) || 0);
+      const sStars = sCount * 5;
+      const pointsEarned = rStars + wStars + cStars + sStars;
 
       if (!student.homeworkRecords) student.homeworkRecords = {};
       const prevRecord = student.homeworkRecords[validDate] || { totalStars: 0 };
@@ -150,6 +152,8 @@
         writingStars: wStars,
         choresDone: !!choresDone,
         choresStars: cStars,
+        stickerCount: sCount,
+        stickerStars: sStars,
         totalStars: accumulatedTotal,
         updatedAt: Date.now()
       };
@@ -158,8 +162,13 @@
       const oldStars = student.stars || 0;
       student.stars = oldStars + pointsEarned;
       const actualAdded = pointsEarned;
-      if (student.stars >= 100) {
+
+      const hatchReq = (typeof window !== 'undefined' && window.EggEvolution) ? window.EggEvolution.getHatchRequirement(student) : { threshold: 100 };
+      if (student.stars >= hatchReq.threshold) {
         if (!student.hatchedAt) student.hatchedAt = Date.now();
+        if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
+      } else {
+        student.hatchedAt = null;
       }
 
       const group = (classData.groups || []).find(g => g.id === student.group);
@@ -170,11 +179,12 @@
       if (!student.logs) student.logs = [];
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const reasonDetail = `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐)${sCount > 0 ? `, Sticker ${sCount} cái (${sStars}⭐)` : ''}, Dặn dò (${cStars}⭐)`;
       student.logs.unshift({
         id: 'log-hw-' + Date.now(),
         time: timeStr,
         points: actualAdded,
-        reason: `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐), Dặn dò (${cStars}⭐)`,
+        reason: reasonDetail,
         icon: '🏠'
       });
       if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
@@ -267,6 +277,12 @@
         summaryEntry.completed = true;
 
         student.lastCompletedGifts = [...student.giftHistory];
+        const hatchTime = student.hatchedAt || student.firstHatchedAt || Date.now();
+        student.previousHatchedAt = hatchTime;
+        if (!student.firstHatchedAt) student.firstHatchedAt = hatchTime;
+        student.lastHatchedAt = Date.now();
+        student.hatchCount = (student.hatchCount || 0) + 1;
+
         student.stars = 0;
         student.hatchedAt = null;
         student.accumulateBonus = false;

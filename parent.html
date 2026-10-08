@@ -774,7 +774,7 @@
         </div>
 
         <p style="font-size: 12px; color: #64748B; margin-bottom: 14px; font-weight: 600;">
-          Bố mẹ hãy đồng hành cùng bé hoàn thành 3 việc dưới đây và bấm <strong>Gửi Cho Cô</strong> để tích sao ấp trứng nhé!
+          Bố mẹ hãy đồng hành cùng bé hoàn thành các mục rèn luyện dưới đây và bấm <strong>Gửi Cho Cô</strong> để tích sao ấp trứng nhé!
         </p>
 
         <!-- Nhiệm vụ 1: Rèn Đọc Bài -->
@@ -809,28 +809,28 @@
         <div class="task-block">
           <div class="task-title">
             <span>✍️ 2. Luyện Viết Bài Nắn Nót</span>
-            <span id="writingStarsDisplay" class="task-points-pill">+2 ⭐</span>
+            <span id="writingStarsDisplay" class="task-points-pill">+7 ⭐</span>
           </div>
           <div class="task-desc">
             Chọn 1 trong 3 mức độ nắn nót của con hôm nay:
           </div>
 
           <div class="writing-levels-grid">
-            <div class="writing-btn" data-stars="1">
-              <div class="writing-stars">⭐</div>
-              <div class="writing-title">Mức 1</div>
+            <div class="writing-btn" data-stars="5">
+              <div class="writing-stars" style="font-size: 15px;">⭐⭐⭐⭐⭐</div>
+              <div class="writing-title">Mức 1 (+5 ⭐)</div>
               <div class="writing-sub">Viết xong bài</div>
             </div>
 
-            <div class="writing-btn selected" data-stars="2">
-              <div class="writing-stars">⭐⭐</div>
-              <div class="writing-title">Mức 2</div>
+            <div class="writing-btn selected" data-stars="7">
+              <div class="writing-stars" style="font-size: 15px;">⭐⭐⭐⭐⭐⭐⭐</div>
+              <div class="writing-title">Mức 2 (+7 ⭐)</div>
               <div class="writing-sub">Nắn nót, đúng nét</div>
             </div>
 
-            <div class="writing-btn" data-stars="3">
-              <div class="writing-stars">⭐⭐⭐</div>
-              <div class="writing-title">Mức 3</div>
+            <div class="writing-btn" data-stars="10">
+              <div class="writing-stars" style="font-size: 15px;">🌟 10 SAO</div>
+              <div class="writing-title">Mức 3 (+10 ⭐)</div>
               <div class="writing-sub">Xuất sắc, sạch đẹp</div>
             </div>
           </div>
@@ -859,11 +859,40 @@
           </label>
         </div>
 
+        <!-- Nhiệm vụ 4: Thưởng Sticker Trên Trường -->
+        <div class="task-block">
+          <div class="task-title">
+            <span>🏷️ 4. Thưởng Sticker Trên Trường</span>
+            <span id="stickerStarsDisplay" class="task-points-pill">+0 ⭐</span>
+          </div>
+          <div class="task-desc">
+            Bé nhận sticker khen thưởng từ cô giáo trên lớp. Quy đổi <strong>1 sticker = 5 sao</strong>:
+          </div>
+
+          <div class="reading-counter-wrapper">
+            <button type="button" id="btnStickerMinus" class="counter-btn" title="Giảm số sticker">−</button>
+            <div class="counter-value-box">
+              <input type="number" id="stickerCountInput" min="0" value="0" style="width: 100%; text-align: center; border: none; background: transparent; font-size: 26px; font-weight: 800; color: #DB2777; font-family: inherit; outline: none; padding: 0; line-height: 1;" title="Bố mẹ có thể bấm trực tiếp vào số để tự gõ số sticker">
+              <div class="counter-label">sticker cô thưởng (bấm số để gõ)</div>
+            </div>
+            <button type="button" id="btnStickerPlus" class="counter-btn" title="Tăng số sticker">+</button>
+          </div>
+
+          <div class="quick-chips">
+            <button type="button" class="chip-btn chip-sticker active" data-sticker="0">0 cái</button>
+            <button type="button" class="chip-btn chip-sticker" data-sticker="1">1 cái (+5⭐)</button>
+            <button type="button" class="chip-btn chip-sticker" data-sticker="2">2 cái (+10⭐)</button>
+            <button type="button" class="chip-btn chip-sticker" data-sticker="3">3 cái (+15⭐)</button>
+            <button type="button" class="chip-btn chip-sticker" data-sticker="5">5 cái (+25⭐)</button>
+            <button type="button" class="chip-btn chip-sticker" data-add-sticker="1">+1 cái</button>
+          </div>
+        </div>
+
         <!-- Submit Section -->
         <div class="submit-bar">
           <div class="total-stars-preview">
             <span>🌟 Tổng sao rèn luyện hôm nay:</span>
-            <strong id="previewTotalHwStars" style="font-size: 18px; color: #B45309;">+8 ⭐</strong>
+            <strong id="previewTotalHwStars" style="font-size: 18px; color: #B45309;">+13 ⭐</strong>
           </div>
 
           <button type="button" id="btnSubmitHomework" class="btn-submit-hw">
@@ -1083,8 +1112,8 @@
           BẢN CẬP NHẬT MỚI TỪ CÔ GIÁO!
         </h2>
         <p style="font-size: 14px; color: #475569; line-height: 1.5; margin-bottom: 18px;">
-          Cô giáo vừa cập nhật tính năng mới: <strong>Vòng quay gọi tên</strong>, <strong>Tích lũy điểm (100⭐ - 200⭐ - 300⭐)</strong> và bảo toàn điểm rèn luyện tại nhà.<br>
-          <strong style="color: #2563EB;">Bố mẹ vui lòng bấm nút bên dưới để nạp giao diện mới nhất ngay!</strong>
+          Cô giáo vừa cập nhật quy đổi sao mới: <strong>Luyện viết nắn nót (5⭐ - 7⭐ - 10⭐)</strong>, thêm mục <strong>Thưởng sticker trên trường (1 sticker = 5⭐)</strong> và cơ chế <strong>Nâng cấp trứng 150 điểm</strong>!<br>
+          <strong style="color: #2563EB;">Bố mẹ vui lòng bấm nút bên dưới để tải giao diện mới nhất ngay!</strong>
         </p>
         <button type="button" id="btnModalApplyUpdate" style="width: 100%; background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #fff; border: none; padding: 14px 20px; border-radius: 18px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);">
           🔄 CẬP NHẬT NGAY
@@ -1096,12 +1125,12 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261008_v2"></script>
-  <script src="js/firebase-sync.js?v=20261008_v2"></script>
-  <script src="js/audio.js?v=20261008_v2"></script>
-  <script src="js/egg-evolution.js?v=20261008_v2"></script>
-  <script src="js/storage.js?v=20261008_v2"></script>
-  <script src="js/wheel.js?v=20261008_v2"></script>
+  <script src="js/firebase-config.js?v=20261008_v4"></script>
+  <script src="js/firebase-sync.js?v=20261008_v4"></script>
+  <script src="js/audio.js?v=20261008_v4"></script>
+  <script src="js/egg-evolution.js?v=20261008_v4"></script>
+  <script src="js/storage.js?v=20261008_v4"></script>
+  <script src="js/wheel.js?v=20261008_v4"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1110,8 +1139,9 @@
       const todayDateStr = StorageManager.getTodayDateString ? StorageManager.getTodayDateString() : new Date().toISOString().split('T')[0];
 
       let readingCount = 1;
-      let writingStars = 2;
+      let writingStars = 7;
       let choresDone = true;
+      let stickerCount = 0;
       let isHomeworkDirty = false;
       let hasInitialHomeworkLoaded = false;
 
@@ -1470,7 +1500,7 @@
       const readingStarsDisplay = document.getElementById('readingStarsDisplay');
       const btnReadingMinus = document.getElementById('btnReadingMinus');
       const btnReadingPlus = document.getElementById('btnReadingPlus');
-      const chipButtons = document.querySelectorAll('.chip-btn');
+      const chipButtons = document.querySelectorAll('.chip-btn:not(.chip-sticker)');
 
       const writingButtons = document.querySelectorAll('.writing-btn');
       const writingStarsDisplay = document.getElementById('writingStarsDisplay');
@@ -1478,6 +1508,12 @@
       const choresCheckbox = document.getElementById('choresCheckbox');
       const choresCardLabel = document.getElementById('choresCardLabel');
       const choresStarsDisplay = document.getElementById('choresStarsDisplay');
+
+      const stickerCountInput = document.getElementById('stickerCountInput');
+      const stickerStarsDisplay = document.getElementById('stickerStarsDisplay');
+      const btnStickerMinus = document.getElementById('btnStickerMinus');
+      const btnStickerPlus = document.getElementById('btnStickerPlus');
+      const stickerChipButtons = document.querySelectorAll('.chip-sticker');
 
       const previewTotalHwStars = document.getElementById('previewTotalHwStars');
       const btnSubmitHomework = document.getElementById('btnSubmitHomework');
@@ -1487,27 +1523,37 @@
         // Reading (không giới hạn số lần)
         readingCount = Math.max(0, parseInt(readingCount, 10) || 0);
         if (readingCountInput) readingCountInput.value = readingCount;
-        readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
+        if (readingStarsDisplay) readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
         chipButtons.forEach(btn => {
           if (btn.dataset.reading) {
             btn.classList.toggle('active', parseInt(btn.dataset.reading, 10) === readingCount);
           }
         });
 
-        // Writing
+        // Writing (Mức 1: 5⭐, Mức 2: 7⭐, Mức 3: 10⭐)
         writingButtons.forEach(btn => {
           btn.classList.toggle('selected', parseInt(btn.dataset.stars, 10) === writingStars);
         });
-        writingStarsDisplay.textContent = `+${writingStars} ⭐`;
+        if (writingStarsDisplay) writingStarsDisplay.textContent = `+${writingStars} ⭐`;
 
-        // Chores
+        // Chores (+5⭐)
         choresCheckbox.checked = choresDone;
         choresCardLabel.classList.toggle('checked', choresDone);
-        choresStarsDisplay.textContent = choresDone ? '+5 ⭐' : '0 ⭐';
+        if (choresStarsDisplay) choresStarsDisplay.textContent = choresDone ? '+5 ⭐' : '0 ⭐';
+
+        // Sticker (1 sticker = 5⭐)
+        stickerCount = Math.max(0, parseInt(stickerCount, 10) || 0);
+        if (stickerCountInput) stickerCountInput.value = stickerCount;
+        if (stickerStarsDisplay) stickerStarsDisplay.textContent = `+${stickerCount * 5} ⭐`;
+        stickerChipButtons.forEach(btn => {
+          if (btn.dataset.sticker !== undefined) {
+            btn.classList.toggle('active', parseInt(btn.dataset.sticker, 10) === stickerCount);
+          }
+        });
 
         // Total
-        const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0);
-        previewTotalHwStars.textContent = `+${total} ⭐`;
+        const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0) + (stickerCount * 5);
+        if (previewTotalHwStars) previewTotalHwStars.textContent = `+${total} ⭐`;
       }
 
       // Reading handlers (không giới hạn)
@@ -1531,14 +1577,14 @@
           isHomeworkDirty = true;
           const val = parseInt(e.target.value, 10);
           readingCount = isNaN(val) ? 0 : Math.max(0, val);
-          readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
+          if (readingStarsDisplay) readingStarsDisplay.textContent = `+${readingCount * 1} ⭐`;
           chipButtons.forEach(btn => {
             if (btn.dataset.reading) {
               btn.classList.toggle('active', parseInt(btn.dataset.reading, 10) === readingCount);
             }
           });
-          const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0);
-          previewTotalHwStars.textContent = `+${total} ⭐`;
+          const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0) + (stickerCount * 5);
+          if (previewTotalHwStars) previewTotalHwStars.textContent = `+${total} ⭐`;
         });
         readingCountInput.addEventListener('change', () => {
           isHomeworkDirty = true;
@@ -1563,11 +1609,11 @@
         });
       });
 
-      // Writing handlers
+      // Writing handlers (Mức 1: 5⭐, Mức 2: 7⭐, Mức 3: 10⭐)
       writingButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           isHomeworkDirty = true;
-          writingStars = parseInt(btn.dataset.stars, 10) || 1;
+          writingStars = parseInt(btn.dataset.stars, 10) || 7;
           updateHomeworkUI();
         });
       });
@@ -1579,6 +1625,63 @@
         updateHomeworkUI();
       });
 
+      // Sticker handlers (1 sticker = 5 sao)
+      if (btnStickerMinus) {
+        btnStickerMinus.addEventListener('click', () => {
+          isHomeworkDirty = true;
+          if (stickerCount > 0) {
+            stickerCount--;
+            updateHomeworkUI();
+          }
+        });
+      }
+      if (btnStickerPlus) {
+        btnStickerPlus.addEventListener('click', () => {
+          isHomeworkDirty = true;
+          stickerCount++;
+          updateHomeworkUI();
+        });
+      }
+      if (stickerCountInput) {
+        stickerCountInput.addEventListener('focus', () => {
+          isHomeworkDirty = true;
+        });
+        stickerCountInput.addEventListener('input', (e) => {
+          isHomeworkDirty = true;
+          const val = parseInt(e.target.value, 10);
+          stickerCount = isNaN(val) ? 0 : Math.max(0, val);
+          if (stickerStarsDisplay) stickerStarsDisplay.textContent = `+${stickerCount * 5} ⭐`;
+          stickerChipButtons.forEach(btn => {
+            if (btn.dataset.sticker !== undefined) {
+              btn.classList.toggle('active', parseInt(btn.dataset.sticker, 10) === stickerCount);
+            }
+          });
+          const total = (readingCount * 1) + writingStars + (choresDone ? 5 : 0) + (stickerCount * 5);
+          if (previewTotalHwStars) previewTotalHwStars.textContent = `+${total} ⭐`;
+        });
+        stickerCountInput.addEventListener('change', () => {
+          isHomeworkDirty = true;
+          updateHomeworkUI();
+        });
+        stickerCountInput.addEventListener('blur', () => {
+          if (stickerCountInput.value === '' || isNaN(parseInt(stickerCountInput.value, 10))) {
+            stickerCount = 0;
+          }
+          updateHomeworkUI();
+        });
+      }
+      stickerChipButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          isHomeworkDirty = true;
+          if (btn.dataset.sticker !== undefined) {
+            stickerCount = parseInt(btn.dataset.sticker, 10) || 0;
+          } else if (btn.dataset.addSticker) {
+            stickerCount += parseInt(btn.dataset.addSticker, 10) || 0;
+          }
+          updateHomeworkUI();
+        });
+      });
+
       // Load existing today's homework for current student
       function loadStudentHomeworkState() {
         const student = data.students.find(s => s.id === currentId);
@@ -1587,8 +1690,13 @@
         if (student.homeworkRecords && student.homeworkRecords[todayDateStr]) {
           const rec = student.homeworkRecords[todayDateStr];
           readingCount = (rec.readingCount !== undefined && rec.readingCount !== null) ? rec.readingCount : 1;
-          writingStars = (rec.writingStars !== undefined && rec.writingStars !== null) ? rec.writingStars : 2;
+          let wVal = (rec.writingStars !== undefined && rec.writingStars !== null) ? rec.writingStars : 7;
+          if (wVal === 1) wVal = 5;
+          else if (wVal === 2) wVal = 7;
+          else if (wVal === 3) wVal = 10;
+          writingStars = wVal;
           choresDone = rec.choresDone !== undefined ? !!rec.choresDone : true;
+          stickerCount = (rec.stickerCount !== undefined && rec.stickerCount !== null) ? rec.stickerCount : 0;
 
           hwStatusBanner.style.display = 'block';
           hwStatusBanner.style.background = '#ECFDF5';
@@ -1596,11 +1704,12 @@
           hwStatusBanner.style.border = '1px solid #A7F3D0';
           hwStatusBanner.innerHTML = `✅ <strong>Đã ghi nhận hôm nay:</strong> Con nhận được <strong>+${rec.totalStars} ⭐</strong>. Bố mẹ có thể điều chỉnh và gửi lại bất kỳ lúc nào!`;
         } else {
-          // Nếu phụ huynh đã tự chỉnh sửa thì tuyệt đối không được reset về 1
+          // Nếu phụ huynh đã tự chỉnh sửa thì tuyệt đối không được reset về mặc định
           if (!isHomeworkDirty) {
             readingCount = 1;
-            writingStars = 2;
+            writingStars = 7;
             choresDone = true;
+            stickerCount = 0;
           }
           hwStatusBanner.style.display = 'none';
         }
@@ -1615,7 +1724,6 @@
         }
 
         const student = data.students.find(s => s.id === currentId);
-        // Cho phép gửi điểm liên tục và tích lũy sao không giới hạn!
 
         btnSubmitHomework.disabled = true;
         btnSubmitHomework.textContent = '⏳ Đang gửi cho cô...';
@@ -1625,6 +1733,7 @@
             readingCount,
             writingStars,
             choresDone,
+            stickerCount,
             dateStr: todayDateStr
           });
 
@@ -1649,7 +1758,7 @@
           hwStatusBanner.style.background = '#ECFDF5';
           hwStatusBanner.style.color = '#065F46';
           hwStatusBanner.style.border = '1px solid #A7F3D0';
-          const rec = res && res.record ? res.record : { totalStars: (readingCount * 1 + writingStars + (choresDone ? 5 : 0)) };
+          const rec = res && res.record ? res.record : { totalStars: (readingCount * 1 + writingStars + (choresDone ? 5 : 0) + (stickerCount * 5)) };
           hwStatusBanner.innerHTML = `🎉 <strong>Gửi thành công!</strong> Bé đã được cộng <strong>+${rec.totalStars} ⭐</strong> vào hồ sơ ấp trứng.`;
 
           // Small celebration particle
@@ -1681,33 +1790,74 @@
         if (!student) return;
 
         const group = data.groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#FF6B6B' };
-        const stage = window.EggEvolution.getStage(student.stars);
-        const milestone = window.EggEvolution.getNextMilestone(student.stars);
+
+        // Kiểm tra yêu cầu nở trứng (100 sao hoặc 150 sao đối với học sinh quá giỏi dưới 3 ngày)
+        const hatchReq = window.EggEvolution ? window.EggEvolution.getHatchRequirement(student) : { threshold: 100, isFastHatcher: false, notice: '' };
+        const hatchThreshold = hatchReq.threshold; // 100 hoặc 150
+        const isHatched = (student.stars || 0) >= hatchThreshold;
+
+        const stage = window.EggEvolution.getStage(student.stars, hatchThreshold);
+        const milestone = window.EggEvolution.getNextMilestone(student.stars, hatchThreshold);
 
         document.getElementById('parentStudentName').textContent = student.name;
         document.getElementById('parentGroupTag').textContent = group.name;
         document.getElementById('parentGroupTag').style.background = group.color;
         document.getElementById('parentStageName').textContent = student.status === 'sleeping' ? '💤 Đang nghỉ tĩnh tâm' : stage.title;
         document.getElementById('parentStarsTotal').textContent = student.stars;
-        document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+        document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, hatchThreshold);
         document.getElementById('parentLikesCount').textContent = student.likes || 0;
 
-        // Tiến trình ấp trứng & nở (100 sao)
+        // Tiến trình ấp trứng & nở (100 sao hoặc 150 sao)
         const parentEvoTitle = document.getElementById('parentEvoTitle');
         const parentEvoNeeded = document.getElementById('parentEvoNeeded');
         const parentEvoFill = document.getElementById('parentEvoFill');
+        const parentEvoHatchNotice = document.getElementById('parentEvoHatchNotice');
 
-        if (student.stars < 100) {
+        if (!isHatched) {
           parentEvoTitle.textContent = 'Tiến trình ấp trứng';
-          parentEvoNeeded.textContent = `Còn thiếu ${milestone.neededToHatch} ⭐ để trứng nở!`;
-          const hatchProgress = Math.min(100, Math.round((student.stars / 100) * 100));
+          parentEvoNeeded.textContent = `Còn thiếu ${hatchThreshold - student.stars} ⭐ để trứng nở!`;
+          const hatchProgress = Math.min(100, Math.round((student.stars / hatchThreshold) * 100));
           parentEvoFill.style.width = `${hatchProgress}%`;
           parentEvoFill.style.background = 'linear-gradient(90deg, #F59E0B, #EF4444)';
+
+          if (parentEvoHatchNotice) {
+            if (hatchReq.isFastHatcher) {
+              parentEvoHatchNotice.style.background = '#FEF3C7';
+              parentEvoHatchNotice.style.border = '1.5px solid #FCD34D';
+              parentEvoHatchNotice.style.borderRadius = '12px';
+              parentEvoHatchNotice.style.padding = '8px 12px';
+              parentEvoHatchNotice.style.color = '#B45309';
+              parentEvoHatchNotice.innerHTML = `⚡ <strong>Trứng đang nâng cấp mời bạn hãy tích luỹ thêm điểm để nở</strong><br><span style="font-size: 11px; opacity: 0.9;">(Bé tiến bộ siêu nhanh dưới 3 ngày! Mốc nở trứng lần này là <strong>150 ⭐</strong>)</span>`;
+            } else {
+              parentEvoHatchNotice.style.background = 'none';
+              parentEvoHatchNotice.style.border = 'none';
+              parentEvoHatchNotice.style.padding = '0';
+              parentEvoHatchNotice.style.color = '#64748B';
+              parentEvoHatchNotice.innerHTML = `🥚 Quy định lớp: Tích lũy đủ <strong>100 sao</strong> thì quả trứng sẽ nở!`;
+            }
+          }
         } else {
           parentEvoTitle.textContent = '🎉 Đã nở linh thú! Tiến hóa tiếp:';
           parentEvoNeeded.textContent = milestone.nextStage ? `Còn ${milestone.needed} ⭐ để lên cấp` : 'Đạt cấp tối thượng!';
           parentEvoFill.style.width = `${milestone.progress}%`;
           parentEvoFill.style.background = 'linear-gradient(90deg, #10B981, #3B82F6)';
+
+          if (parentEvoHatchNotice) {
+            if (hatchReq.isFastHatcher) {
+              parentEvoHatchNotice.style.background = '#ECFDF5';
+              parentEvoHatchNotice.style.border = '1.5px solid #A7F3D0';
+              parentEvoHatchNotice.style.borderRadius = '12px';
+              parentEvoHatchNotice.style.padding = '8px 12px';
+              parentEvoHatchNotice.style.color = '#065F46';
+              parentEvoHatchNotice.innerHTML = `🏆 <strong>Xuất sắc!</strong> Bé đã chinh phục mốc 150 ⭐ thần tốc và mở khóa quà tặng!`;
+            } else {
+              parentEvoHatchNotice.style.background = 'none';
+              parentEvoHatchNotice.style.border = 'none';
+              parentEvoHatchNotice.style.padding = '0';
+              parentEvoHatchNotice.style.color = '#64748B';
+              parentEvoHatchNotice.innerHTML = `🥚 Quy định lớp: Tích lũy đủ <strong>100 sao</strong> thì quả trứng sẽ nở!`;
+            }
+          }
         }
 
         // Highlight current stage in Roadmap
@@ -1737,12 +1887,12 @@
           `;
         }
 
-        // Hatched Celebration Banner (>= 100 stars) & Quà Tặng
+        // Hatched Celebration Banner & Quà Tặng
         const celebrationBox = document.getElementById('parentHatchedCelebrationBox');
         const hatchedStageName = document.getElementById('parentHatchedStageName');
         const giftActionContainer = document.getElementById('parentGiftActionContainer');
 
-        if (student.stars >= 100) {
+        if (isHatched) {
           celebrationBox.style.display = 'block';
           hatchedStageName.textContent = `🦖 Linh thú: ${stage.title} (${student.stars} ⭐)`;
 
@@ -2416,7 +2566,7 @@
       setInterval(checkLiveConnection, 6000);
 
       // Quản lý phiên bản app & làm mới cập nhật tự động từ cô giáo
-      const APP_VERSION = '20261008_v2';
+      const APP_VERSION = '20261008_v4';
       const lastAppVer = localStorage.getItem('parent_app_version');
       const appUpdateBanner = document.getElementById('parentAppUpdateBanner');
       const parentAppUpdateModal = document.getElementById('parentAppUpdateModal');

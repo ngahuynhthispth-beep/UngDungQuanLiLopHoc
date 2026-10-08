@@ -2702,6 +2702,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">Tổ</th>
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">📖 Rèn Đọc</th>
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">✍️ Rèn Viết</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">🏷️ Sticker</th>
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">🎒 Dặn Dò</th>
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">⭐ Tổng Ngày</th>
             <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">Trạng Thái</th>
@@ -2715,6 +2716,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const group = (groups || []).find(g => g.id === s.group) || { name: `Tổ ${s.group}`, color: '#FF6B6B' };
       const readingText = rec.readingCount > 0 ? `${rec.readingCount} lần (+${rec.readingStars}⭐)` : 'Chưa đọc';
       const writingText = rec.writingStars > 0 ? `+${rec.writingStars} ⭐` : 'Chưa chấm';
+      const stickerText = (rec.stickerCount > 0) ? `<span style="background: #FCE7F3; color: #BE185D; padding: 3px 8px; border-radius: 10px; font-weight: 800; font-size: 11px;">${rec.stickerCount} cái (+${rec.stickerStars || (rec.stickerCount * 5)}⭐)</span>` : '<span style="color: #94A3B8; font-size: 12px;">0</span>';
       const choreHtml = rec.choresDone 
         ? `<span style="background: #D1FAE5; color: #047857; padding: 3px 8px; border-radius: 10px; font-weight: 800; font-size: 11px;">✅ Đạt (+5⭐)</span>`
         : `<span style="color: #94A3B8; font-size: 12px;">Chưa</span>`;
@@ -2736,6 +2738,9 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td style="text-align: center; padding: 10px 8px; font-weight: 700; color: #7C3AED;">
             ${writingText}
+          </td>
+          <td style="text-align: center; padding: 10px 8px;">
+            ${stickerText}
           </td>
           <td style="text-align: center; padding: 10px 8px;">
             ${choreHtml}
@@ -2836,8 +2841,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       submissions.forEach((item, idx) => {
         const r = item.record;
-        const choreText = r.choresDone ? ' • Dặn dò/Việc nhà ✅' : '';
-        text += `${idx + 1}. Bé ${item.student.name} (${item.group.name.split('-')[0].trim()}): Đọc ${r.readingCount} lần, Viết ${r.writingStars}⭐${choreText} ➔ +${r.totalStars} ⭐\n`;
+        const choreText = r.choresDone ? ' • Dặn dò ✅' : '';
+        const stickerText = (r.stickerCount > 0) ? ` • Sticker ${r.stickerCount} cái (+${r.stickerStars || (r.stickerCount * 5)}⭐)` : '';
+        text += `${idx + 1}. Bé ${item.student.name} (${item.group.name.split('-')[0].trim()}): Đọc ${r.readingCount} lần, Viết ${r.writingStars}⭐${stickerText}${choreText} ➔ +${r.totalStars} ⭐\n`;
       });
 
       const dayTotalStars = submissions.reduce((sum, item) => sum + (item.record.totalStars || 0), 0);
