@@ -1001,6 +1001,103 @@ const StorageManager = {
   getGiftSummaryRecords() {
     const data = this.loadData();
     return data.giftSummaryRecords || [];
+  },
+
+  // ========================================================
+  // --- QUẢN LÝ CÂU HỎI & BÀI TOÁN TÍCH HỢP VÒNG QUAY ---
+  // ========================================================
+  QUESTIONS_KEY: 'classroom_wheel_questions',
+  DEFAULT_QUESTIONS: [
+    { id: 'q-1', content: 'Tính: 15 + 24 = ?' },
+    { id: 'q-2', content: 'Tính: 38 - 19 = ?' },
+    { id: 'q-3', content: 'Đặt một câu có từ "chăm chỉ".' },
+    { id: 'q-4', content: 'Tìm từ chỉ sự vật trong câu: "Mặt trời tỏa ánh nắng ấm áp".' },
+    { id: 'q-5', content: 'Tính: 45 + 55 = ?' },
+    { id: 'q-6', content: 'Đọc thuộc lòng 4 câu thơ đầu bài thơ em yêu thích.' },
+    { id: 'q-7', content: 'Điền dấu >, <, = :  47 + 12 ... 60' },
+    { id: 'q-8', content: 'Kể tên 3 con vật nuôi trong gia đình.' },
+    { id: 'q-9', content: 'Tính: 70 - 25 = ?' },
+    { id: 'q-10', content: 'Tìm từ chỉ hoạt động trong câu: "Bé Mai đang chăm chú quét nhà".' },
+    { id: 'q-11', content: 'Tính: 6 x 2 = ?' },
+    { id: 'q-12', content: 'Đặt câu hỏi cho bộ phận in đậm: "Hôm nay, **thời tiết rất đẹp**."' },
+    { id: 'q-13', content: 'Tính: 100 - 45 = ?' },
+    { id: 'q-14', content: 'Kể một việc tốt con đã làm để giúp đỡ bố mẹ.' },
+    { id: 'q-15', content: 'Đoạn thẳng AB dài 12 cm, đoạn thẳng CD ngắn hơn đoạn thẳng AB 4 cm. Hỏi đoạn thẳng CD dài bao nhiêu cm?' }
+  ],
+
+  async getQuestions() {
+    // 1. Nếu có server HTTP, ưu tiên đọc từ thư mục cau_hoi trên ổ đĩa
+    if (window.location.protocol.startsWith('http')) {
+      try {
+        const res = await fetch('/api/questions');
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.questions) && json.questions.length > 0) {
+            localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(json.questions));
+            return json.questions;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 2. Dự phòng đọc từ LocalStorage
+    try {
+      const stored = localStorage.getItem(this.QUESTIONS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+
+    // 3. Khởi tạo danh sách mặc định
+    localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(this.DEFAULT_QUESTIONS));
+    return [...this.DEFAULT_QUESTIONS];
+  },
+
+  async saveQuestions(questions) {
+    if (!Array.isArray(questions)) return;
+    localStorage.setItem(this.QUESTIONS_KEY, JSON.stringify(questions));
+
+    if (window.location.protocol.startsWith('http')) {
+      try {
+        await fetch('/api/questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ questions })
+        });
+      } catch (e) {}
+    }
+  },
+
+  async addQuestion(content) {
+    if (!content || !content.trim()) return null;
+    const questions = await this.getQuestions();
+    const newQ = {
+      id: 'q-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+      content: content.trim()
+    };
+    questions.push(newQ);
+    await this.saveQuestions(questions);
+    return newQ;
+  },
+
+  async deleteQuestion(id) {
+    let questions = await this.getQuestions();
+    questions = questions.filter(q => q.id !== id);
+    await this.saveQuestions(questions);
+    return questions;
+  },
+
+  async openQuestionsFolder() {
+    if (window.location.protocol.startsWith('http')) {
+      try {
+        const res = await fetch('/api/questions/open-folder', { method: 'POST' });
+        return res.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
   }
 };
 

@@ -1,0 +1,17 @@
+[
+  { "id": "q-1", "content": "Tính: 15 + 24 = ?" },
+  { "id": "q-2", "content": "Tính: 38 - 19 = ?" },
+  { "id": "q-3", "content": "Đặt một câu có từ \"chăm chỉ\"." },
+  { "id": "q-4", "content": "Tìm từ chỉ sự vật trong câu: \"Mặt trời tỏa ánh nắng ấm áp\"." },
+  { "id": "q-5", "content": "Tính: 45 + 55 = ?" },
+  { "id": "q-6", "content": "Đọc thuộc lòng 4 câu thơ đầu bài thơ em yêu thích." },
+  { "id": "q-7", "content": "Điền dấu >, <, = :  47 + 12 ... 60" },
+  { "id": "q-8", "content": "Kể tên 3 con vật nuôi trong gia đình." },
+  { "id": "q-9", "content": "Tính: 70 - 25 = ?" },
+  { "id": "q-10", "content": "Tìm từ chỉ hoạt động trong câu: \"Bé Mai đang chăm chú quét nhà\"." },
+  { "id": "q-11", "content": "Tính: 6 x 2 = ?" },
+  { "id": "q-12", "content": "Đặt câu hỏi cho bộ phận in đậm: \"Hôm nay, **thời tiết rất đẹp**.\"" },
+  { "id": "q-13", "content": "Tính: 100 - 45 = ?" },
+  { "id": "q-14", "content": "Kể một việc tốt con đã làm để giúp đỡ bố mẹ." },
+  { "id": "q-15", "content": "Đoạn thẳng AB dài 12 cm, đoạn thẳng CD ngắn hơn đoạn thẳng AB 4 cm. Hỏi đoạn thẳng CD dài bao nhiêu cm?" }
+]

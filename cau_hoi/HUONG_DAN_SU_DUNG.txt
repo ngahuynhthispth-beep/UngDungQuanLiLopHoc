@@ -1,0 +1,23 @@
+========================================================================
+    HƯỚNG DẪN THÊM / BỚT CÂU HỎI VÀ BÀI TOÁN CHO VÒNG QUAY
+========================================================================
+
+Kính gửi Thầy/Cô,
+
+Thư mục này dùng để lưu trữ các câu hỏi, bài toán hoặc nhiệm vụ sẽ xuất hiện 
+khi Thầy/Cô quay vòng quay gọi tên học sinh.
+
+CÁCH SỬ DỤNG:
+1. CÁCH 1 - SỬA TRỰC TIẾP TRÊN FILE (RẤT ĐƠN GIẢN):
+   - Nhấp đúp chuột mở file "danh_sach_cau_hoi.txt" bằng Notepad.
+   - Mỗi dòng viết 1 câu hỏi hoặc 1 bài toán (có thể có số thứ tự hoặc không).
+   - Thầy/Cô có thể xóa câu hỏi cũ, thêm câu hỏi mới tùy ý theo từng tiết dạy.
+   - Bấm File -> Save (hoặc nhấn Ctrl + S) để lưu lại.
+   - Trên ứng dụng vòng quay, bấm nút "🔄 Tải lại từ file" là xong!
+
+2. CÁCH 2 - THÊM / XÓA TRỰC TIẾP TRÊN ỨNG DỤNG:
+   - Khi mở Vòng Quay Gọi Tên, bấm nút "⚙️ Quản lý câu hỏi".
+   - Thầy/Cô có thể gõ thêm câu hỏi mới, xóa bớt câu hỏi, hoặc dán một loạt câu hỏi từ tài liệu Word/PowerPoint vào.
+
+CHÚC THẦY/CÔ CÓ NHỮNG TIẾT HỌC THẬT HÀO HỨNG VÀ BỔ ÍCH!
+========================================================================

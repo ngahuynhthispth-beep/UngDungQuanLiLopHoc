@@ -1438,7 +1438,312 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  btnWheel.addEventListener('click', () => {
+  // ========================================================
+  // --- TÍCH HỢP CÂU HỎI & BÀI TOÁN VÀO VÒNG QUAY GỌI TÊN ---
+  // ========================================================
+  let wheelQuestions = [];
+  let usedQuestionIds = new Set();
+  let currentActiveQuestion = null;
+  let activeWheelWinner = null;
+
+  const wheelToggleQuestion = document.getElementById('wheelToggleQuestion');
+  const wheelQuestionCountBadge = document.getElementById('wheelQuestionCountBadge');
+  const wheelQuestionDisplayBox = document.getElementById('wheelQuestionDisplayBox');
+  const wheelQuestionContent = document.getElementById('wheelQuestionContent');
+  const btnChangeQuestion = document.getElementById('btnChangeQuestion');
+  const chkExcludeUsedQuestion = document.getElementById('chkExcludeUsedQuestion');
+
+  // Modal Quản Lý Câu Hỏi
+  const questionManagerModal = document.getElementById('questionManagerModal');
+  const btnOpenQuestionManager = document.getElementById('btnOpenQuestionManager');
+  const closeQuestionManagerBtn = document.getElementById('closeQuestionManagerBtn');
+  const btnCloseQuestionManagerModal = document.getElementById('btnCloseQuestionManagerModal');
+  const btnOpenFolderOnPC = document.getElementById('btnOpenFolderOnPC');
+  const btnReloadQuestionsFromDisk = document.getElementById('btnReloadQuestionsFromDisk');
+  const btnToggleBulkQuestionInput = document.getElementById('btnToggleBulkQuestionInput');
+  const btnResetDefaultQuestions = document.getElementById('btnResetDefaultQuestions');
+  const bulkQuestionInputArea = document.getElementById('bulkQuestionInputArea');
+  const txtBulkQuestions = document.getElementById('txtBulkQuestions');
+  const btnSaveBulkQuestions = document.getElementById('btnSaveBulkQuestions');
+  const btnCancelBulkQuestions = document.getElementById('btnCancelBulkQuestions');
+  const inputNewQuestionContent = document.getElementById('inputNewQuestionContent');
+  const btnSubmitNewQuestion = document.getElementById('btnSubmitNewQuestion');
+  const questionListContainer = document.getElementById('questionListContainer');
+  const questionCountTotal = document.getElementById('questionCountTotal');
+  const btnClearAllQuestions = document.getElementById('btnClearAllQuestions');
+
+  // Nạp câu hỏi từ Storage/Server
+  async function loadAndRefreshWheelQuestions() {
+    try {
+      wheelQuestions = await StorageManager.getQuestions();
+    } catch (e) {
+      wheelQuestions = StorageManager.DEFAULT_QUESTIONS || [];
+    }
+    const count = (wheelQuestions || []).length;
+    if (wheelQuestionCountBadge) wheelQuestionCountBadge.textContent = count;
+    if (questionCountTotal) questionCountTotal.textContent = count;
+    renderQuestionsList();
+  }
+
+  // Render bảng danh sách câu hỏi trong Modal Quản Lý
+  function renderQuestionsList() {
+    if (!questionListContainer) return;
+    if (!wheelQuestions || wheelQuestions.length === 0) {
+      questionListContainer.innerHTML = `
+        <div style="text-align: center; padding: 30px 10px; color: #94A3B8;">
+          <div style="font-size: 32px; margin-bottom: 6px;">📝</div>
+          <div style="font-size: 14px; font-weight: 700; color: #475569;">Chưa có câu hỏi nào trong danh sách</div>
+          <div style="font-size: 12px; margin-top: 4px;">Cô hãy gõ câu hỏi ở trên, hoặc bấm <strong>"Dán Nhiều Câu Hỏi"</strong> để thêm hàng loạt nhé!</div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = `
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="background: #F8FAFC; color: #475569; text-align: left; border-bottom: 1.5px solid #E2E8F0;">
+            <th style="padding: 8px 10px; width: 45px; text-align: center;">STT</th>
+            <th style="padding: 8px 10px;">Nội Dung Câu Hỏi / Bài Toán</th>
+            <th style="padding: 8px 10px; width: 60px; text-align: center;">Xóa</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    wheelQuestions.forEach((q, idx) => {
+      const content = typeof q === 'string' ? q : (q.content || '');
+      const qId = typeof q === 'object' && q.id ? q.id : ('q-' + idx);
+      const isUsed = usedQuestionIds.has(qId);
+      const usedBadge = isUsed ? `<span style="font-size: 10px; background: #E2E8F0; color: #64748B; padding: 2px 6px; border-radius: 6px; margin-left: 6px; font-weight: 700;">Đã quay</span>` : '';
+
+      html += `
+        <tr style="border-bottom: 1px solid #F1F5F9; transition: background 0.15s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+          <td style="padding: 8px 10px; text-align: center; font-weight: 700; color: #94A3B8;">${idx + 1}</td>
+          <td style="padding: 8px 10px; color: #1E293B; font-weight: 600; line-height: 1.4;">
+            ${content} ${usedBadge}
+          </td>
+          <td style="padding: 8px 10px; text-align: center;">
+            <button type="button" class="btn-delete-single-question" data-id="${qId}" style="background: none; border: none; cursor: pointer; color: #EF4444; font-size: 15px; padding: 4px; border-radius: 6px;" title="Xóa câu này">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table>`;
+    questionListContainer.innerHTML = html;
+
+    questionListContainer.querySelectorAll('.btn-delete-single-question').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const idToDelete = btn.dataset.id;
+        wheelQuestions = await StorageManager.deleteQuestion(idToDelete);
+        usedQuestionIds.delete(idToDelete);
+        const count = wheelQuestions.length;
+        if (wheelQuestionCountBadge) wheelQuestionCountBadge.textContent = count;
+        if (questionCountTotal) questionCountTotal.textContent = count;
+        renderQuestionsList();
+      });
+    });
+  }
+
+  // Chọn ngẫu nhiên 1 câu hỏi
+  function pickRandomQuestion() {
+    if (!wheelQuestions || wheelQuestions.length === 0) return null;
+
+    // Lọc những câu chưa dùng
+    let available = wheelQuestions.filter(q => {
+      const qId = typeof q === 'object' && q.id ? q.id : q;
+      return !usedQuestionIds.has(qId);
+    });
+
+    // Nếu đã dùng hết câu hỏi thì reset lại
+    if (available.length === 0) {
+      usedQuestionIds.clear();
+      available = [...wheelQuestions];
+    }
+
+    const randIdx = Math.floor(Math.random() * available.length);
+    return available[randIdx];
+  }
+
+  // Mở / Đóng Modal Quản Lý Câu Hỏi
+  if (btnOpenQuestionManager) {
+    btnOpenQuestionManager.addEventListener('click', () => {
+      loadAndRefreshWheelQuestions();
+      questionManagerModal.classList.add('active');
+    });
+  }
+  if (closeQuestionManagerBtn) {
+    closeQuestionManagerBtn.addEventListener('click', () => questionManagerModal.classList.remove('active'));
+  }
+  if (btnCloseQuestionManagerModal) {
+    btnCloseQuestionManagerModal.addEventListener('click', () => questionManagerModal.classList.remove('active'));
+  }
+
+  // Mở thư mục cau_hoi trên Windows
+  if (btnOpenFolderOnPC) {
+    btnOpenFolderOnPC.addEventListener('click', async () => {
+      const ok = await StorageManager.openQuestionsFolder();
+      if (ok) {
+        showSyncToast('📂 Đã mở thư mục <strong>cau_hoi/</strong> trên máy tính của cô!', '📁');
+      } else {
+        alert('Cô có thể mở thư mục "cau_hoi" tại đường dẫn: d:\\app\\UngDungQuanLiLopHoc\\cau_hoi\\');
+      }
+    });
+  }
+
+  // Tải lại từ File trên ổ đĩa
+  if (btnReloadQuestionsFromDisk) {
+    btnReloadQuestionsFromDisk.addEventListener('click', async () => {
+      btnReloadQuestionsFromDisk.textContent = '⏳ Đang tải...';
+      await loadAndRefreshWheelQuestions();
+      setTimeout(() => {
+        btnReloadQuestionsFromDisk.textContent = '🔄 Tải Lại Từ File';
+        showSyncToast(`✅ Đã nạp thành công ${wheelQuestions.length} câu hỏi từ thư mục cau_hoi!`, '📝');
+      }, 300);
+    });
+  }
+
+  // Khôi phục mẫu câu hỏi chuẩn
+  if (btnResetDefaultQuestions) {
+    btnResetDefaultQuestions.addEventListener('click', async () => {
+      if (confirm('Cô có chắc chắn muốn nạp lại danh sách 15 câu hỏi/bài toán mẫu của chương trình không?')) {
+        wheelQuestions = [...StorageManager.DEFAULT_QUESTIONS];
+        await StorageManager.saveQuestions(wheelQuestions);
+        usedQuestionIds.clear();
+        await loadAndRefreshWheelQuestions();
+        showSyncToast('⭐ Đã khôi phục danh sách câu hỏi mẫu chuẩn thành công!', '🌟');
+      }
+    });
+  }
+
+  // Mở/đóng khung dán hàng loạt
+  if (btnToggleBulkQuestionInput) {
+    btnToggleBulkQuestionInput.addEventListener('click', () => {
+      if (bulkQuestionInputArea.style.display === 'none' || !bulkQuestionInputArea.style.display) {
+        bulkQuestionInputArea.style.display = 'block';
+        txtBulkQuestions.focus();
+      } else {
+        bulkQuestionInputArea.style.display = 'none';
+      }
+    });
+  }
+  if (btnCancelBulkQuestions) {
+    btnCancelBulkQuestions.addEventListener('click', () => {
+      bulkQuestionInputArea.style.display = 'none';
+      txtBulkQuestions.value = '';
+    });
+  }
+  if (btnSaveBulkQuestions) {
+    btnSaveBulkQuestions.addEventListener('click', async () => {
+      const text = txtBulkQuestions.value.trim();
+      if (!text) {
+        alert('Vui lòng dán danh sách câu hỏi vào ô trước khi lưu!');
+        return;
+      }
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('===') && !l.startsWith('---'));
+      if (lines.length === 0) return;
+
+      const newItems = lines.map((l, idx) => ({
+        id: 'q-' + Date.now() + '-' + idx,
+        content: l.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim() || l
+      }));
+
+      wheelQuestions = [...(wheelQuestions || []), ...newItems];
+      await StorageManager.saveQuestions(wheelQuestions);
+      txtBulkQuestions.value = '';
+      bulkQuestionInputArea.style.display = 'none';
+      await loadAndRefreshWheelQuestions();
+      showSyncToast(`🎉 Đã thêm thành công +${newItems.length} câu hỏi mới vào danh sách!`, '✅');
+    });
+  }
+
+  // Thêm từng câu hỏi
+  async function handleAddSingleQuestion() {
+    const val = inputNewQuestionContent.value.trim();
+    if (!val) return;
+    const clean = val.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim() || val;
+    await StorageManager.addQuestion(clean);
+    inputNewQuestionContent.value = '';
+    await loadAndRefreshWheelQuestions();
+    showSyncToast('✅ Đã thêm câu hỏi mới vào vòng quay!', '➕');
+  }
+
+  if (btnSubmitNewQuestion) {
+    btnSubmitNewQuestion.addEventListener('click', handleAddSingleQuestion);
+  }
+  if (inputNewQuestionContent) {
+    inputNewQuestionContent.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleAddSingleQuestion();
+      }
+    });
+  }
+
+  // Xóa toàn bộ câu hỏi
+  if (btnClearAllQuestions) {
+    btnClearAllQuestions.addEventListener('click', async () => {
+      if (confirm('Cô có chắc muốn xóa TOÀN BỘ câu hỏi không?')) {
+        wheelQuestions = [];
+        await StorageManager.saveQuestions(wheelQuestions);
+        usedQuestionIds.clear();
+        await loadAndRefreshWheelQuestions();
+        showSyncToast('🗑️ Đã xóa toàn bộ câu hỏi.', '🧹');
+      }
+    });
+  }
+
+  // Đổi câu hỏi khác khi đang hiện kết quả
+  if (btnChangeQuestion) {
+    btnChangeQuestion.addEventListener('click', () => {
+      const newQ = pickRandomQuestion();
+      if (newQ) {
+        currentActiveQuestion = newQ;
+        wheelQuestionContent.textContent = typeof newQ === 'string' ? newQ : newQ.content;
+        if (window.soundFx) window.soundFx.playTap();
+      } else {
+        wheelQuestionContent.textContent = 'Chưa có câu hỏi nào trong danh sách.';
+      }
+    });
+  }
+
+  // Nút thưởng sao cho học sinh khi trả lời đúng
+  document.querySelectorAll('.btn-award-winner-stars').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!activeWheelWinner) return;
+      const stars = parseInt(btn.dataset.stars, 10) || 1;
+
+      // Đánh dấu câu hỏi đã dùng nếu được chọn
+      if (chkExcludeUsedQuestion && chkExcludeUsedQuestion.checked && currentActiveQuestion) {
+        const qId = typeof currentActiveQuestion === 'object' && currentActiveQuestion.id ? currentActiveQuestion.id : currentActiveQuestion;
+        usedQuestionIds.add(qId);
+      }
+
+      if (window.soundFx) window.soundFx.playStar();
+
+      const qText = currentActiveQuestion ? (typeof currentActiveQuestion === 'string' ? currentActiveQuestion : currentActiveQuestion.content) : '';
+      const reason = qText 
+        ? `Trúng vòng quay & trả lời bài: "${qText.length > 30 ? qText.substring(0, 30) + '...' : qText}" (+${stars}⭐)`
+        : `Bốc thăm trúng vòng quay (+${stars}⭐)`;
+
+      StorageManager.addPointsToStudent(activeWheelWinner.id, stars, reason, '🎲');
+      state.data = StorageManager.loadData();
+      renderStudents();
+      renderGroups();
+
+      showSyncToast(`🎉 Đã cộng <strong>+${stars} ⭐</strong> cho bé <strong>${activeWheelWinner.name}</strong>!`, '🌟');
+
+      wheelModal.classList.remove('active');
+    });
+  });
+
+  // Khởi động nạp danh sách câu hỏi ban đầu
+  loadAndRefreshWheelQuestions();
+
+  btnWheel.addEventListener('click', async () => {
     state.data = StorageManager.loadData();
     wheelModal.classList.add('active');
     const canvas = document.getElementById('luckyWheelCanvas');
@@ -1449,6 +1754,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     luckyWheel = new LuckyWheel('luckyWheelCanvas');
     setupWheelGroup('all');
+
+    // Nạp lại câu hỏi mới nhất
+    await loadAndRefreshWheelQuestions();
 
     const winnerBox = document.getElementById('wheelWinnerBox');
     if (winnerBox) winnerBox.style.display = 'none';
@@ -1461,21 +1769,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     luckyWheel.spin((winner) => {
       if (!winner) return;
-      const winnerName = document.getElementById('wheelWinnerName');
-      if (winnerName) winnerName.textContent = `🎉 Xin chúc mừng: ${winner.name}!`;
-      if (winnerBox) winnerBox.style.display = 'block';
+      activeWheelWinner = winner;
 
-      const awardBtn = document.getElementById('btnAwardWinner');
-      if (awardBtn) {
-        awardBtn.onclick = () => {
-          if (window.soundFx) window.soundFx.playStar();
-          StorageManager.addPointsToStudent(winner.id, 1, 'Bốc thăm trúng phát biểu', '🎲');
-          state.data = StorageManager.loadData();
-          renderStudents();
-          renderGroups();
-          wheelModal.classList.remove('active');
-        };
+      const winnerName = document.getElementById('wheelWinnerName');
+      if (winnerName) winnerName.textContent = `🎉 Xin chúc mừng bé: ${winner.name}!`;
+
+      // Kiểm tra có kèm câu hỏi/bài toán không
+      const withQuestion = wheelToggleQuestion ? wheelToggleQuestion.checked : true;
+      if (withQuestion && wheelQuestions && wheelQuestions.length > 0) {
+        currentActiveQuestion = pickRandomQuestion();
+        if (currentActiveQuestion) {
+          wheelQuestionContent.textContent = typeof currentActiveQuestion === 'string' ? currentActiveQuestion : currentActiveQuestion.content;
+          if (wheelQuestionDisplayBox) wheelQuestionDisplayBox.style.display = 'block';
+        } else {
+          if (wheelQuestionDisplayBox) wheelQuestionDisplayBox.style.display = 'none';
+        }
+      } else {
+        currentActiveQuestion = null;
+        if (wheelQuestionDisplayBox) wheelQuestionDisplayBox.style.display = 'none';
       }
+
+      if (winnerBox) winnerBox.style.display = 'block';
     });
   });
 

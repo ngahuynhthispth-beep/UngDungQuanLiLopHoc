@@ -25,6 +25,91 @@ let liveClassData = null;
 const DATA_FILE = path.join(__dirname, 'class_data.json');
 const FIREBASE_DB_URL = 'https://quanlylophocconga-default-rtdb.asia-southeast1.firebasedatabase.app/classData.json';
 
+// Quản lý thư mục câu hỏi & bài toán cho vòng quay gọi tên
+const QUESTIONS_DIR = path.join(__dirname, 'cau_hoi');
+const QUESTIONS_JSON_FILE = path.join(QUESTIONS_DIR, 'cau_hoi.json');
+const QUESTIONS_TXT_FILE = path.join(QUESTIONS_DIR, 'danh_sach_cau_hoi.txt');
+
+function loadQuestionsFromDisk() {
+  if (!fs.existsSync(QUESTIONS_DIR)) {
+    try { fs.mkdirSync(QUESTIONS_DIR, { recursive: true }); } catch (e) {}
+  }
+
+  let questions = [];
+  let txtMtime = 0;
+  let jsonMtime = 0;
+
+  if (fs.existsSync(QUESTIONS_TXT_FILE)) {
+    try { txtMtime = fs.statSync(QUESTIONS_TXT_FILE).mtimeMs; } catch (e) {}
+  }
+  if (fs.existsSync(QUESTIONS_JSON_FILE)) {
+    try { jsonMtime = fs.statSync(QUESTIONS_JSON_FILE).mtimeMs; } catch (e) {}
+  }
+
+  // Nếu file .txt được sửa mới hơn .json (cô giáo vừa sửa bằng Notepad) -> ưu tiên đọc .txt
+  if (fs.existsSync(QUESTIONS_TXT_FILE) && (txtMtime > jsonMtime || !fs.existsSync(QUESTIONS_JSON_FILE))) {
+    try {
+      const text = fs.readFileSync(QUESTIONS_TXT_FILE, 'utf8');
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('===') && !l.startsWith('---'));
+      if (lines.length > 0) {
+        questions = lines.map((line, idx) => {
+          const cleanContent = line.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim();
+          return {
+            id: 'q-' + (idx + 1) + '-' + (idx + 1),
+            content: cleanContent || line
+          };
+        });
+        try {
+          fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
+        } catch (e) {}
+        return questions;
+      }
+    } catch (e) {}
+  }
+
+  // Đọc từ file JSON
+  if (fs.existsSync(QUESTIONS_JSON_FILE)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(QUESTIONS_JSON_FILE, 'utf8'));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch (e) {}
+  }
+
+  // Dự phòng đọc từ file txt
+  if (fs.existsSync(QUESTIONS_TXT_FILE)) {
+    try {
+      const text = fs.readFileSync(QUESTIONS_TXT_FILE, 'utf8');
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('==='));
+      return lines.map((line, idx) => ({
+        id: 'q-' + (idx + 1),
+        content: line.replace(/^(câu\s*\d+[\s:.-]*|\d+[\s:.-]+)/i, '').trim() || line
+      }));
+    } catch (e) {}
+  }
+
+  return [];
+}
+
+function saveQuestionsToDisk(questions) {
+  if (!Array.isArray(questions)) return false;
+  if (!fs.existsSync(QUESTIONS_DIR)) {
+    try { fs.mkdirSync(QUESTIONS_DIR, { recursive: true }); } catch (e) {}
+  }
+
+  try {
+    fs.writeFileSync(QUESTIONS_JSON_FILE, JSON.stringify(questions, null, 2), 'utf8');
+    const txtContent = questions.map((q, idx) => `${idx + 1}. ${typeof q === 'string' ? q : (q.content || '')}`).join('\r\n');
+    fs.writeFileSync(QUESTIONS_TXT_FILE, txtContent, 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Lỗi lưu câu hỏi vào ổ đĩa:', err);
+    return false;
+  }
+}
+
+
 function syncToFirebase(data) {
   if (!data || !data.students || data.students.length === 0) return;
   const https = require('https');
@@ -914,7 +999,62 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // API Lấy danh sách câu hỏi / bài toán cho vòng quay gọi tên
+  if (pathname === '/api/questions') {
+    if (req.method === 'GET') {
+      const questions = loadQuestionsFromDisk();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, count: questions.length, questions }));
+      return;
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const { questions } = JSON.parse(body);
+          if (Array.isArray(questions)) {
+            saveQuestionsToDisk(questions);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, count: questions.length, questions }));
+            broadcastSse({
+              type: 'QUESTIONS_UPDATED',
+              questions
+            });
+          } else {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Questions must be an array' }));
+          }
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+      return;
+    }
+  }
+
+  // API Mở thư mục cau_hoi trên máy tính Windows
+  if (pathname === '/api/questions/open-folder') {
+    if (req.method === 'POST') {
+      try {
+        const { exec } = require('child_process');
+        exec(`explorer.exe "${QUESTIONS_DIR}"`, (err) => {
+          if (err) console.warn('Không thể mở Explorer:', err);
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, path: QUESTIONS_DIR }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+  }
+
   // File serving
+
   if (pathname === '/') {
     pathname = '/index.html';
   }

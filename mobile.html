@@ -563,16 +563,133 @@
 
   <!-- MODAL: Lucky Wheel (Vòng quay gọi tên) -->
   <div id="wheelModal" class="modal-backdrop">
-    <div class="modal-card" style="text-align: center; max-width: 400px; width: 95%;">
+    <div class="modal-card" style="text-align: center; max-width: 420px; width: 95%;">
       <button id="closeWheelModalBtn" class="modal-close-btn">&times;</button>
-      <h2 class="modal-title" style="font-size: 18px;">🎲 Vòng Quay Gọi Tên</h2>
+      <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">🎲 Vòng Quay Gọi Tên & Hỏi Bài</h2>
+
+      <!-- Tùy chọn Tích hợp Câu Hỏi / Bài Toán -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 6px 10px; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+        <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700; color: #4338CA;">
+          <input type="checkbox" id="wheelToggleQuestion" checked style="width: 15px; height: 15px; cursor: pointer; accent-color: #6366F1;">
+          <span>📝 Kèm câu hỏi/bài toán</span>
+        </label>
+        <button type="button" id="btnOpenQuestionManager" class="btn-header" style="padding: 3px 8px; font-size: 11px; border-radius: 8px;">
+          📂 Câu hỏi (<strong id="wheelQuestionCountBadge" style="color: #6366F1;">15</strong>)
+        </button>
+      </div>
+
       <div class="wheel-container">
         <div class="wheel-pointer">▼</div>
         <canvas id="luckyWheelCanvas" width="280" height="280"></canvas>
       </div>
-      <button id="spinWheelBtn" class="btn-header primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px; margin-top: 12px;">
-        🎯 QUAY NGAY!
+
+      <button id="spinWheelBtn" class="btn-header primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px; margin-top: 10px;">
+        🎯 QUAY GỌI TÊN NGAY!
       </button>
+
+      <!-- Khung hiển thị kết quả học sinh trúng + Câu hỏi bài toán -->
+      <div id="wheelWinnerBox" style="display: none; margin-top: 14px; padding: 14px; background: #FEF3C7; border-radius: 16px; border: 2px solid #F59E0B; text-align: center;">
+        <div id="wheelWinnerName" style="font-size: 20px; font-weight: 800; color: #B45309; margin-bottom: 6px;"></div>
+        
+        <!-- Khung Câu hỏi bài toán dành cho học sinh -->
+        <div id="wheelQuestionDisplayBox" style="margin: 10px 0; background: #FFFFFF; border: 1.5px dashed #F59E0B; border-radius: 12px; padding: 10px 12px; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-weight: 800; color: #D97706; text-transform: uppercase;">
+              📖 Câu hỏi cho con:
+            </span>
+            <button type="button" id="btnChangeQuestion" style="background: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; border-radius: 6px; padding: 2px 6px; font-size: 10.5px; font-weight: 700; cursor: pointer;">
+              🔄 Đổi câu
+            </button>
+          </div>
+          <div id="wheelQuestionContent" style="font-size: 15px; font-weight: 800; color: #1E293B; line-height: 1.4; padding: 2px 0;">
+            Đang tải câu hỏi...
+          </div>
+          <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+            <label style="font-size: 10.5px; color: #64748B; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              <input type="checkbox" id="chkExcludeUsedQuestion" checked style="cursor: pointer;"> Không lặp lại câu này
+            </label>
+          </div>
+        </div>
+
+        <!-- Hàng nút khen thưởng sao khi học sinh trả lời đúng -->
+        <div style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
+          <button type="button" class="btn-fast-reward hand btn-award-winner-stars" data-stars="1" style="padding: 6px 10px; font-size: 12px; font-weight: 800;">
+            👏 +1 ⭐
+          </button>
+          <button type="button" class="btn-fast-reward hand btn-award-winner-stars" data-stars="2" style="padding: 6px 10px; font-size: 12px; font-weight: 800; background: #D1FAE5; color: #065F46; border-color: #6EE7B7;">
+            🌟 +2 ⭐
+          </button>
+          <button type="button" class="btn-fast-reward hand btn-award-winner-stars" data-stars="3" style="padding: 6px 10px; font-size: 12px; font-weight: 800; background: #FCE7F3; color: #9D174D; border-color: #F472B6;">
+            🏆 +3 ⭐
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Quản Lý Câu Hỏi & Bài Toán -->
+  <div id="questionManagerModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <button id="closeQuestionManagerBtn" class="modal-close-btn">&times;</button>
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+        <span style="font-size: 22px;">📂</span>
+        <h2 class="modal-title" style="margin: 0; text-align: left; font-size: 18px;">Quản Lý Câu Hỏi & Bài Toán</h2>
+      </div>
+      <p style="font-size: 12px; color: #64748B; margin-bottom: 10px; text-align: left;">
+        Lưu tại thư mục <code style="background: #F1F5F9; padding: 2px 4px; border-radius: 4px;">cau_hoi/</code>. Cô có thể thêm bớt tùy ý!
+      </p>
+
+      <!-- Thanh Thao Tác Nhanh -->
+      <div style="display: flex; gap: 4px; margin-bottom: 10px; flex-wrap: wrap;">
+        <button type="button" id="btnOpenFolderOnPC" class="btn-header" style="font-size: 11px; padding: 4px 8px; background: #EEF2FF; color: #4338CA;">
+          📁 Mở Thư Mục
+        </button>
+        <button type="button" id="btnReloadQuestionsFromDisk" class="btn-header" style="font-size: 11px; padding: 4px 8px;">
+          🔄 Tải Lại
+        </button>
+        <button type="button" id="btnToggleBulkQuestionInput" class="btn-header" style="font-size: 11px; padding: 4px 8px;">
+          📝 Dán Nhiều Câu
+        </button>
+        <button type="button" id="btnResetDefaultQuestions" class="btn-header" style="font-size: 11px; padding: 4px 8px;">
+          ⭐ Mẫu Chuẩn
+        </button>
+      </div>
+
+      <!-- Khung Dán Hàng Loạt Câu Hỏi (Ẩn/Hiện) -->
+      <div id="bulkQuestionInputArea" style="display: none; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left;">
+        <textarea id="txtBulkQuestions" rows="4" placeholder="Dán các câu hỏi (mỗi dòng 1 câu)..." style="width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid #CBD5E1; font-size: 12px; box-sizing: border-box;"></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px;">
+          <button type="button" id="btnCancelBulkQuestions" class="btn-header" style="font-size: 11px;">Hủy</button>
+          <button type="button" id="btnSaveBulkQuestions" class="btn-header primary" style="font-size: 11px;">✅ Lưu Thêm</button>
+        </div>
+      </div>
+
+      <!-- Ô Thêm Từng Câu Hỏi -->
+      <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+        <input type="text" id="inputNewQuestionContent" placeholder="Gõ câu hỏi mới..." style="flex: 1; padding: 6px 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+        <button type="button" id="btnSubmitNewQuestion" class="btn-header primary" style="padding: 6px 12px; font-size: 12px; white-space: nowrap;">
+          ➕ Thêm
+        </button>
+      </div>
+
+      <!-- Bảng Danh Sách Câu Hỏi Hiện Có -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 11px; font-weight: 800; color: #475569;">
+          📋 Danh sách (<span id="questionCountTotal">0</span> câu):
+        </span>
+        <button type="button" id="btnClearAllQuestions" style="background: none; border: none; color: #EF4444; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: underline;">
+          Xóa hết
+        </button>
+      </div>
+
+      <div id="questionListContainer" style="flex: 1; overflow-y: auto; max-height: 35vh; border: 1px solid #E2E8F0; border-radius: 10px; background: #FFFFFF; text-align: left; padding: 2px;">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+        <button type="button" id="btnCloseQuestionManagerModal" class="btn-header primary" style="padding: 6px 20px; font-size: 13px;">
+          Đóng
+        </button>
+      </div>
     </div>
   </div>
 
@@ -660,15 +777,15 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/firebase-sync.js"></script>
-  <script src="js/qrcode.min.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/egg-evolution.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/noise-meter.js"></script>
-  <script src="js/wheel.js"></script>
-  <script src="js/card-export.js"></script>
-  <script src="js/app.js?v=20261002-3"></script>
+  <script src="js/firebase-config.js?v=20261008_v5"></script>
+  <script src="js/firebase-sync.js?v=20261008_v5"></script>
+  <script src="js/qrcode.min.js?v=20261008_v5"></script>
+  <script src="js/audio.js?v=20261008_v5"></script>
+  <script src="js/egg-evolution.js?v=20261008_v5"></script>
+  <script src="js/storage.js?v=20261008_v5"></script>
+  <script src="js/noise-meter.js?v=20261008_v5"></script>
+  <script src="js/wheel.js?v=20261008_v5"></script>
+  <script src="js/card-export.js?v=20261008_v5"></script>
+  <script src="js/app.js?v=20261008_v5"></script>
 </body>
 </html>
