@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Góc Phụ Huynh - Đồng Hành Rèn Luyện & Ấp Trứng Cùng Con</title>
   <meta name="description" content="Cổng thông tin phụ huynh theo dõi tiến trình ấp trứng, tự điền điểm rèn luyện đọc, viết và dặn dò tại nhà.">
-  <link rel="stylesheet" href="css/main.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="css/main.css?v=20261008_v1">
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -640,10 +643,29 @@
 
   <main class="parent-portal-container">
 
+    <!-- Thông Báo Cập Nhật Bản Mới Cho Phụ Huynh -->
+    <div id="parentAppUpdateBanner" style="display: none; background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 2px solid #3B82F6; border-radius: 16px; padding: 10px 14px; margin-bottom: 12px; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px;">🚀</span>
+        <div style="font-size: 12px; font-weight: 700; color: #1E40AF; line-height: 1.3;">
+          <strong>Đã có bản cập nhật mới từ cô giáo!</strong><br>
+          Đồng bộ Vòng quay & Bảng quà mới nhất.
+        </div>
+      </div>
+      <button type="button" id="btnParentApplyUpdate" style="background: #2563EB; color: #FFF; border: none; padding: 6px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+        🔄 Tải lại ngay
+      </button>
+    </div>
+
     <!-- Real-time Live Connection Badge -->
-    <div id="connectionStatusBadge" style="display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0;">
-      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
-      <span id="connectionStatusText">🟢 Đang kết nối trực tiếp với lớp học của cô giáo</span>
+    <div id="connectionStatusBadge" style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981;"></span>
+        <span id="connectionStatusText">🟢 Kết nối trực tiếp lớp học</span>
+      </div>
+      <button type="button" id="btnQuickRefreshParent" style="background: #FFF; border: 1px solid #6EE7B7; color: #065F46; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; cursor: pointer;" title="Tải lại bản mới nhất từ cô giáo">
+        🔄 Làm mới app
+      </button>
     </div>
 
     <!-- Child Selector / Active Child Bar -->
@@ -930,6 +952,24 @@
           Chúc mừng bé: <strong id="parentGiftClaimStudentName" style="color: #E11D48; font-size: 16px;"></strong>
         </p>
 
+        <!-- Badge Mốc 100 / 200 sao -->
+        <div id="parentGiftModalMilestoneBadge" style="display: none; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 12px; color: #fff; margin-bottom: 8px;"></div>
+
+        <!-- Khóa quay chéo: Đã quay ở trang giáo viên -->
+        <div id="parentTeacherLockedBox" style="display: none; background: #FFFBEB; border: 2px dashed #F59E0B; border-radius: 16px; padding: 16px; margin: 12px 0;">
+          <div style="font-size: 28px; margin-bottom: 4px;">🔒</div>
+          <div style="font-size: 15px; font-weight: 800; color: #92400E; margin-bottom: 4px;">
+            Thầy/Cô giáo đã trao quà cho bé ở lớp học!
+          </div>
+          <div style="font-size: 13px; color: #B45309; margin-bottom: 12px;">
+            Danh sách phần quà bé đã được nhận tại lớp:
+          </div>
+          <div id="parentTeacherLockedGiftsList"></div>
+          <div style="font-size: 12px; color: #059669; font-weight: 700; margin-top: 8px;">
+            👉 Điểm của bé đã tự động hoàn về 0 ⭐ để tích lũy đợt mới. Không thể quay thêm trên trang phụ huynh.
+          </div>
+        </div>
+
         <!-- Badge lượt mở -->
         <div style="display: inline-flex; align-items: center; gap: 6px; background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; padding: 4px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; margin-bottom: 12px;">
           <span>🎯</span> <span id="parentGiftTurnBadge">Lượt mở quà: 1 / 2</span>
@@ -986,16 +1026,65 @@
       </div>
     </div>
 
+    <!-- MODAL: LỰA CHỌN MỐC ĐIỂM (100⭐ / 200⭐) CHO PHỤ HUYNH -->
+    <div id="parentMilestoneChoiceModal" class="modal-backdrop">
+      <div class="modal-card" style="max-width: 500px; width: 95%; text-align: center; border-radius: 24px; padding: 24px 20px; border: 3px solid #6366F1; box-shadow: 0 20px 45px rgba(99, 102, 241, 0.25);">
+        <button id="closeParentMilestoneChoiceBtn" class="modal-close-btn">&times;</button>
+        
+        <div style="font-size: 48px; margin-bottom: 6px; animation: bounce 1.5s infinite;" id="parentMilestoneIcon">🐣</div>
+        <h2 id="parentMilestoneTitle" style="font-size: 20px; font-weight: 900; color: #1E293B; margin-bottom: 6px;">
+          CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!
+        </h2>
+        <p id="parentMilestoneSubtitle" style="font-size: 14px; color: #64748B; margin-bottom: 18px; line-height: 1.5;">
+          Bé <strong id="parentMilestoneStudentName" style="color: #4F46E5; font-size: 16px;">Học Sinh</strong> đã tích đủ điểm! Bố mẹ và bé muốn lựa chọn:
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;">
+          <!-- Lựa chọn 1: Quay quà ngay -->
+          <div id="btnParentChooseSpinNow" class="milestone-choice-card" style="background: linear-gradient(135deg, #FFF1F2, #FFE4E6); border: 2.5px solid #F43F5E; border-radius: 18px; padding: 16px; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 26px;">🎁</span>
+                <strong style="font-size: 15px; color: #E11D48;" id="parentChoice1Title">LỰA CHỌN 1: QUAY QUÀ NGAY</strong>
+              </div>
+              <span style="background: #E11D48; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;" id="parentChoice1Badge">MỐC 100 ⭐</span>
+            </div>
+            <p id="parentChoice1Desc" style="font-size: 13px; color: #881337; margin: 0; line-height: 1.4;">
+              Nhận ngay <strong>2 lượt quay quà may mắn</strong> tại nhà hoặc thông báo cho cô chuẩn bị quà.
+            </p>
+          </div>
+
+          <!-- Lựa chọn 2: Tích điểm cộng dồn đến 200 sao -->
+          <div id="btnParentChooseAccumulate" class="milestone-choice-card" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 2.5px solid #3B82F6; border-radius: 18px; padding: 16px; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 26px;">🚀</span>
+                <strong style="font-size: 15px; color: #1D4ED8;" id="parentChoice2Title">LỰA CHỌN 2: TÍCH ĐIỂM CỘNG DỒN</strong>
+              </div>
+              <span style="background: #2563EB; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;" id="parentChoice2Badge">SĂN MỐC 200 ⭐</span>
+            </div>
+            <p id="parentChoice2Desc" style="font-size: 13px; color: #1E40AF; margin: 0; line-height: 1.4;">
+              Tiếp tục rèn luyện lên <strong>mốc 200 ⭐</strong> để mở vòng quay <strong>QUÀ GIÁ TRỊ CAO</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Ăn món yêu thích, Gấu bông, Xếp hình lê gô, Bộ cờ vua, Bộ cờ cá ngựa...
+            </p>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; color: #94A3B8; font-style: italic;">
+          👉 Bố mẹ chạm vào 1 trong 2 lựa chọn để xác nhận nhé!
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
-  <script src="js/firebase-sync.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/egg-evolution.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/wheel.js"></script>
+  <script src="js/firebase-config.js?v=20261008_v1"></script>
+  <script src="js/firebase-sync.js?v=20261008_v1"></script>
+  <script src="js/audio.js?v=20261008_v1"></script>
+  <script src="js/egg-evolution.js?v=20261008_v1"></script>
+  <script src="js/storage.js?v=20261008_v1"></script>
+  <script src="js/wheel.js?v=20261008_v1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1317,10 +1406,37 @@
         }
       }
 
-      // Kéo dữ liệu từ server nội bộ nếu có
+      // Kéo dữ liệu từ server nội bộ ngay khi mở
       StorageManager.pullFromServer().then(serverData => {
         if (serverData && serverData.students) {
           applyData(serverData);
+        }
+      });
+
+      // Kết nối Realtime tự động với máy chủ (Server-Sent Events) - 0 giây trễ
+      if (window.location.protocol.startsWith('http') && window.EventSource) {
+        try {
+          const sse = new EventSource('/api/events');
+          sse.onmessage = (e) => {
+            try {
+              const payload = JSON.parse(e.data);
+              if (payload.data && payload.data.students) {
+                applyData(payload.data);
+              }
+            } catch (err) {}
+          };
+        } catch (err) {}
+      }
+
+      // Lắng nghe đồng bộ storage giữa các cửa sổ/tab trên cùng trình duyệt
+      window.addEventListener('storage', (e) => {
+        if (e.key === StorageManager.KEY && e.newValue) {
+          try {
+            const parsed = JSON.parse(e.newValue);
+            if (parsed && parsed.students) {
+              applyData(parsed);
+            }
+          } catch (err) {}
         }
       });
 
@@ -1644,21 +1760,36 @@
                 </div>
               `;
             } else if (gifts.length < 2) {
+              const is200 = (student.stars || 0) >= 200;
+              const hasAccumulate = student.accumulateBonus === true;
+
               giftActionContainer.innerHTML = `
                 <div style="background: linear-gradient(135deg, #FDF2F8, #FFF1F2); border: 2px solid #F472B6; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.2);">
-                  <div style="font-size: 28px; margin-bottom: 2px;">🎁🎡🎒</div>
-                  <div style="font-size: 15px; font-weight: 800; color: #BE185D;">CHÚC MỪNG TRỨNG ĐÃ NỞ!</div>
+                  <div style="font-size: 28px; margin-bottom: 2px;">${is200 ? '🏆👑🎁' : '🎁🎡🎒'}</div>
+                  <div style="font-size: 15px; font-weight: 800; color: #BE185D;">
+                    ${is200 ? 'CHÚC MỪNG BÉ ĐẠT KỶ LỤC 200 SAO!' : 'CHÚC MỪNG TRỨNG ĐÃ NỞ!'}
+                  </div>
                   <p style="font-size: 12px; color: #9D174D; font-weight: 700; margin: 4px 0 10px;">
-                    Con nhận được <strong>2 lượt mở quà may mắn</strong> (Vòng quay hoặc Túi mù)!
+                    ${is200 
+                      ? 'Con nhận được <strong>2 lượt mở quà SIÊU ĐẶC BIỆT</strong> (Lớp trưởng 3 ngày, đi siêu thị, gấu bông, lego, cờ vua...)!' 
+                      : (hasAccumulate ? 'Bé đang tích lũy lên mốc 200 ⭐ (hoặc có thể mở 2 quà mốc 100 ⭐ ngay)!' : 'Con nhận được <strong>2 lượt mở quà may mắn</strong> (hoặc chọn tích sao lên 200 ⭐)!')}
                   </p>
-                  <button type="button" id="btnTriggerParentGiftModal" style="background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-size: 14px; font-weight: 800; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);">
-                    🎁 Bấm Vào Đây Mở Quà (Lượt ${gifts.length + 1} / 2)
+                  <button type="button" id="btnTriggerParentGiftModal" style="background: ${is200 ? 'linear-gradient(135deg, #F59E0B, #DC2626)' : 'linear-gradient(135deg, #EC4899, #BE185D)'}; color: #fff; font-size: 14px; font-weight: 800; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);">
+                    ${is200 ? '🏆 Mở Quà Đặc Biệt 200 ⭐' : (hasAccumulate ? '🎁 Mở Quà Hoặc Tiếp Tục Tích Lũy' : `🎁 Bấm Vào Đây Mở Quà (Lượt ${gifts.length + 1} / 2)`)}
                   </button>
                 </div>
               `;
               const btnTrigger = document.getElementById('btnTriggerParentGiftModal');
               if (btnTrigger) {
-                btnTrigger.addEventListener('click', () => openParentGiftModal(student));
+                btnTrigger.addEventListener('click', () => {
+                  if ((student.stars || 0) >= 200) {
+                    openParentMilestoneChoiceModal(student, 200);
+                  } else if ((student.stars || 0) >= 100 && !student.accumulateBonus) {
+                    openParentMilestoneChoiceModal(student, 100);
+                  } else {
+                    openParentGiftModal(student, 100);
+                  }
+                });
               }
             } else {
               giftActionContainer.innerHTML = `
@@ -1672,29 +1803,42 @@
                       </span>
                     `).join('')}
                   </div>
-                  <div style="margin-top: 10px;">
-                    <button type="button" id="btnParentResetCycleInline" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 10px 20px; font-size: 13px; font-weight: 800; border-radius: 20px;">
-                      🎉 Bắt Đầu Chu Kỳ Ấp Mới (Về 0 ⭐)
-                    </button>
+                  <div style="font-size: 13px; font-weight: 800; color: #059669; margin-top: 8px;">
+                    ✨ Điểm đã được tự động hoàn về 0 ⭐ để con bắt đầu chặng đường mới!
                   </div>
                   <div style="font-size: 13px; font-weight: 800; color: #DC2626; background: #FEF2F2; border: 1px dashed #F87171; border-radius: 12px; padding: 8px 12px; margin-top: 8px;">
-                    👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+                    👉 Con hãy lên gặp cô giáo để nhận quà nhé! Cô đã nhận được thông báo để chuẩn bị quà cho con. 💖
                   </div>
                 </div>
               `;
-              const btnReset = document.getElementById('btnParentResetCycleInline');
-              if (btnReset) {
-                btnReset.addEventListener('click', async () => {
-                  await StorageManager.finishAndResetStudentCycle(currentId);
-                  data = StorageManager.loadData();
-                  renderChildView();
-                });
-              }
             }
           }
         } else {
           celebrationBox.style.display = 'none';
-          if (giftActionContainer) giftActionContainer.style.display = 'none';
+          if (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) {
+            giftActionContainer.style.display = 'block';
+            giftActionContainer.innerHTML = `
+              <div style="background: linear-gradient(135deg, #ECFDF5, #F0FDF4); border: 2px solid #10B981; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);">
+                <div style="font-size: 26px; margin-bottom: 2px;">🎉🎁🏆</div>
+                <div style="font-size: 14px; font-weight: 800; color: #065F46;">2 PHẦN QUÀ CON VỪA QUAY TRÚNG:</div>
+                <div style="margin: 8px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                  ${student.lastCompletedGifts.map((g, i) => `
+                    <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1.5px solid #FCD34D; font-size: 13px; font-weight: 800; padding: 5px 14px; border-radius: 16px;">
+                      Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}
+                    </span>
+                  `).join('')}
+                </div>
+                <div style="font-size: 12px; font-weight: 800; color: #059669; margin-top: 6px;">
+                  ✨ Điểm đã được tự động hoàn về 0 ⭐ để con bắt đầu chặng đường ấp quả trứng mới!
+                </div>
+                <div style="font-size: 12px; font-weight: 800; color: #DC2626; background: #FEF2F2; border: 1px dashed #F87171; border-radius: 10px; padding: 8px 12px; margin-top: 8px;">
+                  👉 Con hãy lên gặp cô giáo trên lớp để nhận quà nhé! Cô đã nhận được thông báo trong Bảng tổng hợp để chuẩn bị quà cho con rồi. 💖
+                </div>
+              </div>
+            `;
+          } else if (giftActionContainer) {
+            giftActionContainer.style.display = 'none';
+          }
         }
       }
 
@@ -1807,6 +1951,8 @@
         }
       }
 
+      let parentActiveGiftMilestone = 100;
+
       async function handleParentGiftAward(wonGift) {
         if (isParentClaiming || !currentId) return;
         isParentClaiming = true;
@@ -1831,21 +1977,32 @@
             }, i * 120);
           }
 
-          const updatedStudent = await StorageManager.claimStudentGift(currentId, wonGift, 'parent');
+          const updatedStudent = await StorageManager.claimStudentGift(currentId, wonGift, 'parent', parentActiveGiftMilestone);
           if (updatedStudent) {
             const st = (data.students || []).find(s => s.id === currentId);
-            if (st) st.giftHistory = updatedStudent.giftHistory;
+            if (st) {
+              st.stars = updatedStudent.stars;
+              st.giftHistory = updatedStudent.giftHistory;
+              st.accumulateBonus = updatedStudent.accumulateBonus;
+              st.giftSessionSource = updatedStudent.giftSessionSource;
+              st.lastCompletedGifts = updatedStudent.lastCompletedGifts;
+            }
           }
 
           const gifts = (updatedStudent && updatedStudent.giftHistory) ? updatedStudent.giftHistory : [];
-          renderParentClaimHistory(gifts);
+          const isCompleted = (updatedStudent && updatedStudent.stars === 0 && (!updatedStudent.giftHistory || updatedStudent.giftHistory.length === 0));
+          const completedGifts = (updatedStudent && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length > 0) 
+            ? updatedStudent.lastCompletedGifts 
+            : (gifts.length > 0 ? gifts : [wonGift]);
+
+          renderParentClaimHistory(isCompleted ? completedGifts : gifts);
 
           parentGiftResultBox.style.display = 'block';
           parentGiftResultIcon.textContent = wonGift.icon || '🎁';
           parentGiftResultTitle.textContent = `Bé đã trúng: ${wonGift.name}!`;
 
-          if (gifts.length < 2) {
-            parentGiftTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
+          if (!isCompleted && gifts.length === 1) {
+            parentGiftTurnBadge.textContent = `Lượt mở quà: 2 / 2`;
             parentGiftResultDesc.innerHTML = `
               <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
                 🎉 Chúc mừng con! Con vẫn còn <strong>1 lượt mở quà nữa</strong>!
@@ -1861,32 +2018,42 @@
               parentGiftResultBox.style.display = 'none';
               isParentClaiming = false;
               if (parentCurrentGiftMode === 'blindbag') {
-                const giftItems = StorageManager.getGiftItems();
+                const giftItems = StorageManager.getGiftItems(parentActiveGiftMilestone);
                 renderParentBlindBags(giftItems);
               }
             });
           } else {
+            // TỰ ĐỘNG HOÀN VỀ 0 SAO KHI XONG 2 LƯỢT MÀ KHÔNG CẦN THAO TÁC, KHÔNG CHO QUAY NỮA
             parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+            const g1Text = completedGifts[0] ? `${completedGifts[0].icon || '🎁'} ${completedGifts[0].name}` : 'Quà lượt 1';
+            const g2Text = completedGifts[1] ? `${completedGifts[1].icon || '🎁'} ${completedGifts[1].name}` : `${wonGift.icon || '🎁'} ${wonGift.name}`;
+
             parentGiftResultDesc.innerHTML = `
               <div style="font-size: 15px; font-weight: 800; color: #E11D48; margin-top: 6px;">
                 🌟 CHÚC MỪNG CON ĐÃ MỞ XONG 2 LƯỢT QUÀ! 🌟
               </div>
+              <div style="background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 10px; margin: 8px 0; font-size: 13px; font-weight: 800; color: #92400E; text-align: left;">
+                🎁 Lượt 1: ${g1Text}<br>
+                🎁 Lượt 2: ${g2Text}
+              </div>
               <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px; line-height: 1.5;">
-                👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+                👉 Điểm của bé đã được <strong>tự động hoàn về 0 ⭐</strong> để bắt đầu chu kỳ ấp mới! Không thể quay thêm nữa.
+              </div>
+              <div style="font-size: 13px; font-weight: 800; color: #DC2626; margin-top: 6px;">
+                👉 Con hãy lên gặp cô giáo để nhận quà nhé! Cô đã nhận được thông báo để chuẩn bị quà cho con. 💖
               </div>
             `;
             parentGiftNextActionArea.innerHTML = `
               <button type="button" id="btnParentFinishClaim" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 26px; font-size: 14px; font-weight: 800; border-radius: 20px;">
-                🎉 Hoàn Tất Mở Quà & Bắt Đầu Chu Kỳ Mới (Về 0 ⭐)
+                ✨ Đóng Lại
               </button>
             `;
-            document.getElementById('btnParentFinishClaim').addEventListener('click', async () => {
+            document.getElementById('btnParentFinishClaim').addEventListener('click', () => {
               parentGiftClaimModal.classList.remove('active');
-              await StorageManager.finishAndResetStudentCycle(currentId);
-              data = StorageManager.loadData();
               renderChildView();
             });
 
+            // Khóa hoàn toàn vùng quay và túi mù
             parentGiftWheelArea.style.display = 'none';
             parentGiftBlindBagArea.style.display = 'none';
           }
@@ -1895,35 +2062,88 @@
         } catch (e) {
           console.error('Lỗi nhận quà:', e);
         } finally {
-          if (updatedStudent && updatedStudent.giftHistory && updatedStudent.giftHistory.length >= 2) {
-            isParentClaiming = false;
-          }
+          isParentClaiming = false;
         }
       }
 
-      function openParentGiftModal(student) {
+      function openParentGiftModal(student, forceMilestone = null) {
         if (!student) return;
         isParentClaiming = false;
-        const giftItems = StorageManager.getGiftItems();
-        parentGiftClaimStudentName.textContent = student.name;
+
+        const milestone = forceMilestone || (((student.accumulateBonus && student.stars >= 200) || student.stars >= 200) ? 200 : 100);
+        parentActiveGiftMilestone = milestone;
+
+        const milestoneBadge = document.getElementById('parentGiftModalMilestoneBadge');
+        if (milestoneBadge) {
+          milestoneBadge.style.display = 'inline-block';
+          if (milestone === 200) {
+            milestoneBadge.textContent = '🏆 VÒNG QUAY ĐẶC BIỆT MỐC 200 ⭐';
+            milestoneBadge.style.background = 'linear-gradient(135deg, #F59E0B, #DC2626)';
+          } else {
+            milestoneBadge.textContent = '🎁 VÒNG QUAY MỐC 100 ⭐';
+            milestoneBadge.style.background = 'linear-gradient(135deg, #EC4899, #8B5CF6)';
+          }
+        }
 
         const gifts = student.giftHistory || [];
-        renderParentClaimHistory(gifts);
+        const hasFinished = (gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2);
+        const displayGifts = hasFinished && student.lastCompletedGifts && student.lastCompletedGifts.length > 0 
+          ? student.lastCompletedGifts 
+          : gifts;
+
+        parentGiftClaimStudentName.textContent = student.name;
+        renderParentClaimHistory(displayGifts);
 
         parentCurrentGiftMode = 'wheel';
         btnParentModeWheel.classList.add('active');
         btnParentModeBlindBag.classList.remove('active');
 
-        if (gifts.length >= 2) {
+        // KHÓA QUAY CHÉO: Nếu đã quay với giáo viên ở lớp thì không cho quay ở trang phụ huynh nữa
+        const claimedByTeacher = (student.giftSessionSource === 'teacher') || gifts.some(g => g.claimedBy === 'teacher');
+        const teacherLockedBox = document.getElementById('parentTeacherLockedBox');
+        const teacherLockedList = document.getElementById('parentTeacherLockedGiftsList');
+
+        if (claimedByTeacher) {
+          parentGiftTurnBadge.textContent = '🔒 Đã nhận quà tại lớp học';
+          parentGiftWheelArea.style.display = 'none';
+          parentGiftBlindBagArea.style.display = 'none';
+          parentGiftResultBox.style.display = 'none';
+          if (teacherLockedBox) teacherLockedBox.style.display = 'block';
+          if (teacherLockedList) {
+            teacherLockedList.innerHTML = gifts.map((g, idx) => `
+              <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; border: 1.5px solid #FDE68A;">
+                <span style="font-size: 26px;">${g.icon || '🎁'}</span>
+                <div style="flex: 1; text-align: left;">
+                  <div style="font-weight: 800; color: #1E293B;">Lượt ${idx + 1}: ${g.name}</div>
+                  <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong'} (Tại lớp cùng cô giáo)</div>
+                </div>
+              </div>
+            `).join('');
+          }
+          parentGiftClaimModal.classList.add('active');
+          return;
+        } else {
+          if (teacherLockedBox) teacherLockedBox.style.display = 'none';
+        }
+
+        const giftItems = StorageManager.getGiftItems(milestone);
+
+        if (hasFinished) {
           parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
           parentGiftWheelArea.style.display = 'none';
           parentGiftBlindBagArea.style.display = 'none';
           parentGiftResultBox.style.display = 'block';
           parentGiftResultIcon.textContent = '🏆';
           parentGiftResultTitle.textContent = `Bé ${student.name} đã mở đủ 2 phần quà!`;
+          const g1 = displayGifts[0] ? `${displayGifts[0].icon || '🎁'} ${displayGifts[0].name}` : 'Quà lượt 1';
+          const g2 = displayGifts[1] ? `${displayGifts[1].icon || '🎁'} ${displayGifts[1].name}` : 'Quà lượt 2';
           parentGiftResultDesc.innerHTML = `
+            <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 12px; padding: 10px; margin: 8px 0; font-size: 13px; font-weight: 800; color: #92400E; text-align: left;">
+              🎁 Lượt 1: ${g1}<br>
+              🎁 Lượt 2: ${g2}
+            </div>
             <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
-              👉 Con hãy lên gặp cô giáo để nhận quà nhé! 💖
+              👉 Điểm đã được tự động hoàn về 0 ⭐ để bắt đầu chu kỳ ấp mới! Con hãy lên gặp cô giáo để nhận quà nhé! 💖
             </div>
           `;
           parentGiftNextActionArea.innerHTML = `
@@ -1942,6 +2162,98 @@
         }
 
         parentGiftClaimModal.classList.add('active');
+      }
+
+      // --- MODAL LỰA CHỌN MỐC 100⭐ HOẶC 200⭐ TRÊN TRANG PHỤ HUYNH ---
+      let parentActiveMilestoneStudentId = null;
+      let parentActiveMilestoneType = 100;
+
+      function openParentMilestoneChoiceModal(student, milestone = 100) {
+        if (!student) return;
+        parentActiveMilestoneStudentId = student.id;
+        parentActiveMilestoneType = milestone;
+
+        const modal = document.getElementById('parentMilestoneChoiceModal');
+        if (!modal) {
+          openParentGiftModal(student, milestone);
+          return;
+        }
+
+        const iconEl = document.getElementById('parentMilestoneIcon');
+        const titleEl = document.getElementById('parentMilestoneTitle');
+        const subtitleEl = document.getElementById('parentMilestoneSubtitle');
+        const studentNameEl = document.getElementById('parentMilestoneStudentName');
+        const choice1Title = document.getElementById('parentChoice1Title');
+        const choice1Badge = document.getElementById('parentChoice1Badge');
+        const choice1Desc = document.getElementById('parentChoice1Desc');
+        const choice2Title = document.getElementById('parentChoice2Title');
+        const choice2Badge = document.getElementById('parentChoice2Badge');
+        const choice2Desc = document.getElementById('parentChoice2Desc');
+
+        if (studentNameEl) studentNameEl.textContent = student.name;
+
+        if (milestone === 200) {
+          if (iconEl) iconEl.textContent = '🏆';
+          if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT KỶ LỤC 200 SAO!';
+          if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã xuất sắc tích đủ 200 sao! Bố mẹ và con muốn lựa chọn:`;
+          if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY VÒNG QUAY ĐẶC BIỆT 200 ⭐';
+          if (choice1Badge) choice1Badge.textContent = 'QUÀ GIÁ TRỊ CAO 200 ⭐';
+          if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà SIÊU ĐẶC BIỆT</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Ăn món yêu thích, Gấu bông, Lego, Bộ cờ vua, Cờ cá ngựa...';
+          if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC GIỮ ĐIỂM VINH DANH';
+          if (choice2Badge) choice2Badge.textContent = 'GIỮ ĐIỂM KỶ LỤC';
+          if (choice2Desc) choice2Desc.innerHTML = 'Giữ nguyên điểm số 200 ⭐ để vinh danh trên bảng vàng của lớp học và quay quà sau.';
+        } else {
+          if (iconEl) iconEl.textContent = '🐣';
+          if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!';
+          if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã tích đủ 100 sao và linh thú đã nở! Bố mẹ và con muốn lựa chọn:`;
+          if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY QUÀ NGAY (MỐC 100 ⭐)';
+          if (choice1Badge) choice1Badge.textContent = 'MỐC 100 ⭐';
+          if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà may mắn</strong> tại nhà hoặc thông báo cho cô chuẩn bị quà.';
+          if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TÍCH ĐIỂM CỘNG DỒN ĐẾN 200 ⭐';
+          if (choice2Badge) choice2Badge.textContent = 'SĂN MỐC 200 ⭐';
+          if (choice2Desc) choice2Desc.innerHTML = 'Tiếp tục rèn luyện lên <strong>mốc 200 ⭐</strong> để mở vòng quay <strong>QUÀ GIÁ TRỊ CAO</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Ăn món yêu thích, Gấu bông, Xếp hình lê gô, Bộ cờ vua, Bộ cờ cá ngựa...';
+        }
+
+        modal.classList.add('active');
+      }
+
+      const btnParentChooseSpinNow = document.getElementById('btnParentChooseSpinNow');
+      if (btnParentChooseSpinNow) {
+        btnParentChooseSpinNow.addEventListener('click', () => {
+          const modal = document.getElementById('parentMilestoneChoiceModal');
+          if (modal) modal.classList.remove('active');
+          const student = (data.students || []).find(s => s.id === parentActiveMilestoneStudentId);
+          if (student) {
+            openParentGiftModal(student, parentActiveMilestoneType);
+          }
+        });
+      }
+
+      const btnParentChooseAccumulate = document.getElementById('btnParentChooseAccumulate');
+      if (btnParentChooseAccumulate) {
+        btnParentChooseAccumulate.addEventListener('click', async () => {
+          const modal = document.getElementById('parentMilestoneChoiceModal');
+          if (modal) modal.classList.remove('active');
+          if (parentActiveMilestoneStudentId) {
+            const student = (data.students || []).find(s => s.id === parentActiveMilestoneStudentId);
+            if (parentActiveMilestoneType === 200) {
+              alert(`🏆 Bé ${student ? student.name : ''} sẽ tiếp tục giữ điểm kỷ lục 200 ⭐!`);
+            } else {
+              await StorageManager.setMilestoneChoice(parentActiveMilestoneStudentId, 'accumulate');
+              data = StorageManager.loadData();
+              renderChildView();
+              alert(`🚀 Tuyệt vời! Bé ${student ? student.name : ''} đã chọn tích điểm cộng dồn đến mốc 200 ⭐ để săn quà Siêu Đặc Biệt! Bố mẹ hãy đồng hành cùng con nhé!`);
+            }
+          }
+        });
+      }
+
+      const closeParentMilestoneChoiceBtn = document.getElementById('closeParentMilestoneChoiceBtn');
+      if (closeParentMilestoneChoiceBtn) {
+        closeParentMilestoneChoiceBtn.addEventListener('click', () => {
+          const modal = document.getElementById('parentMilestoneChoiceModal');
+          if (modal) modal.classList.remove('active');
+        });
       }
 
       if (closeParentGiftClaimBtn) {
@@ -2046,6 +2358,31 @@
       }
       checkLiveConnection();
       setInterval(checkLiveConnection, 6000);
+
+      // Quản lý phiên bản app & làm mới cập nhật tự động từ cô giáo
+      const APP_VERSION = '20261008_v1';
+      const lastAppVer = localStorage.getItem('parent_app_version');
+      const appUpdateBanner = document.getElementById('parentAppUpdateBanner');
+      const btnParentApplyUpdate = document.getElementById('btnParentApplyUpdate');
+      const btnQuickRefreshParent = document.getElementById('btnQuickRefreshParent');
+
+      function hardRefreshApp() {
+        localStorage.setItem('parent_app_version', APP_VERSION);
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('_v', Date.now());
+        window.location.href = currentUrl.toString();
+      }
+
+      if (btnParentApplyUpdate) {
+        btnParentApplyUpdate.addEventListener('click', hardRefreshApp);
+      }
+      if (btnQuickRefreshParent) {
+        btnQuickRefreshParent.addEventListener('click', hardRefreshApp);
+      }
+
+      if (lastAppVer !== APP_VERSION) {
+        if (appUpdateBanner) appUpdateBanner.style.display = 'flex';
+      }
     });
   </script>
 </body>

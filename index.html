@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vườn Thú Kỳ Diệu - Quản Lý Lớp Học Lớp 1</title>
   <meta name="description" content="Ứng dụng quản lý lớp học tiểu học thông minh, ấp trứng nở linh thú, thao tác 1 chạm siêu tốc, kết nối phụ huynh thời gian thực.">
-  <link rel="stylesheet" href="css/main.css?v=20261001-6">
+  <link rel="stylesheet" href="css/main.css?v=20261002-2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
 </head>
 <body>
@@ -20,19 +20,16 @@
           <p class="brand-tagline">Thao tác 1 chạm • Ấp trứng rồng • Gắn kết Phụ Huynh</p>
         </div>
       </div>
-      <div class="mobile-header-toggles">
-        <button type="button" id="btnToggleMobileTools" class="btn-toggle-mobile-tools" title="Bấm để mở hoặc thu gọn 14 nút tiện ích lớp học">
-          <span class="icon-toggle">🛠️</span>
-          <span id="mobileToolsToggleText">Tiện ích (13)</span>
-          <span id="mobileToolsToggleArrow">▾</span>
-        </button>
-      </div>
     </div>
 
     <!-- Quick Classroom Tools -->
     <div class="header-actions" id="headerActionsMenu">
       <button id="btnParentHomeworkSummary" class="btn-header" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Xem bảng tổng hợp điểm rèn luyện phụ huynh chấm tại nhà">
         📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
+      </button>
+
+      <button id="btnShareMobileLink" class="btn-header" style="background: linear-gradient(135deg, #059669, #10B981); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);" title="Mở link hoặc mã QR để kết nối điện thoại giáo viên (nhỏ gọn)">
+        📱 <span>Link Điện Thoại</span>
       </button>
 
       <button id="btnShareClassLink" class="btn-header" style="background: linear-gradient(135deg, #7052FF, #9B51E0); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(112, 82, 255, 0.35);" title="Gửi 1 link chung cho nhóm Zalo phụ huynh (Chỉ xem)">
@@ -90,12 +87,23 @@
       <div id="cloudSyncStatusBadge" class="btn-header" style="background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; font-size: 12px; font-weight: 700; cursor: pointer;" title="Bấm để đồng bộ ngay danh sách học sinh lên Đám Mây cho phụ huynh">
         ☁️ <span id="cloudSyncStatusText">Đang nối Đám Mây...</span>
       </div>
-
-      <button type="button" id="btnCloseMobileTools" class="btn-close-mobile-tools" title="Thu gọn tiện ích">
-        ▲ Thu gọn tiện ích
-      </button>
     </div>
   </header>
+
+  <!-- BANNER THÔNG BÁO QUÀ CHO GIÁO VIÊN CHUẨN BỊ -->
+  <div id="teacherGiftNoticeBanner" class="teacher-gift-notice-banner" style="display: none;">
+    <div class="notice-inner">
+      <div class="notice-icon">🎁🔔</div>
+      <div class="notice-content">
+        <div class="notice-title">🔔 THÔNG BÁO CHUẨN BỊ QUÀ CHO HỌC SINH!</div>
+        <div id="noticeGiftDesc" class="notice-desc">
+          Bé vừa quay trúng quà! Vui lòng chuẩn bị quà cho con nhé.
+        </div>
+      </div>
+      <button type="button" id="btnNoticeViewGifts" class="btn-notice-action">Xem Danh Sách Quà</button>
+      <button type="button" id="btnCloseNoticeBanner" class="notice-close">&times;</button>
+    </div>
+  </div>
 
   <!-- Mode Switcher Navigation -->
   <div class="tab-navigation-bar">
@@ -396,6 +404,87 @@
             📋 Xem khen thưởng theo hành vi chi tiết...
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Lựa chọn mốc điểm (Quay quà ngay hay Tích điểm cộng dồn lên 200 sao) -->
+  <div id="milestoneChoiceModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 520px; width: 95%; text-align: center; border-radius: 24px; padding: 24px 20px; border: 3px solid #6366F1; box-shadow: 0 20px 45px rgba(99, 102, 241, 0.25);">
+      <button id="closeMilestoneChoiceBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="font-size: 48px; margin-bottom: 6px; animation: bounce 1.5s infinite;" id="milestoneChoiceIcon">🎉🐣✨</div>
+      <h2 id="milestoneChoiceTitle" style="font-size: 21px; font-weight: 900; color: #1E293B; margin-bottom: 6px;">
+        CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!
+      </h2>
+      <p id="milestoneChoiceSubtitle" style="font-size: 14px; color: #64748B; margin-bottom: 18px; line-height: 1.5;">
+        Bé <strong id="milestoneStudentName" style="color: #4F46E5; font-size: 16px;">Học Sinh</strong> đã tích đủ 100 sao và linh thú đã sẵn sàng nở! Con muốn lựa chọn:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;">
+        <!-- Lựa chọn 1: Quay quà ngay -->
+        <div id="btnChooseSpinNow" class="milestone-choice-card" style="background: linear-gradient(135deg, #FFF1F2, #FFE4E6); border: 2.5px solid #F43F5E; border-radius: 18px; padding: 16px; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 26px;">🎁</span>
+              <strong style="font-size: 16px; color: #E11D48;" id="labelChoice1Title">LỰA CHỌN 1: QUAY QUÀ NGAY</strong>
+            </div>
+            <span style="background: #E11D48; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;" id="labelChoice1Badge">MỐC 100 ⭐</span>
+          </div>
+          <p id="labelChoice1Desc" style="font-size: 13px; color: #881337; margin: 0; line-height: 1.4;">
+            Nhận ngay <strong>2 lượt quay quà may mắn</strong> (Bút chì, Lego mini, Kẹp tóc, Sổ tay, Cục tẩy, Tranh cát, Quà yêu thích...).
+          </p>
+        </div>
+
+        <!-- Lựa chọn 2: Tích điểm cộng dồn lên 200 sao -->
+        <div id="btnChooseAccumulate" class="milestone-choice-card" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 2.5px solid #3B82F6; border-radius: 18px; padding: 16px; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 26px;">🚀</span>
+              <strong style="font-size: 16px; color: #1D4ED8;" id="labelChoice2Title">LỰA CHỌN 2: TÍCH ĐIỂM CỘNG DỒN</strong>
+            </div>
+            <span style="background: #2563EB; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;" id="labelChoice2Badge">LÊN MỐC 200 ⭐</span>
+          </div>
+          <p id="labelChoice2Desc" style="font-size: 13px; color: #1E40AF; margin: 0; line-height: 1.4;">
+            Tiếp tục nuôi sao lên <strong>mốc 200 ⭐</strong> để mở vòng quay <strong>QUÀ GIÁ TRỊ CAO</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Ăn món em yêu thích, Gấu bông, Lego lớn, Bộ cờ vua, Bộ cờ cá ngựa...
+          </p>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; color: #94A3B8; font-style: italic;">
+        💡 Bấm vào một trong hai lựa chọn ở trên để xác nhận nhé!
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Chia Sẻ Link Điện Thoại Giáo Viên & Mã QR -->
+  <div id="mobileLinkModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px; width: 95%; text-align: center; border-radius: 24px; padding: 24px 20px;">
+      <button id="closeMobileLinkModalBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="font-size: 38px; margin-bottom: 6px;">📱✨</div>
+      <h2 class="modal-title" style="margin: 0; font-size: 20px; color: #1E293B;">KẾT NỐI ĐIỆN THOẠI GIÁO VIÊN</h2>
+      <p style="font-size: 13px; color: #64748B; margin: 6px 0 16px;">
+        Giao diện điện thoại nhỏ gọn, thao tác 1 chạm siêu mượt khi cô giáo di chuyển quanh lớp học!
+      </p>
+
+      <div style="background: #F8FAFC; border: 2px dashed #CBD5E1; border-radius: 18px; padding: 16px; margin-bottom: 16px;">
+        <div id="mobileQrContainer" style="display: flex; justify-content: center; margin-bottom: 12px;">
+          <div id="mobileQrCodeImg"></div>
+        </div>
+        <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">
+          Hoặc mở trực tiếp theo địa chỉ:
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" id="inputMobileUrlLink" readonly style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-size: 13px; font-weight: 700; color: #0F172A; background: #FFFFFF; outline: none;">
+          <button type="button" id="btnCopyMobileLink" class="btn-header primary" style="background: linear-gradient(135deg, #059669, #10B981); padding: 10px 14px; font-size: 13px; white-space: nowrap;">
+            📋 Sao Chép
+          </button>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; color: #64748B; line-height: 1.5;">
+        💡 <strong>Lưu ý:</strong> Điện thoại của cô cần kết nối cùng mạng Wifi với máy tính này (hoặc dùng 4G nếu đã bật đường link Online).
       </div>
     </div>
   </div>
@@ -860,9 +949,19 @@
         <span style="font-size: 28px;">🎁</span>
         <h2 class="modal-title" style="margin: 0; text-align: left;">Cài Đặt Danh Sách Quà Nở Trứng</h2>
       </div>
-      <p style="font-size: 13px; color: #64748B; margin-bottom: 14px;">
+      <p style="font-size: 13px; color: #64748B; margin-bottom: 12px;">
         Cô giáo có thể thêm, bớt hoặc đổi tên các phần quà theo thực tế quà cô đã chuẩn bị cho các bé.
       </p>
+
+      <!-- Tabs chọn mốc quà: 100 Sao hoặc 200 Sao -->
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button type="button" id="tabGiftSettings100" class="tab-btn active" style="flex: 1; padding: 8px 12px; font-size: 13px; font-weight: 800;">
+          🎁 Quà Mốc 100 Sao
+        </button>
+        <button type="button" id="tabGiftSettings200" class="tab-btn" style="flex: 1; padding: 8px 12px; font-size: 13px; font-weight: 800;">
+          👑 Quà Mốc 200 Sao (Giá Trị Cao)
+        </button>
+      </div>
 
       <!-- Form Thêm Quà Mới -->
       <div style="background: #F8FAFC; border-radius: 16px; padding: 14px; border: 1px solid #E2E8F0; margin-bottom: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -931,13 +1030,31 @@
         Chúc mừng bé: <strong id="giftClaimStudentName" style="color: #E11D48; font-size: 16px;"></strong>
       </p>
 
-      <!-- Badge số lượt quay -->
-      <div style="display: inline-flex; align-items: center; gap: 6px; background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; padding: 4px 16px; border-radius: 20px; font-weight: 800; font-size: 13px; margin-bottom: 12px;">
-        <span>🎯</span> <span id="giftClaimTurnBadge">Lượt mở quà: 1 / 2</span>
+      <!-- Mốc điểm & Badge số lượt quay -->
+      <div style="display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+        <span id="giftClaimMilestoneBadge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 12px; font-weight: 800; padding: 4px 14px; border-radius: 20px;">
+          🎁 MỐC 100 SAO
+        </span>
+        <span style="background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 12px;">
+          🎯 <span id="giftClaimTurnBadge">Lượt mở quà: 1 / 2</span>
+        </span>
+      </div>
+
+      <!-- Khu vực khóa nếu bé đã quay ở trang phụ huynh -->
+      <div id="giftClaimLockedArea" style="display: none; background: #FFF1F2; border: 2px solid #FDA4AF; border-radius: 18px; padding: 18px; margin: 10px auto 14px; max-width: 480px; text-align: center; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.1);">
+        <div style="font-size: 34px; margin-bottom: 4px;">🏡🎁✨</div>
+        <div style="font-size: 16px; font-weight: 800; color: #BE185D; margin-bottom: 6px;">BÉ ĐÃ ĐƯỢC PHỤ HUYNH QUAY QUÀ TẠI NHÀ!</div>
+        <p style="font-size: 13px; color: #475569; margin: 0 0 10px; line-height: 1.4;">
+          Phụ huynh đã mở quà cho bé trên trang Phụ Huynh. Tính năng quay tại lớp đã khóa để đảm bảo quyền quay duy nhất.
+        </p>
+        <div id="giftClaimLockedList" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;"></div>
+        <div style="font-size: 13px; font-weight: 700; color: #059669;">
+          👉 Cô giáo hãy chuẩn bị những phần quà này để trao cho con nhé! 💖
+        </div>
       </div>
 
       <!-- Mode Selector: Vòng Quay hoặc Túi Mù -->
-      <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 14px;">
+      <div id="giftClaimModeSelector" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 14px;">
         <button type="button" id="btnModeWheel" class="tab-btn active" style="padding: 8px 18px; font-size: 13px; border-radius: 20px;">
           🎡 Vòng Quay May Mắn
         </button>
@@ -1125,6 +1242,6 @@
   <script src="js/noise-meter.js"></script>
   <script src="js/wheel.js"></script>
   <script src="js/card-export.js"></script>
-  <script src="js/app.js?v=20261001-6"></script>
+  <script src="js/app.js?v=20261002-2"></script>
 </body>
 </html>

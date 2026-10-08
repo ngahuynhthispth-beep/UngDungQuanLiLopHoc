@@ -154,13 +154,14 @@
         updatedAt: Date.now()
       };
 
-      // Không cho tích sao nếu đã đạt 100 sao (bắt buộc mở quà nhận thưởng)
+      // Điểm tối đa: 100 sao nếu chưa chọn tích điểm, hoặc 200 sao nếu đã chọn tích điểm cộng dồn
+      const maxStarsLimit = student.accumulateBonus ? 200 : 100;
       let actualAdded = 0;
-      if ((student.stars || 0) >= 100) {
+      if ((student.stars || 0) >= maxStarsLimit) {
         actualAdded = 0;
       } else {
         const oldStars = student.stars || 0;
-        student.stars = Math.min(100, oldStars + pointsEarned);
+        student.stars = Math.min(maxStarsLimit, oldStars + pointsEarned);
         actualAdded = student.stars - oldStars;
         if (student.stars >= 100) {
           if (!student.hatchedAt) student.hatchedAt = Date.now();
@@ -196,8 +197,8 @@
       };
     },
 
-    // Nhận quà nở trứng trực tiếp trên Firebase (Tối đa 2 lượt)
-    async claimStudentGift(studentId, gift, source = 'teacher') {
+    // Nhận quà nở trứng trực tiếp trên Firebase (Tối đa 2 lượt) & Tự động hoàn về 0
+    async claimStudentGift(studentId, gift, source = 'teacher', milestone = 100) {
       if (!this.isInitialized || !this.db) throw new Error('Firebase chưa kết nối');
 
       const ref = this.db.ref('classData');
@@ -215,10 +216,16 @@
         throw new Error('Bé đã hoàn thành 2 lượt nhận quà!');
       }
 
+      if (student.giftSessionSource && student.giftSessionSource !== source) {
+        const otherTitle = student.giftSessionSource === 'parent' ? 'Phụ Huynh' : 'Cô Giáo (trên lớp)';
+        throw new Error(`Bé đã quay quà tại trang ${otherTitle}! Không thể quay thêm tại đây.`);
+      }
+
       if (!student.giftSessionSource) {
         student.giftSessionSource = source;
       }
 
+      const currentMilestone = milestone || (student.stars >= 200 || student.accumulateBonus ? 200 : 100);
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}, ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
       const record = {
@@ -227,13 +234,91 @@
         icon: gift.icon || '🎁',
         time: timeStr,
         timestamp: Date.now(),
-        claimedBy: source
+        claimedBy: source,
+        milestone: currentMilestone
       };
       student.giftHistory.push(record);
+
+      if (!classData.giftSummaryRecords) classData.giftSummaryRecords = [];
+      const group = (classData.groups || []).find(g => g.id === student.group);
+
+      // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
+      let summaryEntry = classData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
+      if (!summaryEntry) {
+        summaryEntry = {
+          id: 'summary-' + Date.now(),
+          studentId: student.id,
+          studentName: student.name,
+          groupName: group ? group.name : `Tổ ${student.group}`,
+          groupColor: group ? group.color : '#64748B',
+          milestone: currentMilestone,
+          gift1: record,
+          gift2: null,
+          claimedBy: source,
+          dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+          timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+          timestamp: Date.now(),
+          completed: false,
+          delivered: false
+        };
+        classData.giftSummaryRecords.unshift(summaryEntry);
+      } else {
+        summaryEntry.gift2 = record;
+        summaryEntry.completed = true;
+      }
+
+      // Tự động hoàn thành chu kỳ nếu đã đủ 2 lượt: tự động hoàn điểm về 0 ⭐ để ấp trứng mới
+      if (student.giftHistory.length >= 2) {
+        summaryEntry.gift2 = record;
+        summaryEntry.completed = true;
+
+        student.lastCompletedGifts = [...student.giftHistory];
+        student.stars = 0;
+        student.hatchedAt = null;
+        student.accumulateBonus = false;
+        student.milestoneChoice = null;
+        student.giftHistory = [];
+        student.giftSessionSource = null;
+
+        if (!student.logs) student.logs = [];
+        student.logs.unshift({
+          id: 'log-cycle-' + Date.now(),
+          time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+          points: 0,
+          reason: `Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc ${currentMilestone}⭐: ${summaryEntry.gift1 ? summaryEntry.gift1.name : ''}, ${record.name})`,
+          icon: '🥚'
+        });
+        if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
+      }
+
       classData.lastUpdated = Date.now();
       await ref.set(classData);
 
       return student;
+    },
+
+    // Lưu lựa chọn mốc 100⭐ (Quay quà hoàn về 0) hoặc mốc 200⭐ (Cộng dồn tiếp tục)
+    async setMilestoneChoice(studentId, choice) {
+      if (!this.isInitialized || !this.db) return false;
+      try {
+        const ref = this.db.ref('classData');
+        const snapshot = await ref.once('value');
+        let classData = snapshot.val();
+        if (!classData || !classData.students) return false;
+        const student = classData.students.find(s => s.id === studentId);
+        if (student) {
+          student.milestoneChoice = choice;
+          if (choice === 'accumulate') {
+            student.accumulateBonus = true;
+          }
+          classData.lastUpdated = Date.now();
+          await ref.set(classData);
+          return true;
+        }
+      } catch (e) {
+        console.error('Lỗi lưu lựa chọn mốc Firebase:', e);
+      }
+      return false;
     },
 
     // Hoàn tất mở quà & reset trứng về 0 ⭐ bắt đầu chu kỳ mới (Lưu bảng tổng hợp quà)
@@ -311,11 +396,12 @@
       }
     },
 
-    // Cập nhật quà tặng cài đặt lên Firebase
-    async saveGiftItems(items) {
+    // Cập nhật quà tặng cài đặt lên Firebase (Mốc 100⭐ và 200⭐)
+    async saveGiftItems(items, items200) {
       if (!this.isInitialized || !this.db) return false;
       try {
-        await this.db.ref('classData/giftItems').set(items);
+        if (items) await this.db.ref('classData/giftItems').set(items);
+        if (items200) await this.db.ref('classData/giftItems200').set(items200);
         await this.db.ref('classData/lastUpdated').set(Date.now());
         return true;
       } catch (e) {

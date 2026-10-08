@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cửa Sổ Mini Dạy Học - Vườn Thú Kỳ Diệu</title>
+  <meta name="description" content="Giao diện cửa sổ mini dạy học nhỏ gọn, thao tác 1 chạm siêu tốc song song với PowerPoint.">
+  <link rel="stylesheet" href="css/main.css?v=20261002-2">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+</head>
+<body class="mobile-app-page">
+
+  <!-- Mobile Header: Thu nhỏ tối đa, ghim cố định -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo-wrap">
+        <div class="brand-icon">🐣</div>
+        <div class="brand-info">
+          <h1>LỚP 1A - CỬA SỔ MINI</h1>
+        </div>
+      </div>
+      <div class="mobile-header-toggles">
+        <button type="button" id="btnMute" class="btn-header" style="padding: 4px 8px; border-radius: 999px; min-width: 0;" title="Bật/Tắt âm thanh">
+          🔊
+        </button>
+        <button type="button" id="btnToggleMobileTools" class="btn-toggle-mobile-tools" title="Bấm để mở hoặc thu gọn tiện ích">
+          <span class="icon-toggle">🛠️</span>
+          <span id="mobileToolsToggleText">Tiện ích</span>
+          <span id="mobileToolsToggleArrow">▾</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Classroom Tools (Dạng ngăn kéo 2 cột trên điện thoại) -->
+    <div class="header-actions" id="headerActionsMenu">
+      <button id="btnParentHomeworkSummary" class="btn-header" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none;" title="Xem bảng tổng hợp điểm phụ huynh">
+        📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
+      </button>
+
+      <button id="btnShareClassLink" class="btn-header" style="background: linear-gradient(135deg, #7052FF, #9B51E0); color: #FFFFFF; border: none;" title="Gửi link nhóm Zalo phụ huynh">
+        📢 <span>Link Zalo PH</span>
+      </button>
+
+      <button id="btnGiftSummary" class="btn-header" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #FFFFFF; border: none;" title="Xem bảng tổng hợp quà các bé đã quay">
+        📋 <span>Bảng Quà (<strong id="giftSummaryBadgeCount">0</strong>)</span>
+      </button>
+
+      <button id="btnAllReward" class="btn-header primary" title="Thưởng cả lớp +1 sao">
+        🏆 <span>Thưởng Cả Lớp</span>
+      </button>
+
+      <button id="btnWeeklyRewards" class="btn-header" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #FFFFFF; border: none;" title="Tổng kết trao quà">
+        🎁 <span>Tổng Kết Tuần</span>
+      </button>
+
+      <button id="btnHatchedList" class="btn-header" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none;" title="Xem trứng đã nở">
+        🏆 <span>Trứng Đã Nở (<strong id="hatchedBadgeCount">0</strong>)</span>
+      </button>
+
+      <button id="btnWheel" class="btn-header" title="Vòng quay gọi tên">
+        🎲 <span>Vòng Quay Gọi Tên</span>
+      </button>
+
+      <button id="btnTimer" class="btn-header" title="Hẹn giờ làm bài">
+        ⏱️ <span>Hẹn Giờ</span>
+      </button>
+
+      <button id="btnNoiseMeter" class="btn-header" title="Máy đo tiếng ồn">
+        🤫 <span>Đo Tiếng Ồn</span>
+      </button>
+
+      <button id="btnOpenGiftSettings" class="btn-header" style="background: linear-gradient(135deg, #EC4899, #BE185D); color: #FFFFFF; border: none;" title="Cài đặt quà">
+        🎁 <span>Cài Đặt Quà</span>
+      </button>
+
+      <button id="btnResetStars" class="btn-header" style="color: #64748B;" title="Về 0 sao">
+        🔄 <span>Về 0 Sao</span>
+      </button>
+
+      <button id="btnImportStudents" class="btn-header" title="Nhập danh sách">
+        📥 <span>Nhập Học Sinh</span>
+      </button>
+
+      <div id="cloudSyncStatusBadge" class="btn-header" style="background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; font-size: 11px; font-weight: 700; grid-column: span 2;" title="Trạng thái đám mây">
+        ☁️ <span id="cloudSyncStatusText">Đang nối Đám Mây...</span>
+      </div>
+
+      <button type="button" id="btnCloseMobileTools" class="btn-close-mobile-tools" title="Thu gọn tiện ích">
+        ▲ Thu gọn tiện ích
+      </button>
+    </div>
+  </header>
+
+  <!-- BANNER THÔNG BÁO QUÀ CHO GIÁO VIÊN CHUẨN BỊ -->
+  <div id="teacherGiftNoticeBanner" class="teacher-gift-notice-banner" style="display: none;">
+    <div class="notice-inner">
+      <div class="notice-icon">🎁🔔</div>
+      <div class="notice-content">
+        <div class="notice-title">🔔 BÉ VỪA QUAY TRÚNG QUÀ!</div>
+        <div id="noticeGiftDesc" class="notice-desc">
+          Bé vừa trúng quà! Vui lòng chuẩn bị quà cho con.
+        </div>
+      </div>
+      <button type="button" id="btnNoticeViewGifts" class="btn-notice-action">Xem Quà</button>
+      <button type="button" id="btnCloseNoticeBanner" class="notice-close">&times;</button>
+    </div>
+  </div>
+
+  <!-- Mode Switcher Navigation -->
+  <div class="tab-navigation-bar">
+    <div class="mode-switcher">
+      <button id="tabStudentsBtn" class="tab-btn active">
+        <span>🐣</span> Cá Nhân
+      </button>
+      <button id="tabGroupsBtn" class="tab-btn">
+        <span>🚩</span> Thi Đua 4 Tổ
+      </button>
+    </div>
+  </div>
+
+  <!-- Bảng Tổng Hợp Sao Phụ Huynh Chấm Tại Nhà (Dạng Thu Gọn) -->
+  <section id="parentHwQuickBar" class="parent-hw-quick-bar">
+    <div class="quick-bar-inner">
+      <div class="quick-bar-header">
+        <div style="display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1;">
+          <span style="font-size: 16px;">🏡</span>
+          <h2 style="font-size: 12px; font-weight: 800; color: #1E293B; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Sao Ở Nhà: <strong id="quickHwCountText" style="color: #4F46E5;">0 bé</strong>
+          </h2>
+        </div>
+        <div class="quick-bar-actions">
+          <button type="button" id="btnToggleHwBarDetails" class="btn-quick-action" title="Xem danh sách chi tiết các bé đã nộp">
+            👁️ Xem
+          </button>
+          <button type="button" id="btnSyncParentToClass" class="btn-quick-action primary" title="Cộng sao phụ huynh vào máy">
+            ⚡ Cộng
+          </button>
+        </div>
+      </div>
+
+      <div id="quickBarContentList" class="quick-bar-content" style="display: none;">
+        <div id="quickHwStudentsTags" class="quick-tags-container"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Thanh Lọc Tổ & Tìm Kiếm Dạng Danh Bạ Điện Thoại -->
+  <div class="view-controls-bar">
+    <div class="search-input-box" style="margin-bottom: 4px;">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="inputSearchStudent" placeholder="Tìm tên bé..." autocomplete="off">
+      <button type="button" id="btnClearSearchStudent" class="btn-clear-search">&times;</button>
+    </div>
+
+    <!-- Thanh Chip Lọc Tổ -->
+    <div id="contactFilterChips" class="contact-filter-chips"></div>
+
+    <div class="view-mode-toggle" style="display: none;">
+      <button type="button" id="btnViewCompact" class="btn-view-toggle active" title="Xem danh bạ">
+        📋 Gọn
+      </button>
+      <button type="button" id="btnViewGrid" class="btn-view-toggle" title="Xem linh thú">
+        🥚 To
+      </button>
+    </div>
+  </div>
+
+  <!-- Danh Sách Học Sinh -->
+  <main class="classroom-layout">
+    <div class="students-container-wrap">
+      <div id="studentsContainer" class="students-compact-wrapper">
+        <!-- Render tại js/app.js dạng cột dọc 100% -->
+      </div>
+    </div>
+
+    <div id="groupsContainer" class="groups-grid" style="display: none;">
+      <!-- Render 4 Tổ tại js/app.js -->
+    </div>
+  </main>
+
+  <!-- Chuyển sang máy tính link -->
+  <footer style="text-align: center; padding: 24px 16px 36px 16px;">
+    <a href="/" style="display: inline-flex; align-items: center; gap: 6px; background: #EEF2FF; color: #4F46E5; font-size: 13px; font-weight: 800; padding: 8px 18px; border-radius: 20px; text-decoration: none; border: 1px solid #C7D2FE;">
+      💻 Chuyển Sang Giao Diện Máy Tính Chuẩn
+    </a>
+  </footer>
+
+  <!-- MODAL: Quick Score (Bàn Phím Chấm Điểm 1 Chạm Siêu Tốc Cho Điện Thoại) -->
+  <div id="quickScoreModal" class="modal-backdrop">
+    <div class="modal-card quick-score-card">
+      <button id="closeQuickScoreModalBtn" class="modal-close-btn">&times;</button>
+      
+      <div class="quick-score-header">
+        <div id="quickScorePetPreview" class="quick-score-pet"></div>
+        <div class="quick-score-info">
+          <h2 id="quickScoreStudentName" class="quick-score-title">Tên Học Sinh</h2>
+          <div class="quick-score-subinfo">
+            <span id="quickScoreGroupBadge" class="quick-score-group-tag">Tổ 1</span>
+            <span id="quickScoreStarsBadge" class="stars-display quick-stars-pill">0 ⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-score-body">
+        <div class="quick-score-prompt">
+          <span>✍️</span> <strong>Tự đánh số điểm hoặc chọn mức 10:</strong>
+        </div>
+
+        <div class="quick-score-input-box">
+          <button type="button" id="btnQuickDec10" class="btn-qs-step" title="Giảm 10 điểm">-10</button>
+          <input type="number" id="inputQuickScoreNumber" value="10" min="1" max="100" inputmode="numeric" placeholder="Số...">
+          <button type="button" id="btnQuickInc10" class="btn-qs-step" title="Tăng 10 điểm">+10</button>
+        </div>
+
+        <div class="quick-score-preset-row">
+          <button type="button" class="btn-qs-chip" data-val="1">1</button>
+          <button type="button" class="btn-qs-chip" data-val="2">2</button>
+          <button type="button" class="btn-qs-chip" data-val="3">3</button>
+          <button type="button" class="btn-qs-chip" data-val="5">5</button>
+          <button type="button" class="btn-qs-chip active" data-val="10">10</button>
+          <button type="button" class="btn-qs-chip" data-val="20">20</button>
+        </div>
+
+        <div class="quick-score-btns-action">
+          <button type="button" id="btnQuickApplyMinus" class="btn-qs-big-action btn-qs-minus">
+            <span class="btn-qs-icon">➖</span>
+            <div class="btn-qs-text-wrap">
+              <span class="btn-qs-action-title">TRỪ ĐIỂM</span>
+              <span class="btn-qs-action-sub">-<span id="labelQuickMinusVal">10</span> ⭐</span>
+            </div>
+          </button>
+
+          <button type="button" id="btnQuickApplyPlus" class="btn-qs-big-action btn-qs-plus">
+            <span class="btn-qs-icon">➕</span>
+            <div class="btn-qs-text-wrap">
+              <span class="btn-qs-action-title">CỘNG ĐIỂM</span>
+              <span class="btn-qs-action-sub">+<span id="labelQuickPlusVal">10</span> ⭐</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="quick-score-footer">
+          <button type="button" id="btnSwitchToFullActionModal" class="btn-qs-full-link">
+            📋 Xem khen thưởng theo hành vi chi tiết...
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Khen Thưởng Hành Vi Chi Tiết -->
+  <div id="rewardModal" class="modal-backdrop">
+    <div class="modal-card">
+      <button id="closeRewardModalBtn" class="modal-close-btn">&times;</button>
+      
+      <div class="modal-student-profile">
+        <div id="modalPetPreview" class="modal-pet-visual"></div>
+        <div class="modal-student-details">
+          <h2 id="modalStudentName" class="modal-title" style="margin: 0; text-align: left;">Tên Học Sinh</h2>
+          <div class="modal-subtitle">
+            <span id="modalGroupBadge" class="modal-group-tag">Tổ 1</span>
+            <span id="modalStageName" class="modal-stage-tag">Đang ấp trứng</span>
+            <span class="stars-display" id="modalStarsCount">0 ⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: #FFFBEB; border-radius: 14px; padding: 10px 14px; margin-bottom: 14px; border: 1px solid #FDE68A;">
+        <div style="font-weight: 800; color: #92400E; font-size: 13px; margin-bottom: 6px;">
+          ⚡ ĐIỂM TỰ CHỌN NHANH:
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; background: #FFFFFF; border-radius: 12px; border: 2px solid #F59E0B; overflow: hidden;">
+            <button type="button" id="btnCustomPointsStepMinus10" style="background: #FEE2E2; border: none; width: 34px; height: 32px; font-size: 11px; font-weight: 800; color: #DC2626;">-10</button>
+            <button type="button" id="btnCustomPointsMinus" style="background: #F8FAFC; border: none; width: 28px; height: 32px; font-size: 14px; font-weight: 800; color: #D97706;">-</button>
+            <input type="number" id="inputCustomRewardPoints" value="10" min="1" max="100" inputmode="numeric" style="width: 48px; text-align: center; border: none; font-weight: 800; font-size: 15px; color: #B45309; outline: none;">
+            <button type="button" id="btnCustomPointsPlus" style="background: #FEF3C7; border: none; width: 28px; height: 32px; font-size: 14px; font-weight: 800; color: #D97706;">+</button>
+            <button type="button" id="btnCustomPointsStepPlus10" style="background: #DCFCE7; border: none; width: 34px; height: 32px; font-size: 11px; font-weight: 800; color: #16A34A;">+10</button>
+          </div>
+          <div class="reward-presets" style="display: flex; gap: 4px; flex-wrap: wrap;">
+            <button type="button" class="btn-preset-pts" data-pts="1">+1</button>
+            <button type="button" class="btn-preset-pts" data-pts="2">+2</button>
+            <button type="button" class="btn-preset-pts" data-pts="3">+3</button>
+            <button type="button" class="btn-preset-pts" data-pts="5">+5</button>
+            <button type="button" class="btn-preset-pts active" data-pts="10">+10</button>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnModalDirectMinus" style="flex: 1; padding: 8px; border-radius: 10px; border: 1.5px solid #FECDD3; background: #FFF1F2; color: #E11D48; font-weight: 800; font-size: 12px; cursor: pointer;">
+            ➖ Trừ (-<span id="lblModalMinusPoints">10</span> ⭐)
+          </button>
+          <button type="button" id="btnModalDirectPlus" style="flex: 1; padding: 8px; border-radius: 10px; border: 1.5px solid #BBF7D0; background: #F0FDF4; color: #16A34A; font-weight: 800; font-size: 12px; cursor: pointer;">
+            ➕ Cộng (+<span id="lblModalPlusPoints">10</span> ⭐)
+          </button>
+        </div>
+      </div>
+
+      <div style="font-weight: 700; color: #64748B; font-size: 12px; margin-bottom: 8px; text-transform: uppercase;">
+        🌟 Khen Thưởng Hành Vi Tích Cực
+      </div>
+      <div class="reward-options-grid">
+        <button class="reward-option-btn" data-action="reward" data-points="10" data-reason="Khen thưởng mức 10 điểm" data-icon="🌟">
+          <span class="opt-icon">🌟</span>
+          <span class="opt-label">Khen thưởng mức 10</span>
+          <span class="opt-points">+10 ⭐</span>
+        </button>
+        <button class="reward-option-btn" data-action="reward" data-points="3" data-reason="Hăng hái phát biểu" data-icon="🙋‍♂️">
+          <span class="opt-icon">🙋‍♂️</span>
+          <span class="opt-label">Hăng hái phát biểu</span>
+          <span class="opt-points">+3 ⭐</span>
+        </button>
+        <button class="reward-option-btn" data-action="reward" data-points="5" data-reason="Làm bài tập xuất sắc" data-icon="✍️">
+          <span class="opt-icon">✍️</span>
+          <span class="opt-label">Làm bài xuất sắc</span>
+          <span class="opt-points">+5 ⭐</span>
+        </button>
+        <button class="reward-option-btn" data-action="reward" data-points="3" data-reason="Giúp đỡ bạn bè" data-icon="🤝">
+          <span class="opt-icon">🤝</span>
+          <span class="opt-label">Giúp đỡ bạn bè</span>
+          <span class="opt-points">+3 ⭐</span>
+        </button>
+        <button class="reward-option-btn" data-action="reward" data-points="2" data-reason="Giữ gìn vệ sinh chung" data-icon="🧹">
+          <span class="opt-icon">🧹</span>
+          <span class="opt-label">Giữ vệ sinh</span>
+          <span class="opt-points">+2 ⭐</span>
+        </button>
+        <button class="reward-option-btn" data-action="reward" data-points="2" data-reason="Ngồi ngay ngắn ngoan ngoãn" data-icon="🪑">
+          <span class="opt-icon">🪑</span>
+          <span class="opt-label">Ngồi ngay ngắn</span>
+          <span class="opt-points">+2 ⭐</span>
+        </button>
+      </div>
+
+      <div style="font-weight: 700; color: #E11D48; font-size: 12px; margin: 12px 0 8px 0; text-transform: uppercase;">
+        ⚠️ Nhắc Nhở Rèn Luyện
+      </div>
+      <div class="reward-options-grid">
+        <button class="reward-option-btn penalty-btn" data-action="reward" data-points="-10" data-reason="Nhắc nhở mức 10 điểm" data-icon="🚨">
+          <span class="opt-icon">🚨</span>
+          <span class="opt-label">Nhắc nhở mức 10</span>
+          <span class="opt-points">-10 ⭐</span>
+        </button>
+        <button class="reward-option-btn penalty-btn" data-action="reward" data-points="-5" data-reason="Không tập trung chú ý" data-icon="🥱">
+          <span class="opt-icon">🥱</span>
+          <span class="opt-label">Không tập trung</span>
+          <span class="opt-points">-5 ⭐</span>
+        </button>
+        <button class="reward-option-btn penalty-btn" data-action="sleep" data-points="0" data-reason="Thú cưng đi ngủ 2 phút" data-icon="💤">
+          <span class="opt-icon">💤</span>
+          <span class="opt-label">Nghỉ tĩnh tâm</span>
+          <span class="opt-points">2 phút</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Lựa chọn mốc điểm (Quay quà ngay hay Tích điểm cộng dồn lên 200 sao) -->
+  <div id="milestoneChoiceModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px; width: 95%; text-align: center; border-radius: 24px; padding: 20px 16px; border: 3px solid #6366F1;">
+      <button id="closeMilestoneChoiceBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="font-size: 42px; margin-bottom: 4px;" id="milestoneChoiceIcon">🎉🐣✨</div>
+      <h2 id="milestoneChoiceTitle" style="font-size: 18px; font-weight: 900; color: #1E293B; margin-bottom: 4px;">
+        CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!
+      </h2>
+      <p id="milestoneChoiceSubtitle" style="font-size: 13px; color: #64748B; margin-bottom: 14px; line-height: 1.4;">
+        Bé <strong id="milestoneStudentName" style="color: #4F46E5;">Học Sinh</strong> đã tích đủ 100 sao và linh thú đã thức giấc! Con muốn lựa chọn:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px;">
+        <div id="btnChooseSpinNow" class="milestone-choice-card" style="background: linear-gradient(135deg, #FFF1F2, #FFE4E6); border: 2px solid #F43F5E; border-radius: 16px; padding: 14px; cursor: pointer; text-align: left;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 22px;">🎁</span>
+              <strong style="font-size: 14.5px; color: #E11D48;" id="labelChoice1Title">LỰA CHỌN 1: QUAY QUÀ NGAY</strong>
+            </div>
+            <span style="background: #E11D48; color: #fff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px;" id="labelChoice1Badge">MỐC 100 ⭐</span>
+          </div>
+          <p id="labelChoice1Desc" style="font-size: 12px; color: #881337; margin: 0; line-height: 1.4;">
+            Nhận ngay <strong>2 lượt quay quà may mắn</strong> (Bút chì, Lego mini, Kẹp tóc, Sổ tay, Cục tẩy, Tranh cát...).
+          </p>
+        </div>
+
+        <div id="btnChooseAccumulate" class="milestone-choice-card" style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); border: 2px solid #3B82F6; border-radius: 16px; padding: 14px; cursor: pointer; text-align: left;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 22px;">🚀</span>
+              <strong style="font-size: 14.5px; color: #1D4ED8;" id="labelChoice2Title">LỰA CHỌN 2: TÍCH ĐIỂM CỘNG DỒN</strong>
+            </div>
+            <span style="background: #2563EB; color: #fff; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 10px;" id="labelChoice2Badge">LÊN MỐC 200 ⭐</span>
+          </div>
+          <p id="labelChoice2Desc" style="font-size: 12px; color: #1E40AF; margin: 0; line-height: 1.4;">
+            Nuôi sao lên <strong>mốc 200 ⭐</strong> để mở vòng quay <strong>QUÀ GIÁ TRỊ CAO</strong>: Làm lớp trưởng 3 ngày, Đi siêu thị mua quà yêu thích, Ăn món yêu thích, Gấu bông, Lego, Cờ vua, Cờ cá ngựa...
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Mở Quà Nở Trứng (Vòng Quay & Túi Mù - 2 Lượt) -->
+  <div id="giftClaimModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 500px; width: 95%; text-align: center; background: linear-gradient(180deg, #FFFFFF 0%, #FFF5F7 100%); border: 3px solid #F472B6;">
+      <button id="closeGiftClaimBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px;">
+        <span style="font-size: 28px;">🎁</span>
+        <h2 class="modal-title" style="margin: 0; color: #BE185D; font-size: 19px;">HỘP QUÀ TRỨNG NỞ</h2>
+      </div>
+
+      <p style="font-size: 13px; color: #475569; margin-bottom: 6px;">
+        Chúc mừng bé: <strong id="giftClaimStudentName" style="color: #E11D48; font-size: 15px;"></strong>
+      </p>
+
+      <div style="display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;">
+        <span id="giftClaimMilestoneBadge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 16px;">
+          🎁 MỐC 100 SAO
+        </span>
+        <span style="background: #FCE7F3; color: #BE185D; border: 1px solid #FBCFE8; padding: 3px 12px; border-radius: 16px; font-weight: 800; font-size: 11px;">
+          🎯 <span id="giftClaimTurnBadge">Lượt mở: 1 / 2</span>
+        </span>
+      </div>
+
+      <div id="giftClaimLockedArea" style="display: none; background: #FFF1F2; border: 2px solid #FDA4AF; border-radius: 16px; padding: 14px; margin: 8px auto 12px; text-align: center;">
+        <div style="font-size: 28px; margin-bottom: 4px;">🏡🎁✨</div>
+        <div style="font-size: 14.5px; font-weight: 800; color: #BE185D; margin-bottom: 4px;">BÉ ĐÃ ĐƯỢC PHỤ HUYNH QUAY QUÀ TẠI NHÀ!</div>
+        <p style="font-size: 12px; color: #475569; margin: 0 0 8px; line-height: 1.4;">
+          Phụ huynh đã mở quà cho bé trên trang Phụ Huynh. Tính năng quay tại lớp đã khóa để đảm bảo quyền quay duy nhất.
+        </p>
+        <div id="giftClaimLockedList" style="display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;"></div>
+        <div style="font-size: 12px; font-weight: 700; color: #059669;">
+          👉 Cô giáo hãy chuẩn bị những phần quà này để trao cho con nhé! 💖
+        </div>
+      </div>
+
+      <div id="giftClaimModeSelector" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 12px;">
+        <button type="button" id="btnModeWheel" class="tab-btn active" style="padding: 6px 14px; font-size: 12px; border-radius: 16px;">
+          🎡 Vòng Quay
+        </button>
+        <button type="button" id="btnModeBlindBag" class="tab-btn" style="padding: 6px 14px; font-size: 12px; border-radius: 16px;">
+          🎒 Túi Mù
+        </button>
+      </div>
+
+      <div id="giftWheelArea" style="display: flex; flex-direction: column; align-items: center;">
+        <div style="position: relative; width: 260px; height: 260px; margin: 0 auto 12px;">
+          <div class="wheel-pointer" style="top: -12px;"></div>
+          <canvas id="giftWheelCanvas" width="260" height="260" style="border-radius: 50%; box-shadow: 0 6px 18px rgba(0,0,0,0.15);"></canvas>
+        </div>
+        <button type="button" id="btnSpinGiftWheel" class="btn-header primary" style="background: linear-gradient(135deg, #EC4899, #BE185D); padding: 10px 28px; font-size: 15px; font-weight: 800; border-radius: 20px;">
+          🚀 BẮT ĐẦU QUAY!
+        </button>
+      </div>
+
+      <div id="giftBlindBagArea" style="display: none; flex-direction: column; align-items: center;">
+        <p style="font-size: 12px; color: #DB2777; font-weight: 700; margin-bottom: 8px;">
+          👉 Chạm tay vào 1 chiếc túi mù để bóc quà nhé!
+        </p>
+        <div id="blindBagsGrid" class="blind-bags-grid" style="width: 100%; max-width: 380px;"></div>
+      </div>
+
+      <div id="giftResultBox" class="gift-reveal-box" style="display: none;">
+        <div style="font-size: 38px; margin-bottom: 2px;" id="giftResultIcon">🎁</div>
+        <div style="font-size: 16px; font-weight: 800; color: #92400E;" id="giftResultTitle">Bé đã trúng: ...</div>
+        <div id="giftResultDesc" style="font-size: 12.5px; color: #B45309; font-weight: 600; margin-top: 4px;"></div>
+        <div id="giftNextActionArea" style="margin-top: 10px;"></div>
+      </div>
+
+      <div style="margin-top: 12px; background: #FFFFFF; border-radius: 12px; padding: 8px 12px; border: 1px solid #FBCFE8; text-align: left;">
+        <div style="font-size: 11.5px; font-weight: 800; color: #BE185D; margin-bottom: 4px;">
+          📋 Quà con đã quay trúng:
+        </div>
+        <div id="giftClaimCurrentHistoryList" style="font-size: 12px; color: #475569; font-weight: 600;">
+          Chưa mở quà lượt nào.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Bảng Quà Đã Quay -->
+  <div id="giftSummaryModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 640px; width: 95%;">
+      <button id="closeGiftSummaryBtn" class="modal-close-btn">&times;</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="font-size: 26px;">📋</span>
+        <h2 class="modal-title" style="margin: 0; text-align: left; font-size: 18px;">Bảng Tổng Hợp Quà Đã Quay</h2>
+      </div>
+      <p id="giftSummaryCountText" style="font-size: 12px; color: #64748B; margin-bottom: 12px;"></p>
+      <div id="giftSummaryTableContainer" style="max-height: 50vh; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; margin-bottom: 12px;"></div>
+      <div style="display: flex; justify-content: space-between; gap: 8px;">
+        <button type="button" id="btnCopyGiftSummary" class="btn-header" style="font-size: 12px;">📋 Sao Chép</button>
+        <button type="button" id="btnCloseGiftSummaryModal" class="btn-header primary">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Cài Đặt Quà -->
+  <div id="giftSettingsModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 540px; width: 95%;">
+      <button id="closeGiftSettingsBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">🎁 Cài Đặt Quà Tặng</h2>
+      <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+        <button type="button" id="tabGiftSettings100" class="tab-btn active" style="flex: 1; padding: 6px; font-size: 12px;">🎁 Quà 100⭐</button>
+        <button type="button" id="tabGiftSettings200" class="tab-btn" style="flex: 1; padding: 6px; font-size: 12px;">👑 Quà 200⭐</button>
+      </div>
+      <div style="background: #F8FAFC; border-radius: 12px; padding: 10px; border: 1px solid #E2E8F0; margin-bottom: 12px; display: flex; gap: 6px; flex-wrap: wrap;">
+        <select id="newGiftIconSelect" style="padding: 6px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 15px;">
+          <option value="✏️">✏️ Bút chì</option>
+          <option value="🧩">🧩 Lê gô</option>
+          <option value="🎀">🎀 Kẹp tóc</option>
+          <option value="📓">📓 Sổ tay</option>
+          <option value="🧼">🧼 Cục tẩy</option>
+          <option value="🎨">🎨 Tranh cát</option>
+          <option value="🧸">🧸 Gấu bông</option>
+          <option value="👑">👑 Lớp trưởng</option>
+          <option value="🛒">🛒 Siêu thị</option>
+          <option value="🍦">🍦 Món ngon</option>
+          <option value="♟️">♟️ Cờ vua</option>
+          <option value="🐴">🐴 Cờ cá ngựa</option>
+          <option value="🎁">🎁 Quà tặng</option>
+        </select>
+        <input type="text" id="newGiftNameInput" placeholder="Tên quà..." style="flex: 1; min-width: 130px; padding: 6px 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px;">
+        <button type="button" id="btnAddGiftItem" class="btn-header primary" style="padding: 6px 12px; font-size: 12px;">➕ Thêm</button>
+      </div>
+      <div style="max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 10px; margin-bottom: 12px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+          <thead>
+            <tr style="background: #F1F5F9; color: #475569; text-align: left;">
+              <th style="padding: 8px;">STT</th>
+              <th style="padding: 8px;">Icon</th>
+              <th style="padding: 8px;">Tên Quà</th>
+              <th style="padding: 8px; text-align: center;">Xóa</th>
+            </tr>
+          </thead>
+          <tbody id="giftSettingsTableBody"></tbody>
+        </table>
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 8px;">
+        <button type="button" id="btnResetDefaultGifts" class="btn-header" style="font-size: 11px;">🔄 Mẫu</button>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" id="btnCloseGiftSettingsModal" class="btn-header" style="font-size: 12px;">Đóng</button>
+          <button type="button" id="btnSaveGiftSettings" class="btn-header primary" style="font-size: 12px;">💾 Lưu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Điểm Phụ Huynh Nộp -->
+  <div id="parentHomeworkSummaryModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 580px; width: 95%;">
+      <button id="closeParentHwSummaryBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px; margin-bottom: 4px;">📝 Điểm Phụ Huynh Chấm Tại Nhà</h2>
+      <div style="display: flex; gap: 6px; margin-bottom: 10px; align-items: center;">
+        <input type="date" id="parentHwDateInput" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 12px; font-weight: 700;">
+        <button type="button" id="btnParentHwToday" class="btn-header" style="padding: 6px 10px; font-size: 12px;">Hôm nay</button>
+      </div>
+      <div id="parentHwTableContainer" style="max-height: 45vh; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 10px; margin-bottom: 12px;"></div>
+      <div style="display: flex; justify-content: space-between; gap: 6px;">
+        <button type="button" id="btnCopyParentHwMessage" class="btn-header" style="font-size: 12px;">📋 Sao Chép Nhắn Zalo</button>
+        <button type="button" id="btnCloseParentHwModal" class="btn-header primary" style="font-size: 12px;">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Lucky Wheel (Vòng quay gọi tên) -->
+  <div id="wheelModal" class="modal-backdrop">
+    <div class="modal-card" style="text-align: center; max-width: 400px; width: 95%;">
+      <button id="closeWheelModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">🎲 Vòng Quay Gọi Tên</h2>
+      <div class="wheel-container">
+        <div class="wheel-pointer">▼</div>
+        <canvas id="luckyWheelCanvas" width="280" height="280"></canvas>
+      </div>
+      <button id="spinWheelBtn" class="btn-header primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px; margin-top: 12px;">
+        🎯 QUAY NGAY!
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: Hẹn Giờ -->
+  <div id="timerModal" class="modal-backdrop">
+    <div class="modal-card" style="text-align: center; max-width: 360px; width: 95%;">
+      <button id="closeTimerModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">⏱️ Hẹn Giờ Làm Bài</h2>
+      <div class="timer-display" id="timerDisplay" style="font-size: 48px; margin: 12px 0;">05:00</div>
+      <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 14px;">
+        <button class="btn-preset-timer" data-sec="60">1 Phút</button>
+        <button class="btn-preset-timer active" data-sec="300">5 Phút</button>
+        <button class="btn-preset-timer" data-sec="600">10 Phút</button>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button id="startTimerBtn" class="btn-header primary" style="flex: 1; padding: 10px;">▶️ Bắt Đầu</button>
+        <button id="resetTimerBtn" class="btn-header" style="flex: 1; padding: 10px;">🔄 Đặt Lại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Đo Tiếng Ồn -->
+  <div id="noiseModal" class="modal-backdrop">
+    <div class="modal-card" style="text-align: center; max-width: 380px; width: 95%;">
+      <button id="closeNoiseModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">🤫 Đo Tiếng Ồn</h2>
+      <p id="noiseStatusText" style="color: #64748B; font-weight: 700; font-size: 13px;">Micro đang kết nối...</p>
+      <div class="noise-gauge-container">
+        <div class="noise-visual-avatar">🐱</div>
+        <div class="noise-volume-track">
+          <div id="noiseThresholdMarker" class="noise-threshold-marker" style="left: 45%;"></div>
+          <div id="noiseVolumeLevel" class="noise-volume-level"></div>
+        </div>
+        <input type="range" id="noiseThresholdSlider" min="20" max="80" value="45" style="width: 100%; margin-top: 8px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nhập Học Sinh -->
+  <div id="importModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 440px; width: 95%;">
+      <button id="closeImportModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">📥 Nhập Danh Sách Học Sinh</h2>
+      <textarea id="importNamesTextarea" rows="6" placeholder="Mỗi bạn 1 dòng...&#10;Nguyễn Văn An&#10;Trần Thị Bình" style="width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 13px; margin: 8px 0;"></textarea>
+      <div style="display: flex; gap: 8px;">
+        <button id="submitImportBtn" class="btn-header primary" style="flex: 1; padding: 10px; font-size: 13px;">📥 Nhập Danh Sách</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Danh Sách Trứng Đã Nở -->
+  <div id="hatchedListModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px; width: 95%;">
+      <button id="closeHatchedListModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">🏆 Danh Sách Trứng Đã Nở</h2>
+      <div id="hatchedListContainer" style="max-height: 50vh; overflow-y: auto; margin: 10px 0;"></div>
+      <button type="button" class="btn-header primary" onclick="document.getElementById('hatchedListModal').classList.remove('active')">Đóng</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Tổng Kết Tuần & Trao Quà -->
+  <div id="weeklyRewardsModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 520px; width: 95%;">
+      <button id="closeWeeklyRewardsModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">🎁 Bảng Tổng Kết Tuần</h2>
+      <div id="weeklyLeaderboardContainer" style="max-height: 50vh; overflow-y: auto; margin: 10px 0;"></div>
+      <button type="button" class="btn-header primary" onclick="document.getElementById('weeklyRewardsModal').classList.remove('active')">Đóng</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Chia Sẻ Link Phụ Huynh -->
+  <div id="shareClassLinkModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 440px; width: 95%; text-align: center;">
+      <button id="closeShareClassLinkModalBtn" class="modal-close-btn">&times;</button>
+      <h2 class="modal-title" style="font-size: 18px;">📢 Link Zalo Phụ Huynh</h2>
+      <p style="font-size: 13px; color: #64748B; margin: 6px 0 12px;">Gửi link này cho phụ huynh để xem và chấm điểm tại nhà:</p>
+      <input type="text" id="inputClassParentLink" readonly style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-weight: 700; font-size: 13px; margin-bottom: 10px;">
+      <button type="button" id="btnCopyClassLink" class="btn-header primary" style="width: 100%; padding: 10px; font-size: 13px;">📋 Sao Chép Link</button>
+    </div>
+  </div>
+
+  <!-- Khung thông báo đồng bộ realtime khi học sinh/phụ huynh gửi điểm -->
+  <div id="liveSyncToastContainer" class="live-sync-toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-sync.js"></script>
+  <script src="js/qrcode.min.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/egg-evolution.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/noise-meter.js"></script>
+  <script src="js/wheel.js"></script>
+  <script src="js/card-export.js"></script>
+  <script src="js/app.js?v=20261002-3"></script>
+</body>
+</html>

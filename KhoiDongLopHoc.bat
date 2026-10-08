@@ -1,10 +1,21 @@
 @echo off
 chcp 65001 > nul
-title Vườn Thú Kỳ Diệu - Lớp Học Lớp 1
+title Vườn Thú Kỳ Diệu - Lớp Học
+
 echo ====================================================
-echo   ĐANG KHỞI ĐỘNG ỨNG DỤNG LỚP HỌC - VƯỜN THÚ KỲ DIỆU
-echo   👉 Máy chủ đang chạy và sẽ tự động mở trình duyệt...
-echo   👉 Vui lòng giữ cửa sổ này trong suốt buổi dạy!
+echo   ĐANG MỞ GOOGLE CHROME VÀO ỨNG DỤNG LỚP HỌC...
+echo ====================================================
+
+start chrome http://localhost:3000
+if %ERRORLEVEL% NEQ 0 (
+  start msedge http://localhost:3000
+)
+if %ERRORLEVEL% NEQ 0 (
+  start http://localhost:3000
+)
+
+echo.
+echo 👉 Vui lòng giữ cửa sổ này trong suốt buổi dạy!
 echo ====================================================
 node server.js
 pause

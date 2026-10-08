@@ -38,7 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Audio Mute Init ---
   function updateMuteBtn() {
-    if (window.soundFx.isMuted) {
+    if (!btnMute) return;
+    const isMuted = window.soundFx ? window.soundFx.isMuted : (localStorage.getItem('class_app_muted') === 'true');
+    if (isMuted) {
       btnMute.innerHTML = '🔇 <span>Đã tắt âm</span>';
     } else {
       btnMute.innerHTML = '🔊 <span>Âm thanh</span>';
@@ -46,10 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateMuteBtn();
 
-  btnMute.addEventListener('click', () => {
-    window.soundFx.toggleMute();
-    updateMuteBtn();
-  });
+  if (btnMute) {
+    btnMute.addEventListener('click', () => {
+      if (window.soundFx) {
+        window.soundFx.toggleMute();
+      }
+      updateMuteBtn();
+    });
+  }
 
   // --- Confetti / Star Particle Animation ---
   function createFloatingStar(x, y, icon = '⭐') {
@@ -63,10 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- View Mode & Search State ---
-  let currentStudentViewMode = localStorage.getItem('vltk_student_view_mode') || 'compact'; // Mặc định hàng dọc ngắn gọn
-  if (window.innerWidth <= 768) {
-    currentStudentViewMode = 'compact';
-  }
+  const isMobilePage = window.location.pathname.includes('mobile.html') || document.body.classList.contains('mobile-app-page');
+  const isMiniScreen = window.innerWidth <= 640;
+  let currentStudentViewMode = (isMobilePage || isMiniScreen) 
+    ? 'compact' 
+    : (localStorage.getItem('vltk_pc_student_view_mode') || 'grid'); // Trên máy tính màn to mặc định grid, màn nhỏ/mini mặc định danh bạ gọn
   let currentSearchQuery = '';
   let currentGroupFilter = 'all'; // Mặc định hiển thị tất cả các tổ
 
@@ -108,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnViewCompact) {
     btnViewCompact.addEventListener('click', () => {
       currentStudentViewMode = 'compact';
-      localStorage.setItem('vltk_student_view_mode', 'compact');
+      if (!isMobilePage) localStorage.setItem('vltk_pc_student_view_mode', 'compact');
       updateViewToggleButtons();
       renderStudents();
     });
@@ -117,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnViewGrid) {
     btnViewGrid.addEventListener('click', () => {
       currentStudentViewMode = 'grid';
-      localStorage.setItem('vltk_student_view_mode', 'grid');
+      if (!isMobilePage) localStorage.setItem('vltk_pc_student_view_mode', 'grid');
       updateViewToggleButtons();
       renderStudents();
     });
@@ -147,10 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    if (points > 0 && (student.stars || 0) >= 100) {
-      showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
-      openGiftClaimModal(student.id);
-      return;
+    if (points > 0) {
+      if ((student.stars || 0) >= 200) {
+        showSyncToast(`🏆 Bé <strong>${student.name}</strong> đã đạt 200 ⭐ (Mốc Đặc Biệt)!`, '🎁');
+        openMilestoneChoiceModal(student.id, 200);
+        return;
+      }
+      if ((student.stars || 0) >= 100 && !student.accumulateBonus) {
+        showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Mời bé chọn quay quà hoặc tích điểm cộng dồn.`, '🎁');
+        openMilestoneChoiceModal(student.id, 100);
+        return;
+      }
     }
 
     if (targetEl) {
@@ -163,7 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.soundFx.playPenalty();
       }
     } else {
-      window.soundFx.playStar();
+      if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+        window.soundFx.playStar();
+      }
     }
 
     const sign = points > 0 ? `+${points}` : `${points}`;
@@ -173,9 +189,14 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshData(res ? res.data : null);
 
     const updated = (state.data.students || []).find(s => s.id === studentId);
-    if (updated && updated.stars >= 100 && points > 0) {
-      showSyncToast(`🎉 Chúc mừng bé <strong>${updated.name}</strong> đã nở trứng (100 ⭐)!`, '🏆');
-      openGiftClaimModal(updated.id);
+    if (updated && points > 0) {
+      if (updated.stars >= 200) {
+        showSyncToast(`🏆 Chúc mừng bé <strong>${updated.name}</strong> đã đạt mốc 200 ⭐ SIÊU ĐẶC BIỆT!`, '🏆');
+        openMilestoneChoiceModal(updated.id, 200);
+      } else if (updated.stars >= 100 && !updated.accumulateBonus) {
+        showSyncToast(`🎉 Chúc mừng bé <strong>${updated.name}</strong> đã nở trứng (100 ⭐)!`, '🏆');
+        openMilestoneChoiceModal(updated.id, 100);
+      }
     }
   }
 
@@ -355,8 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Click row (ngoài các nút điểm) mở modal chi tiết
         row.addEventListener('click', (e) => {
           if (e.target.closest('.compact-score-controls')) return;
-          if (student.stars >= 100) {
-            openGiftClaimModal(student.id);
+          if (student.stars >= 200) {
+            openMilestoneChoiceModal(student.id, 200);
+            return;
+          }
+          if (student.stars >= 100 && !student.accumulateBonus) {
+            openMilestoneChoiceModal(student.id, 100);
             return;
           }
           openActionModal(student.id);
@@ -462,9 +487,13 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="card-quick-btn-row">
-          ${student.stars >= 100 ? `
-            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 100 ⭐ - Bấm mở 2 phần quà!">
-              🎁 ĐÃ NỞ - MỞ 2 QUÀ NGAY (100⭐)
+          ${student.stars >= 200 ? `
+            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift200" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #DC2626); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 200 ⭐ - Bấm mở 2 quà SIÊU ĐẶC BIỆT!">
+              🏆 KỶ LỤC 200⭐ - MỞ QUÀ ĐẶC BIỆT
+            </button>
+          ` : (student.stars >= 100 && !student.accumulateBonus) ? `
+            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift100" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 100 ⭐ - Bấm mở quà hoặc tích điểm!">
+              🎁 ĐÃ NỞ - MỞ QUÀ / TÍCH ĐIỂM (100⭐)
             </button>
           ` : `
             <button class="btn-fast-reward fast-action" data-action="minus10" data-id="${student.id}" style="background: #FEE2E2; color: #DC2626; border: 1.5px solid #FECDD3; font-weight: 800; padding: 6px 8px;" title="Trừ -10 ⭐">
@@ -488,8 +517,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student') || e.target.closest('.card-stars-click')) {
           return;
         }
-        if (student.stars >= 100) {
-          openGiftClaimModal(student.id);
+        if (student.stars >= 200) {
+          openMilestoneChoiceModal(student.id, 200);
+          return;
+        }
+        if (student.stars >= 100 && !student.accumulateBonus) {
+          openMilestoneChoiceModal(student.id, 100);
           return;
         }
         openActionModal(student.id);
@@ -581,11 +614,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
 
+      const giftBtn200 = card.querySelector('.fast-action[data-action="gift200"]');
+      if (giftBtn200) {
+        giftBtn200.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openMilestoneChoiceModal(student.id, 200);
+        });
+      }
+
+      const giftBtn100 = card.querySelector('.fast-action[data-action="gift100"]');
+      if (giftBtn100) {
+        giftBtn100.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openMilestoneChoiceModal(student.id, 100);
+        });
+      }
+
       const giftBtn = card.querySelector('.fast-action[data-action="gift"]');
       if (giftBtn) {
         giftBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          openGiftClaimModal(student.id);
+          openMilestoneChoiceModal(student.id, (student.stars >= 200) ? 200 : 100);
         });
       }
 
@@ -1679,7 +1728,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const left = Math.max(10, (window.screen.availWidth || 1366) - width - 20);
       const top = 30;
       const miniWin = window.open(
-        window.location.href,
+        'mobile.html',
         'MiniClassroomWindow',
         `width=${width},height=${height},left=${left},top=${top},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=yes`
       );
@@ -2447,6 +2496,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <td style="text-align: center; font-weight: 800; color: #64748B;">${idx + 1}</td>
             <td>
               <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${rec.studentName}</div>
+              <div style="font-size: 11px; font-weight: 700; color: ${rec.milestone === 200 ? '#D97706' : '#2563EB'};">
+                ${rec.milestone === 200 ? '👑 Mốc 200 ⭐ (Đặc biệt)' : '🎁 Mốc 100 ⭐'}
+              </div>
             </td>
             <td>
               <span style="background: ${rec.groupColor || '#64748B'}; color: #FFF; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 10px;">
@@ -2459,8 +2511,8 @@ document.addEventListener('DOMContentLoaded', () => {
               </span>
             </td>
             <td>
-              <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-weight: 700;">
-                ${rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : 'Quà 2'}
+              <span class="gift-tag-badge" style="background: ${rec.gift2 ? '#FEF3C7' : '#F1F5F9'}; color: ${rec.gift2 ? '#92400E' : '#64748B'}; border: 1px solid ${rec.gift2 ? '#FCD34D' : '#CBD5E1'}; font-weight: 700;">
+                ${rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : '⏳ Chờ quay lượt 2'}
               </span>
             </td>
             <td style="text-align: center; font-size: 12px; color: #64748B;">
@@ -2825,10 +2877,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  let currentGiftSettingsMilestone = 100;
+  const tabGiftSettings100 = document.getElementById('tabGiftSettings100');
+  const tabGiftSettings200 = document.getElementById('tabGiftSettings200');
+
+  function switchGiftSettingsTab(milestone) {
+    currentGiftSettingsMilestone = milestone;
+    if (tabGiftSettings100 && tabGiftSettings200) {
+      if (milestone === 200) {
+        tabGiftSettings200.classList.add('active');
+        tabGiftSettings100.classList.remove('active');
+      } else {
+        tabGiftSettings100.classList.add('active');
+        tabGiftSettings200.classList.remove('active');
+      }
+    }
+    currentGiftListEditing = JSON.parse(JSON.stringify(StorageManager.getGiftItems(milestone)));
+    renderGiftSettingsTable();
+  }
+
+  if (tabGiftSettings100) {
+    tabGiftSettings100.addEventListener('click', () => switchGiftSettingsTab(100));
+  }
+  if (tabGiftSettings200) {
+    tabGiftSettings200.addEventListener('click', () => switchGiftSettingsTab(200));
+  }
+
   if (btnOpenGiftSettings) {
     btnOpenGiftSettings.addEventListener('click', () => {
-      currentGiftListEditing = JSON.parse(JSON.stringify(StorageManager.getGiftItems()));
-      renderGiftSettingsTable();
+      switchGiftSettingsTab(100);
       giftSettingsModal.classList.add('active');
     });
   }
@@ -2861,8 +2938,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnResetDefaultGifts) {
     btnResetDefaultGifts.addEventListener('click', () => {
-      if (confirm('Cô có chắc muốn khôi phục lại danh sách quà mẫu mặc định (bút chì, lê gô, kẹp tóc, sổ tay, cục tẩy, tranh cát, quà yêu thích)?')) {
-        currentGiftListEditing = JSON.parse(JSON.stringify(StorageManager.DEFAULT_GIFTS));
+      const is200 = currentGiftSettingsMilestone === 200;
+      const msg = is200 
+        ? 'Cô có chắc muốn khôi phục lại danh sách quà mẫu mốc 200⭐ (Lớp trưởng 3 ngày, đi siêu thị mua quà yêu thích, ăn món yêu thích, gấu bông, lê gô, cờ vua, cờ cá ngựa...)?'
+        : 'Cô có chắc muốn khôi phục lại danh sách quà mẫu mặc định mốc 100⭐ (bút chì, lê gô mini, kẹp tóc, sổ tay, cục tẩy, tranh cát, quà yêu thích)?';
+      if (confirm(msg)) {
+        currentGiftListEditing = JSON.parse(JSON.stringify(is200 ? StorageManager.DEFAULT_GIFTS_200 : StorageManager.DEFAULT_GIFTS));
         renderGiftSettingsTable();
       }
     });
@@ -2874,9 +2955,9 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Danh sách quà nên có ít nhất 2 món để các em quay thưởng cô nhé!');
         return;
       }
-      await StorageManager.saveGiftItems(currentGiftListEditing);
+      await StorageManager.saveGiftItems(currentGiftListEditing, currentGiftSettingsMilestone);
       giftSettingsModal.classList.remove('active');
-      showSyncToast('Đã lưu danh sách quà tặng nở trứng thành công!', '🎁');
+      showSyncToast(`Đã lưu danh sách quà tặng mốc ${currentGiftSettingsMilestone}⭐ thành công!`, '🎁');
     });
   }
 
@@ -2972,6 +3053,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  let activeGiftMilestone = 100;
+
   async function handleGiftClaimAward(giftData) {
     if (isClaimingGift || !activeGiftStudentId) return;
     isClaimingGift = true;
@@ -2990,12 +3073,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }, i * 120);
       }
 
-      // Lưu lịch sử nhận quà cho học sinh qua StorageManager (source: teacher)
-      const updatedStudent = await StorageManager.claimStudentGift(activeGiftStudentId, giftData, 'teacher');
+      // Lưu lịch sử nhận quà cho học sinh qua StorageManager (source: teacher, milestone: activeGiftMilestone)
+      const updatedStudent = await StorageManager.claimStudentGift(activeGiftStudentId, giftData, 'teacher', activeGiftMilestone);
       if (updatedStudent) {
         const studentInState = (state.data.students || []).find(s => s.id === activeGiftStudentId);
         if (studentInState) {
+          studentInState.stars = updatedStudent.stars;
           studentInState.giftHistory = updatedStudent.giftHistory;
+          studentInState.accumulateBonus = updatedStudent.accumulateBonus;
+          studentInState.giftSessionSource = updatedStudent.giftSessionSource;
         }
       }
 
@@ -3007,7 +3093,16 @@ document.addEventListener('DOMContentLoaded', () => {
       giftResultIcon.textContent = giftData.icon || '🎁';
       giftResultTitle.textContent = `Bé đã trúng: ${giftData.name}!`;
 
-      if (gifts.length < 2) {
+      // THÔNG BÁO CHO GIÁO VIÊN BIẾT ĐỂ CHUẨN BỊ QUÀ NGAY
+      const curStudent = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+      showTeacherGiftNotification({
+        studentName: curStudent ? curStudent.name : 'Học sinh',
+        gift: giftData,
+        milestone: activeGiftMilestone,
+        source: 'teacher'
+      });
+
+      if (gifts.length < 2 && (!updatedStudent || updatedStudent.stars > 0 || gifts.length === 1)) {
         giftClaimTurnBadge.textContent = 'Lượt mở quà: 2 / 2';
         giftResultDesc.innerHTML = `
           <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 4px;">
@@ -3025,38 +3120,35 @@ document.addEventListener('DOMContentLoaded', () => {
           isClaimingGift = false;
           // Vẽ lại 6 túi mù mới nếu đang ở mode túi mù
           if (currentGiftMode === 'blindbag') {
-            const giftItems = StorageManager.getGiftItems();
+            const giftItems = StorageManager.getGiftItems(activeGiftMilestone);
             renderBlindBags(giftItems);
           }
         });
       } else {
-        // Đã hoàn thành cả 2 lượt quay: nút hoàn tất chuyển về 0 sao
+        // Đã hoàn thành 2 lượt: TỰ ĐỘNG HOÀN VỀ 0 ĐIỂM KHÔNG CẦN THAO TÁC, KHÔNG CHO QUAY NỮA
         giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
         giftResultDesc.innerHTML = `
           <div style="font-size: 15px; font-weight: 800; color: #E11D48; margin-top: 6px;">
             🌟 CHÚC MỪNG CON ĐÃ MỞ XONG 2 LƯỢT QUÀ! 🌟
           </div>
           <div style="font-size: 13px; font-weight: 700; color: #059669; margin-top: 6px; line-height: 1.5;">
-            👉 Quà đã được lưu vào Bảng Tổng Hợp Quà của cô giáo!
+            👉 Điểm đã được <strong>tự động hoàn về 0 ⭐</strong> để bắt đầu chu kỳ ấp mới! Không thể quay thêm nữa.
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #4F46E5; margin-top: 4px;">
+            🎁 Quà đã lưu vào Bảng Tổng Hợp Quà của cô giáo để chuẩn bị trao thưởng!
           </div>
         `;
         giftNextActionArea.innerHTML = `
           <button type="button" id="btnFinishGiftClaim" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 28px; font-size: 15px; font-weight: 800; border-radius: 20px; cursor: pointer;">
-            🎉 Hoàn Tất Mở Quà & Về 0 ⭐ Bắt Đầu Chu Kỳ Mới
+            ✨ Hoàn Tất & Đóng Lại
           </button>
         `;
-        document.getElementById('btnFinishGiftClaim').addEventListener('click', async () => {
-          const studentId = activeGiftStudentId;
-          const student = (state.data.students || []).find(s => s.id === studentId);
+        document.getElementById('btnFinishGiftClaim').addEventListener('click', () => {
           giftClaimModal.classList.remove('active');
-          await StorageManager.finishAndResetStudentCycle(studentId);
           refreshData();
-          if (student) {
-            showSyncToast(`🎉 Bé <strong>${student.name}</strong> đã nhận đủ 2 quà và được chuyển về 0 ⭐ bắt đầu chu kỳ ấp mới!`, '🏆');
-          }
         });
 
-        // Ẩn khu vực quay/mở túi khi đã xong 2 lượt
+        // Khóa hoàn toàn vùng quay và túi mù (không cho quay thêm)
         giftWheelArea.style.display = 'none';
         giftBlindBagArea.style.display = 'none';
       }
@@ -3065,28 +3157,70 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Lỗi khi nhận quà:', err);
     } finally {
-      if ((updatedStudent && updatedStudent.giftHistory && updatedStudent.giftHistory.length >= 2)) {
-        isClaimingGift = false;
-      }
+      isClaimingGift = false;
     }
   }
 
-  function openGiftClaimModal(studentId) {
+  function openGiftClaimModal(studentId, forceMilestone = null) {
     activeGiftStudentId = studentId;
     isClaimingGift = false;
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    const giftItems = StorageManager.getGiftItems();
-    giftClaimStudentName.textContent = student.name;
+    // Xác định mốc quay quà: 200⭐ nếu student.accumulateBonus hoặc student.stars >= 200, ngược lại 100⭐
+    const milestone = forceMilestone || ((student.accumulateBonus && student.stars >= 200) || student.stars >= 200 ? 200 : 100);
+    activeGiftMilestone = milestone;
+
+    const milestoneBadge = document.getElementById('giftModalMilestoneBadge');
+    if (milestoneBadge) {
+      milestoneBadge.style.display = 'inline-block';
+      if (milestone === 200) {
+        milestoneBadge.textContent = '🏆 VÒNG QUAY ĐẶC BIỆT MỐC 200 ⭐';
+        milestoneBadge.style.background = 'linear-gradient(135deg, #F59E0B, #DC2626)';
+      } else {
+        milestoneBadge.textContent = '🎁 VÒNG QUAY MỐC 100 ⭐';
+        milestoneBadge.style.background = 'linear-gradient(135deg, #EC4899, #8B5CF6)';
+      }
+    }
 
     const gifts = student.giftHistory || [];
+    giftClaimStudentName.textContent = student.name;
     renderGiftClaimHistory(gifts);
 
     // Tab default
     currentGiftMode = 'wheel';
     btnModeWheel.classList.add('active');
     btnModeBlindBag.classList.remove('active');
+
+    // KHÓA QUAY CHÉO: Nếu đã quay ở trang phụ huynh thì không quay trang giáo viên nữa và danh sách quà được hiện lên!
+    const claimedByParent = (student.giftSessionSource === 'parent') || gifts.some(g => g.claimedBy === 'parent');
+    const parentLockedBox = document.getElementById('giftParentLockedBox');
+    const parentLockedList = document.getElementById('giftParentLockedGiftsList');
+
+    if (claimedByParent) {
+      giftClaimTurnBadge.textContent = '🔒 Đã quay tại trang Phụ Huynh';
+      giftWheelArea.style.display = 'none';
+      giftBlindBagArea.style.display = 'none';
+      giftResultBox.style.display = 'none';
+      if (parentLockedBox) parentLockedBox.style.display = 'block';
+      if (parentLockedList) {
+        parentLockedList.innerHTML = gifts.map((g, idx) => `
+          <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; border: 1.5px solid #FBCFE8;">
+            <span style="font-size: 26px;">${g.icon || '🎁'}</span>
+            <div style="flex: 1; text-align: left;">
+              <div style="font-weight: 800; color: #1E293B;">Lượt ${idx + 1}: ${g.name}</div>
+              <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong'} (Ba mẹ quay ở nhà)</div>
+            </div>
+          </div>
+        `).join('');
+      }
+      giftClaimModal.classList.add('active');
+      return;
+    } else {
+      if (parentLockedBox) parentLockedBox.style.display = 'none';
+    }
+
+    const giftItems = StorageManager.getGiftItems(milestone);
 
     if (gifts.length >= 2) {
       giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
@@ -3097,19 +3231,17 @@ document.addEventListener('DOMContentLoaded', () => {
       giftResultTitle.textContent = `Bé ${student.name} đã mở đủ 2 phần quà!`;
       giftResultDesc.innerHTML = `
         <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
-          👉 Quà đã lưu trong Bảng Tổng Hợp Quà của cô giáo! Bấm nút bên dưới để đưa bé về 0 ⭐ bắt đầu chu kỳ ấp mới.
+          👉 Điểm đã được tự động hoàn về 0 ⭐ để bắt đầu chu kỳ ấp mới! Quà đã lưu trong Bảng Tổng Hợp Quà của cô giáo.
         </div>
       `;
       giftNextActionArea.innerHTML = `
         <button type="button" id="btnResetCycleFromModal" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); padding: 12px 24px; font-size: 14px; font-weight: 800; border-radius: 20px; cursor: pointer;">
-          🎉 Hoàn Tất & Về 0 ⭐ Bắt Đầu Chu Kỳ Mới
+          ✨ Đóng Lại
         </button>
       `;
-      document.getElementById('btnResetCycleFromModal').addEventListener('click', async () => {
+      document.getElementById('btnResetCycleFromModal').addEventListener('click', () => {
         giftClaimModal.classList.remove('active');
-        await StorageManager.finishAndResetStudentCycle(student.id);
         refreshData();
-        showSyncToast(`🎉 Bé <strong>${student.name}</strong> đã chuyển về 0 ⭐ để bắt đầu chu kỳ ấp mới!`, '✨');
       });
     } else {
       giftClaimTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
@@ -3122,6 +3254,188 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     giftClaimModal.classList.add('active');
+  }
+
+  // --- LỰA CHỌN MỐC 100⭐ HOẶC 200⭐: QUAY QUÀ HAY TÍCH ĐIỂM CỘNG DỒN ---
+  let activeMilestoneStudentId = null;
+  let activeMilestoneType = 100;
+
+  function openMilestoneChoiceModal(studentId, milestone = 100) {
+    const student = (state.data.students || []).find(s => s.id === studentId);
+    if (!student) return;
+
+    activeMilestoneStudentId = studentId;
+    activeMilestoneType = milestone;
+
+    const modal = document.getElementById('milestoneChoiceModal');
+    if (!modal) {
+      openGiftClaimModal(studentId, milestone);
+      return;
+    }
+
+    const iconEl = document.getElementById('milestoneChoiceIcon');
+    const titleEl = document.getElementById('milestoneChoiceTitle');
+    const subtitleEl = document.getElementById('milestoneChoiceSubtitle');
+    const studentNameEl = document.getElementById('milestoneStudentName');
+    const choice1Title = document.getElementById('labelChoice1Title');
+    const choice1Badge = document.getElementById('labelChoice1Badge');
+    const choice1Desc = document.getElementById('labelChoice1Desc');
+    const choice2Title = document.getElementById('labelChoice2Title');
+    const choice2Badge = document.getElementById('labelChoice2Badge');
+    const choice2Desc = document.getElementById('labelChoice2Desc');
+
+    if (studentNameEl) studentNameEl.textContent = student.name;
+
+    if (milestone === 200) {
+      if (iconEl) iconEl.textContent = '🏆';
+      if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT KỶ LỤC 200 SAO!';
+      if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã xuất sắc tích đủ 200 sao! Mời con lựa chọn:`;
+      if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY VÒNG QUAY ĐẶC BIỆT 200 ⭐';
+      if (choice1Badge) choice1Badge.textContent = 'QUÀ GIÁ TRỊ CAO 200 ⭐';
+      if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà SIÊU ĐẶC BIỆT</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Được ăn món yêu thích, Gấu bông, Lego, Bộ cờ vua, Cờ cá ngựa...';
+      if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC GIỮ ĐIỂM VINH DANH';
+      if (choice2Badge) choice2Badge.textContent = 'GIỮ ĐIỂM KỶ LỤC';
+      if (choice2Desc) choice2Desc.innerHTML = 'Giữ nguyên điểm số 200 ⭐ để vinh danh trên bảng vàng của lớp học và quay quà sau.';
+    } else {
+      if (iconEl) iconEl.textContent = '🐣';
+      if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!';
+      if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã tích đủ 100 sao và linh thú đã nở! Con muốn lựa chọn:`;
+      if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY QUÀ NGAY (MỐC 100 ⭐)';
+      if (choice1Badge) choice1Badge.textContent = 'MỐC 100 ⭐';
+      if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà may mắn</strong> (Bút chì, Lego mini, Kẹp tóc, Sổ tay, Cục tẩy, Tranh cát, Quà yêu thích...).';
+      if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TÍCH ĐIỂM CỘNG DỒN ĐẾN 200 ⭐';
+      if (choice2Badge) choice2Badge.textContent = 'SĂN MỐC 200 ⭐';
+      if (choice2Desc) choice2Desc.innerHTML = 'Tiếp tục nuôi sao lên <strong>mốc 200 ⭐</strong> để mở vòng quay <strong>QUÀ GIÁ TRỊ CAO</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Được ăn món yêu thích, Gấu bông, Xếp hình lê gô, Bộ cờ vua, Bộ cờ cá ngựa...';
+    }
+
+    modal.classList.add('active');
+  }
+
+  const btnChooseSpinNow = document.getElementById('btnChooseSpinNow');
+  if (btnChooseSpinNow) {
+    btnChooseSpinNow.addEventListener('click', () => {
+      const modal = document.getElementById('milestoneChoiceModal');
+      if (modal) modal.classList.remove('active');
+      if (activeMilestoneStudentId) {
+        openGiftClaimModal(activeMilestoneStudentId, activeMilestoneType);
+      }
+    });
+  }
+
+  const btnChooseAccumulate = document.getElementById('btnChooseAccumulate');
+  if (btnChooseAccumulate) {
+    btnChooseAccumulate.addEventListener('click', async () => {
+      const modal = document.getElementById('milestoneChoiceModal');
+      if (modal) modal.classList.remove('active');
+      if (activeMilestoneStudentId) {
+        const student = (state.data.students || []).find(s => s.id === activeMilestoneStudentId);
+        if (activeMilestoneType === 200) {
+          showSyncToast(`🏆 Bé <strong>${student ? student.name : ''}</strong> tiếp tục giữ điểm kỷ lục 200 ⭐!`, '⭐');
+        } else {
+          await StorageManager.setMilestoneChoice(activeMilestoneStudentId, 'accumulate');
+          refreshData();
+          showSyncToast(`🚀 Bé <strong>${student ? student.name : ''}</strong> đã chọn tích điểm cộng dồn đến mốc 200 ⭐ để săn quà Siêu Đặc Biệt!`, '🌟');
+        }
+      }
+    });
+  }
+
+  const closeMilestoneChoiceBtn = document.getElementById('closeMilestoneChoiceBtn');
+  if (closeMilestoneChoiceBtn) {
+    closeMilestoneChoiceBtn.addEventListener('click', () => {
+      const modal = document.getElementById('milestoneChoiceModal');
+      if (modal) modal.classList.remove('active');
+    });
+  }
+
+  // --- THÔNG BÁO CHO GIÁO VIÊN BIẾT HỌC SINH QUAY TRÚNG QUÀ GÌ ĐỂ CHUẨN BỊ ---
+  function showTeacherGiftNotification({ studentName, gift, milestone, source }) {
+    const banner = document.getElementById('teacherGiftNoticeBanner');
+    const desc = document.getElementById('noticeGiftDesc');
+    if (!banner || !desc) return;
+
+    const sourceLabel = source === 'parent' ? 'Ba mẹ quay tại nhà (trang Phụ Huynh)' : 'Quay tại lớp học';
+    const milestoneLabel = milestone === 200 ? 'Mốc Kỷ Lục 200 ⭐ (ĐẶC BIỆT)' : 'Mốc 100 ⭐';
+
+    desc.innerHTML = `
+      Bé <strong style="color: #4F46E5; font-size: 15px;">${studentName}</strong> vừa quay trúng: 
+      <strong style="color: #E11D48; font-size: 15px;">${gift.icon || '🎁'} ${gift.name}</strong> 
+      (${milestoneLabel} - ${sourceLabel}). 
+      <strong>Thầy/Cô hãy chuẩn bị món quà này để trao cho bé nhé!</strong>
+    `;
+
+    banner.style.display = 'flex';
+
+    if (window.soundFx && typeof window.soundFx.playHatch === 'function') {
+      window.soundFx.playHatch();
+    }
+
+    showSyncToast(
+      `🎁 <strong>THÔNG BÁO CHUẨN BỊ QUÀ:</strong> Bé <strong>${studentName}</strong> vừa trúng <strong>${gift.name}</strong>!`,
+      '🎉'
+    );
+  }
+
+  const btnCloseNoticeBanner = document.getElementById('btnCloseNoticeBanner');
+  if (btnCloseNoticeBanner) {
+    btnCloseNoticeBanner.addEventListener('click', () => {
+      const banner = document.getElementById('teacherGiftNoticeBanner');
+      if (banner) banner.style.display = 'none';
+    });
+  }
+
+  const btnNoticeViewGifts = document.getElementById('btnNoticeViewGifts');
+  if (btnNoticeViewGifts) {
+    btnNoticeViewGifts.addEventListener('click', () => {
+      if (typeof openGiftSummaryModal === 'function') {
+        openGiftSummaryModal();
+      }
+    });
+  }
+
+  // --- MODAL CHIA SẺ LINK ĐIỆN THOẠI CHO GIÁO VIÊN ---
+  const btnShareMobileLink = document.getElementById('btnShareMobileLink');
+  const mobileLinkModal = document.getElementById('mobileLinkModal');
+  const closeMobileLinkModalBtn = document.getElementById('closeMobileLinkModalBtn');
+  const inputMobileUrlLink = document.getElementById('inputMobileUrlLink');
+  const btnCopyMobileLink = document.getElementById('btnCopyMobileLink');
+  const mobileQrCodeImg = document.getElementById('mobileQrCodeImg');
+
+  if (btnShareMobileLink && mobileLinkModal) {
+    btnShareMobileLink.addEventListener('click', async () => {
+      let mobileUrl = `${window.location.origin}/mobile.html`;
+      try {
+        const infoRes = await fetch('/api/info');
+        if (infoRes.ok) {
+          const info = await infoRes.json();
+          if (info.mobileUrl) mobileUrl = info.mobileUrl;
+        }
+      } catch (e) {}
+
+      if (inputMobileUrlLink) inputMobileUrlLink.value = mobileUrl;
+      if (mobileQrCodeImg) {
+        mobileQrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}" alt="QR Điện Thoại" style="border-radius: 12px; border: 2px solid #CBD5E1; box-shadow: 0 4px 12px rgba(0,0,0,0.08); width: 180px; height: 180px;">`;
+      }
+      mobileLinkModal.classList.add('active');
+    });
+  }
+
+  if (closeMobileLinkModalBtn && mobileLinkModal) {
+    closeMobileLinkModalBtn.addEventListener('click', () => {
+      mobileLinkModal.classList.remove('active');
+    });
+  }
+
+  if (btnCopyMobileLink && inputMobileUrlLink) {
+    btnCopyMobileLink.addEventListener('click', () => {
+      navigator.clipboard.writeText(inputMobileUrlLink.value).then(() => {
+        showSyncToast('📋 Đã sao chép link giao diện điện thoại!', '✨');
+      }).catch(() => {
+        inputMobileUrlLink.select();
+        document.execCommand('copy');
+        showSyncToast('📋 Đã sao chép link giao diện điện thoại!', '✨');
+      });
+    });
   }
 
   if (closeGiftClaimBtn) {
@@ -3179,6 +3493,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // Cross-window local storage sync listener (đồng bộ tức thì giữa tất cả các cửa sổ/tab trên máy)
+  window.addEventListener('storage', (e) => {
+    if (e.key === StorageManager.KEY && e.newValue) {
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (parsed && parsed.students) {
+          state.data = parsed;
+          refreshData();
+        }
+      } catch (err) {}
+    }
+  });
+
   // Toast thông báo tức thì khi phụ huynh nộp bài tập về nhà
   function showSyncToast(htmlMessage, icon = '🎉') {
     const container = document.getElementById('liveSyncToastContainer');
@@ -3235,6 +3562,18 @@ document.addEventListener('DOMContentLoaded', () => {
                   }, 1500);
                 }
               }
+            } else if (payload.type === 'GIFT_CLAIMED') {
+              if (payload.data && payload.data.students) {
+                state.data = payload.data;
+                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                refreshData(payload.data);
+              }
+              showTeacherGiftNotification({
+                studentName: payload.studentName,
+                gift: payload.gift || { name: 'Phần quà bí mật', icon: '🎁' },
+                milestone: payload.milestone || 100,
+                source: payload.source || 'parent'
+              });
             } else if (payload.type === 'CYCLE_RESET') {
               if (payload.data && payload.data.students) {
                 state.data = payload.data;
@@ -3335,9 +3674,44 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             }
 
+            // Kiểm tra quà mới từ nhà (giftSummaryRecords mới hoặc cập nhật lượt 2)
+            const oldSummaries = state.data.giftSummaryRecords || [];
+            const newSummaries = fbData.giftSummaryRecords || [];
+            if (newSummaries.length > oldSummaries.length) {
+              const latestRec = newSummaries[0];
+              if (latestRec && latestRec.claimedBy === 'parent') {
+                showTeacherGiftNotification({
+                  studentName: latestRec.studentName,
+                  gift: latestRec.gift2 || latestRec.gift1 || { name: 'Quà may mắn', icon: '🎁' },
+                  milestone: latestRec.milestone || 100,
+                  source: 'parent'
+                });
+              }
+            } else if (newSummaries.length > 0 && newSummaries[0]) {
+              const latestRec = newSummaries[0];
+              const oldRec = oldSummaries.find(r => r.id === latestRec.id);
+              if (oldRec && !oldRec.completed && latestRec.completed && latestRec.claimedBy === 'parent') {
+                showTeacherGiftNotification({
+                  studentName: latestRec.studentName,
+                  gift: latestRec.gift2 || { name: 'Quà may mắn', icon: '🎁' },
+                  milestone: latestRec.milestone || 100,
+                  source: 'parent'
+                });
+              }
+            }
+
             state.data = fbData;
             localStorage.setItem(StorageManager.KEY, JSON.stringify(fbData));
             refreshData(fbData);
+
+            // Tự động vẽ lại Bảng Tổng Hợp Quà Đã Quay nếu đang mở
+            const giftSummaryModalEl = document.getElementById('giftSummaryModal');
+            if (giftSummaryModalEl && giftSummaryModalEl.classList.contains('active')) {
+              openGiftSummaryModal();
+            }
+
+            // Đồng bộ dữ liệu sang local server để ghi vào file class_data.json
+            StorageManager.syncToServer(fbData);
 
             if (diffStudent && diffStars > 0) {
               if (window.soundFx) window.soundFx.playStar();

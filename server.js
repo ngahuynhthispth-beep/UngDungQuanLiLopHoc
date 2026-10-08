@@ -58,6 +58,17 @@ const DEFAULT_GIFTS = [
   { id: 'g-7', name: 'Phần quà em yêu thích', icon: '🎁' }
 ];
 
+const DEFAULT_GIFTS_200 = [
+  { id: 'g200-1', name: 'Được làm lớp trưởng 3 ngày', icon: '👑' },
+  { id: 'g200-2', name: 'Được ba mẹ dắt đi siêu thị mua quà yêu thích', icon: '🛒' },
+  { id: 'g200-3', name: 'Được ăn một món ăn em yêu thích', icon: '🍦' },
+  { id: 'g200-4', name: 'Gấu bông xinh xắn', icon: '🧸' },
+  { id: 'g200-5', name: 'Bộ xếp hình Lê gô cao cấp', icon: '🧩' },
+  { id: 'g200-6', name: 'Bộ cờ vua thông minh', icon: '♟️' },
+  { id: 'g200-7', name: 'Bộ cờ cá ngựa vui nhộn', icon: '🐴' },
+  { id: 'g200-8', name: 'Phần quà đặc biệt tự chọn', icon: '🎁' }
+];
+
 function ensureHatchedTimestamps(data) {
   if (!data || !data.students) return false;
   const now = Date.now();
@@ -79,6 +90,10 @@ function ensureHatchedTimestamps(data) {
     data.giftItems = DEFAULT_GIFTS;
     modified = true;
   }
+  if (!data.giftItems200 || data.giftItems200.length === 0) {
+    data.giftItems200 = DEFAULT_GIFTS_200;
+    modified = true;
+  }
 
   return modified;
 }
@@ -89,7 +104,7 @@ if (fs.existsSync(DATA_FILE)) {
     if (ensureHatchedTimestamps(liveClassData)) {
       fs.writeFileSync(DATA_FILE, JSON.stringify(liveClassData, null, 2));
     }
-    syncToFirebase(liveClassData);
+    // Không tự ý đồng bộ đè lên Firebase lúc khởi động để tránh ghi đè dữ liệu mới hơn trên Đám Mây
   } catch (e) {
     console.error('Error reading class_data.json:', e);
   }
@@ -116,6 +131,27 @@ function pullFromFirebase() {
           let diffStudentName = '';
           let diffStars = 0;
 
+          // Đồng bộ danh sách quà bảng tổng hợp từ Firebase
+          if (remoteData.giftSummaryRecords && Array.isArray(remoteData.giftSummaryRecords)) {
+            if (!liveClassData.giftSummaryRecords) liveClassData.giftSummaryRecords = [];
+            const localSummaryMap = new Map(liveClassData.giftSummaryRecords.map(r => [r.id, r]));
+            remoteData.giftSummaryRecords.forEach(remR => {
+              if (!localSummaryMap.has(remR.id)) {
+                liveClassData.giftSummaryRecords.push(remR);
+                hasChanges = true;
+              } else {
+                const locR = localSummaryMap.get(remR.id);
+                if (JSON.stringify(locR) !== JSON.stringify(remR)) {
+                  Object.assign(locR, remR);
+                  hasChanges = true;
+                }
+              }
+            });
+            if (hasChanges) {
+              liveClassData.giftSummaryRecords.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            }
+          }
+
           remoteData.students.forEach(remS => {
             const locS = liveClassData.students.find(s => s.id === remS.id);
             if (locS) {
@@ -127,14 +163,37 @@ function pullFromFirebase() {
                   hasChanges = true;
                 }
               }
-              if ((remS.stars || 0) > (locS.stars || 0)) {
+              // Nếu bé vừa quay quà xong và hoàn về 0 ⭐ trên Firebase
+              if (remS.stars === 0 && (locS.stars || 0) >= 100) {
+                locS.stars = 0;
+                locS.hatchedAt = null;
+                locS.accumulateBonus = false;
+                locS.milestoneChoice = null;
+                locS.giftHistory = [];
+                locS.lastCompletedGifts = remS.lastCompletedGifts || [];
+                hasChanges = true;
+                broadcastSse({
+                  type: 'CYCLE_RESET',
+                  studentName: locS.name,
+                  data: liveClassData
+                });
+              } else if ((remS.stars || 0) > (locS.stars || 0)) {
                 diffStudentName = locS.name;
                 diffStars = (remS.stars || 0) - (locS.stars || 0);
                 locS.stars = remS.stars;
                 hasChanges = true;
               }
-              if (remS.giftHistory && remS.giftHistory.length > (locS.giftHistory || []).length) {
+              if (remS.giftHistory && remS.giftHistory.length !== (locS.giftHistory || []).length) {
                 locS.giftHistory = remS.giftHistory;
+                hasChanges = true;
+              }
+              if (remS.lastCompletedGifts && JSON.stringify(remS.lastCompletedGifts) !== JSON.stringify(locS.lastCompletedGifts || [])) {
+                locS.lastCompletedGifts = remS.lastCompletedGifts;
+                hasChanges = true;
+              }
+              if (remS.accumulateBonus !== locS.accumulateBonus) {
+                locS.accumulateBonus = remS.accumulateBonus;
+                locS.milestoneChoice = remS.milestoneChoice;
                 hasChanges = true;
               }
               if (remS.logs && remS.logs.length > (locS.logs || []).length) {
@@ -147,13 +206,20 @@ function pullFromFirebase() {
           if (hasChanges) {
             liveClassData.lastUpdated = Date.now();
             fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-            console.log(`⚡ [Tự động cộng điểm] Đã cập nhật điểm rèn luyện phụ huynh chấm vào máy tính!`);
-            broadcastSse({
-              type: 'HOMEWORK_SUBMITTED',
-              studentName: diffStudentName || 'Học sinh',
-              diff: diffStars,
-              data: liveClassData
-            });
+            if (diffStars > 0) {
+              console.log(`⚡ [Tự động cộng điểm] Đã cập nhật điểm rèn luyện phụ huynh chấm vào máy tính!`);
+              broadcastSse({
+                type: 'HOMEWORK_SUBMITTED',
+                studentName: diffStudentName || 'Học sinh',
+                diff: diffStars,
+                data: liveClassData
+              });
+            } else {
+              broadcastSse({
+                type: 'DATA_CHANGED',
+                data: liveClassData
+              });
+            }
           }
         } catch (e) {}
       });
@@ -198,8 +264,9 @@ function startPublicTunnel() {
         publicTunnelUrl = match[0];
         console.log(`\n======================================================`);
         console.log(`🌐 ĐƯỜNG LINK ONLINE (4G/Wifi mọi nơi):`);
-        console.log(`👉 Link Giáo viên trên điện thoại: ${publicTunnelUrl}`);
-        console.log(`👉 Link Zalo Phụ Huynh: ${publicTunnelUrl}/parent.html`);
+        console.log(`💻 1. Link Máy tính: ${publicTunnelUrl}`);
+        console.log(`📱 2. Link Điện thoại Giáo viên: ${publicTunnelUrl}/mobile.html`);
+        console.log(`📢 3. Link Zalo Phụ Huynh: ${publicTunnelUrl}/parent.html`);
         console.log(`======================================================\n`);
       }
     });
@@ -261,12 +328,18 @@ const server = http.createServer((req, res) => {
   // API Endpoints for Real-Time Sync between Teacher and Parents
   if (pathname === '/api/info') {
     const ips = getLocalIpAddresses();
+    const primaryIp = ips[0] || 'localhost';
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       ips,
-      primaryIp: ips[0] || 'localhost',
+      primaryIp,
       port: PORT,
-      publicUrl: publicTunnelUrl || null
+      publicUrl: publicTunnelUrl || null,
+      desktopUrl: `http://${primaryIp}:${PORT}`,
+      mobileUrl: `http://${primaryIp}:${PORT}/mobile.html`,
+      parentUrl: `http://${primaryIp}:${PORT}/parent.html`,
+      publicMobileUrl: publicTunnelUrl ? `${publicTunnelUrl}/mobile.html` : null,
+      publicParentUrl: publicTunnelUrl ? `${publicTunnelUrl}/parent.html` : null
     }));
     return;
   }
@@ -344,13 +417,14 @@ const server = http.createServer((req, res) => {
             updatedAt: Date.now()
           };
 
-          // Không cho tích sao nữa nếu đã đạt 100 sao (bắt buộc mở quà nhận thưởng)
+          // Điểm tối đa: 100 sao nếu chưa chọn tích điểm, hoặc 200 sao nếu đã chọn tích điểm cộng dồn
+          const maxStarsLimit = student.accumulateBonus ? 200 : 100;
           let actualAdded = 0;
-          if ((student.stars || 0) >= 100) {
+          if ((student.stars || 0) >= maxStarsLimit) {
             actualAdded = 0;
           } else {
             const oldStars = student.stars || 0;
-            student.stars = Math.min(100, oldStars + pointsEarned);
+            student.stars = Math.min(maxStarsLimit, oldStars + pointsEarned);
             actualAdded = student.stars - oldStars;
             if (student.stars >= 100) {
               if (!student.hatchedAt) student.hatchedAt = Date.now();
@@ -414,7 +488,7 @@ const server = http.createServer((req, res) => {
       req.on('data', chunk => { body += chunk; });
       req.on('end', () => {
         try {
-          const { studentId, gift, source } = JSON.parse(body);
+          const { studentId, gift, source, milestone } = JSON.parse(body);
           if (!liveClassData || !liveClassData.students) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Data not initialized' }));
@@ -438,9 +512,24 @@ const server = http.createServer((req, res) => {
           }
 
           const claimSource = source || 'teacher';
+
+          // KHÓA QUAY CHÉO: Nếu đã quay ở bên kia thì không cho quay bên này nữa!
+          if (student.giftSessionSource && student.giftSessionSource !== claimSource) {
+            const otherSourceTitle = student.giftSessionSource === 'parent' ? 'Phụ Huynh' : 'Cô Giáo (trên lớp)';
+            res.writeHead(403, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ 
+              error: `Bé đã quay quà tại trang ${otherSourceTitle}! Không thể quay thêm tại đây.`,
+              lockedBy: student.giftSessionSource,
+              giftHistory: student.giftHistory
+            }));
+            return;
+          }
+
           if (!student.giftSessionSource) {
             student.giftSessionSource = claimSource;
           }
+
+          const currentMilestone = milestone || (student.stars >= 200 || student.accumulateBonus ? 200 : 100);
 
           const now = new Date();
           const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}, ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -450,26 +539,149 @@ const server = http.createServer((req, res) => {
             icon: gift.icon || '🎁',
             time: timeStr,
             timestamp: Date.now(),
-            claimedBy: claimSource
+            claimedBy: claimSource,
+            milestone: currentMilestone
           };
           student.giftHistory.push(record);
+
+          let autoReset = false;
+          let summaryEntry = null;
+
+          if (!liveClassData.giftSummaryRecords) liveClassData.giftSummaryRecords = [];
+          const group = (liveClassData.groups || []).find(g => g.id === student.group);
+
+          // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
+          summaryEntry = liveClassData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
+          if (!summaryEntry) {
+            summaryEntry = {
+              id: 'summary-' + Date.now(),
+              studentId: student.id,
+              studentName: student.name,
+              groupName: group ? group.name : `Tổ ${student.group}`,
+              groupColor: group ? group.color : '#64748B',
+              milestone: currentMilestone,
+              gift1: record,
+              gift2: null,
+              claimedBy: claimSource,
+              dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+              timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+              timestamp: Date.now(),
+              completed: false,
+              delivered: false
+            };
+            liveClassData.giftSummaryRecords.unshift(summaryEntry);
+          } else {
+            summaryEntry.gift2 = record;
+            summaryEntry.completed = true;
+          }
+
+          // NẾU ĐÃ HOÀN TẤT 2 LƯỢT QUÀ -> TỰ ĐỘNG HOÀN VỀ 0 KHÔNG CẦN THAO TÁC NỮA
+          if (student.giftHistory.length >= 2) {
+            autoReset = true;
+            summaryEntry.gift2 = record;
+            summaryEntry.completed = true;
+
+            // Tự động hoàn điểm về 0 để bắt đầu chu kỳ mới
+            student.lastCompletedGifts = [...student.giftHistory];
+            student.stars = 0;
+            student.hatchedAt = null;
+            student.accumulateBonus = false;
+            student.milestoneChoice = null;
+            student.giftHistory = [];
+            student.giftSessionSource = null;
+            student.lastSummaryEntry = summaryEntry;
+
+            if (!student.logs) student.logs = [];
+            student.logs.unshift({
+              id: 'log-cycle-' + Date.now(),
+              time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+              points: 0,
+              reason: `Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc ${currentMilestone}⭐: ${summaryEntry.gift1 ? summaryEntry.gift1.name : ''}, ${record.name})`,
+              icon: '🥚'
+            });
+            if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
+            student.homeworkRecords = {};
+          }
+
           liveClassData.lastUpdated = Date.now();
           fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          syncToFirebase(liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
             status: 'ok', 
             record, 
             student, 
+            autoReset,
+            summaryEntry,
             data: liveClassData 
           }));
 
+          // Broadcast SSE sự kiện học sinh trúng quà để cô giáo chuẩn bị quà
           broadcastSse({
             type: 'GIFT_CLAIMED',
             studentId,
             studentName: student.name,
             gift: record,
             source: claimSource,
+            milestone: currentMilestone,
+            autoReset,
+            summaryEntry,
+            data: liveClassData
+          });
+
+          if (autoReset) {
+            broadcastSse({
+              type: 'CYCLE_RESET',
+              studentId: student.id,
+              studentName: student.name,
+              summaryEntry,
+              data: liveClassData
+            });
+          }
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+      return;
+    }
+  }
+
+  // API lưu lựa chọn mốc điểm (Quay quà 100⭐ hay Tích điểm cộng dồn lên 200⭐)
+  if (pathname === '/api/milestone-choice') {
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const { studentId, choice } = JSON.parse(body); // choice: 'accumulate' | 'spin'
+          if (!liveClassData || !liveClassData.students) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Data not initialized' }));
+            return;
+          }
+          const student = liveClassData.students.find(s => s.id === studentId);
+          if (!student) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Student not found' }));
+            return;
+          }
+
+          student.milestoneChoice = choice;
+          if (choice === 'accumulate') {
+            student.accumulateBonus = true;
+          }
+
+          liveClassData.lastUpdated = Date.now();
+          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          syncToFirebase(liveClassData);
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok', student, data: liveClassData }));
+
+          broadcastSse({
+            type: 'DATA_CHANGED',
             data: liveClassData
           });
         } catch (err) {
@@ -601,13 +813,14 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  // API cài đặt / chỉnh sửa danh sách quà tặng (Túi mù & Vòng quay)
+  // API cài đặt / chỉnh sửa danh sách quà tặng (Mốc 100⭐ và Mốc 200⭐)
   if (pathname === '/api/gifts') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ 
         status: 'ok', 
-        gifts: liveClassData.giftItems || DEFAULT_GIFTS 
+        gifts: liveClassData.giftItems || DEFAULT_GIFTS,
+        gifts200: liveClassData.giftItems200 || DEFAULT_GIFTS_200
       }));
       return;
     }
@@ -617,24 +830,30 @@ const server = http.createServer((req, res) => {
       req.on('data', chunk => { body += chunk; });
       req.on('end', () => {
         try {
-          const { giftItems } = JSON.parse(body);
+          const { giftItems, giftItems200 } = JSON.parse(body);
           if (Array.isArray(giftItems)) {
             liveClassData.giftItems = giftItems;
-            liveClassData.lastUpdated = Date.now();
-            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ status: 'ok', gifts: liveClassData.giftItems }));
-
-            broadcastSse({
-              type: 'GIFTS_UPDATED',
-              gifts: liveClassData.giftItems,
-              data: liveClassData
-            });
-          } else {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'giftItems must be an array' }));
           }
+          if (Array.isArray(giftItems200)) {
+            liveClassData.giftItems200 = giftItems200;
+          }
+          liveClassData.lastUpdated = Date.now();
+          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          syncToFirebase(liveClassData);
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ 
+            status: 'ok', 
+            gifts: liveClassData.giftItems,
+            gifts200: liveClassData.giftItems200
+          }));
+
+          broadcastSse({
+            type: 'GIFTS_UPDATED',
+            gifts: liveClassData.giftItems,
+            gifts200: liveClassData.giftItems200,
+            data: liveClassData
+          });
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
@@ -699,21 +918,22 @@ server.listen(PORT, () => {
   const ips = getLocalIpAddresses();
   console.log(`\n======================================================`);
   console.log(`🚀 ỨNG DỤNG LỚP HỌC ĐANG CHẠY:`);
-  console.log(`👉 Máy giáo viên: http://localhost:${PORT}`);
+  console.log(`💻 1. GIAO DIỆN MÁY TÍNH (Chuẩn, đầy đủ):`);
+  console.log(`   👉 http://localhost:${PORT}`);
   if (ips.length > 0) {
-    console.log(`📱 Giáo viên dùng trên điện thoại (cùng Wifi):`);
+    console.log(`📱 2. GIAO DIỆN ĐIỆN THOẠI GIÁO VIÊN (Nhỏ gọn, cùng Wifi):`);
     ips.forEach(ip => {
-      console.log(`   http://${ip}:${PORT}`);
+      console.log(`   👉 http://${ip}:${PORT}/mobile.html`);
     });
-    console.log(`📱 Phụ huynh xem trên điện thoại (cùng Wifi):`);
+    console.log(`📢 3. GIAO DIỆN PHỤ HUYNH HỌC SINH (Xem & nộp bài tại nhà):`);
     ips.forEach(ip => {
-      console.log(`   http://${ip}:${PORT}/parent.html`);
+      console.log(`   👉 http://${ip}:${PORT}/parent.html`);
     });
   }
   console.log(`======================================================\n`);
 
   if (process.env.AUTO_OPEN !== 'false') {
-    const openCmd = process.platform === 'win32' ? `start http://localhost:${PORT}` :
+    const openCmd = process.platform === 'win32' ? `start "" chrome http://localhost:${PORT} || start "" msedge http://localhost:${PORT} || start http://localhost:${PORT}` :
                     process.platform === 'darwin' ? `open http://localhost:${PORT}` :
                     `xdg-open http://localhost:${PORT}`;
     const { exec } = require('child_process');

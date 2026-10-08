@@ -9,6 +9,26 @@ const StorageManager = {
     }
   },
 
+  DEFAULT_GIFTS: [
+    { id: 'g-1', name: 'Bút chì siêu đẹp', icon: '✏️' },
+    { id: 'g-2', name: 'Bộ lắp ráp Lê gô', icon: '🧩' },
+    { id: 'g-3', name: 'Kẹp tóc công chúa', icon: '🎀' },
+    { id: 'g-4', name: 'Sổ tay mini đáng yêu', icon: '📓' },
+    { id: 'g-5', name: 'Cục tẩy ngộ nghĩnh', icon: '🧼' },
+    { id: 'g-6', name: 'Tranh cát sắc màu', icon: '🎨' },
+    { id: 'g-7', name: 'Phần quà em yêu thích', icon: '🎁' }
+  ],
+  DEFAULT_GIFTS_200: [
+    { id: 'g200-1', name: 'Được làm lớp trưởng 3 ngày', icon: '👑' },
+    { id: 'g200-2', name: 'Được ba mẹ dắt đi siêu thị mua quà yêu thích', icon: '🛒' },
+    { id: 'g200-3', name: 'Được ăn một món ăn em yêu thích', icon: '🍦' },
+    { id: 'g200-4', name: 'Gấu bông xinh xắn', icon: '🧸' },
+    { id: 'g200-5', name: 'Bộ xếp hình Lê gô cao cấp', icon: '🧩' },
+    { id: 'g200-6', name: 'Bộ cờ vua thông minh', icon: '♟️' },
+    { id: 'g200-7', name: 'Bộ cờ cá ngựa vui nhộn', icon: '🐴' },
+    { id: 'g200-8', name: 'Phần quà đặc biệt tự chọn', icon: '🎁' }
+  ],
+
   getDefaultData() {
     return {
       className: 'Lớp 1A',
@@ -41,15 +61,8 @@ const StorageManager = {
         { id: 'hs-15', name: 'Mai Thảo My', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-15', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
         { id: 'hs-16', name: 'Nguyễn Tiến Đạt', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-16', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] }
       ],
-      giftItems: [
-        { id: 'g-1', name: 'Bút chì siêu đẹp', icon: '✏️' },
-        { id: 'g-2', name: 'Bộ lắp ráp Lê gô', icon: '🧩' },
-        { id: 'g-3', name: 'Kẹp tóc công chúa', icon: '🎀' },
-        { id: 'g-4', name: 'Sổ tay mini đáng yêu', icon: '📓' },
-        { id: 'g-5', name: 'Cục tẩy ngộ nghĩnh', icon: '🧼' },
-        { id: 'g-6', name: 'Tranh cát sắc màu', icon: '🎨' },
-        { id: 'g-7', name: 'Phần quà em yêu thích', icon: '🎁' }
-      ],
+      giftItems: [...this.DEFAULT_GIFTS],
+      giftItems200: [...this.DEFAULT_GIFTS_200],
       lastUpdated: Date.now()
     };
   },
@@ -71,6 +84,15 @@ const StorageManager = {
         student.hatchedAt = null;
       }
     });
+
+    if (!data.giftItems || data.giftItems.length === 0) {
+      data.giftItems = this.getDefaultData().giftItems;
+      modified = true;
+    }
+    if (!data.giftItems200 || data.giftItems200.length === 0) {
+      data.giftItems200 = this.getDefaultData().giftItems200;
+      modified = true;
+    }
 
     return modified;
   },
@@ -164,13 +186,14 @@ const StorageManager = {
     const student = data.students.find(s => s.id === studentId);
     if (!student) return null;
 
-    // Không cho tích sao nữa nếu đã đạt 100 sao (bắt buộc mở quà nhận thưởng)
-    if ((student.stars || 0) >= 100 && points > 0) {
-      return { student, capped: true, data };
+    // Giới hạn sao: 200 sao nếu đã chọn tích điểm cộng dồn, hoặc 100 sao nếu chưa
+    const maxCap = student.accumulateBonus ? 200 : 100;
+    if ((student.stars || 0) >= maxCap && points > 0) {
+      return { student, capped: true, data, maxCap };
     }
 
     const oldStars = student.stars || 0;
-    student.stars = Math.min(100, Math.max(0, oldStars + points));
+    student.stars = Math.min(maxCap, Math.max(0, oldStars + points));
     const actualPoints = student.stars - oldStars;
 
     // Cập nhật mốc thời gian trứng nở (>= 100 sao)
@@ -207,7 +230,7 @@ const StorageManager = {
     }
 
     this.saveData(data);
-    return { student, group, data, actualPoints };
+    return { student, group, data, actualPoints, reachedMilestone: student.stars >= 100 };
   },
 
   addPointsToGroup(groupId, points, reason, icon = '🌟') {
@@ -217,12 +240,13 @@ const StorageManager = {
 
     group.stars = Math.max(0, group.stars + points);
 
-    // Also distribute to members in the group (không cộng thêm nếu đã đạt 100 sao)
+    // Also distribute to members in the group (tối đa 100 sao hoặc 200 sao tùy học sinh)
     const members = data.students.filter(s => s.group === groupId);
     members.forEach(s => {
-      if ((s.stars || 0) >= 100 && points > 0) return;
+      const maxCap = s.accumulateBonus ? 200 : 100;
+      if ((s.stars || 0) >= maxCap && points > 0) return;
       const oldStars = s.stars || 0;
-      s.stars = Math.min(100, Math.max(0, oldStars + points));
+      s.stars = Math.min(maxCap, Math.max(0, oldStars + points));
       const sActual = s.stars - oldStars;
       if (s.stars >= 100 && !s.hatchedAt) s.hatchedAt = Date.now();
 
@@ -248,9 +272,10 @@ const StorageManager = {
     });
     data.students.forEach(s => {
       if (s.status === 'sleeping') s.status = 'active';
-      if ((s.stars || 0) >= 100 && points > 0) return;
+      const maxCap = s.accumulateBonus ? 200 : 100;
+      if ((s.stars || 0) >= maxCap && points > 0) return;
       const oldStars = s.stars || 0;
-      s.stars = Math.min(100, Math.max(0, oldStars + points));
+      s.stars = Math.min(maxCap, Math.max(0, oldStars + points));
       const sActual = s.stars - oldStars;
       if (s.stars >= 100 && !s.hatchedAt) s.hatchedAt = Date.now();
 
@@ -622,55 +647,57 @@ const StorageManager = {
     };
   },
 
-  // Quản lý danh sách quà tặng (Túi mù & Vòng quay)
-  getGiftItems() {
+  // Quản lý danh sách quà tặng (Túi mù & Vòng quay) - mốc 100 và mốc 200
+  getGiftItems(milestone = 100) {
     const data = this.loadData();
+    if (Number(milestone) === 200) {
+      if (!data.giftItems200 || data.giftItems200.length === 0) {
+        return this.getDefaultData().giftItems200;
+      }
+      return data.giftItems200;
+    }
     if (!data.giftItems || data.giftItems.length === 0) {
       return this.getDefaultData().giftItems;
     }
     return data.giftItems;
   },
 
-  async saveGiftItems(items) {
+  async saveGiftItems(items, milestone = 100) {
     const data = this.loadData();
-    data.giftItems = items;
+    if (Number(milestone) === 200) {
+      data.giftItems200 = items;
+    } else {
+      data.giftItems = items;
+    }
     data.lastUpdated = Date.now();
 
     if (window.location.protocol.startsWith('http')) {
       try {
+        const payload = Number(milestone) === 200 ? { giftItems200: items } : { giftItems: items };
         await fetch('/api/gifts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ giftItems: items })
+          body: JSON.stringify(payload)
         });
       } catch (e) {}
     }
 
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
-      window.FirebaseSync.saveGiftItems(items);
+      window.FirebaseSync.saveGiftItems(data.giftItems, data.giftItems200);
     }
 
     this.saveData(data);
     return items;
   },
 
-  // Lưu lịch sử nhận quà của học sinh (Tối đa 2 lượt)
-  async claimStudentGift(studentId, gift, source = 'teacher') {
-    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
-      try {
-        const fbStudent = await window.FirebaseSync.claimStudentGift(studentId, gift, source);
-        if (fbStudent) return fbStudent;
-      } catch (e) {
-        console.warn('Lỗi nhận quà qua Firebase:', e);
-      }
-    }
-
+  // Lưu lịch sử nhận quà của học sinh (Tối đa 2 lượt) & Tự động hoàn về 0
+  async claimStudentGift(studentId, gift, source = 'teacher', milestone = 100) {
     if (window.location.protocol.startsWith('http')) {
       try {
         const res = await fetch('/api/claim-gift', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentId, gift, source })
+          body: JSON.stringify({ studentId, gift, source, milestone })
         });
         if (res.ok) {
           const json = await res.json();
@@ -681,8 +708,23 @@ const StorageManager = {
             }
             return json.student;
           }
+        } else if (res.status === 403) {
+          const errJson = await res.json();
+          throw new Error(errJson.error || 'Bé đã quay quà ở thiết bị khác!');
         }
-      } catch (e) {}
+      } catch (e) {
+        if (e.message && e.message.includes('Bé đã quay')) throw e;
+      }
+    }
+
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      try {
+        const fbStudent = await window.FirebaseSync.claimStudentGift(studentId, gift, source, milestone);
+        if (fbStudent) return fbStudent;
+      } catch (e) {
+        console.warn('Lỗi nhận quà qua Firebase:', e);
+        if (e.message && e.message.includes('quay')) throw e;
+      }
     }
 
     // Fallback lưu local
@@ -693,10 +735,16 @@ const StorageManager = {
     if (!student.giftHistory) student.giftHistory = [];
     if (student.giftHistory.length >= 2) return student;
 
+    if (student.giftSessionSource && student.giftSessionSource !== source) {
+      const otherTitle = student.giftSessionSource === 'parent' ? 'Phụ Huynh' : 'Cô Giáo (trên lớp)';
+      throw new Error(`Bé đã quay quà tại trang ${otherTitle}! Không thể quay thêm tại đây.`);
+    }
+
     if (!student.giftSessionSource) {
       student.giftSessionSource = source;
     }
 
+    const currentMilestone = milestone || (student.stars >= 200 || student.accumulateBonus ? 200 : 100);
     const now = new Date();
     const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}, ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
     const record = {
@@ -705,10 +753,91 @@ const StorageManager = {
       icon: gift.icon || '🎁',
       time: timeStr,
       timestamp: Date.now(),
-      claimedBy: source
+      claimedBy: source,
+      milestone: currentMilestone
     };
     student.giftHistory.push(record);
+
+    if (!data.giftSummaryRecords) data.giftSummaryRecords = [];
+    const group = (data.groups || []).find(g => g.id === student.group);
+
+    // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
+    let summaryEntry = data.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
+    if (!summaryEntry) {
+      summaryEntry = {
+        id: 'summary-' + Date.now(),
+        studentId: student.id,
+        studentName: student.name,
+        groupName: group ? group.name : `Tổ ${student.group}`,
+        groupColor: group ? group.color : '#64748B',
+        milestone: currentMilestone,
+        gift1: record,
+        gift2: null,
+        claimedBy: source,
+        dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+        timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        timestamp: Date.now(),
+        completed: false,
+        delivered: false
+      };
+      data.giftSummaryRecords.unshift(summaryEntry);
+    } else {
+      summaryEntry.gift2 = record;
+      summaryEntry.completed = true;
+    }
+
+    // Tự động hoàn thành chu kỳ nếu đã đủ 2 lượt: tự động hoàn điểm về 0 ⭐ để ấp trứng mới
+    if (student.giftHistory.length >= 2) {
+      summaryEntry.gift2 = record;
+      summaryEntry.completed = true;
+
+      student.lastCompletedGifts = [...student.giftHistory];
+      student.stars = 0;
+      student.hatchedAt = null;
+      student.accumulateBonus = false;
+      student.milestoneChoice = null;
+      student.giftHistory = [];
+      student.giftSessionSource = null;
+
+      if (!student.logs) student.logs = [];
+      student.logs.unshift({
+        id: 'log-cycle-' + Date.now(),
+        time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        points: 0,
+        reason: `Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc ${currentMilestone}⭐: ${summaryEntry.gift1 ? summaryEntry.gift1.name : ''}, ${record.name})`,
+        icon: '🥚'
+      });
+      if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
+    }
+
     this.saveData(data);
+    return student;
+  },
+
+  async setMilestoneChoice(studentId, choice) {
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      try {
+        await window.FirebaseSync.setMilestoneChoice(studentId, choice);
+      } catch (e) {}
+    }
+    if (window.location.protocol.startsWith('http')) {
+      try {
+        await fetch('/api/milestone-choice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ studentId, choice })
+        });
+      } catch (e) {}
+    }
+    const data = this.loadData();
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      student.milestoneChoice = choice;
+      if (choice === 'accumulate') {
+        student.accumulateBonus = true;
+      }
+      this.saveData(data);
+    }
     return student;
   },
 

@@ -930,16 +930,16 @@ body {
     background: linear-gradient(135deg, #EF4444, #DC2626) !important;
   }
 
-  /* Mặc định trên mobile: 14 nút tiện ích ẨN HOÀN TOÀN để giải phóng diện tích cho danh bạ */
-  .header-actions {
+  /* Mặc định trên trang mobile (mobile.html): Các nút tiện ích chuyển vào ngăn kéo để nhường chỗ cho danh bạ */
+  body.mobile-app-page .header-actions {
     display: none !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Khi bấm nút "Tiện ích", bung ra dạng lưới 2 cột siêu gọn */
-  .header-actions.show-mobile {
+  /* Khi bấm nút "Tiện ích" trên mobile, bung ra dạng lưới 2 cột siêu gọn */
+  body.mobile-app-page .header-actions.show-mobile {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 6px !important;
@@ -950,7 +950,7 @@ body {
     overflow-y: auto !important;
   }
 
-  .btn-header {
+  body.mobile-app-page .btn-header {
     padding: 7px 8px !important;
     font-size: 11.5px !important;
     justify-content: center !important;
@@ -959,11 +959,11 @@ body {
     white-space: normal !important;
     text-align: center !important;
   }
-  .btn-header span {
+  body.mobile-app-page .btn-header span {
     font-size: 11px !important;
   }
 
-  .btn-close-mobile-tools {
+  body.mobile-app-page .btn-close-mobile-tools {
     display: block !important;
     grid-column: span 2 !important;
     background: #F1F5F9 !important;
@@ -1044,7 +1044,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  /* Danh bạ điện thoại trên mobile: Hàng dọc 100%, không bị tràn ngang */
+  /* Danh bạ điện thoại & Cửa sổ mini dạy học: Hàng dọc 100%, không bị tràn ngang */
   #scrollNavControls {
     display: none !important;
   }
@@ -1067,12 +1067,12 @@ body {
     margin-bottom: 2px;
   }
 
-  /* Modal trên điện thoại chuyển thành dạng Bottom Sheet chạm vuốt siêu tiện */
-  .modal-backdrop {
+  /* Modal trên trang điện thoại chuyển thành dạng Bottom Sheet chạm vuốt siêu tiện */
+  body.mobile-app-page .modal-backdrop {
     align-items: flex-end !important;
     padding: 0 !important;
   }
-  .modal-card {
+  body.mobile-app-page .modal-card {
     border-radius: 24px 24px 0 0 !important;
     max-height: 88vh !important;
     padding: 20px 16px 28px 16px !important;
@@ -1080,7 +1080,7 @@ body {
     margin-bottom: 0 !important;
     transform: translateY(20px) !important;
   }
-  .modal-backdrop.active .modal-card {
+  body.mobile-app-page .modal-backdrop.active .modal-card {
     transform: translateY(0) !important;
   }
 }
