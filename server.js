@@ -357,6 +357,12 @@ const server = http.createServer((req, res) => {
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
+          if (!parsed || !parsed.students || parsed.students.length < 30) {
+            console.warn('Blocked attempt to overwrite students via /api/sync with incomplete data');
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Cannot overwrite full class with sample or incomplete data' }));
+            return;
+          }
           liveClassData = parsed;
           fs.writeFile(DATA_FILE, JSON.stringify(parsed, null, 2), () => {});
           syncToFirebase(liveClassData);
@@ -417,18 +423,12 @@ const server = http.createServer((req, res) => {
             updatedAt: Date.now()
           };
 
-          // Điểm tối đa: 100 sao nếu chưa chọn tích điểm, hoặc 200 sao nếu đã chọn tích điểm cộng dồn
-          const maxStarsLimit = student.accumulateBonus ? 200 : 100;
-          let actualAdded = 0;
-          if ((student.stars || 0) >= maxStarsLimit) {
-            actualAdded = 0;
-          } else {
-            const oldStars = student.stars || 0;
-            student.stars = Math.min(maxStarsLimit, oldStars + pointsEarned);
-            actualAdded = student.stars - oldStars;
-            if (student.stars >= 100) {
-              if (!student.hatchedAt) student.hatchedAt = Date.now();
-            }
+          // Cho phép tích điểm liên tục (100 -> 200 -> 300...) khi rèn luyện
+          const oldStars = student.stars || 0;
+          student.stars = oldStars + pointsEarned;
+          const actualAdded = pointsEarned;
+          if (student.stars >= 100) {
+            if (!student.hatchedAt) student.hatchedAt = Date.now();
           }
 
           // Cập nhật điểm cho tổ

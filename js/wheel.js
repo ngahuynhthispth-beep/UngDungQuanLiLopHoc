@@ -46,7 +46,7 @@ class LuckyWheel {
       this.ctx.lineTo(centerX, centerY);
       this.ctx.fill();
       this.ctx.strokeStyle = '#FFFFFF';
-      this.ctx.lineWidth = 3;
+      this.ctx.lineWidth = this.items.length > 24 ? 1.5 : (this.items.length > 15 ? 2 : 3);
       this.ctx.stroke();
 
       // Text
@@ -55,12 +55,21 @@ class LuckyWheel {
       this.ctx.rotate(angle + arc / 2);
       this.ctx.textAlign = 'right';
       this.ctx.fillStyle = '#FFFFFF';
-      this.ctx.font = 'bold 15px Quicksand, Arial, sans-serif';
-      this.ctx.shadowColor = 'rgba(0,0,0,0.4)';
+      const fontSize = this.items.length > 24 ? 11 : (this.items.length > 15 ? 13 : 15);
+      this.ctx.font = `bold ${fontSize}px Quicksand, Arial, sans-serif`;
+      this.ctx.shadowColor = 'rgba(0,0,0,0.5)';
       this.ctx.shadowBlur = 4;
-      // Shorten name if too long
-      const displayName = item.name.length > 14 ? item.name.substring(0, 12) + '..' : item.name;
-      this.ctx.fillText(displayName, radius - 20, 5);
+      
+      // Định dạng tên học sinh ngắn gọn (lấy 2 từ cuối như "Quốc An", "Bảo Hân", "Gia Khánh") khi lớp đông
+      let displayName = item.name || '';
+      if (this.items.length > 18) {
+        const parts = displayName.trim().split(/\s+/);
+        displayName = parts.length > 1 ? parts.slice(-2).join(' ') : displayName;
+      }
+      if (displayName.length > 12) {
+        displayName = displayName.substring(0, 10) + '..';
+      }
+      this.ctx.fillText(displayName, radius - (this.items.length > 24 ? 12 : 20), Math.round(fontSize / 3));
       this.ctx.restore();
     });
 

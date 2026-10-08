@@ -1408,34 +1408,74 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // --- Lucky Wheel Modal ---
+  let currentWheelGroup = 'all';
+
+  function setupWheelGroup(group) {
+    currentWheelGroup = group;
+    document.querySelectorAll('.wheel-group-tab').forEach(btn => {
+      const isAct = btn.dataset.group === String(group);
+      btn.style.background = isAct ? '#6366F1' : '#F8FAFC';
+      btn.style.color = isAct ? '#FFF' : '#334155';
+      btn.style.borderColor = isAct ? '#6366F1' : '#E2E8F0';
+    });
+
+    const allStudents = state.data.students || [];
+    let items = allStudents.filter(s => s.status !== 'sleeping');
+    if (group !== 'all') {
+      const gId = parseInt(group, 10);
+      items = items.filter(s => s.group === gId);
+    }
+    if (luckyWheel) {
+      luckyWheel.setItems(items);
+    }
+    const winnerBox = document.getElementById('wheelWinnerBox');
+    if (winnerBox) winnerBox.style.display = 'none';
+  }
+
+  document.querySelectorAll('.wheel-group-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setupWheelGroup(btn.dataset.group);
+    });
+  });
+
   btnWheel.addEventListener('click', () => {
+    state.data = StorageManager.loadData();
     wheelModal.classList.add('active');
     const canvas = document.getElementById('luckyWheelCanvas');
-    canvas.width = 340;
-    canvas.height = 340;
+    if (canvas) {
+      canvas.width = 360;
+      canvas.height = 360;
+    }
 
     luckyWheel = new LuckyWheel('luckyWheelCanvas');
-    luckyWheel.setItems(state.data.students);
+    setupWheelGroup('all');
 
-    document.getElementById('wheelWinnerBox').style.display = 'none';
+    const winnerBox = document.getElementById('wheelWinnerBox');
+    if (winnerBox) winnerBox.style.display = 'none';
   });
 
   document.getElementById('spinWheelBtn').addEventListener('click', () => {
     if (!luckyWheel || luckyWheel.isSpinning) return;
-    document.getElementById('wheelWinnerBox').style.display = 'none';
+    const winnerBox = document.getElementById('wheelWinnerBox');
+    if (winnerBox) winnerBox.style.display = 'none';
 
     luckyWheel.spin((winner) => {
-      const winnerBox = document.getElementById('wheelWinnerBox');
+      if (!winner) return;
       const winnerName = document.getElementById('wheelWinnerName');
-      winnerName.textContent = `🎉 Xin chúc mừng: ${winner.name}!`;
-      winnerBox.style.display = 'block';
+      if (winnerName) winnerName.textContent = `🎉 Xin chúc mừng: ${winner.name}!`;
+      if (winnerBox) winnerBox.style.display = 'block';
 
-      document.getElementById('btnAwardWinner').onclick = () => {
-        window.soundFx.playStar();
-        StorageManager.addPointsToStudent(winner.id, 1, 'Bốc thăm trúng phát biểu', '🎲');
-        refreshData();
-        wheelModal.classList.remove('active');
-      };
+      const awardBtn = document.getElementById('btnAwardWinner');
+      if (awardBtn) {
+        awardBtn.onclick = () => {
+          if (window.soundFx) window.soundFx.playStar();
+          StorageManager.addPointsToStudent(winner.id, 1, 'Bốc thăm trúng phát biểu', '🎲');
+          state.data = StorageManager.loadData();
+          renderStudents();
+          renderGroups();
+          wheelModal.classList.remove('active');
+        };
+      }
     });
   });
 

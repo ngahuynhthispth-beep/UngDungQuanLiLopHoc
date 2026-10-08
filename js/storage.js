@@ -41,25 +41,42 @@ const StorageManager = {
         { id: 4, name: 'Tổ 4 - Hổ Vui Vẻ', mascot: '🐯', color: '#96CEB4', stars: 0 }
       ],
       students: [
-        { id: 'hs-1', name: 'Nguyễn Bảo An', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-1', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-2', name: 'Trần Minh Khôi', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-2', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-3', name: 'Lê Tuệ Mẫn', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-3', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-4', name: 'Phạm Gia Huy', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-4', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-
-        { id: 'hs-5', name: 'Vũ Ngọc Hân', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-5', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-6', name: 'Đỗ Đức Anh', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-6', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-7', name: 'Hoàng Thùy Chi', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-7', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-8', name: 'Bùi Quang Dũng', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-8', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-
-        { id: 'hs-9', name: 'Đặng Mai Phương', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-9', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-10', name: 'Ngô Hải Đăng', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-10', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-11', name: 'Trịnh Khánh Linh', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-11', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-12', name: 'Lý Quốc Bảo', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-12', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-
-        { id: 'hs-13', name: 'Dương Gia Linh', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-13', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-14', name: 'Võ Minh Quân', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-14', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-15', name: 'Mai Thảo My', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-15', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] },
-        { id: 'hs-16', name: 'Nguyễn Tiến Đạt', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0, logs: [{ id: 'log-init-16', time: '08:00', points: 0, reason: 'Bắt đầu ấp trứng kỳ diệu (0 ⭐)', icon: '🥚' }] }
+        { id: 'hs-1790097391777-1', name: 'Quốc An', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-2', name: 'Minh An', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-3', name: 'Phúc Anh', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-4', name: 'Nguyên Bình', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-5', name: 'Thanh Bình', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-6', name: 'Bảo Đăng', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-7', name: 'Yên Di', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-8', name: 'Ánh Dương', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-9', name: 'Bảo Hân', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-10', name: 'Phạm Bảo Hân', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-11', name: 'Công Hậu', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-12', name: 'Gia Hưng', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-13', name: 'Hà Kha', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-14', name: 'Minh Khang', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-15', name: 'Gia Khánh', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-16', name: 'Minh Khôi', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-17', name: 'Đăng Khôi', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-18', name: 'Minh Khuê', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-19', name: 'Bảo Lam', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-20', name: 'Vy Lê', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-21', name: 'Bảo Long', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-22', name: 'Huyền My', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-23', name: 'Hoàng Ngân', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-24', name: 'Minh Nhật', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-25', name: 'An Nhiên', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-26', name: 'Hoàng Phúc', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-27', name: 'Uyên Phương', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-28', name: 'Hoàng Quân', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-29', name: 'Anh Quân', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-30', name: 'Tuệ Tâm', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-31', name: 'Hương Thảo', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-32', name: 'Anh Thư', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-33', name: 'Bảo Trân', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-34', name: 'Nhã Uyên', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-35', name: 'Ngọc Uyên', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-1790097391777-36', name: 'Hải Yến', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
       ],
       giftItems: [...this.DEFAULT_GIFTS],
       giftItems200: [...this.DEFAULT_GIFTS_200],
@@ -98,7 +115,7 @@ const StorageManager = {
   },
 
   loadData() {
-    if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+    if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
       try {
         localStorage.setItem(this.KEY, JSON.stringify(window.__INITIAL_DATA__));
       } catch (e) {}
@@ -109,6 +126,10 @@ const StorageManager = {
       const raw = localStorage.getItem(this.KEY);
       if (raw) {
         data = JSON.parse(raw);
+        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua
+        if (data && data.students && (data.students.length < 30 || data.students.some(s => s.name === 'Đỗ Đức Anh'))) {
+          data = null;
+        }
       }
     } catch (e) {
       console.warn('Could not read localStorage:', e);
@@ -121,6 +142,14 @@ const StorageManager = {
   },
 
   saveData(data) {
+    if (!data || !data.students || data.students.length < 30) {
+      console.warn('Bảo vệ dữ liệu: Không lưu danh sách học sinh bị thiếu.');
+      return;
+    }
+    if (data.students.some(s => s.name === 'Đỗ Đức Anh') && data.students.length === 16) {
+      console.warn('Bảo vệ dữ liệu: Không ghi đè dữ liệu mẫu 16 học sinh.');
+      return;
+    }
     data.lastUpdated = Date.now();
     try {
       localStorage.setItem(this.KEY, JSON.stringify(data));
@@ -186,14 +215,9 @@ const StorageManager = {
     const student = data.students.find(s => s.id === studentId);
     if (!student) return null;
 
-    // Giới hạn sao: 200 sao nếu đã chọn tích điểm cộng dồn, hoặc 100 sao nếu chưa
-    const maxCap = student.accumulateBonus ? 200 : 100;
-    if ((student.stars || 0) >= maxCap && points > 0) {
-      return { student, capped: true, data, maxCap };
-    }
-
     const oldStars = student.stars || 0;
-    student.stars = Math.min(maxCap, Math.max(0, oldStars + points));
+    // Cho phép tích điểm liên tục (100 -> 200 -> 300...) không giới hạn trần
+    student.stars = Math.max(0, oldStars + points);
     const actualPoints = student.stars - oldStars;
 
     // Cập nhật mốc thời gian trứng nở (>= 100 sao)

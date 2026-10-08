@@ -8,7 +8,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="css/main.css?v=20261008_v1">
+  <link rel="stylesheet" href="css/main.css?v=20261008_v2">
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1075,16 +1075,33 @@
       </div>
     </div>
 
+    <!-- MODAL: YÊU CẦU CẬP NHẬT BẢN MỚI TỪ CÔ GIÁO -->
+    <div id="parentAppUpdateModal" class="modal-backdrop">
+      <div class="modal-card" style="max-width: 440px; width: 92%; text-align: center; border-radius: 26px; padding: 26px 20px; border: 3px solid #3B82F6; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.35);">
+        <div style="font-size: 52px; margin-bottom: 8px;">🚀</div>
+        <h2 style="font-size: 20px; font-weight: 900; color: #1E3A8A; margin-bottom: 8px;">
+          BẢN CẬP NHẬT MỚI TỪ CÔ GIÁO!
+        </h2>
+        <p style="font-size: 14px; color: #475569; line-height: 1.5; margin-bottom: 18px;">
+          Cô giáo vừa cập nhật tính năng mới: <strong>Vòng quay gọi tên</strong>, <strong>Tích lũy điểm (100⭐ - 200⭐ - 300⭐)</strong> và bảo toàn điểm rèn luyện tại nhà.<br>
+          <strong style="color: #2563EB;">Bố mẹ vui lòng bấm nút bên dưới để nạp giao diện mới nhất ngay!</strong>
+        </p>
+        <button type="button" id="btnModalApplyUpdate" style="width: 100%; background: linear-gradient(135deg, #2563EB, #1D4ED8); color: #fff; border: none; padding: 14px 20px; border-radius: 18px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);">
+          🔄 CẬP NHẬT NGAY
+        </button>
+      </div>
+    </div>
+
   </main>
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261008_v1"></script>
-  <script src="js/firebase-sync.js?v=20261008_v1"></script>
-  <script src="js/audio.js?v=20261008_v1"></script>
-  <script src="js/egg-evolution.js?v=20261008_v1"></script>
-  <script src="js/storage.js?v=20261008_v1"></script>
-  <script src="js/wheel.js?v=20261008_v1"></script>
+  <script src="js/firebase-config.js?v=20261008_v2"></script>
+  <script src="js/firebase-sync.js?v=20261008_v2"></script>
+  <script src="js/audio.js?v=20261008_v2"></script>
+  <script src="js/egg-evolution.js?v=20261008_v2"></script>
+  <script src="js/storage.js?v=20261008_v2"></script>
+  <script src="js/wheel.js?v=20261008_v2"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1598,10 +1615,7 @@
         }
 
         const student = data.students.find(s => s.id === currentId);
-        if (student && (student.stars || 0) >= 100) {
-          alert('🎉 Chúc mừng bé đã đạt 100 ⭐ (Trứng đã nở)! Bắt buộc phải mở quà may mắn để chuyển về 0 ⭐ bắt đầu chu kỳ ấp mới trước khi nộp bài tập tiếp nhé.');
-          return;
-        }
+        // Cho phép gửi điểm liên tục và tích lũy sao không giới hạn!
 
         btnSubmitHomework.disabled = true;
         btnSubmitHomework.textContent = '⏳ Đang gửi cho cô...';
@@ -1760,35 +1774,70 @@
                 </div>
               `;
             } else if (gifts.length < 2) {
-              const is200 = (student.stars || 0) >= 200;
+              const stars = Number(student.stars) || 0;
+              const milestone = (stars >= 300) ? 300 : ((stars >= 200) ? 200 : 100);
               const hasAccumulate = student.accumulateBonus === true;
 
               giftActionContainer.innerHTML = `
-                <div style="background: linear-gradient(135deg, #FDF2F8, #FFF1F2); border: 2px solid #F472B6; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.2);">
-                  <div style="font-size: 28px; margin-bottom: 2px;">${is200 ? '🏆👑🎁' : '🎁🎡🎒'}</div>
-                  <div style="font-size: 15px; font-weight: 800; color: #BE185D;">
-                    ${is200 ? 'CHÚC MỪNG BÉ ĐẠT KỶ LỤC 200 SAO!' : 'CHÚC MỪNG TRỨNG ĐÃ NỞ!'}
+                <div style="background: linear-gradient(135deg, #FDF2F8, #FFF1F2); border: 2.5px solid #F472B6; border-radius: 20px; padding: 18px 14px; text-align: center; box-shadow: 0 6px 20px rgba(244, 114, 182, 0.22); margin-bottom: 14px;">
+                  <div style="font-size: 32px; margin-bottom: 2px;">${milestone >= 300 ? '👑🏆🌟' : (milestone >= 200 ? '🏆👑🎁' : '🎁🎡🎒')}</div>
+                  <div style="font-size: 16px; font-weight: 900; color: #BE185D;">
+                    CHÚC MỪNG BÉ ĐẠT MỐC ${milestone} SAO!
                   </div>
-                  <p style="font-size: 12px; color: #9D174D; font-weight: 700; margin: 4px 0 10px;">
-                    ${is200 
-                      ? 'Con nhận được <strong>2 lượt mở quà SIÊU ĐẶC BIỆT</strong> (Lớp trưởng 3 ngày, đi siêu thị, gấu bông, lego, cờ vua...)!' 
-                      : (hasAccumulate ? 'Bé đang tích lũy lên mốc 200 ⭐ (hoặc có thể mở 2 quà mốc 100 ⭐ ngay)!' : 'Con nhận được <strong>2 lượt mở quà may mắn</strong> (hoặc chọn tích sao lên 200 ⭐)!')}
+                  <p style="font-size: 12.5px; color: #9D174D; font-weight: 700; margin: 4px 0 14px; line-height: 1.4;">
+                    Bé đã tích lũy được <strong>${stars} ⭐</strong>! Bố mẹ và con muốn lựa chọn:
                   </p>
-                  <button type="button" id="btnTriggerParentGiftModal" style="background: ${is200 ? 'linear-gradient(135deg, #F59E0B, #DC2626)' : 'linear-gradient(135deg, #EC4899, #BE185D)'}; color: #fff; font-size: 14px; font-weight: 800; padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);">
-                    ${is200 ? '🏆 Mở Quà Đặc Biệt 200 ⭐' : (hasAccumulate ? '🎁 Mở Quà Hoặc Tiếp Tục Tích Lũy' : `🎁 Bấm Vào Đây Mở Quà (Lượt ${gifts.length + 1} / 2)`)}
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <!-- Nút 1: Quay quà ngay -->
+                    <button type="button" id="btnParentQuickSpin" style="background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-size: 13px; font-weight: 800; padding: 12px 8px; border-radius: 16px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35); display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                      <span style="font-size: 22px;">🎁</span>
+                      <span>Quay Quà (${milestone}⭐)</span>
+                      <span style="font-size: 10.5px; opacity: 0.9;">Mở 2 lượt quà</span>
+                    </button>
+
+                    <!-- Nút 2: Tích lũy điểm tiếp -->
+                    <button type="button" id="btnParentQuickAccumulate" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #fff; font-size: 13px; font-weight: 800; padding: 12px 8px; border-radius: 16px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35); display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                      <span style="font-size: 22px;">🚀</span>
+                      <span>Tiếp Tục Tích Lũy</span>
+                      <span style="font-size: 10.5px; opacity: 0.9;">Săn mốc ${milestone >= 300 ? 'kỷ lục' : (milestone >= 200 ? '300⭐' : '200⭐')}</span>
+                    </button>
+                  </div>
+
+                  ${hasAccumulate ? `
+                    <div style="background: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1E40AF; padding: 8px 12px; border-radius: 14px; font-size: 12px; font-weight: 700; margin-top: 8px; line-height: 1.4;">
+                      🚀 Bé đang chọn tích điểm cộng dồn! Điểm số được bảo toàn và tiếp tục tăng khi nộp bài mỗi tối.
+                    </div>
+                  ` : ''}
+
+                  <button type="button" id="btnOpenMilestoneModalDirect" style="background: none; border: none; color: #6366F1; font-size: 11.5px; font-weight: 800; text-decoration: underline; margin-top: 10px; cursor: pointer;">
+                    ℹ️ Xem chi tiết quyền lợi 2 lựa chọn
                   </button>
                 </div>
               `;
-              const btnTrigger = document.getElementById('btnTriggerParentGiftModal');
-              if (btnTrigger) {
-                btnTrigger.addEventListener('click', () => {
-                  if ((student.stars || 0) >= 200) {
-                    openParentMilestoneChoiceModal(student, 200);
-                  } else if ((student.stars || 0) >= 100 && !student.accumulateBonus) {
-                    openParentMilestoneChoiceModal(student, 100);
-                  } else {
-                    openParentGiftModal(student, 100);
-                  }
+
+              const btnQuickSpin = document.getElementById('btnParentQuickSpin');
+              if (btnQuickSpin) {
+                btnQuickSpin.addEventListener('click', () => {
+                  openParentGiftModal(student, milestone);
+                });
+              }
+
+              const btnQuickAccum = document.getElementById('btnParentQuickAccumulate');
+              if (btnQuickAccum) {
+                btnQuickAccum.addEventListener('click', async () => {
+                  await StorageManager.setMilestoneChoice(student.id, 'accumulate');
+                  data = StorageManager.loadData();
+                  renderChildView();
+                  const targetStr = (milestone >= 300) ? 'kỷ lục Bảng Vàng' : (milestone >= 200 ? '300 ⭐' : '200 ⭐');
+                  alert(`🚀 Tuyệt vời! Bé ${student.name} đã chọn tiếp tục tích điểm cộng dồn đến mốc ${targetStr}! Điểm số ${stars} ⭐ sẽ được bảo toàn nguyên vẹn và tiếp tục tăng mỗi ngày khi con rèn luyện!`);
+                });
+              }
+
+              const btnOpenMilestone = document.getElementById('btnOpenMilestoneModalDirect');
+              if (btnOpenMilestone) {
+                btnOpenMilestone.addEventListener('click', () => {
+                  openParentMilestoneChoiceModal(student, milestone);
                 });
               }
             } else {
@@ -2192,16 +2241,26 @@
 
         if (studentNameEl) studentNameEl.textContent = student.name;
 
-        if (milestone === 200) {
+        if (milestone >= 300) {
+          if (iconEl) iconEl.textContent = '👑';
+          if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT ĐẠI KỶ LỤC 300 SAO!';
+          if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã xuất sắc tích đủ 300 sao! Bố mẹ và con muốn lựa chọn:`;
+          if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY VÒNG QUAY HOÀNG GIA 300 ⭐';
+          if (choice1Badge) choice1Badge.textContent = 'QUÀ HOÀNG GIA 300 ⭐';
+          if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà SIÊU CẤP ĐẶC BIỆT</strong> hoặc nhận cúp vinh danh của cô giáo!';
+          if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC GIỮ ĐIỂM VINH DANH';
+          if (choice2Badge) choice2Badge.textContent = 'BẢNG VÀNG KỶ LỤC';
+          if (choice2Desc) choice2Desc.innerHTML = 'Giữ nguyên điểm số 300 ⭐ và tiếp tục tích lũy vinh danh trên Bảng Vàng của lớp!';
+        } else if (milestone >= 200) {
           if (iconEl) iconEl.textContent = '🏆';
           if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT KỶ LỤC 200 SAO!';
           if (subtitleEl) subtitleEl.innerHTML = `Bé <strong style="color: #4F46E5; font-size: 16px;">${student.name}</strong> đã xuất sắc tích đủ 200 sao! Bố mẹ và con muốn lựa chọn:`;
           if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY VÒNG QUAY ĐẶC BIỆT 200 ⭐';
           if (choice1Badge) choice1Badge.textContent = 'QUÀ GIÁ TRỊ CAO 200 ⭐';
           if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà SIÊU ĐẶC BIỆT</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Ăn món yêu thích, Gấu bông, Lego, Bộ cờ vua, Cờ cá ngựa...';
-          if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC GIỮ ĐIỂM VINH DANH';
-          if (choice2Badge) choice2Badge.textContent = 'GIỮ ĐIỂM KỶ LỤC';
-          if (choice2Desc) choice2Desc.innerHTML = 'Giữ nguyên điểm số 200 ⭐ để vinh danh trên bảng vàng của lớp học và quay quà sau.';
+          if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC TÍCH ĐIỂM ĐẾN 300 ⭐';
+          if (choice2Badge) choice2Badge.textContent = 'SĂN MỐC 300 ⭐';
+          if (choice2Desc) choice2Desc.innerHTML = 'Tiếp tục rèn luyện lên <strong>mốc 300 ⭐</strong> để vinh danh Hoàng Gia và nhận cúp danh dự!';
         } else {
           if (iconEl) iconEl.textContent = '🐣';
           if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!';
@@ -2236,14 +2295,11 @@
           if (modal) modal.classList.remove('active');
           if (parentActiveMilestoneStudentId) {
             const student = (data.students || []).find(s => s.id === parentActiveMilestoneStudentId);
-            if (parentActiveMilestoneType === 200) {
-              alert(`🏆 Bé ${student ? student.name : ''} sẽ tiếp tục giữ điểm kỷ lục 200 ⭐!`);
-            } else {
-              await StorageManager.setMilestoneChoice(parentActiveMilestoneStudentId, 'accumulate');
-              data = StorageManager.loadData();
-              renderChildView();
-              alert(`🚀 Tuyệt vời! Bé ${student ? student.name : ''} đã chọn tích điểm cộng dồn đến mốc 200 ⭐ để săn quà Siêu Đặc Biệt! Bố mẹ hãy đồng hành cùng con nhé!`);
-            }
+            await StorageManager.setMilestoneChoice(parentActiveMilestoneStudentId, 'accumulate');
+            data = StorageManager.loadData();
+            renderChildView();
+            const targetStr = (parentActiveMilestoneType >= 300) ? 'kỷ lục Bảng Vàng' : (parentActiveMilestoneType >= 200 ? '300 ⭐' : '200 ⭐');
+            alert(`🚀 Tuyệt vời! Bé ${student ? student.name : ''} đã chọn tiếp tục tích điểm cộng dồn đến mốc ${targetStr}! Điểm số sẽ được bảo toàn nguyên vẹn và tiếp tục tăng mỗi ngày khi con rèn luyện!`);
           }
         });
       }
@@ -2360,11 +2416,13 @@
       setInterval(checkLiveConnection, 6000);
 
       // Quản lý phiên bản app & làm mới cập nhật tự động từ cô giáo
-      const APP_VERSION = '20261008_v1';
+      const APP_VERSION = '20261008_v2';
       const lastAppVer = localStorage.getItem('parent_app_version');
       const appUpdateBanner = document.getElementById('parentAppUpdateBanner');
+      const parentAppUpdateModal = document.getElementById('parentAppUpdateModal');
       const btnParentApplyUpdate = document.getElementById('btnParentApplyUpdate');
       const btnQuickRefreshParent = document.getElementById('btnQuickRefreshParent');
+      const btnModalApplyUpdate = document.getElementById('btnModalApplyUpdate');
 
       function hardRefreshApp() {
         localStorage.setItem('parent_app_version', APP_VERSION);
@@ -2379,9 +2437,13 @@
       if (btnQuickRefreshParent) {
         btnQuickRefreshParent.addEventListener('click', hardRefreshApp);
       }
+      if (btnModalApplyUpdate) {
+        btnModalApplyUpdate.addEventListener('click', hardRefreshApp);
+      }
 
       if (lastAppVer !== APP_VERSION) {
         if (appUpdateBanner) appUpdateBanner.style.display = 'flex';
+        if (parentAppUpdateModal) parentAppUpdateModal.classList.add('active');
       }
     });
   </script>

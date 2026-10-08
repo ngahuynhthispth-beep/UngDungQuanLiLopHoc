@@ -525,13 +525,23 @@
 
   <!-- MODAL: Lucky Wheel (Vòng quay may mắn) -->
   <div id="wheelModal" class="modal-backdrop">
-    <div class="modal-card" style="text-align: center; max-width: 440px;">
+    <div class="modal-card" style="text-align: center; max-width: 480px; width: 95%;">
       <button id="closeWheelModalBtn" class="modal-close-btn">&times;</button>
-      <h2 class="modal-title">🎲 Vòng Quay Gọi Tên Bất Kỳ</h2>
+      <h2 class="modal-title" style="margin-bottom: 4px;">🎲 Vòng Quay Gọi Tên Học Sinh</h2>
+      <p style="font-size: 13px; color: #64748B; margin-bottom: 12px;">Bốc thăm ngẫu nhiên học sinh phát biểu hoặc làm nhiệm vụ</p>
+
+      <!-- Tổ Filter Tabs -->
+      <div style="display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;">
+        <button type="button" class="wheel-group-tab active" data-group="all" style="padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 1.5px solid #6366F1; background: #6366F1; color: #FFF;">🌟 Cả Lớp (36)</button>
+        <button type="button" class="wheel-group-tab" data-group="1" style="padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #334155;">🐿️ Tổ 1 (9)</button>
+        <button type="button" class="wheel-group-tab" data-group="2" style="padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #334155;">🐰 Tổ 2 (10)</button>
+        <button type="button" class="wheel-group-tab" data-group="3" style="padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #334155;">🐻 Tổ 3 (10)</button>
+        <button type="button" class="wheel-group-tab" data-group="4" style="padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: #334155;">🐯 Tổ 4 (7)</button>
+      </div>
 
       <div class="wheel-container">
         <div class="wheel-pointer">▼</div>
-        <canvas id="luckyWheelCanvas" width="320" height="320"></canvas>
+        <canvas id="luckyWheelCanvas" width="360" height="360"></canvas>
       </div>
 
       <button id="spinWheelBtn" class="btn-header primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 18px; margin-top: 14px;">
