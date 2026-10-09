@@ -19,6 +19,7 @@
   const sampleTaskImage = document.getElementById('sampleTaskImage');
   const sampleTaskRewardBadge = document.getElementById('sampleTaskRewardBadge');
 
+  const cameraViewport = document.getElementById('cameraViewport');
   const cameraVideo = document.getElementById('cameraVideo');
   const capturedImagePreview = document.getElementById('capturedImagePreview');
   const cameraCanvas = document.getElementById('cameraCanvas');
@@ -43,6 +44,8 @@
   // Teacher Admin Modal
   const teacherAdminModal = document.getElementById('teacherAdminModal');
   const btnOpenTeacherAdmin = document.getElementById('btnOpenTeacherAdmin');
+  const btnOpenTeacherAdminStep2 = document.getElementById('btnOpenTeacherAdminStep2');
+  const btnUploadSampleBanner = document.getElementById('btnUploadSampleBanner');
   const closeTeacherAdminBtn = document.getElementById('closeTeacherAdminBtn');
   const btnCloseAdminModal = document.getElementById('btnCloseAdminModal');
   const adminTaskTitleInput = document.getElementById('adminTaskTitleInput');
@@ -172,8 +175,8 @@
       const constraints = {
         video: {
           facingMode: { ideal: 'environment' }, // Ưu tiên camera sau trên điện thoại
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 }
         },
         audio: false
       };
@@ -185,6 +188,15 @@
       cameraPlaceholder.style.display = 'none';
       cameraOverlayGrid.style.display = 'block';
       scanLaserBeam.style.display = 'none';
+
+      // Tự động điều chỉnh tỷ lệ khung hình camera khớp 100% với cảm biến thực tế của máy
+      cameraVideo.onloadedmetadata = () => {
+        const vw = cameraVideo.videoWidth;
+        const vh = cameraVideo.videoHeight;
+        if (vw && vh && cameraViewport) {
+          cameraViewport.style.aspectRatio = `${vw} / ${vh}`;
+        }
+      };
 
       btnStartCamera.style.display = 'none';
       btnSnapPhoto.style.display = 'inline-flex';
@@ -214,7 +226,7 @@
     const ctx = cameraCanvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, width, height);
 
-    capturedImageDataUrl = cameraCanvas.toDataURL('image/jpeg', 0.85);
+    capturedImageDataUrl = cameraCanvas.toDataURL('image/jpeg', 0.9);
 
     capturedImagePreview.src = capturedImageDataUrl;
     capturedImagePreview.style.display = 'block';
@@ -319,25 +331,26 @@
     });
   }
 
-  // 1. Chấm bài bằng Google Gemini Vision API
+  // 1. Chấm bài bằng Google Gemini Vision API (Dành cho cô giáo có API Key)
   async function gradeWithGeminiVision(apiKey, studentImageBase64, task) {
     const base64Data = studentImageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-    const promptText = `Bạn là cô giáo tiểu học lớp 1 Việt Nam giàu tình thương và tận tâm.
-Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ hoặc toán) của học sinh lớp 1 sau đây và chấm bài theo chuẩn giáo dục tiểu học.
+    const promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương và luôn khích lệ học sinh.
+Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ hoặc toán) của học sinh lớp 1 sau đây và chấm bài.
 Đề bài cô giao: "${task.title}".
-Tiêu chí bài viết chuẩn: Đúng độ cao ô ly (2 - 2,5 ly), nét chữ đều đẹp, ngay ngắn thẳng hàng, không gạch xóa bẩn.
 
-Yêu cầu phân tích:
-1. Nếu chữ viết đạt chuẩn đều đẹp (hoặc làm toán đúng rõ ràng): Đánh giá passed = true.
-2. Nếu chữ quá nghệch ngoạc, lệch lạc nhiều ô ly, tẩy xóa lem nhem: Đánh giá passed = false.
-3. Nhận xét ngắn gọn 1-2 câu ấm áp, xưng "Cô" gọi "Con" hoặc "Em", động viên khích lệ học sinh lớp 1.
+LƯU Ý ĐẶC BIỆT KHI CHẤM BÀI LỚP 1:
+- Học sinh lớp 1 (6 tuổi) viết bài bằng BÚT CHÌ trên vở ô ly kẻ ngang. Nét chì màu xám mảnh, có độ bóng phản quang dưới ánh đèn và có thể mờ hơn bút mực rất nhiều.
+- Hãy chấm bài với tinh thần KHOAN DUNG, KHUYẾN KHÍCH SỰ TIẾN BỘ, TUYỆT ĐỐI ĐỪNG QUÁ CỨNG NHẮC HOẶC KHẮT KHE!
+- Chỉ cần bé có viết bài bằng bút chì, chữ tương đối thẳng hàng và hoàn thành trang vở là CHO ĐẠT (passed: true) và thưởng ${task.stars || 5} sao.
+- Viết lời nhận xét ngắn gọn 1-2 câu ấm áp, xưng "Cô" gọi "Con" hoặc "Em", khen ngợi bé đã chăm chỉ nắn nót luyện viết.
+- Chỉ đánh giá passed: false khi trang giấy hoàn toàn để trắng, chưa viết gì hoặc ảnh quá tối/mờ không thể nhìn thấy bất kỳ nét chữ nào.
 
-TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown):
+TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown hay ký tự thừa):
 {
   "passed": true,
   "stars": ${task.stars || 5},
-  "comment": "Lời nhận xét của cô giáo"
+  "comment": "Lời khen ngợi ấm áp của cô giáo"
 }`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -366,46 +379,118 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown):
     return JSON.parse(textOut);
   }
 
-  // 2. Chấm bài bằng Computer Vision nội bộ (Không cần API Key)
+  // 2. Chấm bài bằng Computer Vision nội bộ (Tối ưu đặc biệt cho học sinh Lớp 1 viết BÚT CHÌ)
   async function gradeWithVisionHeuristics(imageBase64, task) {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
+        // Phóng/thu ảnh về kích thước chuẩn 400x300 để phân tích nét chì nhanh và chính xác
         const canvas = document.createElement('canvas');
-        canvas.width = 300;
-        canvas.height = 200;
+        const W = 400;
+        const H = 300;
+        canvas.width = W;
+        canvas.height = H;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 300, 200);
+        ctx.drawImage(img, 0, 0, W, H);
 
-        const imgData = ctx.getImageData(0, 0, 300, 200).data;
-        let darkPixels = 0;
-        let total = imgData.length / 4;
+        const imgData = ctx.getImageData(0, 0, W, H).data;
 
-        for (let i = 0; i < imgData.length; i += 4) {
-          const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
-          const brightness = (r + g + b) / 3;
-          if (brightness < 130) darkPixels++;
+        // Chuyển sang mảng độ xám grayscale
+        const gray = new Uint8Array(W * H);
+        for (let i = 0, p = 0; i < imgData.length; i += 4, p++) {
+          const r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
+          gray[p] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
         }
 
-        const strokeDensity = darkPixels / total;
-        // Bài viết có nét chữ thực thụ thường có mật độ mực từ 2% đến 35%
-        const hasGoodStrokes = strokeDensity >= 0.02 && strokeDensity <= 0.40;
+        // Vùng tập trung vào trang vở (tập trung 80% trung tâm và nửa dưới bức ảnh)
+        const xMin = Math.round(W * 0.08);
+        const xMax = Math.round(W * 0.92);
+        const yMin = Math.round(H * 0.08);
+        const yMax = Math.round(H * 0.92);
+
+        // Phát hiện nét bút chì theo độ tương phản cục bộ (Adaptive Local Contrast)
+        // Nét chì xám tối hơn nền giấy xung quanh từ 8 đến 80 đơn vị, không cần đen tuyền
+        let pencilStrokePixels = 0;
+        let paperPixels = 0;
+        const rowStrokeCounts = new Array(H).fill(0);
+
+        for (let y = yMin; y < yMax; y += 2) {
+          for (let x = xMin; x < xMax; x += 2) {
+            const idx = y * W + x;
+            const pVal = gray[idx];
+
+            // Đo độ sáng trung bình lân cận (4 hướng bán kính 3px)
+            const top = gray[Math.max(0, y - 3) * W + x];
+            const bot = gray[Math.min(H - 1, y + 3) * W + x];
+            const left = gray[y * W + Math.max(0, x - 3)];
+            const right = gray[y * W + Math.min(W - 1, x + 3)];
+            const localBg = (top + bot + left + right) / 4;
+
+            // Nếu vùng này là nền giấy (độ sáng > 65)
+            if (localBg > 65) {
+              paperPixels++;
+              const contrastDiff = localBg - pVal;
+
+              // Nét bút chì: tối hơn giấy xung quanh từ 8 đến 85 đơn vị
+              // Hoặc có độ đậm rõ ràng trên nền giấy sáng
+              if ((contrastDiff >= 8 && contrastDiff <= 85) || (pVal < 140 && localBg > 155)) {
+                pencilStrokePixels++;
+                rowStrokeCounts[y]++;
+              }
+            }
+          }
+        }
+
+        const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
+
+        // Đếm các dòng có xuất hiện nét viết bút chì
+        let activeRows = 0;
+        for (let y = yMin; y < yMax; y += 2) {
+          if (rowStrokeCounts[y] >= 3) {
+            activeRows++;
+          }
+        }
+
+        // TIÊU CHÍ CHẤM LỚP 1: Linh hoạt, khoan dung, khuyến khích sự tự tin của trẻ ("Đừng quá cứng nhắc")
+        // Chỉ cần có nét chì phân bổ ở các dòng (strokeRatio >= 0.005 tức 0.5% diện tích)
+        // hoặc có lượng nét chữ rõ nét (strokeRatio >= 0.008)
+        const hasPencilWriting = (strokeRatio >= 0.005 && activeRows >= 5) || (strokeRatio >= 0.008);
 
         setTimeout(() => {
-          if (hasGoodStrokes) {
+          const studentName = activeStudent ? activeStudent.name : 'bé';
+          if (hasPencilWriting) {
+            const praises = [
+              `Bài viết của ${studentName} rất ngoan! Nét chữ bút chì ngay ngắn, thẳng hàng và đúng ô ly. Cô thưởng con ${task.stars || 5} sao nhé! 🎉`,
+              `Cô khen ${studentName}! Chữ viết nắn nót, trang vở sạch đẹp và đều tay. Con tiếp tục phát huy nhé! 🌟`,
+              `Rất tốt! ${studentName} đã hoàn thành bài viết chữ theo mẫu ô ly. Cô tặng con trọn vẹn ${task.stars || 5} sao linh thú! 💖`,
+              `Nét chữ nết người! Bài viết bút chì của ${studentName} rất tiến bộ và sạch sẽ. Cô khen con! ✨`
+            ];
+            const comment = praises[Math.floor(Math.random() * praises.length)];
+
             resolve({
               passed: true,
               stars: task.stars || 5,
-              comment: `Bài viết của ${activeStudent ? activeStudent.name : 'em'} rất đều và đẹp, con giữ vở sạch và viết đúng ô ly. Cô thưởng con ${task.stars} sao nhé! 🎉`
+              comment: comment,
+              strokeRatio: strokeRatio,
+              activeRows: activeRows
             });
           } else {
+            let advice = '';
+            if (strokeRatio < 0.002) {
+              advice = `Ảnh bài viết chưa rõ nét chữ bút chì hoặc trang vở còn để trống. Bé hãy nắn nót viết bài và soi lại cho cô chấm nhé!`;
+            } else {
+              advice = `Nét bút chì hơi mờ hoặc góc chụp bị bóng tối che khuất một phần. Bé hãy bật đèn sáng, giơ thẳng trang vở và soi lại để cô chấm điểm thưởng sao nhé! 💪`;
+            }
+
             resolve({
               passed: false,
               stars: 0,
-              comment: `Ảnh bài viết chưa rõ nét hoặc nét chữ còn mờ, chưa đạt yêu cầu. Em hãy đặt vở ngay ngắn dưới ánh đèn sáng và viết lại nắn nót hơn nhé!`
+              comment: advice,
+              strokeRatio: strokeRatio,
+              activeRows: activeRows
             });
           }
-        }, 1500); // Giả lập quét 1.5s
+        }, 1200);
       };
       img.src = imageBase64;
     });
@@ -538,15 +623,18 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown):
   }
 
   // --- CÀI ĐẶT BÀI MẪU DÀNH CHO CÔ GIÁO ---
-  if (btnOpenTeacherAdmin && teacherAdminModal) {
-    btnOpenTeacherAdmin.addEventListener('click', () => {
-      adminTaskTitleInput.value = currentTask.title;
-      adminTaskTypeSelect.value = currentTask.type || 'writing';
-      adminTaskStarsSelect.value = String(currentTask.stars || 5);
-      adminGeminiApiKeyInput.value = localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
-      teacherAdminModal.classList.add('active');
-    });
+  function openTeacherAdminModal() {
+    if (!teacherAdminModal) return;
+    adminTaskTitleInput.value = currentTask.title;
+    adminTaskTypeSelect.value = currentTask.type || 'writing';
+    adminTaskStarsSelect.value = String(currentTask.stars || 5);
+    adminGeminiApiKeyInput.value = localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
+    teacherAdminModal.classList.add('active');
   }
+
+  if (btnOpenTeacherAdmin) btnOpenTeacherAdmin.addEventListener('click', openTeacherAdminModal);
+  if (btnOpenTeacherAdminStep2) btnOpenTeacherAdminStep2.addEventListener('click', openTeacherAdminModal);
+  if (btnUploadSampleBanner) btnUploadSampleBanner.addEventListener('click', openTeacherAdminModal);
 
   if (closeTeacherAdminBtn) closeTeacherAdminBtn.addEventListener('click', () => teacherAdminModal.classList.remove('active'));
   if (btnCloseAdminModal) btnCloseAdminModal.addEventListener('click', () => teacherAdminModal.classList.remove('active'));

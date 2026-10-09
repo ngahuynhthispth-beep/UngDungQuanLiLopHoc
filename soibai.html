@@ -244,36 +244,84 @@
       font-weight: 600;
     }
 
-    /* Khung Camera / Chụp ảnh */
+    /* Nút Đổi bài mẫu trong Bước 2 */
+    .btn-change-sample-step2 {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #FFFFFF;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.25);
+      transition: all 0.2s;
+    }
+
+    .btn-change-sample-step2:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 12px rgba(217, 119, 6, 0.35);
+    }
+
+    .sample-upload-banner {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px dashed #F59E0B;
+      color: #B45309;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      transition: all 0.15s;
+    }
+
+    .sample-upload-banner:hover {
+      background: #FFFBEB;
+      border-color: #D97706;
+    }
+
+    /* Khung Camera / Chụp ảnh - Căn chỉnh góc chụp và preview khớp nhau 100% */
     .camera-viewport-card {
       position: relative;
       border-radius: 18px;
       overflow: hidden;
       background: #0F172A;
-      min-height: 260px;
+      width: 100%;
+      min-height: 280px;
+      max-height: 520px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       margin-bottom: 12px;
       border: 3px solid #CBD5E1;
+      aspect-ratio: 4 / 3;
     }
 
     #cameraVideo {
       width: 100%;
       height: 100%;
-      max-height: 380px;
-      object-fit: cover;
+      object-fit: contain;
       display: none;
+      background: #0F172A;
     }
 
     #capturedImagePreview {
       width: 100%;
       height: 100%;
-      max-height: 380px;
       object-fit: contain;
       display: none;
-      background: #000;
+      background: #0F172A;
     }
 
     .camera-placeholder {
@@ -490,9 +538,14 @@
           <div class="sample-task-title" id="sampleTaskTitle">
             <span>✍️</span> Luyện viết chữ cái: Nét chữ nết người
           </div>
-          <span class="sample-stars-reward" id="sampleTaskRewardBadge">
-            🌟 Thưởng: +5 ⭐
-          </span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="btnOpenTeacherAdminStep2" class="btn-change-sample-step2" title="Cô giáo bấm để chụp ảnh bài mẫu mới">
+              ⚙️ Đổi Bài Mẫu
+            </button>
+            <span class="sample-stars-reward" id="sampleTaskRewardBadge">
+              🌟 Thưởng: +5 ⭐
+            </span>
+          </div>
         </div>
 
         <p id="sampleTaskDesc" style="font-size: 12.5px; color: #78350F; margin: 0 0 6px; font-weight: 600;">
@@ -502,7 +555,11 @@
         <!-- Ảnh bài mẫu chuẩn -->
         <img id="sampleTaskImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23FFFBEB'/><line x1='50' y1='60' x2='550' y2='60' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='100' x2='550' y2='100' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='140' x2='550' y2='140' stroke='%23F59E0B' stroke-width='2'/><line x1='50' y1='180' x2='550' y2='180' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='220' x2='550' y2='220' stroke='%23CBD5E1' stroke-width='1.5'/><text x='70' y='135' font-family='sans-serif' font-size='42' font-weight='bold' fill='%231E293B'>a  b  c  d  e  g  h</text><text x='70' y='215' font-family='sans-serif' font-size='36' fill='%23475569'>Nét chữ nết người Lớp 1A</text><text x='380' y='40' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23B45309'>MẪU CHUẨN Ô LY</text></svg>" alt="Bài Mẫu Luyện Viết" class="sample-image-preview">
 
-        <div style="font-size: 12px; font-weight: 800; color: #92400E; margin-top: 6px;">
+        <button type="button" id="btnUploadSampleBanner" class="sample-upload-banner">
+          <span>📸</span> <strong>Cô giáo: Bấm vào đây để Chụp hoặc Tải ảnh bài mẫu mới</strong>
+        </button>
+
+        <div style="font-size: 12px; font-weight: 800; color: #92400E; margin-top: 10px;">
           📌 Tiêu chí cô chấm:
         </div>
         <ul class="sample-criteria-list" id="sampleCriteriaList">
