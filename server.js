@@ -458,8 +458,10 @@ const server = http.createServer((req, res) => {
       desktopUrl: `http://${primaryIp}:${PORT}`,
       mobileUrl: `http://${primaryIp}:${PORT}/mobile.html`,
       parentUrl: `http://${primaryIp}:${PORT}/parent.html`,
+      soibaiUrl: `http://${primaryIp}:${PORT}/soibai.html`,
       publicMobileUrl: publicTunnelUrl ? `${publicTunnelUrl}/mobile.html` : null,
-      publicParentUrl: publicTunnelUrl ? `${publicTunnelUrl}/parent.html` : null
+      publicParentUrl: publicTunnelUrl ? `${publicTunnelUrl}/parent.html` : null,
+      publicSoibaiUrl: publicTunnelUrl ? `${publicTunnelUrl}/soibai.html` : null
     }));
     return;
   }
@@ -1134,6 +1136,10 @@ server.listen(PORT, () => {
     console.log(`📢 3. GIAO DIỆN PHỤ HUYNH HỌC SINH (Xem & nộp bài tại nhà):`);
     ips.forEach(ip => {
       console.log(`   👉 http://${ip}:${PORT}/parent.html`);
+    });
+    console.log(`📸 4. TRANG SOI BÀI CAMERA (Học sinh tự soi bài & chấm điểm):`);
+    ips.forEach(ip => {
+      console.log(`   👉 http://${ip}:${PORT}/soibai.html`);
     });
   }
   console.log(`======================================================\n`);

@@ -1,0 +1,10 @@
+THƯ MỤC CHỨA BÀI LUYỆN VIẾT VÀ BÀI TOÁN MẪU
+=============================================
+
+Cô giáo thả các file bài tập mẫu vào thư mục này để ứng dụng làm tiêu chí chấm:
+- Định dạng hỗ trợ: Hình ảnh (.jpg, .png) hoặc file văn bản (.txt, .pdf)
+- Ví dụ:
+  + chu_mau_bai_1.jpg (ảnh chụp trang viết mẫu chuẩn của cô)
+  + toan_bai_1.jpg (ảnh bài toán chuẩn)
+
+Ứng dụng sẽ căn cứ vào hình ảnh và tiêu chí trong thư mục này để đối chiếu với bài học sinh chụp lên!

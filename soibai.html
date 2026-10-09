@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>📸 Soi Bài & Tự Chấm Điểm - Vườn Thú Kỳ Diệu Lớp 1A</title>
+  <meta name="description" content="Ứng dụng thông minh học sinh tự soi bài viết chữ và toán, AI chấm điểm theo bài mẫu và tự động cộng sao vào linh thú.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FFE4E6">
+  <link rel="stylesheet" href="css/main.css?v=20261009_m1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📸</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --scan-primary: #4F46E5;
+      --scan-success: #10B981;
+      --scan-warning: #F59E0B;
+      --scan-danger: #EF4444;
+    }
+
+    body.soi-bai-body {
+      background: linear-gradient(135deg, #FFF1F2 0%, #F5F3FF 50%, #ECFDF5 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1E293B;
+      box-sizing: border-box;
+    }
+
+    .soibai-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid rgba(255, 182, 193, 0.4);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    }
+
+    .soibai-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .soibai-icon {
+      font-size: 28px;
+      animation: eggWobble 3s infinite ease-in-out;
+    }
+
+    .soibai-title h1 {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(45deg, #E11D48, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .soibai-title p {
+      font-size: 11px;
+      color: #64748B;
+      margin: 2px 0 0;
+      font-weight: 700;
+    }
+
+    .soibai-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-soibai-nav {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1.5px solid #CBD5E1;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-soibai-nav:hover {
+      background: #E2E8F0;
+      transform: translateY(-1px);
+    }
+
+    .soibai-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px 12px 60px 12px;
+    }
+
+    /* Card Box */
+    .soibai-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 2px solid #E2E8F0;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+
+    .card-badge-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #EEF2FF;
+      color: #4F46E5;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      border: 1px solid #C7D2FE;
+    }
+
+    /* Chọn học sinh */
+    .student-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+      gap: 8px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 4px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 14px;
+      background: #F8FAFC;
+    }
+
+    .student-pick-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      text-align: left;
+    }
+
+    .student-pick-btn:hover {
+      border-color: #6366F1;
+      background: #EEF2FF;
+    }
+
+    .student-pick-btn.active {
+      border-color: #4F46E5;
+      background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    .student-pick-avatar {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .student-pick-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1E293B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    /* Khung bài tập mẫu */
+    .sample-task-box {
+      background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+      border: 2px dashed #F59E0B;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .sample-task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .sample-task-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #92400E;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sample-stars-reward {
+      background: #FEF3C7;
+      color: #B45309;
+      border: 1.5px solid #FCD34D;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sample-image-preview {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1.5px solid #FDE68A;
+      background: #FFFFFF;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    .sample-criteria-list {
+      font-size: 12px;
+      color: #78350F;
+      margin: 6px 0 0;
+      padding-left: 18px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    /* Khung Camera / Chụp ảnh */
+    .camera-viewport-card {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0F172A;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      border: 3px solid #CBD5E1;
+    }
+
+    #cameraVideo {
+      width: 100%;
+      height: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      display: none;
+    }
+
+    #capturedImagePreview {
+      width: 100%;
+      height: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      display: none;
+      background: #000;
+    }
+
+    .camera-placeholder {
+      padding: 24px;
+      text-align: center;
+      color: #E2E8F0;
+    }
+
+    .camera-overlay-grid {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 2px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 14px;
+      pointer-events: none;
+      display: none;
+    }
+
+    .camera-overlay-grid::after {
+      content: "Đặt bài viết ngay ngắn vào khung này";
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.65);
+      color: #FFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+
+    /* Hiệu ứng quét bài (Scanner Beam) */
+    .scan-laser-beam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #38BDF8, #818CF8, transparent);
+      box-shadow: 0 0 16px #38BDF8;
+      display: none;
+      animation: scanBeamAnim 2s infinite ease-in-out alternate;
+      z-index: 10;
+    }
+
+    @keyframes scanBeamAnim {
+      0% { top: 5%; }
+      100% { top: 92%; }
+    }
+
+    .camera-action-buttons {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-cam-action {
+      flex: 1 1 auto;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-cam-action.primary {
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-cam-action.success {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-cam-action.secondary {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1.5px solid #CBD5E1;
+    }
+
+    /* Hộp kết quả chấm bài */
+    .grading-result-box {
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 14px;
+      display: none;
+      animation: popIn 0.3s ease;
+      text-align: center;
+    }
+
+    .grading-result-box.passed {
+      background: linear-gradient(180deg, #F0FDF4 0%, #DCFCE7 100%);
+      border: 2.5px solid #34D399;
+      color: #065F46;
+    }
+
+    .grading-result-box.failed {
+      background: linear-gradient(180deg, #FFF1F2 0%, #FFE4E6 100%);
+      border: 2.5px solid #FB7185;
+      color: #881337;
+    }
+
+    .result-avatar-visual {
+      font-size: 46px;
+      margin-bottom: 6px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .result-comment {
+      font-size: 13.5px;
+      font-weight: 700;
+      margin: 8px 0 12px;
+      line-height: 1.45;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 10px 14px;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .result-stars-added {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FEF3C7;
+      color: #B45309;
+      border: 2px solid #FCD34D;
+      padding: 6px 16px;
+      border-radius: 24px;
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="soi-bai-body">
+
+  <!-- Header -->
+  <header class="soibai-header">
+    <div class="soibai-brand">
+      <div class="soibai-icon">📸</div>
+      <div class="soibai-title">
+        <h1>SOI BÀI & CHẤM ĐIỂM THÔNG MINH</h1>
+        <p>Lớp 1A • Vườn Thú Kỳ Diệu</p>
+      </div>
+    </div>
+    <div class="soibai-header-actions">
+      <button type="button" id="btnOpenTeacherAdmin" class="btn-soibai-nav" title="Dành cho cô giáo tải đề bài mẫu">
+        ⚙️ Bài Mẫu
+      </button>
+      <a href="index.html" class="btn-soibai-nav" title="Quay về lớp học">
+        🏠 Lớp Học
+      </a>
+    </div>
+  </header>
+
+  <main class="soibai-container">
+
+    <!-- BƯỚC 1: Chọn Học Sinh -->
+    <section class="soibai-card">
+      <div class="card-badge-step">
+        <span>👤</span> BƯỚC 1: BÉ HÃY CHỌN TÊN MÌNH
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="font-size: 13px; font-weight: 800; color: #475569;">
+          Đang chọn bé: <strong id="selectedStudentLabel" style="color: #4F46E5; font-size: 15px;">Chưa chọn</strong>
+        </div>
+        <div id="selectedStudentStarsPill" style="display: none; background: #FEF3C7; color: #B45309; font-size: 12px; font-weight: 800; padding: 2px 10px; border-radius: 12px; border: 1px solid #FCD34D;">
+          0 ⭐
+        </div>
+      </div>
+
+      <div class="student-select-grid" id="studentSelectGrid">
+        <div style="grid-column: 1 / -1; text-align: center; color: #64748B; font-size: 12px; padding: 12px;">
+          ⏳ Đang kết nối danh sách học sinh từ Đám Mây...
+        </div>
+      </div>
+    </section>
+
+    <!-- BƯỚC 2: Bài Mẫu Chuẩn Hôm Nay -->
+    <section class="soibai-card">
+      <div class="card-badge-step">
+        <span>📖</span> BƯỚC 2: BÀI TẬP MẪU CÔ GIAO HÔM NAY
+      </div>
+
+      <div class="sample-task-box">
+        <div class="sample-task-header">
+          <div class="sample-task-title" id="sampleTaskTitle">
+            <span>✍️</span> Luyện viết chữ cái: Nét chữ nết người
+          </div>
+          <span class="sample-stars-reward" id="sampleTaskRewardBadge">
+            🌟 Thưởng: +5 ⭐
+          </span>
+        </div>
+
+        <p id="sampleTaskDesc" style="font-size: 12.5px; color: #78350F; margin: 0 0 6px; font-weight: 600;">
+          Con hãy viết đúng độ cao ô ly, nét chữ ngay ngắn, thẳng hàng và sạch đẹp như bài mẫu dưới đây nhé!
+        </p>
+
+        <!-- Ảnh bài mẫu chuẩn -->
+        <img id="sampleTaskImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23FFFBEB'/><line x1='50' y1='60' x2='550' y2='60' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='100' x2='550' y2='100' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='140' x2='550' y2='140' stroke='%23F59E0B' stroke-width='2'/><line x1='50' y1='180' x2='550' y2='180' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='220' x2='550' y2='220' stroke='%23CBD5E1' stroke-width='1.5'/><text x='70' y='135' font-family='sans-serif' font-size='42' font-weight='bold' fill='%231E293B'>a  b  c  d  e  g  h</text><text x='70' y='215' font-family='sans-serif' font-size='36' fill='%23475569'>Nét chữ nết người Lớp 1A</text><text x='380' y='40' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23B45309'>MẪU CHUẨN Ô LY</text></svg>" alt="Bài Mẫu Luyện Viết" class="sample-image-preview">
+
+        <div style="font-size: 12px; font-weight: 800; color: #92400E; margin-top: 6px;">
+          📌 Tiêu chí cô chấm:
+        </div>
+        <ul class="sample-criteria-list" id="sampleCriteriaList">
+          <li>Con chữ đúng độ cao 2 ô ly và 2,5 ô ly.</li>
+          <li>Nét chữ đều đặn, không bị run tay, thẳng hàng.</li>
+          <li>Trang vở sạch sẽ, không gạch xóa hoặc nhăn góc.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- BƯỚC 3: Soi Bài (Camera / Chụp Ảnh) -->
+    <section class="soibai-card">
+      <div class="card-badge-step">
+        <span>📸</span> BƯỚC 3: GIƠ VỞ LÊN ĐỂ SOI BÀI
+      </div>
+
+      <!-- Khung Camera & Ảnh Chụp -->
+      <div class="camera-viewport-card" id="cameraViewport">
+        <video id="cameraVideo" playsinline autoplay muted></video>
+        <img id="capturedImagePreview" alt="Ảnh bài làm của bé">
+        <canvas id="cameraCanvas" style="display: none;"></canvas>
+
+        <div class="camera-overlay-grid" id="cameraOverlayGrid"></div>
+        <div class="scan-laser-beam" id="scanLaserBeam"></div>
+
+        <div class="camera-placeholder" id="cameraPlaceholder">
+          <div style="font-size: 48px; margin-bottom: 6px;">📖✨</div>
+          <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Sẵn sàng soi bài!</div>
+          <p style="font-size: 12px; color: #94A3B8; margin: 0;">
+            Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài viết đã chụp sẵn
+          </p>
+        </div>
+      </div>
+
+      <!-- Nút điều khiển Camera -->
+      <div class="camera-action-buttons">
+        <button type="button" id="btnStartCamera" class="btn-cam-action primary">
+          <span>📷</span> Mở Camera Soi Bài
+        </button>
+        <button type="button" id="btnSnapPhoto" class="btn-cam-action success" style="display: none;">
+          <span>📸</span> Chụp Ảnh Bài Viết
+        </button>
+        <label class="btn-cam-action secondary" style="cursor: pointer; margin: 0;">
+          <span>📁</span> Chọn Ảnh Có Sẵn
+          <input type="file" id="inputUploadPhoto" accept="image/*" style="display: none;">
+        </label>
+        <button type="button" id="btnRetakePhoto" class="btn-cam-action secondary" style="display: none;">
+          <span>🔄</span> Chụp Lại
+        </button>
+      </div>
+
+      <!-- Nút Bắt Đầu Chấm Điểm -->
+      <button type="button" id="btnAnalyzeWork" class="btn-cam-action success" style="width: 100%; padding: 14px; font-size: 16px; border-radius: 16px; display: none;">
+        <span>⚡</span> BẮT ĐẦU CHẤM BÀI NGAY!
+      </button>
+
+      <!-- Hộp kết quả chấm bài -->
+      <div class="grading-result-box" id="gradingResultBox">
+        <div class="result-avatar-visual" id="resultAvatar">🎉🐣</div>
+        <div class="result-title" id="resultTitle">BÀI VIẾT ĐẠT CHUẨN!</div>
+        
+        <div class="result-stars-added" id="resultStarsBadge">
+          <span>⭐</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!
+        </div>
+
+        <div class="result-comment" id="resultComment">
+          "Em viết chữ rất đều và đẹp, các con chữ ngay ngắn thẳng hàng. Cô khen con nhé!"
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px;">
+          <button type="button" id="btnSpeakComment" class="btn-cam-action secondary" style="flex: none; padding: 8px 14px; font-size: 12.5px;">
+            🔊 Đọc Lời Khen
+          </button>
+          <button type="button" id="btnScanAnother" class="btn-cam-action primary" style="flex: none; padding: 8px 18px; font-size: 12.5px;">
+            ✨ Soi Bài Khác
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Cài Đặt Bài Mẫu Dành Cho Cô Giáo -->
+  <div id="teacherAdminModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 540px; width: 95%;">
+      <button id="closeTeacherAdminBtn" class="modal-close-btn">&times;</button>
+      
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="font-size: 26px;">⚙️</span>
+        <h2 class="modal-title" style="margin: 0; font-size: 18px; text-align: left;">Cài Đặt Bài Mẫu & Chấm Điểm</h2>
+      </div>
+      <p style="font-size: 12.5px; color: #64748B; margin-bottom: 14px;">
+        Cô giáo có thể chụp trang vở mẫu hôm nay để học sinh căn cứ theo đó luyện viết và tự chấm!
+      </p>
+
+      <div style="margin-bottom: 12px; text-align: left;">
+        <label style="display: block; font-size: 12.5px; font-weight: 800; color: #334155; margin-bottom: 4px;">
+          Tiêu đề bài tập hôm nay:
+        </label>
+        <input type="text" id="adminTaskTitleInput" value="Luyện viết chữ cái: Nét chữ nết người" style="width: 100%; padding: 8px 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 13px; font-weight: 700; box-sizing: border-box;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: left;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 4px;">
+            Loại bài tập:
+          </label>
+          <select id="adminTaskTypeSelect" style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 13px; font-weight: 700; background: #FFF;">
+            <option value="writing">✍️ Luyện viết chữ ô ly</option>
+            <option value="math">🔢 Bài toán / Phép tính</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 4px;">
+            Số sao thưởng khi đạt:
+          </label>
+          <select id="adminTaskStarsSelect" style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 13px; font-weight: 700; background: #FFF;">
+            <option value="3">⭐ 3 Sao</option>
+            <option value="5" selected>⭐ 5 Sao (Chuẩn)</option>
+            <option value="10">⭐ 10 Sao (Xuất sắc)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px; text-align: left;">
+        <label style="display: block; font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 4px;">
+          Tải ảnh bài mẫu mới của cô (Chụp trang vở mẫu hoặc đề toán):
+        </label>
+        <input type="file" id="adminSampleFileInput" accept="image/*" style="font-size: 12px;">
+      </div>
+
+      <div style="margin-bottom: 14px; text-align: left;">
+        <label style="display: block; font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 4px;">
+          Google Gemini API Key (Tùy chọn - Dùng AI soi nét chữ siêu thông minh):
+        </label>
+        <input type="password" id="adminGeminiApiKeyInput" placeholder="Dán Gemini API Key (nếu có)..." style="width: 100%; padding: 8px 12px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-size: 12px; box-sizing: border-box;">
+        <div style="font-size: 11px; color: #64748B; margin-top: 3px;">
+          💡 Không bắt buộc: Nếu không nhập API Key, app vẫn tự động chấm bài dựa trên thuật toán phân tích nét chữ và ô ly.
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; gap: 8px;">
+        <button type="button" id="btnAdminResetDefault" class="btn-header" style="font-size: 12px;">
+          🔄 Nạp mẫu chuẩn
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="btnCloseAdminModal" class="btn-header">Đóng</button>
+          <button type="button" id="btnSaveAdminSettings" class="btn-header primary">
+            💾 Lưu Bài Mẫu Mới
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="js/firebase-config.js?v=20261009_m1"></script>
+  <script src="js/firebase-sync.js?v=20261009_m1"></script>
+  <script src="js/egg-evolution.js?v=20261009_m1"></script>
+  <script src="js/audio.js?v=20261009_m1"></script>
+  <script src="js/soibai.js?v=20261009_m1"></script>
+</body>
+</html>
