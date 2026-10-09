@@ -418,7 +418,7 @@
       border: 1.5px solid #CBD5E1;
     }
 
-    /* Hộp kết quả chấm bài */
+    /* Hộp kết quả chấm bài - 3 Mức Độ */
     .grading-result-box {
       border-radius: 18px;
       padding: 16px;
@@ -428,16 +428,37 @@
       text-align: center;
     }
 
-    .grading-result-box.passed {
-      background: linear-gradient(180deg, #F0FDF4 0%, #DCFCE7 100%);
-      border: 2.5px solid #34D399;
-      color: #065F46;
+    .grading-result-box.tier-1 {
+      background: linear-gradient(180deg, #FEFCE8 0%, #FEF08A 50%, #FDE047 100%);
+      border: 3px solid #EAB308;
+      color: #713F12;
+      box-shadow: 0 8px 24px rgba(234, 179, 8, 0.25);
     }
 
-    .grading-result-box.failed {
+    .grading-result-box.tier-2 {
+      background: linear-gradient(180deg, #F0FDF4 0%, #DCFCE7 100%);
+      border: 2.5px solid #10B981;
+      color: #065F46;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+    }
+
+    .grading-result-box.tier-3 {
       background: linear-gradient(180deg, #FFF1F2 0%, #FFE4E6 100%);
       border: 2.5px solid #FB7185;
       color: #881337;
+      box-shadow: 0 8px 24px rgba(244, 63, 94, 0.2);
+    }
+
+    #annotationCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+      display: none;
+      z-index: 5;
     }
 
     .result-avatar-visual {
@@ -560,12 +581,12 @@
         </button>
 
         <div style="font-size: 12px; font-weight: 800; color: #92400E; margin-top: 10px;">
-          📌 Tiêu chí cô chấm:
+          📌 3 MỨC ĐỘ CÔ CHẤM BÀI:
         </div>
         <ul class="sample-criteria-list" id="sampleCriteriaList">
-          <li>Con chữ đúng độ cao 2 ô ly và 2,5 ô ly.</li>
-          <li>Nét chữ đều đặn, không bị run tay, thẳng hàng.</li>
-          <li>Trang vở sạch sẽ, không gạch xóa hoặc nhăn góc.</li>
+          <li><strong>🌟 Mức 1 (+10 ⭐):</strong> Chữ viết đều nét, đúng chuẩn chữ mẫu, trang vở sạch đẹp không tẩy xóa.</li>
+          <li><strong>⭐ Mức 2 (+5 ⭐):</strong> Bài viết đều nhưng chưa đúng chữ mẫu lắm, hoặc tẩy xóa 1 - 3 lỗi (cô sẽ gạch chân chỗ sai trên vở để con rút kinh nghiệm).</li>
+          <li><strong>📝 Mức 3 (Nhắc viết lại bài - 0 ⭐):</strong> Bài viết chưa đúng chữ mẫu, sai ô ly hoặc tẩy xóa nhiều. Cô gạch chân các lỗi trên vở và nhắc con viết lại bài nhé!</li>
         </ul>
       </div>
     </section>
@@ -580,6 +601,7 @@
       <div class="camera-viewport-card" id="cameraViewport">
         <video id="cameraVideo" playsinline autoplay muted></video>
         <img id="capturedImagePreview" alt="Ảnh bài làm của bé">
+        <canvas id="annotationCanvas"></canvas>
         <canvas id="cameraCanvas" style="display: none;"></canvas>
 
         <div class="camera-overlay-grid" id="cameraOverlayGrid"></div>
@@ -592,6 +614,20 @@
             Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài viết đã chụp sẵn
           </p>
         </div>
+      </div>
+
+      <!-- Danh sách lỗi cô đã gạch chân trực tiếp trên ảnh -->
+      <div id="annotatedErrorsBox" style="display: none; background: #FFF1F2; border: 2px dashed #FB7185; border-radius: 16px; padding: 12px 14px; margin-bottom: 12px; text-align: left; animation: popIn 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="font-size: 13px; font-weight: 800; color: #BE123C; display: flex; align-items: center; gap: 6px;">
+            <span>✍️</span> <strong>Cô đã gạch chân chỗ sai trên ảnh bài viết:</strong>
+          </div>
+          <button type="button" id="btnToggleAnnotations" style="font-size: 11.5px; padding: 4px 10px; border-radius: 12px; background: #FFFFFF; border: 1.5px solid #FDA4AF; color: #BE123C; cursor: pointer; font-weight: 800; font-family: inherit;">
+            👁️ Ẩn / Hiện Bút Đỏ
+          </button>
+        </div>
+        <ul id="annotatedErrorsList" style="margin: 0; padding-left: 18px; font-size: 12.5px; color: #881337; line-height: 1.6; font-weight: 700;">
+        </ul>
       </div>
 
       <!-- Nút điều khiển Camera -->
@@ -616,22 +652,25 @@
         <span>⚡</span> BẮT ĐẦU CHẤM BÀI NGAY!
       </button>
 
-      <!-- Hộp kết quả chấm bài -->
+      <!-- Hộp kết quả chấm bài (3 Mức Độ) -->
       <div class="grading-result-box" id="gradingResultBox">
         <div class="result-avatar-visual" id="resultAvatar">🎉🐣</div>
         <div class="result-title" id="resultTitle">BÀI VIẾT ĐẠT CHUẨN!</div>
         
         <div class="result-stars-added" id="resultStarsBadge">
-          <span>⭐</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!
+          <span>⭐</span> +10 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!
         </div>
 
         <div class="result-comment" id="resultComment">
           "Em viết chữ rất đều và đẹp, các con chữ ngay ngắn thẳng hàng. Cô khen con nhé!"
         </div>
 
-        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px;">
+        <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
           <button type="button" id="btnSpeakComment" class="btn-cam-action secondary" style="flex: none; padding: 8px 14px; font-size: 12.5px;">
-            🔊 Đọc Lời Khen
+            🔊 Đọc Lời Nhận Xét
+          </button>
+          <button type="button" id="btnRewriteWork" class="btn-cam-action secondary" style="flex: none; padding: 8px 16px; font-size: 12.5px; display: none; background: #FFE4E6; color: #BE123C; border: 1.5px solid #FDA4AF;">
+            ✏️ Viết Lại & Soi Lại Bài
           </button>
           <button type="button" id="btnScanAnother" class="btn-cam-action primary" style="flex: none; padding: 8px 18px; font-size: 12.5px;">
             ✨ Soi Bài Khác

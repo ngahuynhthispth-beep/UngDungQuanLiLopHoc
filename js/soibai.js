@@ -22,10 +22,15 @@
   const cameraViewport = document.getElementById('cameraViewport');
   const cameraVideo = document.getElementById('cameraVideo');
   const capturedImagePreview = document.getElementById('capturedImagePreview');
+  const annotationCanvas = document.getElementById('annotationCanvas');
   const cameraCanvas = document.getElementById('cameraCanvas');
   const cameraPlaceholder = document.getElementById('cameraPlaceholder');
   const cameraOverlayGrid = document.getElementById('cameraOverlayGrid');
   const scanLaserBeam = document.getElementById('scanLaserBeam');
+
+  const annotatedErrorsBox = document.getElementById('annotatedErrorsBox');
+  const annotatedErrorsList = document.getElementById('annotatedErrorsList');
+  const btnToggleAnnotations = document.getElementById('btnToggleAnnotations');
 
   const btnStartCamera = document.getElementById('btnStartCamera');
   const btnSnapPhoto = document.getElementById('btnSnapPhoto');
@@ -39,6 +44,7 @@
   const resultStarsBadge = document.getElementById('resultStarsBadge');
   const resultComment = document.getElementById('resultComment');
   const btnSpeakComment = document.getElementById('btnSpeakComment');
+  const btnRewriteWork = document.getElementById('btnRewriteWork');
   const btnScanAnother = document.getElementById('btnScanAnother');
 
   // Teacher Admin Modal
@@ -60,13 +66,13 @@
   const DEFAULT_SAMPLE_TASK = {
     title: 'Luyện viết chữ cái: Nét chữ nết người',
     type: 'writing',
-    stars: 5,
+    stars: 10,
     desc: 'Con hãy viết đúng độ cao ô ly (2 - 2,5 ly), nét chữ ngay ngắn, thẳng hàng và sạch đẹp như bài mẫu dưới đây nhé!',
     image: sampleTaskImage ? sampleTaskImage.src : '',
     criteria: [
-      'Con chữ đúng độ cao 2 ô ly và 2,5 ô ly.',
-      'Nét chữ đều đặn, không bị run tay, thẳng hàng.',
-      'Trang vở sạch sẽ, không gạch xóa hoặc nhăn góc.'
+      '🌟 Mức 1 (10 ⭐): Chữ viết đều nét, đúng chữ mẫu ô ly, không tẩy xóa.',
+      '⭐ Mức 2 (5 ⭐): Bài viết tương đối đều, tẩy xóa 1 - 3 lỗi nhỏ (cô gạch chân chỗ sai).',
+      '📝 Mức 3 (Viết lại bài - 0 ⭐): Bài viết chưa đúng chữ mẫu, sai ô ly hoặc lem nhem nhiều.'
     ]
   };
 
@@ -91,7 +97,7 @@
   function renderSampleTaskUI() {
     if (sampleTaskTitle) sampleTaskTitle.innerHTML = `<span>✍️</span> ${currentTask.title}`;
     if (sampleTaskDesc) sampleTaskDesc.textContent = currentTask.desc;
-    if (sampleTaskRewardBadge) sampleTaskRewardBadge.textContent = `🌟 Thưởng: +${currentTask.stars} ⭐`;
+    if (sampleTaskRewardBadge) sampleTaskRewardBadge.textContent = `🌟 Thưởng: Lên tới +10 ⭐`;
     if (sampleTaskImage && currentTask.image) sampleTaskImage.src = currentTask.image;
   }
 
@@ -317,9 +323,11 @@
         console.error('Lỗi phân tích bài:', err);
         // Fallback nhẹ nhàng
         const fallbackRes = {
+          tier: 2,
           passed: true,
-          stars: currentTask.stars || 5,
-          comment: `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng ${currentTask.stars} sao thưởng cho con nhé!`
+          stars: 5,
+          title: 'ĐẠT YÊU CẦU - 5 SAO! ⭐',
+          comment: `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 5 sao thưởng cho con nhé!`
         };
         lastGradingResult = fallbackRes;
         await showGradingResult(fallbackRes);
@@ -331,6 +339,131 @@
     });
   }
 
+  // --- CÔNG NGHỆ BÚT ĐỎ CÔ GIÁO: GẠCH CHÂN CHỖ SAI & ĐÓNG DẤU LỜI PHÊ ---
+  function drawAnnotationsOnCanvas(imgElement, errors, tier) {
+    if (!annotationCanvas) return;
+    const nw = imgElement.naturalWidth || imgElement.videoWidth || imgElement.width || 640;
+    const nh = imgElement.naturalHeight || imgElement.videoHeight || imgElement.height || 480;
+
+    annotationCanvas.width = nw;
+    annotationCanvas.height = nh;
+    const ctx = annotationCanvas.getContext('2d');
+    ctx.clearRect(0, 0, nw, nh);
+
+    const scaleX = nw / 400;
+    const scaleY = nh / 300;
+
+    // Hàm vẽ nét gạch chân lượn sóng màu đỏ (Wavy underline) như bút mực đỏ cô giáo
+    function drawWavyUnderline(x1, y, x2, color = '#EF4444') {
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
+      const wavelength = Math.max(8, Math.round(nw * 0.018));
+      const amplitude = Math.max(3, Math.round(nh * 0.006));
+      for (let x = x1; x <= x2; x++) {
+        const wy = y + Math.sin(((x - x1) / wavelength) * Math.PI * 2) * amplitude;
+        if (x === x1) ctx.moveTo(x, wy);
+        else ctx.lineTo(x, wy);
+      }
+      ctx.stroke();
+    }
+
+    // 1. Vẽ các nét gạch chân và khoanh vùng chỗ sai
+    if (errors && errors.length > 0) {
+      errors.forEach((err) => {
+        const x = Math.round(err.x * scaleX);
+        const y = Math.round(err.y * scaleY);
+        const w = Math.round(err.w * scaleX);
+        const h = Math.round(err.h * scaleY);
+
+        // Khung nét đứt màu đỏ bao quanh chữ sai
+        ctx.strokeStyle = '#DC2626';
+        ctx.lineWidth = Math.max(2, Math.round(nw * 0.0035));
+        ctx.setLineDash([Math.round(nw * 0.01), Math.round(nw * 0.008)]);
+        ctx.strokeRect(x, y, w, h);
+        ctx.setLineDash([]);
+
+        // Đường gạch chân lượn sóng màu đỏ ngay bên dưới chữ
+        const underlineY = y + h + Math.round(nh * 0.008);
+        drawWavyUnderline(x - 4, underlineY, x + w + 4, '#EF4444');
+
+        // Nhãn ghi chú nhỏ xinh bên trên
+        const tagText = err.type === 'smudge' ? '🧹 Tẩy xóa lem' : '✍️ Chưa chuẩn mẫu';
+        ctx.font = `bold ${Math.max(11, Math.round(nw * 0.022))}px sans-serif`;
+        const textWidth = ctx.measureText(tagText).width;
+        const tagHeight = Math.max(16, Math.round(nh * 0.035));
+        const tagX = Math.max(4, x);
+        const tagY = Math.max(tagHeight, y - 6);
+
+        ctx.fillStyle = '#EF4444';
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(tagX, tagY - tagHeight + 4, textWidth + 12, tagHeight, 6);
+        } else {
+          ctx.rect(tagX, tagY - tagHeight + 4, textWidth + 12, tagHeight);
+        }
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(tagText, tagX + 6, tagY);
+      });
+    }
+
+    // 2. Đóng dấu lời phê đỏ của cô giáo ở góc trang vở
+    const stampX = Math.round(nw * 0.70);
+    const stampY = Math.round(nh * 0.12);
+    ctx.save();
+    ctx.translate(stampX, stampY);
+    ctx.rotate(-0.06);
+
+    const boxW = Math.round(nw * 0.27);
+    const boxH = Math.round(nh * 0.095);
+
+    if (tier === 1) {
+      // Dấu đỏ: ĐIỂM 10 ĐẸP 🌸
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
+      ctx.fillStyle = 'rgba(254, 242, 242, 0.9)';
+      ctx.strokeRect(-8, -20, boxW, boxH);
+      ctx.fillRect(-8, -20, boxW, boxH);
+
+      ctx.fillStyle = '#DC2626';
+      ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
+      ctx.fillText('🌸 ĐIỂM 10 ĐẸP 🌸', 0, 0);
+      ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
+      ctx.fillText('Chữ đều nét & rất sạch!', 2, Math.round(nh * 0.032));
+    } else if (tier === 2) {
+      // Dấu cam: ĐẠT 5 SAO ⭐
+      ctx.strokeStyle = '#EA580C';
+      ctx.lineWidth = Math.max(2.5, Math.round(nw * 0.004));
+      ctx.fillStyle = 'rgba(255, 247, 237, 0.9)';
+      ctx.strokeRect(-8, -20, boxW, boxH);
+      ctx.fillRect(-8, -20, boxW, boxH);
+
+      ctx.fillStyle = '#EA580C';
+      ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
+      ctx.fillText('⭐ ĐẠT 5 SAO', 0, 0);
+      ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
+      ctx.fillText('Chú ý chỗ cô gạch chân', 0, Math.round(nh * 0.032));
+    } else {
+      // Dấu đỏ: CÔ NHẮC: VIẾT LẠI 📝
+      ctx.strokeStyle = '#DC2626';
+      ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
+      ctx.fillStyle = 'rgba(254, 242, 242, 0.95)';
+      ctx.strokeRect(-8, -20, boxW, boxH);
+      ctx.fillRect(-8, -20, boxW, boxH);
+
+      ctx.fillStyle = '#DC2626';
+      ctx.font = `bold ${Math.max(12.5, Math.round(nw * 0.028))}px sans-serif`;
+      ctx.fillText('✍️ CÔ NHẮC: VIẾT LẠI', 0, 0);
+      ctx.font = `bold ${Math.max(9, Math.round(nw * 0.017))}px sans-serif`;
+      ctx.fillText('Xem các nét gạch chân nhé', 0, Math.round(nh * 0.032));
+    }
+    ctx.restore();
+
+    annotationCanvas.style.display = 'block';
+  }
+
   // 1. Chấm bài bằng Google Gemini Vision API (Dành cho cô giáo có API Key)
   async function gradeWithGeminiVision(apiKey, studentImageBase64, task) {
     const base64Data = studentImageBase64.replace(/^data:image\/\w+;base64,/, '');
@@ -339,18 +472,29 @@
 Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ hoặc toán) của học sinh lớp 1 sau đây và chấm bài.
 Đề bài cô giao: "${task.title}".
 
-LƯU Ý ĐẶC BIỆT KHI CHẤM BÀI LỚP 1:
-- Học sinh lớp 1 (6 tuổi) viết bài bằng BÚT CHÌ trên vở ô ly kẻ ngang. Nét chì màu xám mảnh, có độ bóng phản quang dưới ánh đèn và có thể mờ hơn bút mực rất nhiều.
-- Hãy chấm bài với tinh thần KHOAN DUNG, KHUYẾN KHÍCH SỰ TIẾN BỘ, TUYỆT ĐỐI ĐỪNG QUÁ CỨNG NHẮC HOẶC KHẮT KHE!
-- Chỉ cần bé có viết bài bằng bút chì, chữ tương đối thẳng hàng và hoàn thành trang vở là CHO ĐẠT (passed: true) và thưởng ${task.stars || 5} sao.
-- Viết lời nhận xét ngắn gọn 1-2 câu ấm áp, xưng "Cô" gọi "Con" hoặc "Em", khen ngợi bé đã chăm chỉ nắn nót luyện viết.
-- Chỉ đánh giá passed: false khi trang giấy hoàn toàn để trắng, chưa viết gì hoặc ảnh quá tối/mờ không thể nhìn thấy bất kỳ nét chữ nào.
+QUY ĐỊNH CHẤM ĐÚNG 3 MỨC ĐỘ THEO YÊU CẦU:
+1. MỨC 1 (tier = 1, stars = 10, passed = true):
+   - Chữ viết đều nét, đúng chuẩn chữ mẫu ô ly, trang vở sạch đẹp không tẩy xóa.
+   - Nhận xét khen ngợi con xuất sắc đạt 10 sao.
+2. MỨC 2 (tier = 2, stars = 5, passed = true):
+   - Bài viết đều nhưng chưa đúng chữ mẫu lắm, hoặc tẩy xóa 1 - 3 lỗi nhỏ.
+   - Nhận xét động viên con đạt 5 sao và chỉ ra các chỗ cô đã gạch chân để rút kinh nghiệm.
+3. MỨC 3 (tier = 3, stars = 0, passed = false):
+   - Bài viết chưa đúng chữ mẫu, lệch nhiều ô ly, chữ nghệch ngoạc hoặc tẩy xóa lem nhem nhiều (> 3 lỗi) hoặc trang vở chưa viết bài.
+   - Nhắc con nhìn bài mẫu và viết lại bài cho đẹp.
 
-TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown hay ký tự thừa):
+NẾU CÓ LỖI Ở MỨC 2 HOẶC MỨC 3:
+- Xác định vị trí các chỗ viết sai hoặc tẩy xóa trong mảng "errors" để cô giáo vẽ gạch chân màu đỏ (x, y tính trên lưới 400x300):
+  { "x": 60, "y": 80, "w": 40, "h": 20, "type": "height" | "smudge", "label": "Mô tả lỗi ngắn gọn (ví dụ: Dòng 2: Nét chữ chưa đúng độ cao ô ly)" }
+
+TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 {
+  "tier": 1,
+  "stars": 10,
   "passed": true,
-  "stars": ${task.stars || 5},
-  "comment": "Lời khen ngợi ấm áp của cô giáo"
+  "title": "XUẤT SẮC - 10 SAO VÀNG!",
+  "comment": "Lời nhận xét của cô giáo",
+  "errors": []
 }`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
@@ -379,15 +523,14 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown hay ký tự th�
     return JSON.parse(textOut);
   }
 
-  // 2. Chấm bài bằng Computer Vision nội bộ (Tối ưu đặc biệt cho học sinh Lớp 1 viết BÚT CHÌ)
+  // 2. Chấm bài bằng Computer Vision nội bộ (Tối ưu 3 Mức Độ cho Bút Chì Lớp 1)
   async function gradeWithVisionHeuristics(imageBase64, task) {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        // Phóng/thu ảnh về kích thước chuẩn 400x300 để phân tích nét chì nhanh và chính xác
-        const canvas = document.createElement('canvas');
         const W = 400;
         const H = 300;
+        const canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
         const ctx = canvas.getContext('2d');
@@ -402,135 +545,291 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown hay ký tự th�
           gray[p] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
         }
 
-        // Vùng tập trung vào trang vở (tập trung 80% trung tâm và nửa dưới bức ảnh)
+        // Vùng tập trung vào trang vở (80% trung tâm và nửa dưới bức ảnh)
         const xMin = Math.round(W * 0.08);
         const xMax = Math.round(W * 0.92);
         const yMin = Math.round(H * 0.08);
         const yMax = Math.round(H * 0.92);
 
-        // Phát hiện nét bút chì theo độ tương phản cục bộ (Adaptive Local Contrast)
-        // Nét chì xám tối hơn nền giấy xung quanh từ 8 đến 80 đơn vị, không cần đen tuyền
         let pencilStrokePixels = 0;
         let paperPixels = 0;
         const rowStrokeCounts = new Array(H).fill(0);
+        const strokeGrid = new Uint8Array(W * H);
 
         for (let y = yMin; y < yMax; y += 2) {
           for (let x = xMin; x < xMax; x += 2) {
             const idx = y * W + x;
             const pVal = gray[idx];
 
-            // Đo độ sáng trung bình lân cận (4 hướng bán kính 3px)
             const top = gray[Math.max(0, y - 3) * W + x];
             const bot = gray[Math.min(H - 1, y + 3) * W + x];
             const left = gray[y * W + Math.max(0, x - 3)];
             const right = gray[y * W + Math.min(W - 1, x + 3)];
             const localBg = (top + bot + left + right) / 4;
 
-            // Nếu vùng này là nền giấy (độ sáng > 65)
             if (localBg > 65) {
               paperPixels++;
               const contrastDiff = localBg - pVal;
 
-              // Nét bút chì: tối hơn giấy xung quanh từ 8 đến 85 đơn vị
-              // Hoặc có độ đậm rõ ràng trên nền giấy sáng
-              if ((contrastDiff >= 8 && contrastDiff <= 85) || (pVal < 140 && localBg > 155)) {
+              // Nét chì chuẩn: tối hơn nền 8 - 75 đơn vị
+              if ((contrastDiff >= 8 && contrastDiff <= 75) || (pVal < 140 && localBg > 155)) {
                 pencilStrokePixels++;
                 rowStrokeCounts[y]++;
+                strokeGrid[idx] = 1;
+              }
+              // Vết tẩy xóa lem chì hoặc vết bẩn đậm bất thường
+              if (contrastDiff > 75 && pVal < 110) {
+                strokeGrid[idx] = 2; // smudge
               }
             }
           }
         }
 
-        const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
-
-        // Đếm các dòng có xuất hiện nét viết bút chì
-        let activeRows = 0;
+        // Nhận diện các dòng kẻ chữ
+        const lines = [];
+        let inLine = false, lineStart = 0;
         for (let y = yMin; y < yMax; y += 2) {
           if (rowStrokeCounts[y] >= 3) {
-            activeRows++;
+            if (!inLine) { inLine = true; lineStart = y; }
+          } else {
+            if (inLine) {
+              if (y - lineStart >= 6) {
+                lines.push({ startY: lineStart, endY: y, height: y - lineStart });
+              }
+              inLine = false;
+            }
           }
         }
 
-        // TIÊU CHÍ CHẤM LỚP 1: Linh hoạt, khoan dung, khuyến khích sự tự tin của trẻ ("Đừng quá cứng nhắc")
-        // Chỉ cần có nét chì phân bổ ở các dòng (strokeRatio >= 0.005 tức 0.5% diện tích)
-        // hoặc có lượng nét chữ rõ nét (strokeRatio >= 0.008)
-        const hasPencilWriting = (strokeRatio >= 0.005 && activeRows >= 5) || (strokeRatio >= 0.008);
+        // Nhận diện các chữ và phát hiện lỗi để gạch chân
+        const detectedErrors = [];
+        let lineIdx = 0;
+
+        for (const line of lines) {
+          lineIdx++;
+          let inWord = false, wordStart = 0, wordSmudges = 0, strokeCount = 0;
+          let wordYMin = line.endY, wordYMax = line.startY;
+
+          for (let x = xMin; x < xMax; x += 2) {
+            let colStrokes = 0, colSmudges = 0;
+            for (let y = line.startY; y <= line.endY; y += 2) {
+              const gVal = strokeGrid[y * W + x];
+              if (gVal === 1) {
+                colStrokes++;
+                if (y < wordYMin) wordYMin = y;
+                if (y > wordYMax) wordYMax = y;
+              } else if (gVal === 2) {
+                colSmudges++;
+              }
+            }
+
+            if (colStrokes > 0 || colSmudges > 0) {
+              if (!inWord) { inWord = true; wordStart = x; wordSmudges = 0; strokeCount = 0; wordYMin = line.endY; wordYMax = line.startY; }
+              strokeCount += colStrokes;
+              wordSmudges += colSmudges;
+            } else {
+              if (inWord) {
+                const wordWidth = x - wordStart;
+                if (wordWidth >= 6 && strokeCount >= 4) {
+                  const wordHeight = wordYMax - wordYMin;
+                  // Lỗi 1: Tẩy xóa lem nhem
+                  if (wordSmudges >= 3) {
+                    detectedErrors.push({
+                      lineNum: lineIdx,
+                      x: wordStart,
+                      y: wordYMin,
+                      w: Math.max(14, wordWidth),
+                      h: Math.max(12, wordHeight),
+                      type: 'smudge',
+                      label: `Dòng ${lineIdx}: Có vết tẩy chì lem nhem`
+                    });
+                  }
+                  // Lỗi 2: Nét chữ chưa đúng độ cao ô ly (quá cao hoặc quá lùn so với chuẩn)
+                  else if (wordHeight > 28 || wordHeight < 5) {
+                    detectedErrors.push({
+                      lineNum: lineIdx,
+                      x: wordStart,
+                      y: wordYMin,
+                      w: Math.max(14, wordWidth),
+                      h: Math.max(12, wordHeight),
+                      type: 'height',
+                      label: `Dòng ${lineIdx}: Nét chữ chưa đúng độ cao ô ly`
+                    });
+                  }
+                }
+                inWord = false;
+              }
+            }
+          }
+        }
+
+        // Gộp các lỗi gần nhau trên cùng dòng
+        function mergeCloseErrors(errs) {
+          if (errs.length <= 1) return errs;
+          const res = [];
+          for (const err of errs) {
+            const match = res.find(m => m.lineNum === err.lineNum && Math.abs(m.x + m.w - err.x) < 25);
+            if (match) {
+              const newX = Math.min(match.x, err.x);
+              const newR = Math.max(match.x + match.w, err.x + err.w);
+              match.x = newX;
+              match.w = newR - newX;
+              match.h = Math.max(match.h, err.h);
+              if (err.type === 'smudge') match.type = 'smudge';
+            } else {
+              res.push(Object.assign({}, err));
+            }
+          }
+          return res;
+        }
+
+        const cleanedErrors = mergeCloseErrors(detectedErrors);
+        const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
+        const hasWriting = (strokeRatio >= 0.005 && lines.length >= 2) || (strokeRatio >= 0.008);
 
         setTimeout(() => {
           const studentName = activeStudent ? activeStudent.name : 'bé';
-          if (hasPencilWriting) {
-            const praises = [
-              `Bài viết của ${studentName} rất ngoan! Nét chữ bút chì ngay ngắn, thẳng hàng và đúng ô ly. Cô thưởng con ${task.stars || 5} sao nhé! 🎉`,
-              `Cô khen ${studentName}! Chữ viết nắn nót, trang vở sạch đẹp và đều tay. Con tiếp tục phát huy nhé! 🌟`,
-              `Rất tốt! ${studentName} đã hoàn thành bài viết chữ theo mẫu ô ly. Cô tặng con trọn vẹn ${task.stars || 5} sao linh thú! 💖`,
-              `Nét chữ nết người! Bài viết bút chì của ${studentName} rất tiến bộ và sạch sẽ. Cô khen con! ✨`
-            ];
-            const comment = praises[Math.floor(Math.random() * praises.length)];
+          let tier = 3;
+          let stars = 0;
+          let title = '';
+          let comment = '';
+          let passed = false;
 
-            resolve({
-              passed: true,
-              stars: task.stars || 5,
-              comment: comment,
-              strokeRatio: strokeRatio,
-              activeRows: activeRows
-            });
+          if (!hasWriting) {
+            // Mức 3: Chưa có chữ hoặc ảnh trống
+            tier = 3;
+            stars = 0;
+            passed = false;
+            title = 'BÉ HÃY VIẾT LẠI BÀI NHÉ! 📝';
+            comment = 'Ảnh bài làm chưa rõ nét chữ bút chì hoặc trang vở còn để trống. Bé hãy nắn nót viết bài và soi lại cho cô chấm nhé!';
           } else {
-            let advice = '';
-            if (strokeRatio < 0.002) {
-              advice = `Ảnh bài viết chưa rõ nét chữ bút chì hoặc trang vở còn để trống. Bé hãy nắn nót viết bài và soi lại cho cô chấm nhé!`;
+            const errCount = cleanedErrors.length;
+            if (errCount === 0) {
+              // MỨC 1: XUẤT SẮC - 10 SAO
+              tier = 1;
+              stars = 10;
+              passed = true;
+              title = 'XUẤT SẮC - 10 SAO VÀNG! 🌟';
+              comment = `Bài viết của ${studentName} rất ngoan! Chữ viết đều nét, đúng chuẩn chữ mẫu ô ly và trang vở sạch đẹp không tẩy xóa. Cô khen con đạt 10 sao xuất sắc! 🌟`;
+            } else if (errCount >= 1 && errCount <= 3) {
+              // MỨC 2: ĐẠT YÊU CẦU - 5 SAO
+              tier = 2;
+              stars = 5;
+              passed = true;
+              title = 'ĐẠT YÊU CẦU - 5 SAO! ⭐';
+              comment = `Bài viết của ${studentName} tương đối đều nét nhưng còn ${errCount} chỗ tẩy xóa hoặc chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con cần sửa ở trên, lần sau con nắn nót hơn nhé! Cô thưởng con 5 sao! ⭐`;
             } else {
-              advice = `Nét bút chì hơi mờ hoặc góc chụp bị bóng tối che khuất một phần. Bé hãy bật đèn sáng, giơ thẳng trang vở và soi lại để cô chấm điểm thưởng sao nhé! 💪`;
+              // MỨC 3: NHẮC CON VIẾT LẠI BÀI (0 SAO)
+              tier = 3;
+              stars = 0;
+              passed = false;
+              title = 'BÉ HÃY VIẾT LẠI BÀI NHÉ! 📝';
+              comment = `Bài viết của ${studentName} chưa đúng chữ mẫu và có ${errCount} chỗ bị lệch ô ly hoặc tẩy xóa lem nhem. Cô đã gạch chân các chỗ sai trên trang vở ở trên, con hãy nhìn bài mẫu và viết lại thật nắn nót nhé! 💪`;
             }
-
-            resolve({
-              passed: false,
-              stars: 0,
-              comment: advice,
-              strokeRatio: strokeRatio,
-              activeRows: activeRows
-            });
           }
+
+          resolve({
+            tier,
+            stars,
+            passed,
+            title,
+            comment,
+            errors: cleanedErrors,
+            metrics: { strokeRatio, linesCount: lines.length, errCount: cleanedErrors.length }
+          });
         }, 1200);
       };
       img.src = imageBase64;
     });
   }
 
-  // Hiển thị kết quả & Cộng sao vào Firebase
+  // Hiển thị kết quả chấm 3 Mức Độ & Cộng sao vào Firebase
   async function showGradingResult(res) {
     gradingResultBox.style.display = 'block';
 
-    if (res.passed) {
-      gradingResultBox.className = 'grading-result-box passed';
-      resultAvatar.textContent = '🎉🐣🌟';
-      resultTitle.textContent = 'XUẤT SẮC! BÀI VIẾT ĐẠT CHUẨN';
-      resultStarsBadge.style.display = 'inline-flex';
-      resultStarsBadge.innerHTML = `<span>⭐</span> +${res.stars} SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!`;
-      resultComment.textContent = `"${res.comment}"`;
+    // 1. Vẽ các nét gạch chân màu đỏ của cô giáo lên ảnh chụp
+    if (capturedImagePreview) {
+      drawAnnotationsOnCanvas(capturedImagePreview, res.errors || [], res.tier || 3);
+    }
 
-      // Bắn pháo hoa ăn mừng
-      if (window.confetti) {
-        window.confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+    // 2. Cập nhật danh sách các chỗ sai cô đã gạch chân
+    if (annotatedErrorsBox && annotatedErrorsList) {
+      if (res.errors && res.errors.length > 0) {
+        annotatedErrorsBox.style.display = 'block';
+        annotatedErrorsList.innerHTML = '';
+        res.errors.forEach((err, idx) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>Lỗi ${idx + 1}:</strong> ${err.label}`;
+          annotatedErrorsList.appendChild(li);
+        });
+      } else {
+        annotatedErrorsBox.style.display = 'none';
       }
+    }
 
-      // Phát âm thanh chúc mừng
+    // 3. Định hình giao diện theo 3 Mức Độ
+    gradingResultBox.classList.remove('passed', 'failed', 'tier-1', 'tier-2', 'tier-3');
+    gradingResultBox.classList.add(`tier-${res.tier || 3}`);
+
+    const studentName = activeStudent ? activeStudent.name : 'Bé';
+
+    if (res.tier === 1) {
+      // MỨC 1: XUẤT SẮC (10 SAO)
+      resultAvatar.textContent = '🌟🐣💮';
+      resultTitle.textContent = res.title || 'XUẤT SẮC - 10 SAO VÀNG!';
+      resultStarsBadge.style.display = 'inline-flex';
+      resultStarsBadge.style.background = '#FEF3C7';
+      resultStarsBadge.style.color = '#B45309';
+      resultStarsBadge.style.borderColor = '#FCD34D';
+      resultStarsBadge.innerHTML = '<span>🌟</span> +10 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
+      resultComment.textContent = `"${res.comment}"`;
+      if (btnRewriteWork) btnRewriteWork.style.display = 'none';
+
+      if (window.confetti) {
+        window.confetti({ particleCount: 110, spread: 85, origin: { y: 0.6 } });
+      }
       if (window.AudioManager && window.AudioManager.playReward) {
         window.AudioManager.playReward();
       }
 
-      // Tự động đọc giọng nói khích lệ bé
-      speakVietnamese(`Chúc mừng ${activeStudent.name}! ${res.comment}`);
+      speakVietnamese(`Chúc mừng ${studentName}! Bài viết của con đạt xuất sắc 10 sao!`);
+      await awardStarsToFirebase(activeStudent.id, 10, `Soi bài Mức 1 (Xuất sắc): ${currentTask.title}`);
 
-      // CỘNG SAO VÀO FIREBASE
-      await awardStarsToFirebase(activeStudent.id, res.stars, `Soi bài đạt chuẩn: ${currentTask.title}`);
-    } else {
-      gradingResultBox.className = 'grading-result-box failed';
-      resultAvatar.textContent = '📝💪';
-      resultTitle.textContent = 'EM CẦN VIẾT LẠI NHÉ!';
-      resultStarsBadge.style.display = 'none';
+    } else if (res.tier === 2) {
+      // MỨC 2: ĐẠT YÊU CẦU (5 SAO)
+      resultAvatar.textContent = '⭐🐣👏';
+      resultTitle.textContent = res.title || 'ĐẠT YÊU CẦU - 5 SAO!';
+      resultStarsBadge.style.display = 'inline-flex';
+      resultStarsBadge.style.background = '#DCFCE7';
+      resultStarsBadge.style.color = '#065F46';
+      resultStarsBadge.style.borderColor = '#34D399';
+      resultStarsBadge.innerHTML = '<span>⭐</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
       resultComment.textContent = `"${res.comment}"`;
+      if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
-      speakVietnamese(`Bài viết của ${activeStudent.name} chưa đạt yêu cầu. Em hãy nắn nót viết lại cẩn thận hơn nhé!`);
+      if (window.confetti) {
+        window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+      }
+      if (window.AudioManager && window.AudioManager.playReward) {
+        window.AudioManager.playReward();
+      }
+
+      speakVietnamese(`Chúc mừng ${studentName}! Con đạt 5 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
+      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 2 (Đạt 5 sao): ${currentTask.title}`);
+
+    } else {
+      // MỨC 3: NHẮC CON VIẾT LẠI BÀI (0 SAO)
+      resultAvatar.textContent = '📝💪✨';
+      resultTitle.textContent = res.title || 'BÉ HÃY VIẾT LẠI BÀI NHÉ!';
+      resultStarsBadge.style.display = 'inline-flex';
+      resultStarsBadge.style.background = '#FFE4E6';
+      resultStarsBadge.style.color = '#BE123C';
+      resultStarsBadge.style.borderColor = '#FDA4AF';
+      resultStarsBadge.innerHTML = '<span>⚠️</span> CẦN LUYỆN VIẾT LẠI (0 SAO)';
+      resultComment.textContent = `"${res.comment}"`;
+      if (btnRewriteWork) btnRewriteWork.style.display = 'inline-flex';
+
+      speakVietnamese(`Bài viết của ${studentName} chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con viết chưa đạt trên vở. Con hãy nhìn bài mẫu và viết lại nhé!`);
     }
 
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -609,9 +908,48 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON (không kèm markdown hay ký tự th�
     });
   }
 
+  if (btnToggleAnnotations) {
+    btnToggleAnnotations.addEventListener('click', () => {
+      if (!annotationCanvas) return;
+      if (annotationCanvas.style.display === 'none') {
+        annotationCanvas.style.display = 'block';
+        btnToggleAnnotations.textContent = '👁️ Ẩn Bút Đỏ';
+      } else {
+        annotationCanvas.style.display = 'none';
+        btnToggleAnnotations.textContent = '👁️ Hiện Bút Đỏ';
+      }
+    });
+  }
+
+  if (btnRewriteWork) {
+    btnRewriteWork.addEventListener('click', () => {
+      capturedImageDataUrl = null;
+      if (annotationCanvas) {
+        annotationCanvas.style.display = 'none';
+        const ctx = annotationCanvas.getContext('2d');
+        ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+      }
+      if (annotatedErrorsBox) annotatedErrorsBox.style.display = 'none';
+      gradingResultBox.style.display = 'none';
+      btnAnalyzeWork.style.display = 'none';
+      capturedImagePreview.style.display = 'none';
+      cameraPlaceholder.style.display = 'block';
+      btnStartCamera.style.display = 'inline-flex';
+      btnRetakePhoto.style.display = 'none';
+      btnSnapPhoto.style.display = 'none';
+      if (cameraViewport) cameraViewport.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
   if (btnScanAnother) {
     btnScanAnother.addEventListener('click', () => {
       capturedImageDataUrl = null;
+      if (annotationCanvas) {
+        annotationCanvas.style.display = 'none';
+        const ctx = annotationCanvas.getContext('2d');
+        ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+      }
+      if (annotatedErrorsBox) annotatedErrorsBox.style.display = 'none';
       gradingResultBox.style.display = 'none';
       btnAnalyzeWork.style.display = 'none';
       capturedImagePreview.style.display = 'none';
