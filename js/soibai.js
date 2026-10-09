@@ -18,6 +18,9 @@
   const sampleTaskDesc = document.getElementById('sampleTaskDesc');
   const sampleTaskImage = document.getElementById('sampleTaskImage');
   const sampleTaskRewardBadge = document.getElementById('sampleTaskRewardBadge');
+  const sampleCriteriaList = document.getElementById('sampleCriteriaList');
+  const btnSwitchWriting = document.getElementById('btnSwitchWriting');
+  const btnSwitchMath = document.getElementById('btnSwitchMath');
 
   const cameraViewport = document.getElementById('cameraViewport');
   const cameraVideo = document.getElementById('cameraVideo');
@@ -62,19 +65,34 @@
   const btnSaveAdminSettings = document.getElementById('btnSaveAdminSettings');
   const btnAdminResetDefault = document.getElementById('btnAdminResetDefault');
 
-  // Dữ liệu bài mẫu mặc định
-  const DEFAULT_SAMPLE_TASK = {
+  // Dữ liệu bài mẫu chuẩn cho 2 môn học
+  const DEFAULT_WRITING_TASK = {
     title: 'Luyện viết chữ cái: Nét chữ nết người',
     type: 'writing',
     stars: 10,
     desc: 'Con hãy viết đúng độ cao ô ly (2 - 2,5 ly), nét chữ ngay ngắn, thẳng hàng và sạch đẹp như bài mẫu dưới đây nhé!',
-    image: sampleTaskImage ? sampleTaskImage.src : '',
+    image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23FFFBEB'/><line x1='50' y1='60' x2='550' y2='60' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='100' x2='550' y2='100' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='140' x2='550' y2='140' stroke='%23F59E0B' stroke-width='2'/><line x1='50' y1='180' x2='550' y2='180' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='220' x2='550' y2='220' stroke='%23CBD5E1' stroke-width='1.5'/><text x='70' y='135' font-family='sans-serif' font-size='42' font-weight='bold' fill='%231E293B'>a  b  c  d  e  g  h</text><text x='70' y='215' font-family='sans-serif' font-size='36' fill='%23475569'>Nét chữ nết người Lớp 1A</text><text x='380' y='40' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23B45309'>MẪU CHUẨN Ô LY</text></svg>",
     criteria: [
       '🌟 Mức 1 (10 ⭐): Chữ viết đều nét, đúng chữ mẫu ô ly, không tẩy xóa.',
-      '⭐ Mức 2 (5 ⭐): Bài viết tương đối đều, tẩy xóa 1 - 3 lỗi nhỏ (cô gạch chân chỗ sai).',
+      '⭐ Mức 2 (5 ⭐): Bài viết tương đối đều, tẩy xóa 1 - 3 lỗi (cô gạch chân chỗ sai).',
       '📝 Mức 3 (Viết lại bài - 0 ⭐): Bài viết chưa đúng chữ mẫu, sai ô ly hoặc lem nhem nhiều.'
     ]
   };
+
+  const DEFAULT_MATH_TASK = {
+    title: 'Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10',
+    type: 'math',
+    stars: 10,
+    desc: 'Bé hãy tính nhẩm cẩn thận, viết số ngay ngắn và ghi đúng kết quả của các phép tính dưới đây nhé!',
+    image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23F0FDF4'/><rect x='30' y='25' width='540' height='250' rx='16' fill='%23FFFFFF' stroke='%2386EFAC' stroke-width='2'/><text x='50' y='65' font-family='sans-serif' font-size='20' font-weight='bold' fill='%23166534'>ĐỀ TOÁN LỚP 1: TÍNH NHẨM &amp; SO SÁNH</text><line x1='50' y1='80' x2='550' y2='80' stroke='%23BBF7D0' stroke-width='2'/><text x='60' y='130' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>1)  3 + 2 = 5</text><text x='320' y='130' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>2)  7 - 4 = 3</text><text x='60' y='190' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>3)  8 + 2 = 10</text><text x='320' y='190' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>4)  9 - 5 = 4</text><text x='60' y='245' font-family='sans-serif' font-size='24' font-weight='bold' fill='%23059669'>5)  6 &gt; 4     6)  7 = 7</text><text x='390' y='65' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23047857'>CHUẨN KIẾN THỨC</text></svg>",
+    criteria: [
+      '🌟 Mức 1 (10 ⭐): Làm đúng 100% tất cả các phép tính, chữ số rõ nét, sạch đẹp.',
+      '⭐ Mức 2 (5 ⭐): Đúng phần lớn, sai hoặc tẩy xóa 1 - 2 phép tính (cô gạch chân câu sai để con sửa).',
+      '📝 Mức 3 (Tính lại bài - 0 ⭐): Sai từ 3 phép tính trở lên hoặc chưa hoàn thành trang toán.'
+    ]
+  };
+
+  const DEFAULT_SAMPLE_TASK = DEFAULT_WRITING_TASK;
 
   function loadSampleTask() {
     try {
@@ -95,10 +113,65 @@
   let currentTask = loadSampleTask();
 
   function renderSampleTaskUI() {
-    if (sampleTaskTitle) sampleTaskTitle.innerHTML = `<span>✍️</span> ${currentTask.title}`;
+    const isMath = currentTask.type === 'math';
+    if (btnSwitchWriting && btnSwitchMath) {
+      if (isMath) {
+        btnSwitchMath.classList.add('active');
+        btnSwitchWriting.classList.remove('active');
+      } else {
+        btnSwitchWriting.classList.add('active');
+        btnSwitchMath.classList.remove('active');
+      }
+    }
+
+    const icon = isMath ? '🔢' : '✍️';
+    if (sampleTaskTitle) sampleTaskTitle.innerHTML = `<span>${icon}</span> ${currentTask.title}`;
     if (sampleTaskDesc) sampleTaskDesc.textContent = currentTask.desc;
     if (sampleTaskRewardBadge) sampleTaskRewardBadge.textContent = `🌟 Thưởng: Lên tới +10 ⭐`;
     if (sampleTaskImage && currentTask.image) sampleTaskImage.src = currentTask.image;
+
+    if (sampleCriteriaList && currentTask.criteria) {
+      sampleCriteriaList.innerHTML = currentTask.criteria.map(c => `<li>${c}</li>`).join('');
+    }
+
+    if (btnSnapPhoto) {
+      btnSnapPhoto.innerHTML = isMath ? '<span>📸</span> Chụp Ảnh Bài Toán' : '<span>📸</span> Chụp Ảnh Bài Viết';
+    }
+
+    if (cameraPlaceholder) {
+      const descP = cameraPlaceholder.querySelector('p');
+      if (descP) {
+        descP.textContent = isMath 
+          ? 'Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài toán đã chụp sẵn' 
+          : 'Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài viết đã chụp sẵn';
+      }
+    }
+
+    if (btnUploadSampleBanner) {
+      const bannerStrong = btnUploadSampleBanner.querySelector('strong');
+      if (bannerStrong) {
+        bannerStrong.textContent = isMath
+          ? 'Cô giáo: Bấm vào đây để Chụp hoặc Tải ảnh đề toán mẫu mới'
+          : 'Cô giáo: Bấm vào đây để Chụp hoặc Tải ảnh bài mẫu mới';
+      }
+    }
+  }
+
+  // Chuyển đổi qua lại giữa Môn Viết và Môn Toán
+  if (btnSwitchWriting) {
+    btnSwitchWriting.addEventListener('click', () => {
+      currentTask = Object.assign({}, DEFAULT_WRITING_TASK);
+      saveSampleTask(currentTask);
+      renderSampleTaskUI();
+    });
+  }
+
+  if (btnSwitchMath) {
+    btnSwitchMath.addEventListener('click', () => {
+      currentTask = Object.assign({}, DEFAULT_MATH_TASK);
+      saveSampleTask(currentTask);
+      renderSampleTaskUI();
+    });
   }
 
   // Khởi tạo Firebase & Lấy danh sách học sinh
@@ -296,15 +369,18 @@
         return;
       }
 
+      const isMath = currentTask && currentTask.type === 'math';
       if (!capturedImageDataUrl) {
-        alert('👉 Vui lòng chụp hoặc tải ảnh bài viết lên trước nhé!');
+        alert(isMath ? '👉 Vui lòng chụp hoặc tải ảnh bài toán lên trước nhé!' : '👉 Vui lòng chụp hoặc tải ảnh bài viết lên trước nhé!');
         return;
       }
 
       // Bật hiệu ứng quét laser
       scanLaserBeam.style.display = 'block';
       btnAnalyzeWork.disabled = true;
-      btnAnalyzeWork.innerHTML = '<span>⏳</span> ĐANG SOI TỪNG NÉT CHỮ...';
+      btnAnalyzeWork.innerHTML = isMath 
+        ? '<span>⏳</span> ĐANG SOI TỪNG PHÉP TÍNH...' 
+        : '<span>⏳</span> ĐANG SOI TỪNG NÉT CHỮ...';
 
       try {
         const apiKey = localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
@@ -313,7 +389,7 @@
         if (apiKey) {
           result = await gradeWithGeminiVision(apiKey, capturedImageDataUrl, currentTask);
         } else {
-          // Thuật toán Computer Vision nội bộ phân tích độ tương phản và nét chữ
+          // Thuật toán Computer Vision nội bộ phân tích độ tương phản và nét chữ / phép tính
           result = await gradeWithVisionHeuristics(capturedImageDataUrl, currentTask);
         }
 
@@ -326,8 +402,10 @@
           tier: 2,
           passed: true,
           stars: 5,
-          title: 'ĐẠT YÊU CẦU - 5 SAO! ⭐',
-          comment: `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 5 sao thưởng cho con nhé!`
+          title: isMath ? 'ĐẠT YÊU CẦU - 5 SAO TOÁN! ⭐' : 'ĐẠT YÊU CẦU - 5 SAO! ⭐',
+          comment: isMath
+            ? `Bài toán của ${activeStudent.name} khá sạch đẹp, các phép tính rõ ràng. Cô cộng 5 sao thưởng cho con nhé!`
+            : `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 5 sao thưởng cho con nhé!`
         };
         lastGradingResult = fallbackRes;
         await showGradingResult(fallbackRes);
@@ -388,7 +466,11 @@
         drawWavyUnderline(x - 4, underlineY, x + w + 4, '#EF4444');
 
         // Nhãn ghi chú nhỏ xinh bên trên
-        const tagText = err.type === 'smudge' ? '🧹 Tẩy xóa lem' : '✍️ Chưa chuẩn mẫu';
+        const isMath = currentTask && currentTask.type === 'math';
+        let tagText = err.type === 'smudge' ? '🧹 Tẩy xóa lem' : (isMath ? '✍️ Tính lại' : '✍️ Chưa chuẩn mẫu');
+        if (isMath && err.type === 'calc_error') {
+          tagText = '✍️ Tính chưa đúng';
+        }
         ctx.font = `bold ${Math.max(11, Math.round(nw * 0.022))}px sans-serif`;
         const textWidth = ctx.measureText(tagText).width;
         const tagHeight = Math.max(16, Math.round(nh * 0.035));
@@ -418,9 +500,10 @@
 
     const boxW = Math.round(nw * 0.27);
     const boxH = Math.round(nh * 0.095);
+    const isMath = currentTask && currentTask.type === 'math';
 
     if (tier === 1) {
-      // Dấu đỏ: ĐIỂM 10 ĐẸP 🌸
+      // Dấu đỏ: ĐIỂM 10 ĐẸP 🌸 / ĐIỂM 10 TOÁN 🌸
       ctx.strokeStyle = '#DC2626';
       ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
       ctx.fillStyle = 'rgba(254, 242, 242, 0.9)';
@@ -429,11 +512,11 @@
 
       ctx.fillStyle = '#DC2626';
       ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
-      ctx.fillText('🌸 ĐIỂM 10 ĐẸP 🌸', 0, 0);
+      ctx.fillText(isMath ? '🌸 ĐIỂM 10 TOÁN 🌸' : '🌸 ĐIỂM 10 ĐẸP 🌸', 0, 0);
       ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
-      ctx.fillText('Chữ đều nét & rất sạch!', 2, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Tính đúng 100% & vở sạch!' : 'Chữ đều nét & rất sạch!', 2, Math.round(nh * 0.032));
     } else if (tier === 2) {
-      // Dấu cam: ĐẠT 5 SAO ⭐
+      // Dấu cam: ĐẠT 5 SAO ⭐ / ĐẠT 5 SAO TOÁN ⭐
       ctx.strokeStyle = '#EA580C';
       ctx.lineWidth = Math.max(2.5, Math.round(nw * 0.004));
       ctx.fillStyle = 'rgba(255, 247, 237, 0.9)';
@@ -442,11 +525,11 @@
 
       ctx.fillStyle = '#EA580C';
       ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
-      ctx.fillText('⭐ ĐẠT 5 SAO', 0, 0);
+      ctx.fillText(isMath ? '⭐ ĐẠT 5 SAO TOÁN' : '⭐ ĐẠT 5 SAO', 0, 0);
       ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
-      ctx.fillText('Chú ý chỗ cô gạch chân', 0, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Tính lại câu cô gạch chân' : 'Chú ý chỗ cô gạch chân', 0, Math.round(nh * 0.032));
     } else {
-      // Dấu đỏ: CÔ NHẮC: VIẾT LẠI 📝
+      // Dấu đỏ: CÔ NHẮC: VIẾT LẠI 📝 / CÔ NHẮC: TÍNH LẠI 🔢
       ctx.strokeStyle = '#DC2626';
       ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
       ctx.fillStyle = 'rgba(254, 242, 242, 0.95)';
@@ -455,9 +538,9 @@
 
       ctx.fillStyle = '#DC2626';
       ctx.font = `bold ${Math.max(12.5, Math.round(nw * 0.028))}px sans-serif`;
-      ctx.fillText('✍️ CÔ NHẮC: VIẾT LẠI', 0, 0);
+      ctx.fillText(isMath ? '✍️ CÔ NHẮC: TÍNH LẠI' : '✍️ CÔ NHẮC: VIẾT LẠI', 0, 0);
       ctx.font = `bold ${Math.max(9, Math.round(nw * 0.017))}px sans-serif`;
-      ctx.fillText('Xem các nét gạch chân nhé', 0, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Xem phép tính gạch chân nhé' : 'Xem các nét gạch chân nhé', 0, Math.round(nh * 0.032));
     }
     ctx.restore();
 
@@ -468,8 +551,42 @@
   async function gradeWithGeminiVision(apiKey, studentImageBase64, task) {
     const base64Data = studentImageBase64.replace(/^data:image\/\w+;base64,/, '');
 
-    const promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương và luôn khích lệ học sinh.
-Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ hoặc toán) của học sinh lớp 1 sau đây và chấm bài.
+    let promptText = '';
+    if (task && task.type === 'math') {
+      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, tâm lý và luôn động viên học sinh.
+Hãy quan sát bức ảnh chụp bài làm MÔN TOÁN LỚP 1 (phép cộng/trừ trong phạm vi 10, 20 hoặc so sánh >, <, =) của học sinh lớp 1 sau đây và chấm bài.
+Đề bài cô giao: "${task.title}".
+
+HÃY ĐỌC TỪNG PHÉP TÍNH VÀ KẾT QUẢ CỦA BÉ, KIỂM TRA ĐÚNG/SAI CHÍNH XÁC:
+Ví dụ: 3 + 2 = 5 (Đúng), 7 - 4 = 3 (Đúng), 4 + 3 = 8 (Sai - kết quả đúng là 7).
+
+QUY ĐỊNH CHẤM ĐÚNG 3 MỨC ĐỘ THEO YÊU CẦU:
+1. MỨC 1 (tier = 1, stars = 10, passed = true):
+   - Làm đúng 100% tất cả các phép tính trong bài, chữ số rõ ràng, trang vở sạch đẹp không lem nhem.
+   - Nhận xét khen ngợi con tính nhẩm rất siêu, xuất sắc đạt 10 sao vàng.
+2. MỨC 2 (tier = 2, stars = 5, passed = true):
+   - Đúng phần lớn, nhưng sai 1 đến 2 phép tính hoặc có 1-2 chỗ tẩy xóa nhỏ.
+   - Nhận xét động viên con làm toán tốt đạt 5 sao, chỉ ra các câu cô gạch chân để con tính lại cho đúng.
+3. MỨC 3 (tier = 3, stars = 0, passed = false):
+   - Sai từ 3 phép tính trở lên, hoặc tẩy xóa lem nhem nhiều, hoặc chưa làm bài / ảnh trống.
+   - Nhắc con nhìn lại đề, tính nhẩm lại cẩn thận từng phép tính và làm lại bài.
+
+NẾU CÓ PHÉP TÍNH SAI HOẶC TẨY XÓA Ở MỨC 2 HOẶC MỨC 3:
+- Xác định vị trí từng phép tính bị sai trong mảng "errors" để cô giáo vẽ gạch chân màu đỏ (x, y tính trên lưới 400x300):
+  { "x": 60, "y": 80, "w": 65, "h": 22, "type": "calc_error", "label": "Câu 2: Phép tính 4 + 3 = 8 chưa đúng (kết quả đúng là 7)" }
+
+TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
+{
+  "tier": 1,
+  "stars": 10,
+  "passed": true,
+  "title": "XUẤT SẮC - 10 SAO TOÁN VÀNG!",
+  "comment": "Lời nhận xét ngọt ngào của cô giáo",
+  "errors": []
+}`;
+    } else {
+      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương và luôn khích lệ học sinh.
+Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ) của học sinh lớp 1 sau đây và chấm bài.
 Đề bài cô giao: "${task.title}".
 
 QUY ĐỊNH CHẤM ĐÚNG 3 MỨC ĐỘ THEO YÊU CẦU:
@@ -496,6 +613,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
   "comment": "Lời nhận xét của cô giáo",
   "errors": []
 }`;
+    }
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const payload = {
@@ -601,7 +719,154 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
           }
         }
 
-        // Nhận diện các chữ và phát hiện lỗi để gạch chân
+        // Gộp các lỗi gần nhau trên cùng dòng
+        function mergeCloseErrors(errs) {
+          if (errs.length <= 1) return errs;
+          const res = [];
+          for (const err of errs) {
+            const match = res.find(m => m.lineNum === err.lineNum && Math.abs(m.x + m.w - err.x) < 25);
+            if (match) {
+              const newX = Math.min(match.x, err.x);
+              const newR = Math.max(match.x + match.w, err.x + err.w);
+              match.x = newX;
+              match.w = newR - newX;
+              match.h = Math.max(match.h, err.h);
+              if (err.type === 'smudge') match.type = 'smudge';
+            } else {
+              res.push(Object.assign({}, err));
+            }
+          }
+          return res;
+        }
+
+        // --- NHÁNH CHẤM BÀI MÔN TOÁN LỚP 1 ---
+        if (task && task.type === 'math') {
+          const mathErrors = [];
+          let eqIndex = 0;
+          let mLineIdx = 0;
+
+          for (const line of lines) {
+            mLineIdx++;
+            let inCluster = false, clusterStart = 0, clusterSmudges = 0, clusterStrokes = 0;
+            let clusterYMin = line.endY, clusterYMax = line.startY;
+
+            for (let x = xMin; x < xMax; x += 2) {
+              let colStrokes = 0, colSmudges = 0;
+              for (let y = line.startY; y <= line.endY; y += 2) {
+                const gVal = strokeGrid[y * W + x];
+                if (gVal === 1) {
+                  colStrokes++;
+                  if (y < clusterYMin) clusterYMin = y;
+                  if (y > clusterYMax) clusterYMax = y;
+                } else if (gVal === 2) {
+                  colSmudges++;
+                }
+              }
+
+              // Nhận diện từng cụm phép tính / chữ số (khoảng cách giữa các cột/phép tính > 14px)
+              if (colStrokes > 0 || colSmudges > 0) {
+                if (!inCluster) {
+                  inCluster = true;
+                  clusterStart = x;
+                  clusterSmudges = 0;
+                  clusterStrokes = 0;
+                  clusterYMin = line.endY;
+                  clusterYMax = line.startY;
+                }
+                clusterStrokes += colStrokes;
+                clusterSmudges += colSmudges;
+              } else {
+                if (inCluster) {
+                  const clusterWidth = x - clusterStart;
+                  if (clusterWidth >= 10 && clusterStrokes >= 4) {
+                    eqIndex++;
+                    const clusterHeight = clusterYMax - clusterYMin;
+                    // Lỗi 1: Tẩy xóa lem nhem quanh phép tính
+                    if (clusterSmudges >= 3) {
+                      mathErrors.push({
+                        lineNum: mLineIdx,
+                        x: clusterStart,
+                        y: clusterYMin,
+                        w: Math.max(16, clusterWidth),
+                        h: Math.max(12, clusterHeight),
+                        type: 'smudge',
+                        label: `Dòng ${mLineIdx}, Câu ${eqIndex}: Phép tính có vết tẩy chì lem nhem`
+                      });
+                    }
+                    // Lỗi 2: Chữ số bất thường hoặc chưa ghi rõ kết quả
+                    else if (clusterHeight > 32 || clusterHeight < 5) {
+                      mathErrors.push({
+                        lineNum: mLineIdx,
+                        x: clusterStart,
+                        y: clusterYMin,
+                        w: Math.max(16, clusterWidth),
+                        h: Math.max(12, clusterHeight),
+                        type: 'calc_error',
+                        label: `Dòng ${mLineIdx}, Câu ${eqIndex}: Chữ số chưa rõ nét hoặc chưa điền kết quả`
+                      });
+                    }
+                  }
+                  inCluster = false;
+                }
+              }
+            }
+          }
+
+          const cleanedMathErrors = mergeCloseErrors(mathErrors);
+          const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
+          const hasMathWork = (strokeRatio >= 0.004 && lines.length >= 1) || (strokeRatio >= 0.007);
+
+          setTimeout(() => {
+            const studentName = activeStudent ? activeStudent.name : 'bé';
+            let tier = 3;
+            let stars = 0;
+            let title = '';
+            let comment = '';
+            let passed = false;
+
+            if (!hasMathWork) {
+              tier = 3;
+              stars = 0;
+              passed = false;
+              title = 'BÉ HÃY LÀM BÀI TOÁN NHÉ! 🔢';
+              comment = `Ảnh bài làm chưa rõ nét bút chì hoặc trang vở bài tập Toán còn để trống. ${studentName} hãy tính nhẩm cẩn thận, viết số rõ ràng và soi lại cho cô chấm nhé!`;
+            } else {
+              const errCount = cleanedMathErrors.length;
+              if (errCount === 0) {
+                tier = 1;
+                stars = 10;
+                passed = true;
+                title = 'XUẤT SẮC - 10 SAO TOÁN VÀNG! 🌟';
+                comment = `Bài toán của ${studentName} làm rất xuất sắc! Các phép tính đều chính xác, chữ số rõ ràng và trang vở sạch đẹp. Cô khen con đạt 10 sao vàng! 🌟`;
+              } else if (errCount >= 1 && errCount <= 2) {
+                tier = 2;
+                stars = 5;
+                passed = true;
+                title = 'ĐẠT YÊU CẦU - 5 SAO TOÁN! ⭐';
+                comment = `Bài toán của ${studentName} làm khá tốt nhưng còn ${errCount} phép tính bị nhầm hoặc tẩy xóa. Cô đã gạch chân những phép tính con cần tính lại ở trên, con sửa lại nhé! Cô thưởng con 5 sao! ⭐`;
+              } else {
+                tier = 3;
+                stars = 0;
+                passed = false;
+                title = 'BÉ HÃY TÍNH LẠI BÀI NHÉ! 🔢';
+                comment = `Bài toán của ${studentName} có ${errCount} phép tính chưa chính xác hoặc tẩy xóa nhiều. Cô đã gạch chân các câu sai trên bài ở trên, con hãy tính nhẩm lại cẩn thận và làm lại bài nhé! 💪`;
+              }
+            }
+
+            resolve({
+              tier,
+              stars,
+              passed,
+              title,
+              comment,
+              errors: cleanedMathErrors,
+              metrics: { strokeRatio, linesCount: lines.length, errCount: cleanedMathErrors.length }
+            });
+          }, 1200);
+          return;
+        }
+
+        // --- NHÁNH CHẤM BÀI LUYỆN VIẾT CHỮ Ô LY ---
         const detectedErrors = [];
         let lineIdx = 0;
 
@@ -661,26 +926,6 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
               }
             }
           }
-        }
-
-        // Gộp các lỗi gần nhau trên cùng dòng
-        function mergeCloseErrors(errs) {
-          if (errs.length <= 1) return errs;
-          const res = [];
-          for (const err of errs) {
-            const match = res.find(m => m.lineNum === err.lineNum && Math.abs(m.x + m.w - err.x) < 25);
-            if (match) {
-              const newX = Math.min(match.x, err.x);
-              const newR = Math.max(match.x + match.w, err.x + err.w);
-              match.x = newX;
-              match.w = newR - newX;
-              match.h = Math.max(match.h, err.h);
-              if (err.type === 'smudge') match.type = 'smudge';
-            } else {
-              res.push(Object.assign({}, err));
-            }
-          }
-          return res;
         }
 
         const cleanedErrors = mergeCloseErrors(detectedErrors);
@@ -757,9 +1002,16 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       if (res.errors && res.errors.length > 0) {
         annotatedErrorsBox.style.display = 'block';
         annotatedErrorsList.innerHTML = '';
+        const isMath = currentTask && currentTask.type === 'math';
+        const strongTitle = annotatedErrorsBox.querySelector('strong');
+        if (strongTitle) {
+          strongTitle.textContent = isMath 
+            ? 'Cô đã gạch chân các phép tính cần xem lại:' 
+            : 'Cô đã gạch chân chỗ sai trên ảnh bài viết:';
+        }
         res.errors.forEach((err, idx) => {
           const li = document.createElement('li');
-          li.innerHTML = `<strong>Lỗi ${idx + 1}:</strong> ${err.label}`;
+          li.innerHTML = `<strong>${isMath ? 'Câu' : 'Lỗi'} ${idx + 1}:</strong> ${err.label}`;
           annotatedErrorsList.appendChild(li);
         });
       } else {
@@ -771,12 +1023,13 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     gradingResultBox.classList.remove('passed', 'failed', 'tier-1', 'tier-2', 'tier-3');
     gradingResultBox.classList.add(`tier-${res.tier || 3}`);
 
+    const isMath = currentTask && currentTask.type === 'math';
     const studentName = activeStudent ? activeStudent.name : 'Bé';
 
     if (res.tier === 1) {
       // MỨC 1: XUẤT SẮC (10 SAO)
-      resultAvatar.textContent = '🌟🐣💮';
-      resultTitle.textContent = res.title || 'XUẤT SẮC - 10 SAO VÀNG!';
+      resultAvatar.textContent = isMath ? '🌟🔢💮' : '🌟🐣💮';
+      resultTitle.textContent = res.title || (isMath ? 'XUẤT SẮC - 10 SAO TOÁN VÀNG!' : 'XUẤT SẮC - 10 SAO VÀNG!');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#FEF3C7';
       resultStarsBadge.style.color = '#B45309';
@@ -792,13 +1045,13 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         window.AudioManager.playReward();
       }
 
-      speakVietnamese(`Chúc mừng ${studentName}! Bài viết của con đạt xuất sắc 10 sao!`);
-      await awardStarsToFirebase(activeStudent.id, 10, `Soi bài Mức 1 (Xuất sắc): ${currentTask.title}`);
+      speakVietnamese(isMath ? `Chúc mừng ${studentName}! Bài toán của con đạt xuất sắc 10 sao!` : `Chúc mừng ${studentName}! Bài viết của con đạt xuất sắc 10 sao!`);
+      await awardStarsToFirebase(activeStudent.id, 10, `Soi bài Mức 1 (${isMath ? 'Toán' : 'Viết'} - Xuất sắc): ${currentTask.title}`);
 
     } else if (res.tier === 2) {
       // MỨC 2: ĐẠT YÊU CẦU (5 SAO)
-      resultAvatar.textContent = '⭐🐣👏';
-      resultTitle.textContent = res.title || 'ĐẠT YÊU CẦU - 5 SAO!';
+      resultAvatar.textContent = isMath ? '⭐🔢👏' : '⭐🐣👏';
+      resultTitle.textContent = res.title || (isMath ? 'ĐẠT YÊU CẦU - 5 SAO TOÁN!' : 'ĐẠT YÊU CẦU - 5 SAO!');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#DCFCE7';
       resultStarsBadge.style.color = '#065F46';
@@ -814,22 +1067,31 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         window.AudioManager.playReward();
       }
 
-      speakVietnamese(`Chúc mừng ${studentName}! Con đạt 5 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
-      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 2 (Đạt 5 sao): ${currentTask.title}`);
+      speakVietnamese(isMath 
+        ? `Chúc mừng ${studentName}! Con đạt 5 sao môn Toán. Con nhớ chú ý những phép tính cô gạch chân nhé!` 
+        : `Chúc mừng ${studentName}! Con đạt 5 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
+      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 2 (${isMath ? 'Toán' : 'Viết'} - Đạt 5 sao): ${currentTask.title}`);
 
     } else {
-      // MỨC 3: NHẮC CON VIẾT LẠI BÀI (0 SAO)
-      resultAvatar.textContent = '📝💪✨';
-      resultTitle.textContent = res.title || 'BÉ HÃY VIẾT LẠI BÀI NHÉ!';
+      // MỨC 3: NHẮC CON VIẾT LẠI / TÍNH LẠI BÀI (0 SAO)
+      resultAvatar.textContent = isMath ? '🔢💪✨' : '📝💪✨';
+      resultTitle.textContent = res.title || (isMath ? 'BÉ HÃY TÍNH LẠI BÀI NHÉ!' : 'BÉ HÃY VIẾT LẠI BÀI NHÉ!');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#FFE4E6';
       resultStarsBadge.style.color = '#BE123C';
       resultStarsBadge.style.borderColor = '#FDA4AF';
-      resultStarsBadge.innerHTML = '<span>⚠️</span> CẦN LUYỆN VIẾT LẠI (0 SAO)';
+      resultStarsBadge.innerHTML = isMath 
+        ? '<span>⚠️</span> CẦN TÍNH LẠI BÀI (0 SAO)' 
+        : '<span>⚠️</span> CẦN LUYỆN VIẾT LẠI (0 SAO)';
       resultComment.textContent = `"${res.comment}"`;
-      if (btnRewriteWork) btnRewriteWork.style.display = 'inline-flex';
+      if (btnRewriteWork) {
+        btnRewriteWork.style.display = 'inline-flex';
+        btnRewriteWork.innerHTML = isMath ? '🔢 Tính Lại & Soi Lại Bài' : '✏️ Viết Lại & Soi Lại Bài';
+      }
 
-      speakVietnamese(`Bài viết của ${studentName} chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con viết chưa đạt trên vở. Con hãy nhìn bài mẫu và viết lại nhé!`);
+      speakVietnamese(isMath 
+        ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng trên bài. Con hãy tính nhẩm lại cẩn thận nhé!` 
+        : `Bài viết của ${studentName} chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con viết chưa đạt trên vở. Con hãy nhìn bài mẫu và viết lại nhé!`);
     }
 
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1014,7 +1276,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
   if (btnAdminResetDefault) {
     btnAdminResetDefault.addEventListener('click', () => {
       if (confirm('Khôi phục bài mẫu chuẩn ban đầu?')) {
-        currentTask = Object.assign({}, DEFAULT_SAMPLE_TASK);
+        const resetTask = (currentTask && currentTask.type === 'math') ? DEFAULT_MATH_TASK : DEFAULT_WRITING_TASK;
+        currentTask = Object.assign({}, resetTask);
         saveSampleTask(currentTask);
         renderSampleTaskUI();
         teacherAdminModal.classList.remove('active');

@@ -244,6 +244,32 @@
       font-weight: 600;
     }
 
+    /* Tabs chọn môn học: Viết Chữ / Toán */
+    .btn-subject-tab {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 2px solid #CBD5E1;
+      background: #F8FAFC;
+      color: #475569;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-subject-tab.active {
+      background: linear-gradient(135deg, #4F46E5, #6366F1);
+      color: #FFFFFF;
+      border-color: #4F46E5;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
     /* Nút Đổi bài mẫu trong Bước 2 */
     .btn-change-sample-step2 {
       background: linear-gradient(135deg, #F59E0B, #D97706);
@@ -552,6 +578,16 @@
     <section class="soibai-card">
       <div class="card-badge-step">
         <span>📖</span> BƯỚC 2: BÀI TẬP MẪU CÔ GIAO HÔM NAY
+      </div>
+
+      <!-- Thanh chọn môn học: Luyện Viết hoặc Toán -->
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button type="button" id="btnSwitchWriting" class="btn-subject-tab active">
+          <span>✍️</span> Môn Viết Chữ
+        </button>
+        <button type="button" id="btnSwitchMath" class="btn-subject-tab">
+          <span>🔢</span> Môn Toán Lớp 1
+        </button>
       </div>
 
       <div class="sample-task-box">
