@@ -3775,12 +3775,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnShareMobileLink && mobileLinkModal) {
     btnShareMobileLink.addEventListener('click', async () => {
-      let mobileUrl = `${window.location.origin}/mobile.html`;
+      let mobileUrl = '';
+      if (window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+        mobileUrl = new URL('mobile.html', window.location.href).href;
+      } else {
+        mobileUrl = `${window.location.origin}/mobile.html`;
+      }
+
       try {
         const infoRes = await fetch('/api/info');
         if (infoRes.ok) {
           const info = await infoRes.json();
-          if (info.mobileUrl) mobileUrl = info.mobileUrl;
+          if (info.publicMobileUrl) {
+            mobileUrl = info.publicMobileUrl;
+          } else if (info.mobileUrl) {
+            mobileUrl = info.mobileUrl;
+          }
         }
       } catch (e) {}
 
