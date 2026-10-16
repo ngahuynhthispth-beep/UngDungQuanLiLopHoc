@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vườn Thú Kỳ Diệu - Lớp 1/8 Trường TH Tiểu La</title>
   <meta name="description" content="Ứng dụng quản lý lớp học tiểu học thông minh, ấp trứng nở linh thú, thao tác 1 chạm siêu tốc, kết nối phụ huynh thời gian thực.">
-  <link rel="stylesheet" href="css/main.css?v=20261009_m1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="css/main.css?v=20261016_v4">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
 </head>
 <body>
@@ -19,11 +22,11 @@
           <h1 id="appClassHeading">LỚP 1/8 - VƯỜN THÚ KỲ DIỆU</h1>
           <p class="brand-tagline">Trường Tiểu học Tiểu La • Thao tác 1 chạm • Gắn kết Phụ Huynh</p>
           <div class="class-badge-container" style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-            <span class="class-id-badge" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.92); padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 13px; color: #4F46E5; border: 1.5px solid #C7D2FE; box-shadow: 0 2px 6px rgba(79,70,229,0.12);">
+            <button id="btnClassBadge" type="button" onclick="openClassManageModal()" style="display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.95); padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px; color: #4F46E5; border: 1.5px solid #C7D2FE; box-shadow: 0 2px 6px rgba(79,70,229,0.15); cursor: pointer;" title="Bấm vào để đổi mã lớp hoặc tạo lớp mới">
               🏫 Mã Lớp: <strong id="headerClassIdDisplay">1/8</strong>
-            </span>
-            <button id="btnOpenClassModal" type="button" onclick="if(window.openClassManageModal){window.openClassManageModal();}else{document.getElementById('classManageModal')?.classList.add('active');}" style="padding: 3px 10px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #EEF2FF, #E0E7FF); color: #4338CA; border: 1px solid #C7D2FE; border-radius: 14px; cursor: pointer; transition: all 0.2s;" title="Đổi mã lớp hoặc tạo lớp mới cho giáo viên khác">
-              🔄 Đổi Lớp / Tạo Lớp
+            </button>
+            <button id="btnOpenClassModal" type="button" onclick="openClassManageModal()" style="padding: 4px 12px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; border-radius: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35); transition: all 0.2s;" title="Đổi mã lớp hoặc tạo lớp mới cho giáo viên khác">
+              🔄 Đổi Lớp
             </button>
           </div>
         </div>
@@ -32,6 +35,10 @@
 
     <!-- Quick Classroom Tools -->
     <div class="header-actions" id="headerActionsMenu">
+      <button id="btnToolbarChangeClass" class="btn-header" type="button" onclick="openClassManageModal()" style="background: linear-gradient(135deg, #4F46E5, #6366F1); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Đổi mã lớp học hoặc tạo lớp mới cho giáo viên khác">
+        🏫 <span>Đổi Lớp (<strong id="toolbarClassIdDisplay">1/8</strong>)</span>
+      </button>
+
       <button id="btnParentHomeworkSummary" class="btn-header" style="background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Xem bảng tổng hợp điểm rèn luyện phụ huynh chấm tại nhà">
         📝 <span>Điểm Phụ Huynh (<strong id="hwBadgeCount">0</strong>)</span>
       </button>
@@ -1366,9 +1373,9 @@
   </div>
 
   <!-- Modal Quản Lý Mã Lớp Học (Tách Lớp Giáo Viên) -->
-  <div id="classManageModal" class="modal-backdrop">
-    <div class="modal-card" style="max-width: 520px; text-align: left;">
-      <button id="closeClassManageModalBtn" class="modal-close-btn" type="button" aria-label="Đóng">&times;</button>
+  <div id="classManageModal" class="modal-backdrop" onclick="if(event.target===this)closeClassManageModal()" style="display: none;">
+    <div class="modal-card" style="max-width: 520px; text-align: left; position: relative;">
+      <button id="closeClassManageModalBtn" class="modal-close-btn" type="button" onclick="closeClassManageModal()" aria-label="Đóng">&times;</button>
       <h2 class="modal-title" style="margin-bottom: 6px; text-align: left; display: flex; align-items: center; gap: 8px;">
         <span>🏫</span> Quản Lý Mã Lớp Học
       </h2>
@@ -1394,7 +1401,7 @@
         </label>
         <div style="display: flex; gap: 8px;">
           <input type="text" id="inputNewClassId" placeholder="Ví dụ: 1/8, 1/2, 2/1..." style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-size: 15px; font-weight: 700; text-transform: uppercase;">
-          <button id="btnApplySwitchClass" type="button" style="padding: 10px 18px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #fff; border: none; cursor: pointer; white-space: nowrap;">
+          <button id="btnApplySwitchClass" type="button" onclick="applySwitchClass()" style="padding: 10px 18px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #fff; border: none; cursor: pointer; white-space: nowrap;">
             🚀 Mở Lớp
           </button>
         </div>
@@ -1404,16 +1411,85 @@
       <div style="border-top: 1px dashed #E2E8F0; padding-top: 14px; margin-top: 14px;">
         <div style="font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 8px;">LỚP HỌC TRÊN MÁY:</div>
         <div id="classListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-          <button type="button" class="btn-quick-class" data-class="1/8" style="padding: 6px 14px; border-radius: 10px; border: 1.5px solid #4F46E5; background: #EEF2FF; color: #4338CA; font-weight: 700; font-size: 13px; cursor: pointer;">
+          <button type="button" class="btn-quick-class" onclick="switchToClass('1/8')" data-class="1/8" style="padding: 6px 14px; border-radius: 10px; border: 1.5px solid #4F46E5; background: #EEF2FF; color: #4338CA; font-weight: 700; font-size: 13px; cursor: pointer;">
             ⭐ Lớp 1/8 - TH Tiểu La (Mặc định)
           </button>
         </div>
-        <button id="btnReturnClass1A" type="button" style="width: 100%; padding: 10px; font-weight: 700; border-radius: 10px; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; cursor: pointer;">
+        <button id="btnReturnClass1A" type="button" onclick="switchToClass('1/8')" style="width: 100%; padding: 10px; font-weight: 700; border-radius: 10px; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; cursor: pointer;">
           🔙 Quay Về Lớp 1/8 (Dữ liệu gốc của cô)
         </button>
       </div>
     </div>
   </div>
+
+  <!-- Inline Script tự chủ hoàn toàn cho Modal Đổi Lớp Học (chạy tức thì không phụ thuộc) -->
+  <script>
+    function openClassManageModal() {
+      var modal = document.getElementById('classManageModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        modal.style.visibility = 'visible';
+        modal.style.zIndex = '999999';
+        modal.classList.add('active');
+        var input = document.getElementById('inputNewClassId');
+        if (input) {
+          input.value = '';
+          setTimeout(function() { input.focus(); }, 120);
+        }
+        if (window.fetchClassList) {
+          window.fetchClassList();
+        }
+      }
+    }
+    function closeClassManageModal() {
+      var modal = document.getElementById('classManageModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
+        modal.classList.remove('active');
+      }
+    }
+    function applySwitchClass() {
+      var input = document.getElementById('inputNewClassId');
+      var val = input ? input.value.trim() : '';
+      if (!val) {
+        alert('Cô hãy nhập Mã Lớp (ví dụ: 1/8, 1/2, 2/1...) nhé!');
+        return;
+      }
+      switchToClass(val);
+    }
+    function switchToClass(targetId) {
+      var clean = (targetId || '1/8').trim();
+      var norm = clean.toUpperCase();
+      if (!clean || norm === '1/8' || norm === '1-8' || norm === '18' || norm === '1A') {
+        clean = '1/8';
+      } else {
+        clean = clean.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
+      }
+      try {
+        localStorage.setItem('magic_zoo_class_id', clean);
+      } catch (e) {}
+      var url = new URL(window.location.href);
+      if (clean === '1/8' || clean === '1A') {
+        url.searchParams.delete('class');
+        url.searchParams.delete('lop');
+      } else {
+        url.searchParams.set('class', clean);
+      }
+      window.location.href = url.toString();
+    }
+    window.openClassManageModal = openClassManageModal;
+    window.closeClassManageModal = closeClassManageModal;
+    window.applySwitchClass = applySwitchClass;
+    window.switchToClass = switchToClass;
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeClassManageModal();
+    });
+  </script>
 
   <!-- Khung thông báo đồng bộ realtime khi học sinh/phụ huynh gửi điểm -->
   <div id="liveSyncToastContainer" class="live-sync-toast-container"></div>
@@ -1421,15 +1497,15 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261016_v3"></script>
-  <script src="js/firebase-sync.js?v=20261016_v3"></script>
-  <script src="js/qrcode.min.js?v=20261016_v3"></script>
-  <script src="js/audio.js?v=20261016_v3"></script>
-  <script src="js/egg-evolution.js?v=20261016_v3"></script>
-  <script src="js/storage.js?v=20261016_v3"></script>
-  <script src="js/noise-meter.js?v=20261016_v3"></script>
-  <script src="js/wheel.js?v=20261016_v3"></script>
-  <script src="js/card-export.js?v=20261016_v3"></script>
-  <script src="js/app.js?v=20261016_v3"></script>
+  <script src="js/firebase-config.js?v=20261016_v4"></script>
+  <script src="js/firebase-sync.js?v=20261016_v4"></script>
+  <script src="js/qrcode.min.js?v=20261016_v4"></script>
+  <script src="js/audio.js?v=20261016_v4"></script>
+  <script src="js/egg-evolution.js?v=20261016_v4"></script>
+  <script src="js/storage.js?v=20261016_v4"></script>
+  <script src="js/noise-meter.js?v=20261016_v4"></script>
+  <script src="js/wheel.js?v=20261016_v4"></script>
+  <script src="js/card-export.js?v=20261016_v4"></script>
+  <script src="js/app.js?v=20261016_v4"></script>
 </body>
 </html>

@@ -4153,8 +4153,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupClassManagement() {
     const currentClassId = StorageManager.getClassId();
     const headerDisplay = document.getElementById('headerClassIdDisplay');
+    const toolbarDisplay = document.getElementById('toolbarClassIdDisplay');
     const modalDisplay = document.getElementById('modalCurrentClassId');
     const btnOpenClassModal = document.getElementById('btnOpenClassModal');
+    const btnClassBadge = document.getElementById('btnClassBadge');
+    const btnToolbarChangeClass = document.getElementById('btnToolbarChangeClass');
     const classManageModal = document.getElementById('classManageModal');
     const closeClassManageModalBtn = document.getElementById('closeClassManageModalBtn');
     const btnApplySwitchClass = document.getElementById('btnApplySwitchClass');
@@ -4163,6 +4166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const classListContainer = document.getElementById('classListContainer');
 
     if (headerDisplay) headerDisplay.textContent = currentClassId;
+    if (toolbarDisplay) toolbarDisplay.textContent = currentClassId;
     if (modalDisplay) modalDisplay.textContent = currentClassId;
 
     // Cập nhật đường link Soi Bài AI trên header có kèm mã lớp
@@ -4177,6 +4181,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (input) input.value = '';
       fetchClassList();
       if (modal) {
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+        modal.style.visibility = 'visible';
+        modal.style.zIndex = '999999';
         modal.classList.add('active');
         if (input) setTimeout(() => input.focus(), 150);
       }
@@ -4185,15 +4194,35 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeModal() {
       const modal = document.getElementById('classManageModal');
       if (modal) {
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.pointerEvents = 'none';
         modal.classList.remove('active');
       }
     }
 
     window.openClassManageModal = openModal;
     window.closeClassManageModal = closeModal;
+    window.fetchClassList = fetchClassList;
 
     if (btnOpenClassModal) {
       btnOpenClassModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openModal();
+      });
+    }
+
+    if (btnClassBadge) {
+      btnClassBadge.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openModal();
+      });
+    }
+
+    if (btnToolbarChangeClass) {
+      btnToolbarChangeClass.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         openModal();
