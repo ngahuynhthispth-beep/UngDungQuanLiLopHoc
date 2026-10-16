@@ -768,6 +768,13 @@ document.addEventListener('DOMContentLoaded', () => {
       state.data = StorageManager.loadData();
     }
 
+    const appClassHeading = document.getElementById('appClassHeading');
+    if (appClassHeading) {
+      const cId = StorageManager.getClassId();
+      const cName = (state.data && state.data.className) || (StorageManager.isPrimaryClass(cId) ? 'Lớp 1/8' : `Lớp ${cId}`);
+      appClassHeading.textContent = `${cName.toUpperCase()} - VƯỜN THÚ KỲ DIỆU`;
+    }
+
     const prevHatchedMap = new Set(
       ((state.data && state.data.students) || []).filter(s => (s.stars || 0) >= 100).map(s => s.id)
     );
@@ -1896,7 +1903,8 @@ document.addEventListener('DOMContentLoaded', () => {
       baseUrl = 'http://localhost:3000';
     }
 
-    const parentUrl = `${baseUrl}/parent.html?id=${student.id}`;
+    const classIdParam = StorageManager.getClassId();
+    const parentUrl = `${baseUrl}/parent.html?class=${encodeURIComponent(classIdParam)}&id=${student.id}`;
 
     const linkInput = document.getElementById('parentLinkInput');
     const linkAnchor = document.getElementById('parentLinkAnchor');
@@ -1981,7 +1989,8 @@ document.addEventListener('DOMContentLoaded', () => {
       baseUrl = 'http://localhost:3000';
     }
 
-    currentSharedParentUrl = `${baseUrl}/parent.html`;
+    const classIdParam = StorageManager.getClassId();
+    currentSharedParentUrl = `${baseUrl}/parent.html?class=${encodeURIComponent(classIdParam)}`;
 
     sharedClassLinkAnchor.href = currentSharedParentUrl;
     sharedClassLinkAnchor.textContent = currentSharedParentUrl;
@@ -2011,8 +2020,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnCopySharedClassMessage.addEventListener('click', async () => {
-    const className = state.data.className || 'Lớp 1A';
-    const message = `🌸 Kính gửi quý phụ huynh ${className}!\nCô gửi đường link theo dõi tiến trình ấp trứng và tự chấm điểm rèn luyện tại nhà (Đọc, Viết, Dặn dò) của các con:\n👉 ${currentSharedParentUrl}\n(Bố mẹ mở link trên điện thoại bằng 4G hoặc Wifi ở nhà bất kỳ để tự chấm cho con nhé! Bố mẹ có thể bấm "Thêm vào Màn hình chính" để cài thành app tiện dùng mỗi tối).`;
+    const className = state.data.className || 'Lớp 1/8';
+    const schoolName = state.data.schoolName || 'Trường Tiểu học Tiểu La';
+    const message = `🌸 Kính gửi quý phụ huynh ${className} (${schoolName})!\nCô gửi đường link theo dõi tiến trình ấp trứng và tự chấm điểm rèn luyện tại nhà (Đọc, Viết, Dặn dò) của các con:\n👉 ${currentSharedParentUrl}\n(Bố mẹ mở link trên điện thoại bằng 4G hoặc Wifi ở nhà bất kỳ để tự chấm cho con nhé! Bố mẹ có thể bấm "Thêm vào Màn hình chính" để cài thành app tiện dùng mỗi tối).`;
 
     try {
       await navigator.clipboard.writeText(message);
@@ -3160,7 +3170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const className = state.data.className || 'Lớp 1A';
+      const className = state.data.className || 'Lớp 1/8';
       let text = `🌸 BẢNG TUYÊN DƯƠNG RÈN LUYỆN TẠI NHÀ - ${className} 🌸\n`;
       text += `📅 Ngày ${d}/${m}/${y}\n`;
       text += `✨ Đã có ${submissions.length}/${state.data.students.length} bé hoàn thành xuất sắc và được tự động cộng sao ấp trứng:\n\n`;
@@ -3794,6 +3804,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (e) {}
 
+      const classIdParam = StorageManager.getClassId();
+      if (!mobileUrl.includes('?')) {
+        mobileUrl += `?class=${encodeURIComponent(classIdParam)}`;
+      } else if (!mobileUrl.includes('class=')) {
+        mobileUrl += `&class=${encodeURIComponent(classIdParam)}`;
+      }
+
       if (inputMobileUrlLink) inputMobileUrlLink.value = mobileUrl;
       if (mobileQrCodeImg) {
         mobileQrCodeImg.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(mobileUrl)}" alt="QR Điện Thoại" style="border-radius: 12px; border: 2px solid #CBD5E1; box-shadow: 0 4px 12px rgba(0,0,0,0.08); width: 180px; height: 180px;">`;
@@ -3869,15 +3886,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (StorageManager.broadcast) {
     StorageManager.broadcast.onmessage = (e) => {
       if (e.data && e.data.type === 'DATA_CHANGED') {
-        state.data = e.data.data;
-        refreshData();
+        const curId = StorageManager.getClassId();
+        if (!e.data.classId || e.data.classId === curId) {
+          state.data = e.data.data;
+          refreshData();
+        }
       }
     };
   }
 
   // Cross-window local storage sync listener (đồng bộ tức thì giữa tất cả các cửa sổ/tab trên máy)
   window.addEventListener('storage', (e) => {
-    if (e.key === StorageManager.KEY && e.newValue) {
+    if (e.key === StorageManager.getStorageKey() && e.newValue) {
       try {
         const parsed = JSON.parse(e.newValue);
         if (parsed && parsed.students) {
@@ -3916,6 +3936,10 @@ document.addEventListener('DOMContentLoaded', () => {
         sse.onmessage = (e) => {
           try {
             const payload = JSON.parse(e.data);
+            const curClassId = StorageManager.getClassId();
+            if (payload.classId && payload.classId !== curClassId) {
+              return; // Bỏ qua sự kiện của lớp khác
+            }
             if (payload.type === 'HOMEWORK_SUBMITTED') {
               if (payload.data && payload.data.students) {
                 state.data = payload.data;
@@ -4125,6 +4149,109 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Quản lý Đổi Lớp Học & Tách Lớp Riêng Biệt
+  function setupClassManagement() {
+    const currentClassId = StorageManager.getClassId();
+    const headerDisplay = document.getElementById('headerClassIdDisplay');
+    const modalDisplay = document.getElementById('modalCurrentClassId');
+    const btnOpenClassModal = document.getElementById('btnOpenClassModal');
+    const classManageModal = document.getElementById('classManageModal');
+    const closeClassManageModalBtn = document.getElementById('closeClassManageModalBtn');
+    const btnApplySwitchClass = document.getElementById('btnApplySwitchClass');
+    const btnReturnClass1A = document.getElementById('btnReturnClass1A');
+    const inputNewClassId = document.getElementById('inputNewClassId');
+    const classListContainer = document.getElementById('classListContainer');
+
+    if (headerDisplay) headerDisplay.textContent = currentClassId;
+    if (modalDisplay) modalDisplay.textContent = currentClassId;
+
+    // Cập nhật đường link Soi Bài AI trên header có kèm mã lớp
+    const linkSoiBai = document.querySelector('a[href^="soibai.html"]');
+    if (linkSoiBai) {
+      linkSoiBai.href = `soibai.html?class=${encodeURIComponent(currentClassId)}`;
+    }
+
+    if (btnOpenClassModal && classManageModal) {
+      btnOpenClassModal.addEventListener('click', () => {
+        if (inputNewClassId) inputNewClassId.value = '';
+        fetchClassList();
+        classManageModal.classList.add('active');
+      });
+    }
+
+    if (closeClassManageModalBtn && classManageModal) {
+      closeClassManageModalBtn.addEventListener('click', () => {
+        classManageModal.classList.remove('active');
+      });
+    }
+
+    async function fetchClassList() {
+      if (!classListContainer) return;
+      try {
+        const res = await fetch('/api/classes');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.classes && Array.isArray(json.classes)) {
+            classListContainer.innerHTML = '';
+            json.classes.forEach(c => {
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'btn-quick-class';
+              const isCurrent = (c.id === currentClassId);
+              btn.style.cssText = `padding: 6px 14px; border-radius: 10px; border: 1.5px solid ${isCurrent ? '#4F46E5' : '#CBD5E1'}; background: ${isCurrent ? '#EEF2FF' : '#FFFFFF'}; color: ${isCurrent ? '#4338CA' : '#334155'}; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;`;
+              btn.innerHTML = `${isCurrent ? '⭐' : '📁'} ${c.name} (${c.count} HS)`;
+              btn.addEventListener('click', () => {
+                switchToClass(c.id);
+              });
+              classListContainer.appendChild(btn);
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+    function switchToClass(targetId) {
+      let clean = (targetId || '1/8').trim();
+      if (StorageManager.isPrimaryClass(clean)) {
+        clean = '1/8';
+      } else {
+        clean = clean.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
+      }
+      StorageManager.setClassId(clean);
+      const url = new URL(window.location.href);
+      if (clean === '1/8' || clean === '1A') {
+        url.searchParams.delete('class');
+        url.searchParams.delete('lop');
+      } else {
+        url.searchParams.set('class', clean);
+      }
+      window.location.href = url.toString();
+    }
+
+    if (btnApplySwitchClass && inputNewClassId) {
+      btnApplySwitchClass.addEventListener('click', () => {
+        const val = inputNewClassId.value.trim();
+        if (!val) {
+          alert('Cô hãy nhập Mã Lớp (ví dụ: 1/8, 1/2, 2/1...) nhé!');
+          return;
+        }
+        switchToClass(val);
+      });
+
+      inputNewClassId.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          btnApplySwitchClass.click();
+        }
+      });
+    }
+
+    if (btnReturnClass1A) {
+      btnReturnClass1A.addEventListener('click', () => {
+        switchToClass('1/8');
+      });
+    }
+  }
+
   // Tải dữ liệu mới nhất từ server ngay khi mở trang
   StorageManager.pullFromServer().then(remote => {
     if (remote && remote.students) {
@@ -4135,6 +4262,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupFirebaseCloudSync();
   setupRealtimeServerSync();
+  setupClassManagement();
 
   // Initial render
   refreshData();

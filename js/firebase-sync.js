@@ -60,26 +60,103 @@
       }
     },
 
+    currentClassId: null,
+    _currentListenerRef: null,
+
+    // Kiểm tra có phải lớp chính (Lớp 1/8 gốc) hay không
+    isPrimaryClass(id) {
+      if (!id) return true;
+      const s = String(id).trim().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      return s === '18' || s === '1A';
+    },
+
+    // Lấy Mã Lớp: Ưu tiên 1) URL (?class= hoặc ?lop=), 2) localStorage, 3) mặc định '1/8'
+    getClassId() {
+      if (this.currentClassId) return this.currentClassId;
+      if (typeof window !== 'undefined' && window.location) {
+        const params = new URLSearchParams(window.location.search);
+        const fromUrl = params.get('class') || params.get('lop');
+        if (fromUrl) {
+          this.currentClassId = this.sanitizeClassId(fromUrl);
+          return this.currentClassId;
+        }
+      }
+      try {
+        const saved = localStorage.getItem('lop_hoc_current_class_id');
+        if (saved) {
+          this.currentClassId = this.sanitizeClassId(saved);
+          return this.currentClassId;
+        }
+      } catch (e) {}
+      this.currentClassId = '1/8';
+      return '1/8';
+    },
+
+    setClassId(classId) {
+      const clean = this.sanitizeClassId(classId);
+      this.currentClassId = clean;
+      try {
+        localStorage.setItem('lop_hoc_current_class_id', clean);
+      } catch (e) {}
+      return clean;
+    },
+
+    sanitizeClassId(id) {
+      if (!id) return '1/8';
+      let str = String(id).trim();
+      if (this.isPrimaryClass(str)) return '1/8';
+      let clean = str.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+      return clean || '1/8';
+    },
+
+    // Đường dẫn Firebase: Lớp 1/8 dùng 'classData' gốc (giữ nguyên 100% dữ liệu cũ), các lớp khác dùng 'classes/<id>'
+    getClassPath(customClassId) {
+      const id = customClassId || this.getClassId();
+      if (this.isPrimaryClass(id)) {
+        return 'classData';
+      }
+      const safeKey = this.sanitizeClassId(id).replace(/\//g, '-');
+      return 'classes/' + safeKey;
+    },
+
+    getClassRef(subPath = '', customClassId = null) {
+      const basePath = this.getClassPath(customClassId);
+      const fullPath = subPath ? `${basePath}/${subPath}` : basePath;
+      return this.db.ref(fullPath);
+    },
+
     // Đảm bảo dữ liệu lớp học có sẵn trên Firebase khi mới kết nối lần đầu
     async ensureInitialData(localData) {
       if (!this.isInitialized || !this.db || !localData || !localData.students) return false;
       try {
-        const ref = this.db.ref('classData');
+        const ref = this.getClassRef();
         const snapshot = await ref.once('value');
         const remoteData = snapshot.val();
+        const classId = this.getClassId();
 
-        const remoteIsSample = remoteData && remoteData.students && remoteData.students.some(s => s.name === 'Đỗ Đức Anh') && remoteData.students.length === 16;
-        const localIsReal = localData.students.length > 16 || !localData.students.some(s => s.name === 'Đỗ Đức Anh');
-        const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
-          (localData.students.length > remoteData.students.length) ||
-          (remoteIsSample && localIsReal) ||
-          ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
+        if (classId === '1A') {
+          const remoteIsSample = remoteData && remoteData.students && remoteData.students.some(s => s.name === 'Đỗ Đức Anh') && remoteData.students.length === 16;
+          const localIsReal = localData.students.length > 16 || !localData.students.some(s => s.name === 'Đỗ Đức Anh');
+          const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
+            (localData.students.length > remoteData.students.length) ||
+            (remoteIsSample && localIsReal) ||
+            ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
 
-        if (needsSync) {
-          console.log('Đang đẩy dữ liệu lớp học mới nhất lên Firebase Cloud...');
-          localData.lastUpdated = Date.now();
-          await ref.set(localData);
-          return true;
+          if (needsSync) {
+            console.log('Đang đẩy dữ liệu lớp 1A mới nhất lên Firebase Cloud...');
+            localData.lastUpdated = Date.now();
+            localData.classId = '1A';
+            await ref.set(localData);
+            return true;
+          }
+        } else {
+          // Đối với các lớp khác: nếu trên cloud chưa có thì khởi tạo
+          if (!snapshot.exists() || !remoteData || !remoteData.students) {
+            localData.lastUpdated = Date.now();
+            localData.classId = classId;
+            await ref.set(localData);
+            return true;
+          }
         }
         return false;
       } catch (e) {
@@ -91,7 +168,11 @@
     // Lắng nghe dữ liệu lớp học thay đổi realtime từ Firebase
     onClassDataChange(callback) {
       if (!this.isInitialized || !this.db) return;
-      const ref = this.db.ref('classData');
+      if (this._currentListenerRef) {
+        try { this._currentListenerRef.off(); } catch (e) {}
+      }
+      const ref = this.getClassRef();
+      this._currentListenerRef = ref;
       ref.on('value', snapshot => {
         const data = snapshot.val();
         if (data && data.students) {
@@ -105,7 +186,8 @@
       if (!this.isInitialized || !this.db) return false;
       try {
         data.lastUpdated = Date.now();
-        await this.db.ref('classData').set(data);
+        data.classId = this.getClassId();
+        await this.getClassRef().set(data);
         return true;
       } catch (e) {
         console.error('Lỗi cập nhật Firebase:', e);
@@ -117,7 +199,7 @@
     async submitHomework(studentId, { readingCount, writingStars, choresDone, stickerCount = 0, dateStr }) {
       if (!this.isInitialized || !this.db) throw new Error('Firebase chưa kết nối');
 
-      const ref = this.db.ref('classData');
+      const ref = this.getClassRef();
       const snapshot = await ref.once('value');
       let classData = snapshot.val();
 
@@ -205,7 +287,7 @@
     async claimStudentGift(studentId, gift, source = 'teacher', milestone = 100) {
       if (!this.isInitialized || !this.db) throw new Error('Firebase chưa kết nối');
 
-      const ref = this.db.ref('classData');
+      const ref = this.getClassRef();
       const snapshot = await ref.once('value');
       let classData = snapshot.val();
       if (!classData || !classData.students) throw new Error('Dữ liệu chưa sẵn sàng');
@@ -246,35 +328,74 @@
       if (!classData.giftSummaryRecords) classData.giftSummaryRecords = [];
       const group = (classData.groups || []).find(g => g.id === student.group);
 
-      // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
-      let summaryEntry = classData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
-      if (!summaryEntry) {
-        summaryEntry = {
-          id: 'summary-' + Date.now(),
-          studentId: student.id,
-          studentName: student.name,
-          groupName: group ? group.name : `Tổ ${student.group}`,
-          groupColor: group ? group.color : '#64748B',
-          milestone: currentMilestone,
-          gift1: record,
-          gift2: null,
-          claimedBy: source,
-          dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
-          timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-          timestamp: Date.now(),
-          completed: false,
-          delivered: false
-        };
-        classData.giftSummaryRecords.unshift(summaryEntry);
+      // Cập nhật quà trên bảng tổng hợp: chỉ tìm bản ghi thật sự đang dang dở (chưa có gift2 và chưa completed)
+      let summaryEntry = classData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed && !r.gift2);
+
+      if (student.giftHistory.length === 1) {
+        // Lượt 1: Tạo mới bản ghi tổng hợp hoặc cập nhật gift1
+        if (!summaryEntry) {
+          summaryEntry = {
+            id: 'summary-' + Date.now(),
+            studentId: student.id,
+            studentName: student.name,
+            groupName: group ? group.name : `Tổ ${student.group}`,
+            groupColor: group ? group.color : '#64748B',
+            milestone: currentMilestone,
+            gift1: record,
+            gift2: null,
+            claimedBy: source,
+            dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+            timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+            timestamp: Date.now(),
+            completed: false,
+            delivered: false
+          };
+          classData.giftSummaryRecords.unshift(summaryEntry);
+        } else {
+          summaryEntry.gift1 = record;
+          summaryEntry.claimedBy = source;
+          summaryEntry.milestone = currentMilestone;
+          summaryEntry.completed = false;
+        }
       } else {
-        summaryEntry.gift2 = record;
-        summaryEntry.completed = true;
+        // Lượt 2: Chắc chắn lấy gift1 từ lượt 1 (student.giftHistory[0]) và gift2 từ lượt 2
+        const turn1Gift = student.giftHistory[0] || record;
+        const turn2Gift = record;
+        if (!summaryEntry) {
+          summaryEntry = {
+            id: 'summary-' + Date.now(),
+            studentId: student.id,
+            studentName: student.name,
+            groupName: group ? group.name : `Tổ ${student.group}`,
+            groupColor: group ? group.color : '#64748B',
+            milestone: currentMilestone,
+            gift1: turn1Gift,
+            gift2: turn2Gift,
+            claimedBy: source,
+            dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+            timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+            timestamp: Date.now(),
+            completed: true,
+            delivered: false
+          };
+          classData.giftSummaryRecords.unshift(summaryEntry);
+        } else {
+          summaryEntry.gift1 = turn1Gift;
+          summaryEntry.gift2 = turn2Gift;
+          summaryEntry.claimedBy = source;
+          summaryEntry.milestone = currentMilestone;
+          summaryEntry.completed = true;
+          summaryEntry.timestamp = Date.now();
+          summaryEntry.dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+          summaryEntry.timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
       }
 
       // Tự động hoàn thành chu kỳ nếu đã đủ 2 lượt: tự động hoàn điểm về 0 ⭐ để ấp trứng mới
       if (student.giftHistory.length >= 2) {
-        summaryEntry.gift2 = record;
         summaryEntry.completed = true;
+        summaryEntry.gift1 = student.giftHistory[0] || summaryEntry.gift1;
+        summaryEntry.gift2 = student.giftHistory[1] || record;
 
         student.lastCompletedGifts = [...student.giftHistory];
         const hatchTime = student.hatchedAt || student.firstHatchedAt || Date.now();
@@ -311,7 +432,7 @@
     async setMilestoneChoice(studentId, choice) {
       if (!this.isInitialized || !this.db) return false;
       try {
-        const ref = this.db.ref('classData');
+        const ref = this.getClassRef();
         const snapshot = await ref.once('value');
         let classData = snapshot.val();
         if (!classData || !classData.students) return false;
@@ -335,7 +456,7 @@
     async finishAndResetStudentCycle(studentId) {
       if (!this.isInitialized || !this.db) throw new Error('Firebase chưa kết nối');
 
-      const ref = this.db.ref('classData');
+      const ref = this.getClassRef();
       const snapshot = await ref.once('value');
       let classData = snapshot.val();
       if (!classData || !classData.students) throw new Error('Dữ liệu chưa sẵn sàng');
@@ -387,7 +508,7 @@
     async toggleGiftDelivered(summaryId) {
       if (!this.isInitialized || !this.db) return false;
       try {
-        const ref = this.db.ref('classData');
+        const ref = this.getClassRef();
         const snapshot = await ref.once('value');
         let classData = snapshot.val();
         if (!classData || !classData.giftSummaryRecords) return false;
@@ -410,9 +531,9 @@
     async saveGiftItems(items, items200) {
       if (!this.isInitialized || !this.db) return false;
       try {
-        if (items) await this.db.ref('classData/giftItems').set(items);
-        if (items200) await this.db.ref('classData/giftItems200').set(items200);
-        await this.db.ref('classData/lastUpdated').set(Date.now());
+        if (items) await this.getClassRef('giftItems').set(items);
+        if (items200) await this.getClassRef('giftItems200').set(items200);
+        await this.getClassRef('lastUpdated').set(Date.now());
         return true;
       } catch (e) {
         console.error('Lỗi lưu danh sách quà Firebase:', e);

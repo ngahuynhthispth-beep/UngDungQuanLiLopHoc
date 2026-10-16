@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Góc Phụ Huynh - Đồng Hành Rèn Luyện & Ấp Trứng Cùng Con</title>
+  <title>Góc Phụ Huynh - Lớp 1/8 Trường TH Tiểu La</title>
   <meta name="description" content="Cổng thông tin phụ huynh theo dõi tiến trình ấp trứng, tự điền điểm rèn luyện đọc, viết và dặn dò tại nhà.">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Lớp 1A">
+  <meta name="apple-mobile-web-app-title" content="Lớp 1/8">
   <meta name="theme-color" content="#FF5E7E">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐣</text></svg>">
@@ -633,9 +633,9 @@
     <div class="brand-section" style="width: 100%; justify-content: center; text-align: center;">
       <div>
         <div class="security-badge">
-          <span>🏡</span> Góc Phụ Huynh Lớp 1 Đồng Hành
+          <span>🏡</span> Trường TH Tiểu La • Góc Phụ Huynh Đồng Hành
         </div>
-        <h1 style="font-size: 19px; line-height: 1.2;">LỚP 1A - VƯỜN THÚ KỲ DIỆU</h1>
+        <h1 id="parentClassHeaderTitle" style="font-size: 19px; line-height: 1.2;">LỚP 1/8 - VƯỜN THÚ KỲ DIỆU</h1>
         <p style="font-size: 12px; color: #64748B; font-weight: 600;">Ấp trứng rèn luyện • Tự chấm bài về nhà</p>
       </div>
     </div>
@@ -1402,8 +1402,17 @@
         if (!newData || !newData.students || newData.students.length === 0) return;
         data = newData;
         try {
-          localStorage.setItem(StorageManager.KEY, JSON.stringify(data));
+          localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(data));
         } catch (e) {}
+
+        const classTitleEl = document.getElementById('parentClassHeaderTitle');
+        if (classTitleEl) {
+          const curClass = (window.FirebaseSync && typeof window.FirebaseSync.getClassId === 'function') ? window.FirebaseSync.getClassId() : '1/8';
+          const isPrimary = (window.FirebaseSync && typeof window.FirebaseSync.isPrimaryClass === 'function') ? window.FirebaseSync.isPrimaryClass(curClass) : (curClass === '1/8' || curClass === '1A');
+          const cName = data.className || (isPrimary ? 'Lớp 1/8' : `Lớp ${curClass}`);
+          classTitleEl.textContent = `${cName.toUpperCase()} - VƯỜN THÚ KỲ DIỆU`;
+        }
+
         ensureCurrentStudentId();
         updateDropdown();
         // TUYỆT ĐỐI không gọi loadStudentHomeworkState() trong quá trình đồng bộ ngầm định kỳ/Firebase
@@ -1481,6 +1490,8 @@
           sse.onmessage = (e) => {
             try {
               const payload = JSON.parse(e.data);
+              const curClassId = StorageManager.getClassId();
+              if (payload.classId && payload.classId !== curClassId) return;
               if (payload.data && payload.data.students) {
                 applyData(payload.data);
               }
@@ -1491,7 +1502,7 @@
 
       // Lắng nghe đồng bộ storage giữa các cửa sổ/tab trên cùng trình duyệt
       window.addEventListener('storage', (e) => {
-        if (e.key === StorageManager.KEY && e.newValue) {
+        if (e.key === StorageManager.getStorageKey() && e.newValue) {
           try {
             const parsed = JSON.parse(e.newValue);
             if (parsed && parsed.students) {

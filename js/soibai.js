@@ -1105,7 +1105,9 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     }
 
     try {
-      const ref = window.FirebaseSync.db.ref('classData');
+      const ref = (window.FirebaseSync && typeof window.FirebaseSync.getClassRef === 'function')
+        ? window.FirebaseSync.getClassRef()
+        : window.FirebaseSync.db.ref('classData');
       const snap = await ref.once('value');
       let classData = snap.val();
       if (!classData || !classData.students) return;

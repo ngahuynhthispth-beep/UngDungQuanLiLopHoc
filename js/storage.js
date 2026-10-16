@@ -3,6 +3,63 @@ const StorageManager = {
   KEY: 'ung_dung_quan_li_lop_hoc_v1',
   broadcast: null,
 
+  isPrimaryClass(id) {
+    if (window.FirebaseSync && typeof window.FirebaseSync.isPrimaryClass === 'function') {
+      return window.FirebaseSync.isPrimaryClass(id);
+    }
+    if (!id) return true;
+    const s = String(id).trim().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    return s === '18' || s === '1A';
+  },
+
+  getClassId() {
+    if (window.FirebaseSync && typeof window.FirebaseSync.getClassId === 'function') {
+      return window.FirebaseSync.getClassId();
+    }
+    if (typeof window !== 'undefined' && window.location) {
+      const params = new URLSearchParams(window.location.search);
+      const fromUrl = params.get('class') || params.get('lop');
+      if (fromUrl) {
+        const str = fromUrl.trim();
+        if (this.isPrimaryClass(str)) return '1/8';
+        return str.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
+      }
+    }
+    try {
+      const saved = localStorage.getItem('lop_hoc_current_class_id');
+      if (saved) {
+        const str = saved.trim();
+        if (this.isPrimaryClass(str)) return '1/8';
+        return str.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
+      }
+    } catch (e) {}
+    return '1/8';
+  },
+
+  setClassId(id) {
+    let clean = (id || '1/8').trim();
+    if (this.isPrimaryClass(clean)) {
+      clean = '1/8';
+    } else {
+      clean = clean.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
+    }
+    try {
+      localStorage.setItem('lop_hoc_current_class_id', clean);
+    } catch (e) {}
+    if (window.FirebaseSync && typeof window.FirebaseSync.setClassId === 'function') {
+      window.FirebaseSync.setClassId(clean);
+    }
+    return clean;
+  },
+
+  getStorageKey() {
+    const id = this.getClassId();
+    if (this.isPrimaryClass(id)) {
+      return this.KEY; // Đảm bảo lớp 1/8 nguyên vẹn 100% dữ liệu gốc
+    }
+    return `${this.KEY}_${id.toLowerCase().replace(/[^a-z0-9_-]/g, '')}`;
+  },
+
   init() {
     if (window.BroadcastChannel) {
       this.broadcast = new BroadcastChannel('class_sync_channel');
@@ -29,9 +86,14 @@ const StorageManager = {
     { id: 'g200-8', name: 'Phần quà đặc biệt tự chọn', icon: '🎁' }
   ],
 
-  getDefaultData() {
+  getDefaultData(customClassId, customClassName) {
+    const classId = customClassId || this.getClassId();
+    const isDefaultClass = this.isPrimaryClass(classId);
+    const className = customClassName || (isDefaultClass ? 'Lớp 1/8' : `Lớp ${classId}`);
     return {
-      className: 'Lớp 1A',
+      classId: isDefaultClass ? '1/8' : classId,
+      className: className,
+      schoolName: 'Trường Tiểu học Tiểu La',
       schoolYear: '2026 - 2027',
       teacherName: 'Cô Giáo',
       groups: [
@@ -40,7 +102,7 @@ const StorageManager = {
         { id: 3, name: 'Tổ 3 - Gấu Dũng Cảm', mascot: '🐻', color: '#FFA07A', stars: 0 },
         { id: 4, name: 'Tổ 4 - Hổ Vui Vẻ', mascot: '🐯', color: '#96CEB4', stars: 0 }
       ],
-      students: [
+      students: isDefaultClass ? [
         { id: 'hs-1790097391777-1', name: 'Quốc An', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-2', name: 'Minh An', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-3', name: 'Phúc Anh', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
@@ -77,6 +139,11 @@ const StorageManager = {
         { id: 'hs-1790097391777-34', name: 'Nhã Uyên', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-35', name: 'Ngọc Uyên', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-36', name: 'Hải Yến', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
+      ] : [
+        { id: 'hs-' + Date.now() + '-1', name: 'Học sinh 1', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-' + Date.now() + '-2', name: 'Học sinh 2', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-' + Date.now() + '-3', name: 'Học sinh 3', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-' + Date.now() + '-4', name: 'Học sinh 4', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
       ],
       giftItems: [...this.DEFAULT_GIFTS],
       giftItems200: [...this.DEFAULT_GIFTS_200],
@@ -120,19 +187,22 @@ const StorageManager = {
   },
 
   loadData() {
-    if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
+    const storageKey = this.getStorageKey();
+    const isDefaultClass = (this.getClassId() === '1A');
+
+    if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
       try {
-        localStorage.setItem(this.KEY, JSON.stringify(window.__INITIAL_DATA__));
+        localStorage.setItem(storageKey, JSON.stringify(window.__INITIAL_DATA__));
       } catch (e) {}
       return window.__INITIAL_DATA__;
     }
     let data = null;
     try {
-      const raw = localStorage.getItem(this.KEY);
+      const raw = localStorage.getItem(storageKey);
       if (raw) {
         data = JSON.parse(raw);
-        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua
-        if (data && data.students && (data.students.length < 30 || data.students.some(s => s.name === 'Đỗ Đức Anh'))) {
+        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua (chỉ áp dụng bảo vệ cho 1A)
+        if (isDefaultClass && data && data.students && (data.students.length < 30 || data.students.some(s => s.name === 'Đỗ Đức Anh'))) {
           data = null;
         }
       }
@@ -147,19 +217,28 @@ const StorageManager = {
   },
 
   saveData(data) {
-    if (!data || !data.students || data.students.length < 30) {
-      console.warn('Bảo vệ dữ liệu: Không lưu danh sách học sinh bị thiếu.');
+    const isDefaultClass = this.isPrimaryClass(this.getClassId());
+    if (isDefaultClass && (!data || !data.students || data.students.length < 30)) {
+      console.warn('Bảo vệ dữ liệu lớp 1/8: Không lưu danh sách học sinh bị thiếu.');
       return;
     }
-    if (data.students.some(s => s.name === 'Đỗ Đức Anh') && data.students.length === 16) {
-      console.warn('Bảo vệ dữ liệu: Không ghi đè dữ liệu mẫu 16 học sinh.');
+    if (isDefaultClass && data.students.some(s => s.name === 'Đỗ Đức Anh') && data.students.length === 16) {
+      console.warn('Bảo vệ dữ liệu lớp 1/8: Không ghi đè dữ liệu mẫu 16 học sinh.');
       return;
     }
+    if (!data || !data.students || data.students.length === 0) {
+      console.warn('Không thể lưu danh sách lớp rỗng.');
+      return;
+    }
+
     data.lastUpdated = Date.now();
+    data.classId = this.getClassId();
+    const storageKey = this.getStorageKey();
+
     try {
-      localStorage.setItem(this.KEY, JSON.stringify(data));
+      localStorage.setItem(storageKey, JSON.stringify(data));
       if (this.broadcast) {
-        this.broadcast.postMessage({ type: 'DATA_CHANGED', data });
+        this.broadcast.postMessage({ type: 'DATA_CHANGED', data, classId: data.classId });
       }
     } catch (e) {
       console.error('Error saving data:', e);
@@ -177,7 +256,8 @@ const StorageManager = {
   async syncToServer(data) {
     if (window.location.protocol.startsWith('http')) {
       try {
-        await fetch('/api/sync', {
+        const classId = this.getClassId();
+        await fetch(`/api/sync?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
@@ -191,12 +271,14 @@ const StorageManager = {
   async pullFromServer() {
     if (window.location.protocol.startsWith('http')) {
       try {
-        const res = await fetch('/api/sync');
+        const classId = this.getClassId();
+        const res = await fetch(`/api/sync?class=${encodeURIComponent(classId)}`);
         if (res.ok) {
           const json = await res.json();
           if (json.data && json.data.students) {
             this.ensureHatchedTimestamps(json.data);
-            localStorage.setItem(this.KEY, JSON.stringify(json.data));
+            const storageKey = this.getStorageKey();
+            localStorage.setItem(storageKey, JSON.stringify(json.data));
             return json.data;
           }
         }
@@ -546,9 +628,9 @@ const StorageManager = {
           dateStr: validDate
         });
         if (fbResult && fbResult.data) {
-          localStorage.setItem(this.KEY, JSON.stringify(fbResult.data));
+          localStorage.setItem(this.getStorageKey(), JSON.stringify(fbResult.data));
           if (this.broadcast) {
-            this.broadcast.postMessage({ type: 'DATA_CHANGED', data: fbResult.data });
+            this.broadcast.postMessage({ type: 'DATA_CHANGED', data: fbResult.data, classId: this.getClassId() });
           }
           this.syncToServer(fbResult.data);
           return fbResult;
@@ -561,7 +643,8 @@ const StorageManager = {
     // 2. Tiếp theo: Gọi API server để đồng bộ (nếu chạy server nội bộ)
     if (window.location.protocol.startsWith('http')) {
       try {
-        const res = await fetch('/api/homework', {
+        const classId = this.getClassId();
+        const res = await fetch(`/api/homework?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -576,9 +659,9 @@ const StorageManager = {
         if (res.ok) {
           const json = await res.json();
           if (json.data) {
-            localStorage.setItem(this.KEY, JSON.stringify(json.data));
+            localStorage.setItem(this.getStorageKey(), JSON.stringify(json.data));
             if (this.broadcast) {
-              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data });
+              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data, classId: this.getClassId() });
             }
             return json;
           }
@@ -717,8 +800,9 @@ const StorageManager = {
 
     if (window.location.protocol.startsWith('http')) {
       try {
+        const classId = this.getClassId();
         const payload = Number(milestone) === 200 ? { giftItems200: items } : { giftItems: items };
-        await fetch('/api/gifts', {
+        await fetch(`/api/gifts?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -738,7 +822,8 @@ const StorageManager = {
   async claimStudentGift(studentId, gift, source = 'teacher', milestone = 100) {
     if (window.location.protocol.startsWith('http')) {
       try {
-        const res = await fetch('/api/claim-gift', {
+        const classId = this.getClassId();
+        const res = await fetch(`/api/claim-gift?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ studentId, gift, source, milestone })
@@ -746,9 +831,9 @@ const StorageManager = {
         if (res.ok) {
           const json = await res.json();
           if (json.data) {
-            localStorage.setItem(this.KEY, JSON.stringify(json.data));
+            localStorage.setItem(this.getStorageKey(), JSON.stringify(json.data));
             if (this.broadcast) {
-              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data });
+              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data, classId: this.getClassId() });
             }
             return json.student;
           }
@@ -805,35 +890,74 @@ const StorageManager = {
     if (!data.giftSummaryRecords) data.giftSummaryRecords = [];
     const group = (data.groups || []).find(g => g.id === student.group);
 
-    // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
-    let summaryEntry = data.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
-    if (!summaryEntry) {
-      summaryEntry = {
-        id: 'summary-' + Date.now(),
-        studentId: student.id,
-        studentName: student.name,
-        groupName: group ? group.name : `Tổ ${student.group}`,
-        groupColor: group ? group.color : '#64748B',
-        milestone: currentMilestone,
-        gift1: record,
-        gift2: null,
-        claimedBy: source,
-        dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
-        timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-        timestamp: Date.now(),
-        completed: false,
-        delivered: false
-      };
-      data.giftSummaryRecords.unshift(summaryEntry);
+    // Cập nhật quà trên bảng tổng hợp: chỉ tìm bản ghi thật sự đang dang dở (chưa có gift2 và chưa completed)
+    let summaryEntry = data.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed && !r.gift2);
+
+    if (student.giftHistory.length === 1) {
+      // Lượt 1: Tạo mới bản ghi tổng hợp hoặc cập nhật gift1
+      if (!summaryEntry) {
+        summaryEntry = {
+          id: 'summary-' + Date.now(),
+          studentId: student.id,
+          studentName: student.name,
+          groupName: group ? group.name : `Tổ ${student.group}`,
+          groupColor: group ? group.color : '#64748B',
+          milestone: currentMilestone,
+          gift1: record,
+          gift2: null,
+          claimedBy: source,
+          dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+          timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+          timestamp: Date.now(),
+          completed: false,
+          delivered: false
+        };
+        data.giftSummaryRecords.unshift(summaryEntry);
+      } else {
+        summaryEntry.gift1 = record;
+        summaryEntry.claimedBy = source;
+        summaryEntry.milestone = currentMilestone;
+        summaryEntry.completed = false;
+      }
     } else {
-      summaryEntry.gift2 = record;
-      summaryEntry.completed = true;
+      // Lượt 2: Chắc chắn lấy gift1 từ lượt 1 (student.giftHistory[0]) và gift2 từ lượt 2
+      const turn1Gift = student.giftHistory[0] || record;
+      const turn2Gift = record;
+      if (!summaryEntry) {
+        summaryEntry = {
+          id: 'summary-' + Date.now(),
+          studentId: student.id,
+          studentName: student.name,
+          groupName: group ? group.name : `Tổ ${student.group}`,
+          groupColor: group ? group.color : '#64748B',
+          milestone: currentMilestone,
+          gift1: turn1Gift,
+          gift2: turn2Gift,
+          claimedBy: source,
+          dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+          timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+          timestamp: Date.now(),
+          completed: true,
+          delivered: false
+        };
+        data.giftSummaryRecords.unshift(summaryEntry);
+      } else {
+        summaryEntry.gift1 = turn1Gift;
+        summaryEntry.gift2 = turn2Gift;
+        summaryEntry.claimedBy = source;
+        summaryEntry.milestone = currentMilestone;
+        summaryEntry.completed = true;
+        summaryEntry.timestamp = Date.now();
+        summaryEntry.dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        summaryEntry.timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      }
     }
 
     // Tự động hoàn thành chu kỳ nếu đã đủ 2 lượt: tự động hoàn điểm về 0 ⭐ để ấp trứng mới
     if (student.giftHistory.length >= 2) {
-      summaryEntry.gift2 = record;
       summaryEntry.completed = true;
+      summaryEntry.gift1 = student.giftHistory[0] || summaryEntry.gift1;
+      summaryEntry.gift2 = student.giftHistory[1] || record;
 
       student.lastCompletedGifts = [...student.giftHistory];
       const hatchTime = student.hatchedAt || student.firstHatchedAt || Date.now();
@@ -872,7 +996,8 @@ const StorageManager = {
     }
     if (window.location.protocol.startsWith('http')) {
       try {
-        await fetch('/api/milestone-choice', {
+        const classId = this.getClassId();
+        await fetch(`/api/milestone-choice?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ studentId, choice })
@@ -898,9 +1023,9 @@ const StorageManager = {
       try {
         const res = await window.FirebaseSync.finishAndResetStudentCycle(studentId);
         if (res && res.data) {
-          localStorage.setItem(this.KEY, JSON.stringify(res.data));
+          localStorage.setItem(this.getStorageKey(), JSON.stringify(res.data));
           if (this.broadcast) {
-            this.broadcast.postMessage({ type: 'DATA_CHANGED', data: res.data });
+            this.broadcast.postMessage({ type: 'DATA_CHANGED', data: res.data, classId: this.getClassId() });
           }
           this.syncToServer(res.data);
           return res;
@@ -913,7 +1038,8 @@ const StorageManager = {
     // 2. Server API nếu có
     if (window.location.protocol.startsWith('http')) {
       try {
-        const res = await fetch('/api/reset-cycle', {
+        const classId = this.getClassId();
+        const res = await fetch(`/api/reset-cycle?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ studentId })
@@ -921,9 +1047,9 @@ const StorageManager = {
         if (res.ok) {
           const json = await res.json();
           if (json.data) {
-            localStorage.setItem(this.KEY, JSON.stringify(json.data));
+            localStorage.setItem(this.getStorageKey(), JSON.stringify(json.data));
             if (this.broadcast) {
-              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data });
+              this.broadcast.postMessage({ type: 'DATA_CHANGED', data: json.data, classId: this.getClassId() });
             }
             return json;
           }
@@ -981,7 +1107,8 @@ const StorageManager = {
     }
     if (window.location.protocol.startsWith('http')) {
       try {
-        await fetch('/api/toggle-gift-delivered', {
+        const classId = this.getClassId();
+        await fetch(`/api/toggle-gift-delivered?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ summaryId })

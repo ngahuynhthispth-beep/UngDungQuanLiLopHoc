@@ -23,7 +23,13 @@ let liveClassData = null;
 
 // Try to load initial data from file if exists
 const DATA_FILE = path.join(__dirname, 'class_data.json');
-const FIREBASE_DB_URL = 'https://quanlylophocconga-default-rtdb.asia-southeast1.firebasedatabase.app/classData.json';
+const CLASSES_DIR = path.join(__dirname, 'classes');
+if (!fs.existsSync(CLASSES_DIR)) {
+  try { fs.mkdirSync(CLASSES_DIR, { recursive: true }); } catch (e) {}
+}
+
+const FIREBASE_BASE_URL = 'https://quanlylophocconga-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_DB_URL = `${FIREBASE_BASE_URL}/classData.json`;
 
 // Quản lý thư mục câu hỏi & bài toán cho vòng quay gọi tên
 const QUESTIONS_DIR = path.join(__dirname, 'cau_hoi');
@@ -106,31 +112,6 @@ function saveQuestionsToDisk(questions) {
     console.error('Lỗi lưu câu hỏi vào ổ đĩa:', err);
     return false;
   }
-}
-
-
-
-function syncToFirebase(data) {
-  if (!data || !data.students || data.students.length === 0) return;
-  const https = require('https');
-  try {
-    const payload = JSON.stringify(data);
-    const req = https.request(FIREBASE_DB_URL, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload)
-      },
-      timeout: 10000
-    }, res => {
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        console.log(`☁️ [Firebase Cloud] Đã tự động đồng bộ ${data.students.length} học sinh lên Đám Mây trực tuyến!`);
-      }
-    });
-    req.on('error', () => {});
-    req.write(payload);
-    req.end();
-  } catch (e) {}
 }
 
 const DEFAULT_GIFTS = [
@@ -218,21 +199,150 @@ function ensureHatchedTimestamps(data) {
   return modified;
 }
 
+function isPrimaryClass(id) {
+  if (!id) return true;
+  const s = String(id).trim().replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  return s === '18' || s === '1A';
+}
+
+function sanitizeClassId(id) {
+  if (!id) return '1/8';
+  let str = String(id).trim();
+  if (isPrimaryClass(str)) return '1/8';
+  let clean = str.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+  return clean || '1/8';
+}
+
+function getClassFilePath(classId) {
+  const id = sanitizeClassId(classId);
+  if (isPrimaryClass(id)) {
+    return DATA_FILE; // Lớp 1/8 luôn luôn dùng trực tiếp class_data.json gốc!
+  }
+  const fileKey = id.replace(/\//g, '-');
+  return path.join(CLASSES_DIR, `class_data_${fileKey}.json`);
+}
+
+function getFirebaseUrlForClass(classId) {
+  const id = sanitizeClassId(classId);
+  if (isPrimaryClass(id)) {
+    return `${FIREBASE_BASE_URL}/classData.json`; // Lớp 1/8 dùng classData.json gốc giữ nguyên 100% dữ liệu
+  }
+  const safeKey = id.replace(/\//g, '-');
+  return `${FIREBASE_BASE_URL}/classes/${safeKey}.json`;
+}
+
+const classStore = new Map();
+
+function getClassData(classId) {
+  const id = sanitizeClassId(classId);
+  const cacheKey = isPrimaryClass(id) ? '1/8' : id;
+  if (classStore.has(cacheKey)) {
+    return classStore.get(cacheKey);
+  }
+  const filePath = getClassFilePath(id);
+  if (fs.existsSync(filePath)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      if (ensureHatchedTimestamps(data)) {
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      }
+      classStore.set(cacheKey, data);
+      if (isPrimaryClass(id)) liveClassData = data;
+      return data;
+    } catch (e) {
+      console.error(`Error reading ${filePath}:`, e);
+    }
+  }
+  if (isPrimaryClass(id) && liveClassData) {
+    classStore.set('1/8', liveClassData);
+    return liveClassData;
+  }
+  const newClass = {
+    classId: id,
+    className: isPrimaryClass(id) ? 'Lớp 1/8' : `Lớp ${id}`,
+    schoolName: 'Trường Tiểu học Tiểu La',
+    schoolYear: '2026 - 2027',
+    teacherName: 'Cô Giáo',
+    groups: [
+      { id: 1, name: 'Tổ 1 - Sóc Nhanh Nhẹn', mascot: '🐿️', color: '#FF6B6B', stars: 0 },
+      { id: 2, name: 'Tổ 2 - Thỏ Thông Thái', mascot: '🐰', color: '#4ECDC4', stars: 0 },
+      { id: 3, name: 'Tổ 3 - Gấu Dũng Cảm', mascot: '🐻', color: '#FFA07A', stars: 0 },
+      { id: 4, name: 'Tổ 4 - Hổ Vui Vẻ', mascot: '🐯', color: '#96CEB4', stars: 0 }
+    ],
+    students: [
+      { id: 'hs-' + Date.now() + '-1', name: 'Học sinh 1', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+      { id: 'hs-' + Date.now() + '-2', name: 'Học sinh 2', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+      { id: 'hs-' + Date.now() + '-3', name: 'Học sinh 3', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+      { id: 'hs-' + Date.now() + '-4', name: 'Học sinh 4', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
+    ],
+    giftItems: [...DEFAULT_GIFTS],
+    giftItems200: [...DEFAULT_GIFTS_200],
+    giftSummaryRecords: [],
+    lastUpdated: Date.now()
+  };
+  classStore.set(cacheKey, newClass);
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(newClass, null, 2));
+  } catch (e) {}
+  return newClass;
+}
+
+function saveClassData(classId, data) {
+  const id = sanitizeClassId(classId || data.classId);
+  const cacheKey = isPrimaryClass(id) ? '1/8' : id;
+  data.classId = isPrimaryClass(id) ? '1/8' : id;
+  data.lastUpdated = Date.now();
+  classStore.set(cacheKey, data);
+  if (isPrimaryClass(id)) {
+    liveClassData = data;
+  }
+  const filePath = getClassFilePath(id);
+  fs.writeFile(filePath, JSON.stringify(data, null, 2), () => {});
+  syncToFirebase(data, id);
+}
+
+function syncToFirebase(data, classId = '1A') {
+  if (!data || !data.students || data.students.length === 0) return;
+  const id = sanitizeClassId(classId || data.classId);
+  const https = require('https');
+  const targetUrl = getFirebaseUrlForClass(id);
+  try {
+    const payload = JSON.stringify(data);
+    const req = https.request(targetUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      },
+      timeout: 10000
+    }, res => {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        console.log(`☁️ [Firebase Cloud] Đã tự động đồng bộ Lớp [${id}] (${data.students.length} học sinh) lên Đám Mây!`);
+      }
+    });
+    req.on('error', () => {});
+    req.write(payload);
+    req.end();
+  } catch (e) {}
+}
+
 if (fs.existsSync(DATA_FILE)) {
   try {
     liveClassData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
     if (ensureHatchedTimestamps(liveClassData)) {
       fs.writeFileSync(DATA_FILE, JSON.stringify(liveClassData, null, 2));
     }
-    // Không tự ý đồng bộ đè lên Firebase lúc khởi động để tránh ghi đè dữ liệu mới hơn trên Đám Mây
+    classStore.set('1A', liveClassData);
   } catch (e) {
     console.error('Error reading class_data.json:', e);
   }
 }
 
-function pullFromFirebase() {
+function pullClassFromFirebase(classId = '1A') {
+  const id = sanitizeClassId(classId);
   const https = require('https');
-  const req = https.get(FIREBASE_DB_URL, { timeout: 8000 }, res => {
+  const targetUrl = getFirebaseUrlForClass(id);
+  const req = https.get(targetUrl, { timeout: 8000 }, res => {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       let body = '';
       res.on('data', chunk => body += chunk);
@@ -241,9 +351,9 @@ function pullFromFirebase() {
           const remoteData = JSON.parse(body);
           if (!remoteData || !remoteData.students || remoteData.students.length === 0) return;
 
-          if (!liveClassData || !liveClassData.students) {
-            liveClassData = remoteData;
-            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          let targetData = getClassData(id);
+          if (!targetData || !targetData.students) {
+            saveClassData(id, remoteData);
             return;
           }
 
@@ -253,11 +363,11 @@ function pullFromFirebase() {
 
           // Đồng bộ danh sách quà bảng tổng hợp từ Firebase
           if (remoteData.giftSummaryRecords && Array.isArray(remoteData.giftSummaryRecords)) {
-            if (!liveClassData.giftSummaryRecords) liveClassData.giftSummaryRecords = [];
-            const localSummaryMap = new Map(liveClassData.giftSummaryRecords.map(r => [r.id, r]));
+            if (!targetData.giftSummaryRecords) targetData.giftSummaryRecords = [];
+            const localSummaryMap = new Map(targetData.giftSummaryRecords.map(r => [r.id, r]));
             remoteData.giftSummaryRecords.forEach(remR => {
               if (!localSummaryMap.has(remR.id)) {
-                liveClassData.giftSummaryRecords.push(remR);
+                targetData.giftSummaryRecords.push(remR);
                 hasChanges = true;
               } else {
                 const locR = localSummaryMap.get(remR.id);
@@ -268,12 +378,12 @@ function pullFromFirebase() {
               }
             });
             if (hasChanges) {
-              liveClassData.giftSummaryRecords.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+              targetData.giftSummaryRecords.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             }
           }
 
           remoteData.students.forEach(remS => {
-            const locS = liveClassData.students.find(s => s.id === remS.id);
+            const locS = targetData.students.find(s => s.id === remS.id);
             if (locS) {
               if (remS.homeworkRecords && Object.keys(remS.homeworkRecords).length > 0) {
                 const locHwStr = JSON.stringify(locS.homeworkRecords || {});
@@ -283,7 +393,6 @@ function pullFromFirebase() {
                   hasChanges = true;
                 }
               }
-              // Nếu bé vừa quay quà xong và hoàn về 0 ⭐ trên Firebase
               if (remS.stars === 0 && (locS.stars || 0) >= 100) {
                 locS.stars = 0;
                 locS.hatchedAt = null;
@@ -295,8 +404,8 @@ function pullFromFirebase() {
                 broadcastSse({
                   type: 'CYCLE_RESET',
                   studentName: locS.name,
-                  data: liveClassData
-                });
+                  data: targetData
+                }, id);
               } else if ((remS.stars || 0) > (locS.stars || 0)) {
                 diffStudentName = locS.name;
                 diffStars = (remS.stars || 0) - (locS.stars || 0);
@@ -324,21 +433,20 @@ function pullFromFirebase() {
           });
 
           if (hasChanges) {
-            liveClassData.lastUpdated = Date.now();
-            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+            saveClassData(id, targetData);
             if (diffStars > 0) {
-              console.log(`⚡ [Tự động cộng điểm] Đã cập nhật điểm rèn luyện phụ huynh chấm vào máy tính!`);
+              console.log(`⚡ [Tự động cộng điểm Lớp ${id}] Đã cập nhật điểm rèn luyện phụ huynh chấm vào máy tính!`);
               broadcastSse({
                 type: 'HOMEWORK_SUBMITTED',
                 studentName: diffStudentName || 'Học sinh',
                 diff: diffStars,
-                data: liveClassData
-              });
+                data: targetData
+              }, id);
             } else {
               broadcastSse({
                 type: 'DATA_CHANGED',
-                data: liveClassData
-              });
+                data: targetData
+              }, id);
             }
           }
         } catch (e) {}
@@ -346,6 +454,11 @@ function pullFromFirebase() {
     }
   });
   req.on('error', () => {});
+}
+
+function pullFromFirebase() {
+  const activeIds = Array.from(new Set(['1A', ...classStore.keys()]));
+  activeIds.forEach(id => pullClassFromFirebase(id));
 }
 
 // Tự động kéo điểm từ phụ huynh về máy tính giáo viên định kỳ
@@ -402,8 +515,9 @@ function startPublicTunnel() {
 
 let sseClients = [];
 
-function broadcastSse(payload) {
-  const msg = `data: ${JSON.stringify(payload)}\n\n`;
+function broadcastSse(payload, classId = '1A') {
+  const targetId = sanitizeClassId(classId || (payload && payload.classId) || (payload && payload.data && payload.data.classId) || '1A');
+  const msg = `data: ${JSON.stringify({ ...payload, classId: targetId })}\n\n`;
   for (let i = sseClients.length - 1; i >= 0; i--) {
     try {
       sseClients[i].write(msg);
@@ -427,6 +541,8 @@ const server = http.createServer((req, res) => {
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   let pathname = decodeURIComponent(parsedUrl.pathname);
+  const reqClassId = sanitizeClassId(parsedUrl.searchParams.get('class') || parsedUrl.searchParams.get('lop') || '1/8');
+  liveClassData = getClassData(reqClassId);
 
   // Real-time Event Stream for Instant Sync (Server-Sent Events)
   if (pathname === '/api/events') {
@@ -468,8 +584,9 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/api/sync') {
     if (req.method === 'GET') {
+      const data = getClassData(reqClassId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'ok', data: liveClassData }));
+      res.end(JSON.stringify({ status: 'ok', data: data, classId: reqClassId }));
       return;
     }
 
@@ -479,18 +596,20 @@ const server = http.createServer((req, res) => {
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
-          if (!parsed || !parsed.students || parsed.students.length < 30) {
-            console.warn('Blocked attempt to overwrite students via /api/sync with incomplete data');
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Cannot overwrite full class with sample or incomplete data' }));
-            return;
+          const targetClassId = sanitizeClassId(parsed.classId || reqClassId);
+          if (isPrimaryClass(targetClassId)) {
+            if (!parsed || !parsed.students || parsed.students.length < 30) {
+              console.warn('Blocked attempt to overwrite students via /api/sync with incomplete data');
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Cannot overwrite full class with sample or incomplete data' }));
+              return;
+            }
           }
-          liveClassData = parsed;
-          fs.writeFile(DATA_FILE, JSON.stringify(parsed, null, 2), () => {});
-          syncToFirebase(liveClassData);
+          parsed.classId = targetClassId;
+          saveClassData(targetClassId, parsed);
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ status: 'saved', timestamp: Date.now() }));
-          broadcastSse({ type: 'DATA_CHANGED', data: liveClassData });
+          res.end(JSON.stringify({ status: 'saved', classId: targetClassId, timestamp: Date.now() }));
+          broadcastSse({ type: 'DATA_CHANGED', data: parsed }, targetClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Invalid JSON' }));
@@ -498,6 +617,30 @@ const server = http.createServer((req, res) => {
       });
       return;
     }
+  }
+
+  // Danh sách các lớp học hiện có trên máy
+  if (pathname === '/api/classes') {
+    const mainClass = getClassData('1/8') || {};
+    const list = [{ id: '1/8', name: mainClass.className || 'Lớp 1/8 - TH Tiểu La', count: ((mainClass.students || []).length) }];
+    if (fs.existsSync(CLASSES_DIR)) {
+      const files = fs.readdirSync(CLASSES_DIR);
+      files.forEach(f => {
+        const match = f.match(/^class_data_(.+)\.json$/);
+        if (match && match[1] && !isPrimaryClass(match[1])) {
+          const cId = match[1].toUpperCase();
+          const cData = getClassData(cId);
+          list.push({
+            id: cId,
+            name: (cData && cData.className) || `Lớp ${cId}`,
+            count: (cData && cData.students && cData.students.length) || 0
+          });
+        }
+      });
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', classes: list, currentClassId: reqClassId }));
+    return;
   }
 
   // API riêng để phụ huynh nộp điểm rèn luyện tại nhà (Đọc, Viết, Dặn dò) an toàn, chống ghi đè
@@ -583,8 +726,7 @@ const server = http.createServer((req, res) => {
           if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
 
           liveClassData.lastUpdated = Date.now();
-          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-          syncToFirebase(liveClassData);
+          saveClassData(reqClassId, liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
@@ -603,7 +745,7 @@ const server = http.createServer((req, res) => {
             diff: pointsEarned,
             totalStars: student.stars,
             data: liveClassData
-          });
+          }, reqClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
@@ -682,36 +824,75 @@ const server = http.createServer((req, res) => {
           if (!liveClassData.giftSummaryRecords) liveClassData.giftSummaryRecords = [];
           const group = (liveClassData.groups || []).find(g => g.id === student.group);
 
-          // Cập nhật quà trên bảng tổng hợp ngay từ lượt 1 để cô giáo theo dõi tức thì
-          summaryEntry = liveClassData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed);
-          if (!summaryEntry) {
-            summaryEntry = {
-              id: 'summary-' + Date.now(),
-              studentId: student.id,
-              studentName: student.name,
-              groupName: group ? group.name : `Tổ ${student.group}`,
-              groupColor: group ? group.color : '#64748B',
-              milestone: currentMilestone,
-              gift1: record,
-              gift2: null,
-              claimedBy: claimSource,
-              dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
-              timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-              timestamp: Date.now(),
-              completed: false,
-              delivered: false
-            };
-            liveClassData.giftSummaryRecords.unshift(summaryEntry);
+          // Cập nhật quà trên bảng tổng hợp: chỉ tìm bản ghi thật sự đang dang dở (chưa có gift2 và chưa completed)
+          summaryEntry = liveClassData.giftSummaryRecords.find(r => r.studentId === student.id && !r.completed && !r.gift2);
+
+          if (student.giftHistory.length === 1) {
+            // Lượt 1: Tạo mới bản ghi tổng hợp hoặc cập nhật gift1
+            if (!summaryEntry) {
+              summaryEntry = {
+                id: 'summary-' + Date.now(),
+                studentId: student.id,
+                studentName: student.name,
+                groupName: group ? group.name : `Tổ ${student.group}`,
+                groupColor: group ? group.color : '#64748B',
+                milestone: currentMilestone,
+                gift1: record,
+                gift2: null,
+                claimedBy: claimSource,
+                dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+                timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+                timestamp: Date.now(),
+                completed: false,
+                delivered: false
+              };
+              liveClassData.giftSummaryRecords.unshift(summaryEntry);
+            } else {
+              summaryEntry.gift1 = record;
+              summaryEntry.claimedBy = claimSource;
+              summaryEntry.milestone = currentMilestone;
+              summaryEntry.completed = false;
+            }
           } else {
-            summaryEntry.gift2 = record;
-            summaryEntry.completed = true;
+            // Lượt 2: Chắc chắn lấy gift1 từ lượt 1 (student.giftHistory[0]) và gift2 từ lượt 2
+            const turn1Gift = student.giftHistory[0] || record;
+            const turn2Gift = record;
+            if (!summaryEntry) {
+              summaryEntry = {
+                id: 'summary-' + Date.now(),
+                studentId: student.id,
+                studentName: student.name,
+                groupName: group ? group.name : `Tổ ${student.group}`,
+                groupColor: group ? group.color : '#64748B',
+                milestone: currentMilestone,
+                gift1: turn1Gift,
+                gift2: turn2Gift,
+                claimedBy: claimSource,
+                dateStr: `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
+                timeStr: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+                timestamp: Date.now(),
+                completed: true,
+                delivered: false
+              };
+              liveClassData.giftSummaryRecords.unshift(summaryEntry);
+            } else {
+              summaryEntry.gift1 = turn1Gift;
+              summaryEntry.gift2 = turn2Gift;
+              summaryEntry.claimedBy = claimSource;
+              summaryEntry.milestone = currentMilestone;
+              summaryEntry.completed = true;
+              summaryEntry.timestamp = Date.now();
+              summaryEntry.dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+              summaryEntry.timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            }
           }
 
           // NẾU ĐÃ HOÀN TẤT 2 LƯỢT QUÀ -> TỰ ĐỘNG HOÀN VỀ 0 KHÔNG CẦN THAO TÁC NỮA
           if (student.giftHistory.length >= 2) {
             autoReset = true;
-            summaryEntry.gift2 = record;
             summaryEntry.completed = true;
+            summaryEntry.gift1 = student.giftHistory[0] || summaryEntry.gift1;
+            summaryEntry.gift2 = student.giftHistory[1] || record;
 
             // Tự động hoàn điểm về 0 để bắt đầu chu kỳ mới
             student.lastCompletedGifts = [...student.giftHistory];
@@ -742,8 +923,7 @@ const server = http.createServer((req, res) => {
           }
 
           liveClassData.lastUpdated = Date.now();
-          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-          syncToFirebase(liveClassData);
+          saveClassData(reqClassId, liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
@@ -766,7 +946,7 @@ const server = http.createServer((req, res) => {
             autoReset,
             summaryEntry,
             data: liveClassData
-          });
+          }, reqClassId);
 
           if (autoReset) {
             broadcastSse({
@@ -775,7 +955,7 @@ const server = http.createServer((req, res) => {
               studentName: student.name,
               summaryEntry,
               data: liveClassData
-            });
+            }, reqClassId);
           }
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -812,8 +992,7 @@ const server = http.createServer((req, res) => {
           }
 
           liveClassData.lastUpdated = Date.now();
-          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-          syncToFirebase(liveClassData);
+          saveClassData(reqClassId, liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok', student, data: liveClassData }));
@@ -821,7 +1000,7 @@ const server = http.createServer((req, res) => {
           broadcastSse({
             type: 'DATA_CHANGED',
             data: liveClassData
-          });
+          }, reqClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
@@ -887,8 +1066,7 @@ const server = http.createServer((req, res) => {
           }];
           student.homeworkRecords = {};
           liveClassData.lastUpdated = Date.now();
-
-          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+          saveClassData(reqClassId, liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
@@ -904,7 +1082,7 @@ const server = http.createServer((req, res) => {
             studentName: student.name,
             summaryEntry,
             data: liveClassData
-          });
+          }, reqClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
@@ -932,7 +1110,7 @@ const server = http.createServer((req, res) => {
           if (record) {
             record.delivered = !record.delivered;
             liveClassData.lastUpdated = Date.now();
-            fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
+            saveClassData(reqClassId, liveClassData);
           }
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -941,7 +1119,7 @@ const server = http.createServer((req, res) => {
           broadcastSse({
             type: 'DATA_CHANGED',
             data: liveClassData
-          });
+          }, reqClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
@@ -976,8 +1154,7 @@ const server = http.createServer((req, res) => {
             liveClassData.giftItems200 = giftItems200;
           }
           liveClassData.lastUpdated = Date.now();
-          fs.writeFile(DATA_FILE, JSON.stringify(liveClassData, null, 2), () => {});
-          syncToFirebase(liveClassData);
+          saveClassData(reqClassId, liveClassData);
 
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ 
@@ -991,7 +1168,7 @@ const server = http.createServer((req, res) => {
             gifts: liveClassData.giftItems,
             gifts200: liveClassData.giftItems200,
             data: liveClassData
-          });
+          }, reqClassId);
         } catch (err) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: err.message }));
