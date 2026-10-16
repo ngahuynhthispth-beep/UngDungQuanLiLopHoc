@@ -4171,17 +4171,48 @@ document.addEventListener('DOMContentLoaded', () => {
       linkSoiBai.href = `soibai.html?class=${encodeURIComponent(currentClassId)}`;
     }
 
-    if (btnOpenClassModal && classManageModal) {
-      btnOpenClassModal.addEventListener('click', () => {
-        if (inputNewClassId) inputNewClassId.value = '';
-        fetchClassList();
-        classManageModal.classList.add('active');
+    function openModal() {
+      const modal = document.getElementById('classManageModal');
+      const input = document.getElementById('inputNewClassId');
+      if (input) input.value = '';
+      fetchClassList();
+      if (modal) {
+        modal.classList.add('active');
+        if (input) setTimeout(() => input.focus(), 150);
+      }
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('classManageModal');
+      if (modal) {
+        modal.classList.remove('active');
+      }
+    }
+
+    window.openClassManageModal = openModal;
+    window.closeClassManageModal = closeModal;
+
+    if (btnOpenClassModal) {
+      btnOpenClassModal.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openModal();
       });
     }
 
-    if (closeClassManageModalBtn && classManageModal) {
-      closeClassManageModalBtn.addEventListener('click', () => {
-        classManageModal.classList.remove('active');
+    if (closeClassManageModalBtn) {
+      closeClassManageModalBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
+      });
+    }
+
+    if (classManageModal) {
+      classManageModal.addEventListener('click', (e) => {
+        if (e.target === classManageModal) {
+          closeModal();
+        }
       });
     }
 

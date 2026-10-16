@@ -22,7 +22,7 @@
             <span class="class-id-badge" style="display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.92); padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 13px; color: #4F46E5; border: 1.5px solid #C7D2FE; box-shadow: 0 2px 6px rgba(79,70,229,0.12);">
               🏫 Mã Lớp: <strong id="headerClassIdDisplay">1/8</strong>
             </span>
-            <button id="btnOpenClassModal" type="button" style="padding: 3px 10px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #EEF2FF, #E0E7FF); color: #4338CA; border: 1px solid #C7D2FE; border-radius: 14px; cursor: pointer; transition: all 0.2s;" title="Đổi mã lớp hoặc tạo lớp mới cho giáo viên khác">
+            <button id="btnOpenClassModal" type="button" onclick="if(window.openClassManageModal){window.openClassManageModal();}else{document.getElementById('classManageModal')?.classList.add('active');}" style="padding: 3px 10px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #EEF2FF, #E0E7FF); color: #4338CA; border: 1px solid #C7D2FE; border-radius: 14px; cursor: pointer; transition: all 0.2s;" title="Đổi mã lớp hoặc tạo lớp mới cho giáo viên khác">
               🔄 Đổi Lớp / Tạo Lớp
             </button>
           </div>
@@ -1366,57 +1366,51 @@
   </div>
 
   <!-- Modal Quản Lý Mã Lớp Học (Tách Lớp Giáo Viên) -->
-  <div id="classManageModal" class="modal-overlay">
-    <div class="modal-card" style="max-width: 520px;">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <div class="modal-title-icon">🏫</div>
-          <div>
-            <h3>Quản Lý Mã Lớp Học</h3>
-            <p style="margin: 0; font-size: 13px; color: #64748B;">Phân chia không gian riêng cho từng giáo viên</p>
-          </div>
-        </div>
-        <button id="closeClassManageModalBtn" class="btn-close-modal" aria-label="Đóng">&times;</button>
+  <div id="classManageModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 520px; text-align: left;">
+      <button id="closeClassManageModalBtn" class="modal-close-btn" type="button" aria-label="Đóng">&times;</button>
+      <h2 class="modal-title" style="margin-bottom: 6px; text-align: left; display: flex; align-items: center; gap: 8px;">
+        <span>🏫</span> Quản Lý Mã Lớp Học
+      </h2>
+      <p style="margin: 0 0 16px 0; font-size: 13px; color: #64748B;">Phân chia không gian riêng cho từng giáo viên</p>
+
+      <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 14px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.5;">
+        <strong>🛡️ An Toàn Tuyệt Đối:</strong> Dữ liệu <strong>Lớp 1/8 (Trường TH Tiểu La)</strong> (36 học sinh hiện tại của cô) luôn được lưu giữ nguyên vẹn 100%. Khi giáo viên khác vào dùng, chỉ cần nhập một <strong>Mã Lớp</strong> riêng (ví dụ: <code>1/2</code>, <code>2/1</code>, <code>1B</code>) thì danh sách học sinh và điểm số của lớp đó sẽ hoàn toàn tách biệt, không bao giờ ghi đè lên lớp của cô!
       </div>
-      <div class="modal-body" style="padding: 20px;">
-        <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 14px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #166534; line-height: 1.5;">
-          <strong>🛡️ An Toàn Tuyệt Đối:</strong> Dữ liệu <strong>Lớp 1/8 (Trường TH Tiểu La)</strong> (36 học sinh hiện tại của cô) luôn được lưu giữ nguyên vẹn 100%. Khi giáo viên khác vào dùng, chỉ cần nhập một <strong>Mã Lớp</strong> riêng (ví dụ: <code>1/2</code>, <code>2/1</code>, <code>1B</code>) thì danh sách học sinh và điểm số của lớp đó sẽ hoàn toàn tách biệt, không bao giờ ghi đè lên lớp của cô!
-        </div>
 
-        <div style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 14px; margin-bottom: 16px;">
-          <div style="font-size: 13px; color: #64748B; margin-bottom: 4px;">Mã lớp hiện tại của bạn:</div>
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <div style="font-size: 18px; font-weight: 800; color: #4F46E5;">
-              Lớp: <span id="modalCurrentClassId">1/8</span>
-            </div>
-            <span style="font-size: 12px; font-weight: 700; color: #059669; background: #D1FAE5; padding: 3px 10px; border-radius: 12px;">Đang kết nối Đám Mây</span>
+      <div style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13px; color: #64748B; margin-bottom: 4px;">Mã lớp hiện tại của bạn:</div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-size: 18px; font-weight: 800; color: #4F46E5;">
+            Lớp: <span id="modalCurrentClassId">1/8</span>
           </div>
+          <span style="font-size: 12px; font-weight: 700; color: #059669; background: #D1FAE5; padding: 3px 10px; border-radius: 12px;">Đang kết nối Đám Mây</span>
         </div>
+      </div>
 
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">
-            Nhập Mã Lớp muốn mở hoặc tạo mới:
-          </label>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="inputNewClassId" placeholder="Ví dụ: 1/8, 1/2, 2/1..." style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-size: 15px; font-weight: 700; text-transform: uppercase;">
-            <button id="btnApplySwitchClass" type="button" style="padding: 10px 18px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #fff; border: none; cursor: pointer; white-space: nowrap;">
-              🚀 Mở Lớp
-            </button>
-          </div>
-          <p style="font-size: 12px; color: #94A3B8; margin: 5px 0 0;">💡 Gợi ý: Mỗi cô giáo nên đặt mã lớp theo tên lớp của mình (ví dụ: 1/8, 1/2, 2/1...).</p>
-        </div>
-
-        <div style="border-top: 1px dashed #E2E8F0; padding-top: 14px; margin-top: 14px;">
-          <div style="font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 8px;">LỚP HỌC TRÊN MÁY:</div>
-          <div id="classListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-            <button type="button" class="btn-quick-class" data-class="1/8" style="padding: 6px 14px; border-radius: 10px; border: 1.5px solid #4F46E5; background: #EEF2FF; color: #4338CA; font-weight: 700; font-size: 13px; cursor: pointer;">
-              ⭐ Lớp 1/8 - TH Tiểu La (Mặc định)
-            </button>
-          </div>
-          <button id="btnReturnClass1A" type="button" style="width: 100%; padding: 10px; font-weight: 700; border-radius: 10px; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; cursor: pointer;">
-            🔙 Quay Về Lớp 1/8 (Dữ liệu gốc của cô)
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+          Nhập Mã Lớp muốn mở hoặc tạo mới:
+        </label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="inputNewClassId" placeholder="Ví dụ: 1/8, 1/2, 2/1..." style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #CBD5E1; font-size: 15px; font-weight: 700; text-transform: uppercase;">
+          <button id="btnApplySwitchClass" type="button" style="padding: 10px 18px; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #fff; border: none; cursor: pointer; white-space: nowrap;">
+            🚀 Mở Lớp
           </button>
         </div>
+        <p style="font-size: 12px; color: #94A3B8; margin: 5px 0 0;">💡 Gợi ý: Mỗi cô giáo nên đặt mã lớp theo tên lớp của mình (ví dụ: 1/8, 1/2, 2/1...).</p>
+      </div>
+
+      <div style="border-top: 1px dashed #E2E8F0; padding-top: 14px; margin-top: 14px;">
+        <div style="font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 8px;">LỚP HỌC TRÊN MÁY:</div>
+        <div id="classListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+          <button type="button" class="btn-quick-class" data-class="1/8" style="padding: 6px 14px; border-radius: 10px; border: 1.5px solid #4F46E5; background: #EEF2FF; color: #4338CA; font-weight: 700; font-size: 13px; cursor: pointer;">
+            ⭐ Lớp 1/8 - TH Tiểu La (Mặc định)
+          </button>
+        </div>
+        <button id="btnReturnClass1A" type="button" style="width: 100%; padding: 10px; font-weight: 700; border-radius: 10px; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; cursor: pointer;">
+          🔙 Quay Về Lớp 1/8 (Dữ liệu gốc của cô)
+        </button>
       </div>
     </div>
   </div>
@@ -1427,15 +1421,15 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261008_v6"></script>
-  <script src="js/firebase-sync.js?v=20261008_v6"></script>
-  <script src="js/qrcode.min.js?v=20261008_v6"></script>
-  <script src="js/audio.js?v=20261008_v6"></script>
-  <script src="js/egg-evolution.js?v=20261008_v6"></script>
-  <script src="js/storage.js?v=20261008_v6"></script>
-  <script src="js/noise-meter.js?v=20261008_v6"></script>
-  <script src="js/wheel.js?v=20261008_v6"></script>
-  <script src="js/card-export.js?v=20261008_v6"></script>
-  <script src="js/app.js?v=20261008_v6"></script>
+  <script src="js/firebase-config.js?v=20261016_v3"></script>
+  <script src="js/firebase-sync.js?v=20261016_v3"></script>
+  <script src="js/qrcode.min.js?v=20261016_v3"></script>
+  <script src="js/audio.js?v=20261016_v3"></script>
+  <script src="js/egg-evolution.js?v=20261016_v3"></script>
+  <script src="js/storage.js?v=20261016_v3"></script>
+  <script src="js/noise-meter.js?v=20261016_v3"></script>
+  <script src="js/wheel.js?v=20261016_v3"></script>
+  <script src="js/card-export.js?v=20261016_v3"></script>
+  <script src="js/app.js?v=20261016_v3"></script>
 </body>
 </html>
