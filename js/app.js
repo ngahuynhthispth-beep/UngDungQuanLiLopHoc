@@ -3983,14 +3983,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (payload.type === 'CYCLE_RESET') {
               if (payload.data && payload.data.students) {
                 state.data = payload.data;
-                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(payload.data));
                 refreshData(payload.data);
                 showSyncToast(`🎉 Bé <strong>${payload.studentName}</strong> đã hoàn thành mở quà và trở về 0 ⭐ bắt đầu chu kỳ ấp mới!`, '✨');
               }
             } else if (payload.type === 'DATA_CHANGED') {
               if (payload.data && payload.data.students) {
                 state.data = payload.data;
-                localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
+                localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(payload.data));
                 refreshData(payload.data);
               }
             }
@@ -4107,7 +4107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             state.data = fbData;
-            localStorage.setItem(StorageManager.KEY, JSON.stringify(fbData));
+            localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(fbData));
             refreshData(fbData);
 
             // Tự động vẽ lại Bảng Tổng Hợp Quà Đã Quay nếu đang mở
@@ -4149,12 +4149,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Quản lý Đổi Lớp Học & Tách Lớp Riêng Biệt
+  // Quản lý Đổi Lớp Học & Tách Lớp Riêng Biệt (Độc Lập Đa Giáo Viên)
   function setupClassManagement() {
     const currentClassId = StorageManager.getClassId();
+    const isPrimary = StorageManager.isPrimaryClass(currentClassId);
     const headerDisplay = document.getElementById('headerClassIdDisplay');
     const toolbarDisplay = document.getElementById('toolbarClassIdDisplay');
     const modalDisplay = document.getElementById('modalCurrentClassId');
+    const appClassHeading = document.getElementById('appClassHeading');
     const btnOpenClassModal = document.getElementById('btnOpenClassModal');
     const btnClassBadge = document.getElementById('btnClassBadge');
     const btnToolbarChangeClass = document.getElementById('btnToolbarChangeClass');
@@ -4169,6 +4171,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toolbarDisplay) toolbarDisplay.textContent = currentClassId;
     if (modalDisplay) modalDisplay.textContent = currentClassId;
 
+    if (appClassHeading) {
+      if (!isPrimary) {
+        appClassHeading.textContent = `LỚP ${currentClassId} - VƯỜN THÚ KỲ DIỆU`;
+      }
+      appClassHeading.style.cursor = 'pointer';
+      appClassHeading.title = 'Bấm vào để đổi lớp hoặc tạo lớp mới';
+      appClassHeading.addEventListener('click', () => openModal());
+    }
+
     // Cập nhật đường link Soi Bài AI trên header có kèm mã lớp
     const linkSoiBai = document.querySelector('a[href^="soibai.html"]');
     if (linkSoiBai) {
@@ -4179,31 +4190,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('classManageModal');
       const input = document.getElementById('inputNewClassId');
       if (input) input.value = '';
-      fetchClassList();
+      renderClassList();
       if (modal) {
-        modal.style.display = 'flex';
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-        modal.style.visibility = 'visible';
-        modal.style.zIndex = '999999';
         modal.classList.add('active');
-        if (input) setTimeout(() => input.focus(), 150);
+        if (input) setTimeout(() => input.focus(), 120);
       }
     }
 
     function closeModal() {
       const modal = document.getElementById('classManageModal');
       if (modal) {
-        modal.style.display = 'none';
-        modal.style.opacity = '0';
-        modal.style.pointerEvents = 'none';
         modal.classList.remove('active');
       }
     }
 
     window.openClassManageModal = openModal;
     window.closeClassManageModal = closeModal;
-    window.fetchClassList = fetchClassList;
+    window.renderClassListModal = renderClassList;
 
     if (btnOpenClassModal) {
       btnOpenClassModal.addEventListener('click', (e) => {
@@ -4245,29 +4248,55 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    async function fetchClassList() {
+    function renderClassList() {
       if (!classListContainer) return;
-      try {
-        const res = await fetch('/api/classes');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.classes && Array.isArray(json.classes)) {
-            classListContainer.innerHTML = '';
-            json.classes.forEach(c => {
-              const btn = document.createElement('button');
-              btn.type = 'button';
-              btn.className = 'btn-quick-class';
-              const isCurrent = (c.id === currentClassId);
-              btn.style.cssText = `padding: 6px 14px; border-radius: 10px; border: 1.5px solid ${isCurrent ? '#4F46E5' : '#CBD5E1'}; background: ${isCurrent ? '#EEF2FF' : '#FFFFFF'}; color: ${isCurrent ? '#4338CA' : '#334155'}; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;`;
-              btn.innerHTML = `${isCurrent ? '⭐' : '📁'} ${c.name} (${c.count} HS)`;
-              btn.addEventListener('click', () => {
-                switchToClass(c.id);
-              });
-              classListContainer.appendChild(btn);
+      const registered = StorageManager.getAllRegisteredClasses();
+      classListContainer.innerHTML = '';
+
+      registered.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-quick-class';
+        const isCurrent = (c.id === currentClassId);
+        btn.style.cssText = `padding: 8px 14px; border-radius: 12px; border: 1.5px solid ${isCurrent ? '#4F46E5' : '#CBD5E1'}; background: ${isCurrent ? '#EEF2FF' : '#FFFFFF'}; color: ${isCurrent ? '#4338CA' : '#334155'}; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: all 0.2s;`;
+        btn.innerHTML = `${isCurrent ? '⭐' : '🏫'} <strong>${c.name}</strong> <span style="font-size: 11px; opacity: 0.85;">(${c.count || (c.isPrimary ? 36 : 16)} HS)</span>`;
+        btn.addEventListener('click', () => {
+          switchToClass(c.id);
+        });
+        classListContainer.appendChild(btn);
+      });
+
+      // Kéo thêm danh mục từ Firebase Realtime Database nếu có
+      if (window.FirebaseSync && window.FirebaseSync.isInitialized && window.FirebaseSync.db) {
+        window.FirebaseSync.db.ref('classes_registry').once('value').then(snap => {
+          const val = snap.val();
+          if (val && typeof val === 'object') {
+            let changed = false;
+            Object.values(val).forEach(item => {
+              if (item && item.id && !StorageManager.isPrimaryClass(item.id)) {
+                StorageManager.registerClass(item.id, item.name, item.count);
+                changed = true;
+              }
             });
+            if (changed) {
+              const updated = StorageManager.getAllRegisteredClasses();
+              classListContainer.innerHTML = '';
+              updated.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-quick-class';
+                const isCurrent = (c.id === currentClassId);
+                btn.style.cssText = `padding: 8px 14px; border-radius: 12px; border: 1.5px solid ${isCurrent ? '#4F46E5' : '#CBD5E1'}; background: ${isCurrent ? '#EEF2FF' : '#FFFFFF'}; color: ${isCurrent ? '#4338CA' : '#334155'}; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: all 0.2s;`;
+                btn.innerHTML = `${isCurrent ? '⭐' : '🏫'} <strong>${c.name}</strong> <span style="font-size: 11px; opacity: 0.85;">(${c.count || (c.isPrimary ? 36 : 16)} HS)</span>`;
+                btn.addEventListener('click', () => {
+                  switchToClass(c.id);
+                });
+                classListContainer.appendChild(btn);
+              });
+            }
           }
-        }
-      } catch (e) {}
+        }).catch(() => {});
+      }
     }
 
     function switchToClass(targetId) {
@@ -4278,6 +4307,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clean = clean.replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase() || '1/8';
       }
       StorageManager.setClassId(clean);
+      if (!StorageManager.isPrimaryClass(clean)) {
+        StorageManager.registerClass(clean, `Lớp ${clean}`);
+      }
       const url = new URL(window.location.href);
       if (clean === '1/8' || clean === '1A') {
         url.searchParams.delete('class');

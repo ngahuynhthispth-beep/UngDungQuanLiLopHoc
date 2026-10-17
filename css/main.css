@@ -559,6 +559,11 @@ body {
   pointer-events: auto;
 }
 
+/* Modal Quản Lý Mã Lớp Học Độc Lập */
+#classManageModal {
+  z-index: 999999 !important;
+}
+
 .modal-card {
   background: #FFFFFF;
   border-radius: 28px;

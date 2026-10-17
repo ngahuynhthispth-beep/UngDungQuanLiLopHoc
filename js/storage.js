@@ -61,6 +61,81 @@ const StorageManager = {
     return `${this.KEY}_${id.toLowerCase().replace(/[^a-z0-9_-]/g, '')}`;
   },
 
+  getAllRegisteredClasses() {
+    const map = new Map();
+    // 1. Luôn bảo toàn Lớp 1/8 Trường TH Tiểu La làm lớp gốc
+    map.set('1/8', { id: '1/8', name: 'Lớp 1/8 - TH Tiểu La', count: 36, isPrimary: true });
+
+    // 2. Quét toàn bộ các lớp đã lưu trong LocalStorage của trình duyệt
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(this.KEY + '_')) {
+          const rawId = k.substring((this.KEY + '_').length);
+          if (rawId) {
+            try {
+              const val = JSON.parse(localStorage.getItem(k));
+              const displayId = rawId.replace(/-/g, '/');
+              const cName = (val && val.className) ? val.className : `Lớp ${displayId}`;
+              const count = (val && val.students) ? val.students.length : 0;
+              map.set(displayId, { id: displayId, name: cName, count: count, isPrimary: false });
+            } catch (err) {}
+          }
+        }
+      }
+    } catch (e) {}
+
+    // 3. Quét registry danh mục lớp mở rộng
+    try {
+      const reg = localStorage.getItem('magic_zoo_classes_registry');
+      if (reg) {
+        const arr = JSON.parse(reg);
+        if (Array.isArray(arr)) {
+          arr.forEach(c => {
+            if (c && c.id && !this.isPrimaryClass(c.id)) {
+              if (!map.has(c.id)) {
+                map.set(c.id, { id: c.id, name: c.name || `Lớp ${c.id}`, count: c.count || 0, isPrimary: false });
+              }
+            }
+          });
+        }
+      }
+    } catch (e) {}
+
+    return Array.from(map.values());
+  },
+
+  registerClass(classId, className, studentCount) {
+    if (!classId || this.isPrimaryClass(classId)) return;
+    try {
+      const list = this.getAllRegisteredClasses();
+      const existing = list.find(x => x.id === classId);
+      if (existing) {
+        if (className) existing.name = className;
+        if (studentCount !== undefined) existing.count = studentCount;
+      } else {
+        list.push({
+          id: classId,
+          name: className || `Lớp ${classId}`,
+          count: studentCount || 0,
+          isPrimary: false
+        });
+      }
+      localStorage.setItem('magic_zoo_classes_registry', JSON.stringify(list.filter(x => !x.isPrimary)));
+
+      // Đồng bộ registry lên Firebase nếu có kết nối
+      if (window.FirebaseSync && window.FirebaseSync.isInitialized && window.FirebaseSync.db) {
+        const safeKey = String(classId).replace(/\//g, '-').replace(/[^a-zA-Z0-9_-]/g, '');
+        window.FirebaseSync.db.ref('classes_registry/' + safeKey).set({
+          id: classId,
+          name: className || `Lớp ${classId}`,
+          count: studentCount || 0,
+          updatedAt: Date.now()
+        }).catch(() => {});
+      }
+    } catch (e) {}
+  },
+
   init() {
     if (window.BroadcastChannel) {
       this.broadcast = new BroadcastChannel('class_sync_channel');
@@ -141,10 +216,22 @@ const StorageManager = {
         { id: 'hs-1790097391777-35', name: 'Ngọc Uyên', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-36', name: 'Hải Yến', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
       ] : [
-        { id: 'hs-' + Date.now() + '-1', name: 'Học sinh 1', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
-        { id: 'hs-' + Date.now() + '-2', name: 'Học sinh 2', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
-        { id: 'hs-' + Date.now() + '-3', name: 'Học sinh 3', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
-        { id: 'hs-' + Date.now() + '-4', name: 'Học sinh 4', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
+        { id: 'hs-custom-1', name: 'Bảo An', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-2', name: 'Gia Bảo', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-3', name: 'Minh Châu', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-4', name: 'Tuấn Đạt', group: 1, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-5', name: 'Hương Giang', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-6', name: 'Gia Huy', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-7', name: 'Khánh Linh', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-8', name: 'Đức Minh', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-9', name: 'Kim Ngân', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-10', name: 'Hoàng Nam', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-11', name: 'Thảo Nguyên', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-12', name: 'Minh Phong', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-13', name: 'Như Quỳnh', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-14', name: 'Quốc Thịnh', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-15', name: 'Phương Uyên', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
+        { id: 'hs-custom-16', name: 'Quang Vinh', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 }
       ],
       giftItems: [...this.DEFAULT_GIFTS],
       giftItems200: [...this.DEFAULT_GIFTS_200],
@@ -247,6 +334,9 @@ const StorageManager = {
 
     // Try background sync with server if available
     this.syncToServer(data);
+
+    // Tự động đăng ký lớp vào danh mục hệ thống
+    this.registerClass(data.classId, data.className, (data.students || []).length);
 
     // Đồng bộ lên Google Firebase Đám Mây (nếu có kết nối)
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
