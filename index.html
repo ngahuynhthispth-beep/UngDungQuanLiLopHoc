@@ -8,12 +8,18 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="css/main.css?v=20261017_v6">
+  <link rel="stylesheet" href="css/main.css?v=20261017_v7">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
   <script>
     function openClassManageModal() {
       var modal = document.getElementById('classManageModal');
       if (modal) {
+        if (modal.parentElement !== document.body) {
+          document.body.appendChild(modal);
+        }
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
         modal.classList.add('active');
         var input = document.getElementById('inputNewClassId');
         if (input) {
@@ -21,14 +27,19 @@
           setTimeout(function() { input.focus(); }, 120);
         }
       }
-      if (window.renderClassListModal) {
-        window.renderClassListModal();
-      }
+      try {
+        if (window.renderClassListModal) {
+          window.renderClassListModal();
+        }
+      } catch (err) {}
     }
     function closeClassManageModal() {
       var modal = document.getElementById('classManageModal');
       if (modal) {
         modal.classList.remove('active');
+        modal.style.setProperty('display', 'none', 'important');
+        modal.style.setProperty('opacity', '0', 'important');
+        modal.style.setProperty('pointer-events', 'none', 'important');
       }
     }
     window.openClassManageModal = openClassManageModal;
@@ -1273,6 +1284,8 @@
         </div>
       </div>
     </div>
+  </div>
+
   <!-- MODAL: Chỉnh Sửa Tên & Tổ Học Sinh -->
   <div id="editStudentModal" class="modal-backdrop">
     <div class="modal-card" style="max-width: 440px; width: 95%;">
@@ -1495,15 +1508,15 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261017_v6"></script>
-  <script src="js/firebase-sync.js?v=20261017_v6"></script>
-  <script src="js/qrcode.min.js?v=20261017_v6"></script>
-  <script src="js/audio.js?v=20261017_v6"></script>
-  <script src="js/egg-evolution.js?v=20261017_v6"></script>
-  <script src="js/storage.js?v=20261017_v6"></script>
-  <script src="js/noise-meter.js?v=20261017_v6"></script>
-  <script src="js/wheel.js?v=20261017_v6"></script>
-  <script src="js/card-export.js?v=20261017_v6"></script>
-  <script src="js/app.js?v=20261017_v6"></script>
+  <script src="js/firebase-config.js?v=20261017_v7"></script>
+  <script src="js/firebase-sync.js?v=20261017_v7"></script>
+  <script src="js/qrcode.min.js?v=20261017_v7"></script>
+  <script src="js/audio.js?v=20261017_v7"></script>
+  <script src="js/egg-evolution.js?v=20261017_v7"></script>
+  <script src="js/storage.js?v=20261017_v7"></script>
+  <script src="js/noise-meter.js?v=20261017_v7"></script>
+  <script src="js/wheel.js?v=20261017_v7"></script>
+  <script src="js/card-export.js?v=20261017_v7"></script>
+  <script src="js/app.js?v=20261017_v7"></script>
 </body>
 </html>

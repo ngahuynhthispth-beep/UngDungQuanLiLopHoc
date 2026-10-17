@@ -4188,12 +4188,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openModal() {
       const modal = document.getElementById('classManageModal');
-      const input = document.getElementById('inputNewClassId');
-      if (input) input.value = '';
-      renderClassList();
       if (modal) {
+        if (modal.parentElement !== document.body) {
+          document.body.appendChild(modal);
+        }
+        modal.style.setProperty('display', 'flex', 'important');
+        modal.style.setProperty('opacity', '1', 'important');
+        modal.style.setProperty('pointer-events', 'auto', 'important');
         modal.classList.add('active');
-        if (input) setTimeout(() => input.focus(), 120);
+      }
+      const input = document.getElementById('inputNewClassId');
+      if (input) {
+        input.value = '';
+        setTimeout(() => input.focus(), 120);
+      }
+      try {
+        renderClassList();
+      } catch (err) {
+        console.warn('renderClassList warning:', err);
       }
     }
 
@@ -4201,6 +4213,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const modal = document.getElementById('classManageModal');
       if (modal) {
         modal.classList.remove('active');
+        modal.style.setProperty('display', 'none', 'important');
+        modal.style.setProperty('opacity', '0', 'important');
+        modal.style.setProperty('pointer-events', 'none', 'important');
       }
     }
 

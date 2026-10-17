@@ -564,6 +564,17 @@ body {
   z-index: 999999 !important;
 }
 
+#classManageModal.active {
+  display: flex !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#classManageModal.active .modal-card {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
 .modal-card {
   background: #FFFFFF;
   border-radius: 28px;
