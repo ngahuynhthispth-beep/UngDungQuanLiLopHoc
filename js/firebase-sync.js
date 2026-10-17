@@ -82,7 +82,7 @@
         }
       }
       try {
-        const saved = localStorage.getItem('lop_hoc_current_class_id');
+        const saved = localStorage.getItem('lop_hoc_current_class_id') || localStorage.getItem('magic_zoo_class_id');
         if (saved) {
           this.currentClassId = this.sanitizeClassId(saved);
           return this.currentClassId;
@@ -97,6 +97,7 @@
       this.currentClassId = clean;
       try {
         localStorage.setItem('lop_hoc_current_class_id', clean);
+        localStorage.setItem('magic_zoo_class_id', clean);
       } catch (e) {}
       return clean;
     },
@@ -134,7 +135,7 @@
         const remoteData = snapshot.val();
         const classId = this.getClassId();
 
-        if (classId === '1A') {
+        if (this.isPrimaryClass(classId)) {
           const remoteIsSample = remoteData && remoteData.students && remoteData.students.some(s => s.name === 'Đỗ Đức Anh') && remoteData.students.length === 16;
           const localIsReal = localData.students.length > 16 || !localData.students.some(s => s.name === 'Đỗ Đức Anh');
           const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
@@ -143,9 +144,9 @@
             ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
 
           if (needsSync) {
-            console.log('Đang đẩy dữ liệu lớp 1A mới nhất lên Firebase Cloud...');
+            console.log('Đang đẩy dữ liệu lớp 1/8 mới nhất lên Firebase Cloud...');
             localData.lastUpdated = Date.now();
-            localData.classId = '1A';
+            localData.classId = '1/8';
             await ref.set(localData);
             return true;
           }

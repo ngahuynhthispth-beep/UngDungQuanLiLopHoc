@@ -1370,7 +1370,7 @@
       "stars": 746
     }
   ],
-  "lastUpdated": 1792138165552,
+  "lastUpdated": 1792230788740,
   "schoolYear": "2026 - 2027",
   "students": [
     {
@@ -2033,14 +2033,21 @@
           "readingStars": 1,
           "stickerCount": 0,
           "stickerStars": 0,
-          "totalStars": 13,
-          "updatedAt": 1792106564283,
-          "writingStars": 7
+          "totalStars": 29,
+          "updatedAt": 1792158021432,
+          "writingStars": 10
         }
       },
       "id": "hs-1790097391777-4",
       "likes": 0,
       "logs": [
+        {
+          "icon": "🏠",
+          "id": "log-hw-1792158021432",
+          "points": 16,
+          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
+          "time": "20:40"
+        },
         {
           "icon": "🏠",
           "id": "log-hw-1792106564283",
@@ -2080,7 +2087,7 @@
           "icon": "🏆",
           "id": "log-1790905990472-hs-1790097391777-4",
           "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
+          "reason": "Cả l���p cùng chăm ngoan",
           "time": "08:53"
         },
         {
@@ -2241,7 +2248,7 @@
       "milestoneChoice": "accumulate",
       "name": "Nguyên Bình",
       "sleepUntil": 0,
-      "stars": 128,
+      "stars": 144,
       "status": "active"
     },
     {
@@ -3704,6 +3711,18 @@
           "totalStars": 24,
           "updatedAt": 1791814730822,
           "writingStars": 10
+        },
+        "2026-10-17": {
+          "choresDone": true,
+          "choresStars": 5,
+          "date": "2026-10-17",
+          "readingCount": 25,
+          "readingStars": 25,
+          "stickerCount": 0,
+          "stickerStars": 0,
+          "totalStars": 40,
+          "updatedAt": 1792224918647,
+          "writingStars": 10
         }
       },
       "id": "hs-1790097391777-14",
@@ -3730,6 +3749,13 @@
       "lastHatchedAt": 1791814816111,
       "likes": 123,
       "logs": [
+        {
+          "icon": "🏠",
+          "id": "log-hw-1792224918647",
+          "points": 40,
+          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 25 lượt (25⭐), Viết (10⭐), Dặn dò (5⭐)",
+          "time": "15:15"
+        },
         {
           "icon": "🥚",
           "id": "log-cycle-1791814816111",
@@ -3818,7 +3844,7 @@
       "name": "Minh Khang",
       "previousHatchedAt": 1791814730822,
       "sleepUntil": 0,
-      "stars": 0,
+      "stars": 40,
       "status": "active",
       "hatchedAt": null
     },
@@ -3870,11 +3896,30 @@
           "totalStars": 20,
           "updatedAt": 1791942460204,
           "writingStars": 5
+        },
+        "2026-10-16": {
+          "choresDone": true,
+          "choresStars": 5,
+          "date": "2026-10-16",
+          "readingCount": 13,
+          "readingStars": 13,
+          "stickerCount": 0,
+          "stickerStars": 0,
+          "totalStars": 25,
+          "updatedAt": 1792162818205,
+          "writingStars": 7
         }
       },
       "id": "hs-1790097391777-15",
       "likes": 1,
       "logs": [
+        {
+          "icon": "🏠",
+          "id": "log-hw-1792162818205",
+          "points": 25,
+          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 13 lượt (13⭐), Viết (7⭐), Dặn dò (5⭐)",
+          "time": "22:00"
+        },
         {
           "icon": "⚠️",
           "id": "log-1792035047004",
@@ -3997,7 +4042,7 @@
       ],
       "name": "Gia Khánh",
       "sleepUntil": 0,
-      "stars": 75,
+      "stars": 100,
       "status": "active",
       "hatchedAt": null
     },
@@ -6274,8 +6319,8 @@
           "readingStars": 5,
           "stickerCount": 0,
           "stickerStars": 0,
-          "totalStars": 40,
-          "updatedAt": 1792115153873,
+          "totalStars": 60,
+          "updatedAt": 1792153081236,
           "writingStars": 10
         }
       },
@@ -6303,6 +6348,13 @@
       "lastHatchedAt": 1792115188331,
       "likes": 45,
       "logs": [
+        {
+          "icon": "🏠",
+          "id": "log-hw-1792153081236",
+          "points": 20,
+          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
+          "time": "19:18"
+        },
         {
           "icon": "🥚",
           "id": "log-cycle-1792115188331",
@@ -6391,7 +6443,7 @@
           "icon": "🏠",
           "id": "log-hw-1790678859789",
           "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 2 lượt (2⭐), Viết (3⭐), Dặn dò (5⭐)",
+          "reason": "Phụ huynh gửi điểm ở nhà: ��ọc 2 lượt (2⭐), Viết (3⭐), Dặn dò (5⭐)",
           "time": "17:47"
         },
         {
@@ -6468,7 +6520,7 @@
       "name": "Anh Quân",
       "previousHatchedAt": 1791551580604,
       "sleepUntil": 0,
-      "stars": 0,
+      "stars": 20,
       "status": "active",
       "hatchedAt": null
     },
@@ -6546,7 +6598,7 @@
         },
         {
           "claimedBy": "parent",
-          "icon": "🎨",
+          "icon": "���",
           "id": "gift-1791807874994",
           "milestone": 100,
           "name": "Tranh cát sắc màu",
@@ -6783,6 +6835,27 @@
       "likes": 6,
       "logs": [
         {
+          "icon": "📸",
+          "id": "log-ai-1792156473403",
+          "points": 10,
+          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
+          "time": "20:14"
+        },
+        {
+          "icon": "📸",
+          "id": "log-ai-1792156445568",
+          "points": 10,
+          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
+          "time": "20:14"
+        },
+        {
+          "icon": "📸",
+          "id": "log-ai-1792156308648",
+          "points": 5,
+          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
+          "time": "20:11"
+        },
+        {
           "icon": "🏠",
           "id": "log-hw-1792073957697",
           "points": 16,
@@ -6926,7 +6999,7 @@
       "name": "Hương Thảo",
       "previousHatchedAt": 1791551725552,
       "sleepUntil": 0,
-      "stars": 16,
+      "stars": 41,
       "status": "active",
       "hatchedAt": null
     },
@@ -6982,6 +7055,18 @@
           "totalStars": 30,
           "updatedAt": 1791901290169,
           "writingStars": 10
+        },
+        "2026-10-16": {
+          "choresDone": true,
+          "choresStars": 5,
+          "date": "2026-10-16",
+          "readingCount": 36,
+          "readingStars": 36,
+          "stickerCount": 0,
+          "stickerStars": 0,
+          "totalStars": 48,
+          "updatedAt": 1792154644490,
+          "writingStars": 7
         }
       },
       "id": "hs-1790097391777-32",
@@ -7008,6 +7093,13 @@
       "lastHatchedAt": 1791720431914,
       "likes": 10,
       "logs": [
+        {
+          "icon": "🏠",
+          "id": "log-hw-1792154644490",
+          "points": 48,
+          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 36 lượt (36⭐), Viết (7⭐), Dặn dò (5⭐)",
+          "time": "19:44"
+        },
         {
           "icon": "🏠",
           "id": "log-hw-1791901290169",
@@ -7139,7 +7231,7 @@
       "name": "Anh Thư",
       "previousHatchedAt": 1791720410551,
       "sleepUntil": 0,
-      "stars": 134,
+      "stars": 182,
       "status": "active"
     },
     {

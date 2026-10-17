@@ -174,15 +174,66 @@
     });
   }
 
-  // Khởi tạo Firebase & Lấy danh sách học sinh
+  // Tham số URL: Mã lớp & Học sinh cần chọn sẵn
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramClass = urlParams.get('class') || urlParams.get('lop');
+  const paramStudentId = urlParams.get('student') || urlParams.get('id');
+
+  if (paramClass && window.StorageManager && typeof window.StorageManager.setClassId === 'function') {
+    window.StorageManager.setClassId(paramClass);
+  }
+
+  function updateClassHeaderUI(classData) {
+    const subtitle = document.getElementById('soibaiClassHeaderSubtitle');
+    const backBtn = document.getElementById('btnSoibaiBackHome');
+    const curClass = (window.StorageManager && typeof window.StorageManager.getClassId === 'function') 
+      ? window.StorageManager.getClassId() 
+      : ((window.FirebaseSync && typeof window.FirebaseSync.getClassId === 'function') ? window.FirebaseSync.getClassId() : '1/8');
+    const isPrimary = (window.StorageManager && typeof window.StorageManager.isPrimaryClass === 'function')
+      ? window.StorageManager.isPrimaryClass(curClass)
+      : (curClass === '1/8' || curClass === '1A');
+
+    if (subtitle) {
+      const cName = (classData && classData.className) ? classData.className : (isPrimary ? 'Lớp 1/8' : `Lớp ${curClass}`);
+      const sName = (classData && classData.schoolName) ? classData.schoolName : 'Trường TH Tiểu La';
+      subtitle.textContent = `${cName} • ${sName}`;
+    }
+    if (backBtn) {
+      backBtn.href = isPrimary ? 'index.html' : `index.html?class=${encodeURIComponent(curClass)}`;
+    }
+  }
+
+  // Khởi tạo Dữ liệu & Lấy danh sách học sinh
   function initData() {
     renderSampleTaskUI();
 
+    // 1. Nạp tức thì từ StorageManager (Local Storage / Cache)
+    if (window.StorageManager) {
+      window.StorageManager.init();
+      const localData = window.StorageManager.loadData();
+      if (localData && localData.students && localData.students.length > 0) {
+        currentClassData = localData;
+        updateClassHeaderUI(localData);
+        renderStudentsList(localData.students);
+      }
+      if (typeof window.StorageManager.pullFromServer === 'function') {
+        window.StorageManager.pullFromServer().then(sData => {
+          if (sData && sData.students) {
+            currentClassData = sData;
+            updateClassHeaderUI(sData);
+            renderStudentsList(sData.students);
+          }
+        }).catch(() => {});
+      }
+    }
+
+    // 2. Kết nối Firebase Realtime Cloud
     if (window.FirebaseSync && window.FirebaseSync.init) {
       window.FirebaseSync.init();
       window.FirebaseSync.onClassDataChange(data => {
         if (data && data.students) {
           currentClassData = data;
+          updateClassHeaderUI(data);
           renderStudentsList(data.students);
           if (activeStudent) {
             const updated = data.students.find(s => s.id === activeStudent.id);
@@ -192,14 +243,15 @@
       });
     }
 
-    // Fallback nếu không có mạng
+    // 3. Fallback dự phòng
     if (!currentClassData) {
       try {
-        const local = localStorage.getItem('lop_hoc_vltk_local_data');
+        const local = localStorage.getItem('ung_dung_quan_li_lop_hoc_v1');
         if (local) {
           const parsed = JSON.parse(local);
           if (parsed && parsed.students) {
             currentClassData = parsed;
+            updateClassHeaderUI(parsed);
             renderStudentsList(parsed.students);
           }
         }
@@ -210,6 +262,15 @@
   function renderStudentsList(students) {
     if (!studentSelectGrid) return;
     studentSelectGrid.innerHTML = '';
+
+    // Tự động chọn học sinh nếu có param từ URL và chưa chọn ai
+    if (paramStudentId && !activeStudent) {
+      const matched = students.find(s => s.id === paramStudentId);
+      if (matched) {
+        activeStudent = matched;
+        updateActiveStudentUI(matched);
+      }
+    }
 
     students.forEach(st => {
       const btn = document.createElement('button');
@@ -1097,60 +1158,98 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // Tự động cộng sao vào Firebase Realtime Database
+  // Tự động cộng sao vào StorageManager (Cục bộ/Máy chủ) & Firebase Realtime Database
   async function awardStarsToFirebase(studentId, stars, reason) {
-    if (!window.FirebaseSync || !window.FirebaseSync.isInitialized) {
-      console.warn('Firebase chưa sẵn sàng, lưu cục bộ.');
-      return;
+    const numStars = Number(stars);
+
+    // 1. Cập nhật cục bộ & đồng bộ StorageManager / Máy chủ
+    if (window.StorageManager) {
+      try {
+        let localData = window.StorageManager.loadData();
+        if (localData && localData.students) {
+          const s = localData.students.find(st => st.id === studentId);
+          if (s) {
+            s.stars = (s.stars || 0) + numStars;
+            const grp = (localData.groups || []).find(g => g.id === s.group);
+            if (grp) grp.stars = (grp.stars || 0) + numStars;
+            if (!s.logs) s.logs = [];
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            s.logs.unshift({
+              id: 'log-ai-' + Date.now(),
+              time: timeStr,
+              points: numStars,
+              reason: reason,
+              icon: '📸'
+            });
+            if (s.logs.length > 30) s.logs = s.logs.slice(0, 30);
+            const hatchReq = (window.EggEvolution && window.EggEvolution.getHatchRequirement)
+              ? window.EggEvolution.getHatchRequirement(s)
+              : { threshold: 100 };
+            if (s.stars >= hatchReq.threshold) {
+              if (!s.hatchedAt) s.hatchedAt = Date.now();
+              if (!s.firstHatchedAt) s.firstHatchedAt = Date.now();
+            }
+            localData.lastUpdated = Date.now();
+            window.StorageManager.saveData(localData);
+            if (typeof window.StorageManager.pushToServer === 'function') {
+              window.StorageManager.pushToServer(localData).catch(() => {});
+            }
+            if (activeStudent) {
+              activeStudent.stars = s.stars;
+              updateActiveStudentUI(s);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Lỗi lưu điểm cục bộ:', err);
+      }
     }
 
-    try {
-      const ref = (window.FirebaseSync && typeof window.FirebaseSync.getClassRef === 'function')
-        ? window.FirebaseSync.getClassRef()
-        : window.FirebaseSync.db.ref('classData');
-      const snap = await ref.once('value');
-      let classData = snap.val();
-      if (!classData || !classData.students) return;
-
-      const student = classData.students.find(s => s.id === studentId);
-      if (!student) return;
-
-      student.stars = (student.stars || 0) + Number(stars);
-
-      const group = (classData.groups || []).find(g => g.id === student.group);
-      if (group) group.stars = (group.stars || 0) + Number(stars);
-
-      if (!student.logs) student.logs = [];
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      student.logs.unshift({
-        id: 'log-ai-' + Date.now(),
-        time: timeStr,
-        points: Number(stars),
-        reason: reason,
-        icon: '📸'
-      });
-      if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
-
-      // Kiểm tra mốc nở trứng
-      const hatchReq = (window.EggEvolution && window.EggEvolution.getHatchRequirement) 
-        ? window.EggEvolution.getHatchRequirement(student) 
-        : { threshold: 100 };
-      if (student.stars >= hatchReq.threshold) {
-        if (!student.hatchedAt) student.hatchedAt = Date.now();
-        if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
+    // 2. Đồng bộ lên Firebase Đám Mây nếu có kết nối
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      try {
+        const ref = (typeof window.FirebaseSync.getClassRef === 'function')
+          ? window.FirebaseSync.getClassRef()
+          : window.FirebaseSync.db.ref('classData');
+        const snap = await ref.once('value');
+        let classData = snap.val();
+        if (classData && classData.students) {
+          const student = classData.students.find(s => s.id === studentId);
+          if (student) {
+            student.stars = (student.stars || 0) + numStars;
+            const group = (classData.groups || []).find(g => g.id === student.group);
+            if (group) group.stars = (group.stars || 0) + numStars;
+            if (!student.logs) student.logs = [];
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            student.logs.unshift({
+              id: 'log-ai-' + Date.now(),
+              time: timeStr,
+              points: numStars,
+              reason: reason,
+              icon: '📸'
+            });
+            if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
+            const hatchReq = (window.EggEvolution && window.EggEvolution.getHatchRequirement) 
+              ? window.EggEvolution.getHatchRequirement(student) 
+              : { threshold: 100 };
+            if (student.stars >= hatchReq.threshold) {
+              if (!student.hatchedAt) student.hatchedAt = Date.now();
+              if (!student.firstHatchedAt) student.firstHatchedAt = Date.now();
+            }
+            classData.lastUpdated = Date.now();
+            await ref.set(classData);
+            if (activeStudent) {
+              activeStudent.stars = student.stars;
+              updateActiveStudentUI(student);
+            }
+            console.log(`✅ Đã cộng +${numStars} sao cho bé ${student.name} lên Firebase!`);
+          }
+        }
+      } catch (e) {
+        console.error('Lỗi cộng sao Firebase:', e);
       }
-
-      classData.lastUpdated = Date.now();
-      await ref.set(classData);
-
-      // Cập nhật lại UI số sao
-      activeStudent.stars = student.stars;
-      updateActiveStudentUI(student);
-
-      console.log(`✅ Đã cộng +${stars} sao cho bé ${student.name} lên Firebase!`);
-    } catch (e) {
-      console.error('Lỗi cộng sao Firebase:', e);
     }
   }
 

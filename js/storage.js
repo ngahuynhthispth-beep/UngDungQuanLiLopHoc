@@ -26,7 +26,7 @@ const StorageManager = {
       }
     }
     try {
-      const saved = localStorage.getItem('lop_hoc_current_class_id');
+      const saved = localStorage.getItem('lop_hoc_current_class_id') || localStorage.getItem('magic_zoo_class_id');
       if (saved) {
         const str = saved.trim();
         if (this.isPrimaryClass(str)) return '1/8';
@@ -45,6 +45,7 @@ const StorageManager = {
     }
     try {
       localStorage.setItem('lop_hoc_current_class_id', clean);
+      localStorage.setItem('magic_zoo_class_id', clean);
     } catch (e) {}
     if (window.FirebaseSync && typeof window.FirebaseSync.setClassId === 'function') {
       window.FirebaseSync.setClassId(clean);
@@ -188,7 +189,7 @@ const StorageManager = {
 
   loadData() {
     const storageKey = this.getStorageKey();
-    const isDefaultClass = (this.getClassId() === '1A');
+    const isDefaultClass = this.isPrimaryClass(this.getClassId());
 
     if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
       try {
@@ -201,7 +202,7 @@ const StorageManager = {
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         data = JSON.parse(raw);
-        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua (chỉ áp dụng bảo vệ cho 1A)
+        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua (chỉ áp dụng bảo vệ cho lớp chính)
         if (isDefaultClass && data && data.students && (data.students.length < 30 || data.students.some(s => s.name === 'Đỗ Đức Anh'))) {
           data = null;
         }

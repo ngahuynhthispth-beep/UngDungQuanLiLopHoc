@@ -659,7 +659,7 @@
 
     <!-- Nút Lối Tắt Soi Bài Bằng Camera Dành Cho Bé -->
     <div style="margin-bottom: 12px;">
-      <a href="soibai.html" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; text-decoration: none; padding: 12px 16px; border-radius: 18px; font-weight: 800; font-size: 14px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: all 0.2s;">
+      <a href="soibai.html" id="linkParentSoiBai" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; text-decoration: none; padding: 12px 16px; border-radius: 18px; font-weight: 800; font-size: 14px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: all 0.2s;">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 22px;">📸</span>
           <div style="text-align: left;">
@@ -1139,12 +1139,12 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261016_v3"></script>
-  <script src="js/firebase-sync.js?v=20261016_v3"></script>
-  <script src="js/audio.js?v=20261016_v3"></script>
-  <script src="js/egg-evolution.js?v=20261016_v3"></script>
-  <script src="js/storage.js?v=20261016_v3"></script>
-  <script src="js/wheel.js?v=20261016_v3"></script>
+  <script src="js/firebase-config.js?v=20261017_v5"></script>
+  <script src="js/firebase-sync.js?v=20261017_v5"></script>
+  <script src="js/audio.js?v=20261017_v5"></script>
+  <script src="js/egg-evolution.js?v=20261017_v5"></script>
+  <script src="js/storage.js?v=20261017_v5"></script>
+  <script src="js/wheel.js?v=20261017_v5"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1831,6 +1831,13 @@
         document.getElementById('parentStarsTotal').textContent = student.stars;
         document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, hatchThreshold);
         document.getElementById('parentLikesCount').textContent = student.likes || 0;
+
+        // Cập nhật đường link Soi Bài AI kèm mã lớp & id học sinh
+        const linkParentSoiBai = document.getElementById('linkParentSoiBai');
+        if (linkParentSoiBai) {
+          const curClass = (window.FirebaseSync && typeof window.FirebaseSync.getClassId === 'function') ? window.FirebaseSync.getClassId() : '1/8';
+          linkParentSoiBai.href = `soibai.html?class=${encodeURIComponent(curClass)}&student=${encodeURIComponent(student.id)}`;
+        }
 
         // Tiến trình ấp trứng & nở (100 sao hoặc 150 sao)
         const parentEvoTitle = document.getElementById('parentEvoTitle');
