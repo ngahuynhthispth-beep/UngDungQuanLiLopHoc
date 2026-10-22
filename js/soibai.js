@@ -50,6 +50,27 @@
   const btnRewriteWork = document.getElementById('btnRewriteWork');
   const btnScanAnother = document.getElementById('btnScanAnother');
 
+  // Kiosk Auto Mode DOM Elements (Trạm Tự Soi Bài)
+  const btnVoiceName = document.getElementById('btnVoiceName');
+  const voiceStatusText = document.getElementById('voiceStatusText');
+  const voiceFeedbackBox = document.getElementById('voiceFeedbackBox');
+  const voiceFeedbackIcon = document.getElementById('voiceFeedbackIcon');
+  const voiceFeedbackMessage = document.getElementById('voiceFeedbackMessage');
+  const btnToggleAutoKiosk = document.getElementById('btnToggleAutoKiosk');
+  const kioskCountdownOverlay = document.getElementById('kioskCountdownOverlay');
+  const countdownNumber = document.getElementById('countdownNumber');
+  const countdownBarFill = document.getElementById('countdownBarFill');
+  const kioskNextStudentCountdown = document.getElementById('kioskNextStudentCountdown');
+  const nextStudentCountdownSec = document.getElementById('nextStudentCountdownSec');
+  const nextStudentProgressBar = document.getElementById('nextStudentProgressBar');
+  const btnNextStudentNow = document.getElementById('btnNextStudentNow');
+
+  let isAutoKioskEnabled = true;
+  let kioskCountdownTimer = null;
+  let kioskNextResetTimer = null;
+  let speechRecognizer = null;
+  let isListeningVoice = false;
+
   // Teacher Admin Modal
   const teacherAdminModal = document.getElementById('teacherAdminModal');
   const btnOpenTeacherAdmin = document.getElementById('btnOpenTeacherAdmin');
@@ -265,6 +286,9 @@
         }
       } catch (e) {}
     }
+
+    // Khởi tạo nhận diện giọng nói cho Trạm Tự Soi Bài Kiosk
+    speechRecognizer = initVoiceRecognition();
   }
 
   function renderStudentsList(students) {
@@ -301,8 +325,12 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('.student-pick-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        activeStudent = st;
-        updateActiveStudentUI(st);
+        if (isAutoKioskEnabled) {
+          selectStudentAndStartAutoFlow(st);
+        } else {
+          activeStudent = st;
+          updateActiveStudentUI(st);
+        }
       });
 
       studentSelectGrid.appendChild(btn);
@@ -430,60 +458,341 @@
   }
 
   // --- CÔNG NGHỆ CHẤM BÀI THÔNG MINH (AI + HEURISTICS) ---
-  if (btnAnalyzeWork) {
-    btnAnalyzeWork.addEventListener('click', async () => {
-      if (!activeStudent) {
-        alert('👉 Bé hãy chọn tên của mình ở Bước 1 trước khi chấm bài nhé!');
-        document.querySelector('.soibai-container').scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
+  async function runGradingAnalysis() {
+    if (!activeStudent) {
+      alert('👉 Bé hãy chọn tên của mình ở Bước 1 trước khi chấm bài nhé!');
+      document.querySelector('.soibai-container').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
 
-      const isMath = currentTask && currentTask.type === 'math';
-      if (!capturedImageDataUrl) {
-        alert(isMath ? '👉 Vui lòng chụp hoặc tải ảnh bài toán lên trước nhé!' : '👉 Vui lòng chụp hoặc tải ảnh bài viết lên trước nhé!');
-        return;
-      }
+    const isMath = currentTask && currentTask.type === 'math';
+    if (!capturedImageDataUrl) {
+      alert(isMath ? '👉 Vui lòng chụp hoặc tải ảnh bài toán lên trước nhé!' : '👉 Vui lòng chụp hoặc tải ảnh bài viết lên trước nhé!');
+      return;
+    }
 
-      // Bật hiệu ứng quét laser
-      scanLaserBeam.style.display = 'block';
+    // Bật hiệu ứng quét laser
+    scanLaserBeam.style.display = 'block';
+    if (btnAnalyzeWork) {
       btnAnalyzeWork.disabled = true;
       btnAnalyzeWork.innerHTML = isMath 
         ? '<span>⏳</span> ĐANG SOI TỪNG PHÉP TÍNH...' 
         : '<span>⏳</span> ĐANG SOI TỪNG NÉT CHỮ...';
+    }
 
-      try {
-        const apiKey = localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
-        let result = null;
+    try {
+      const apiKey = localStorage.getItem(STORAGE_KEY_GEMINI_KEY) || '';
+      let result = null;
 
-        if (apiKey) {
-          result = await gradeWithGeminiVision(apiKey, capturedImageDataUrl, currentTask);
-        } else {
-          // Thuật toán Computer Vision nội bộ phân tích độ tương phản và nét chữ / phép tính
-          result = await gradeWithVisionHeuristics(capturedImageDataUrl, currentTask);
-        }
+      if (apiKey) {
+        result = await gradeWithGeminiVision(apiKey, capturedImageDataUrl, currentTask);
+      } else {
+        // Thuật toán Computer Vision nội bộ phân tích độ tương phản và nét chữ / phép tính
+        result = await gradeWithVisionHeuristics(capturedImageDataUrl, currentTask);
+      }
 
-        lastGradingResult = result;
-        await showGradingResult(result);
-      } catch (err) {
-        console.error('Lỗi phân tích bài:', err);
-        // Fallback nhẹ nhàng
-        const fallbackRes = {
-          tier: 2,
-          passed: true,
-          stars: 5,
-          title: isMath ? 'ĐẠT YÊU CẦU - 5 SAO TOÁN! ⭐' : 'ĐẠT YÊU CẦU - 5 SAO! ⭐',
-          comment: isMath
-            ? `Bài toán của ${activeStudent.name} khá sạch đẹp, các phép tính rõ ràng. Cô cộng 5 sao thưởng cho con nhé!`
-            : `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 5 sao thưởng cho con nhé!`
-        };
-        lastGradingResult = fallbackRes;
-        await showGradingResult(fallbackRes);
-      } finally {
-        scanLaserBeam.style.display = 'none';
+      lastGradingResult = result;
+      await showGradingResult(result);
+    } catch (err) {
+      console.error('Lỗi phân tích bài:', err);
+      // Fallback nhẹ nhàng
+      const fallbackRes = {
+        tier: 2,
+        passed: true,
+        stars: 3,
+        title: isMath ? 'ĐẠT YÊU CẦU - 3 SAO TOÁN! ⭐' : 'ĐẠT YÊU CẦU - 3 SAO! ⭐',
+        comment: isMath
+          ? `Bài toán của ${activeStudent.name} khá sạch đẹp, các phép tính rõ ràng. Cô cộng 3 sao thưởng cho con nhé!`
+          : `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 3 sao thưởng cho con nhé!`
+      };
+      lastGradingResult = fallbackRes;
+      await showGradingResult(fallbackRes);
+    } finally {
+      scanLaserBeam.style.display = 'none';
+      if (btnAnalyzeWork) {
         btnAnalyzeWork.disabled = false;
         btnAnalyzeWork.innerHTML = '<span>⚡</span> BẮT ĐẦU CHẤM BÀI NGAY!';
       }
+    }
+  }
+
+  if (btnAnalyzeWork) {
+    btnAnalyzeWork.addEventListener('click', runGradingAnalysis);
+  }
+
+  // --- HỆ THỐNG TRẠM TỰ PHỤC VỤ (KIOSK AUTO FLOW) ---
+  function normalizeVietnamese(str) {
+    return (str || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim();
+  }
+
+  function initVoiceRecognition() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn('Trình duyệt không hỗ trợ Web Speech API');
+      if (voiceStatusText) {
+        voiceStatusText.textContent = 'Bé hãy chạm vào tên mình ở danh sách bên dưới nhé!';
+      }
+      return null;
+    }
+
+    const reco = new SpeechRecognition();
+    reco.lang = 'vi-VN';
+    reco.continuous = false;
+    reco.interimResults = false;
+    reco.maxAlternatives = 3;
+
+    reco.onstart = () => {
+      isListeningVoice = true;
+      if (btnVoiceName) btnVoiceName.classList.add('listening');
+      if (voiceFeedbackBox) {
+        voiceFeedbackBox.style.display = 'flex';
+        voiceFeedbackIcon.textContent = '🎙️';
+        voiceFeedbackMessage.innerHTML = '<strong>Đang lắng nghe...</strong> Bé hãy nói to tên mình nhé!';
+      }
+    };
+
+    reco.onresult = (event) => {
+      const results = event.results;
+      if (!results || results.length === 0) return;
+      const spokenText = results[0][0].transcript;
+      console.log('🎤 Giọng nói nhận diện được:', spokenText);
+      handleSpokenStudentName(spokenText);
+    };
+
+    reco.onerror = (event) => {
+      console.warn('Lỗi nhận diện giọng nói:', event.error);
+      isListeningVoice = false;
+      if (btnVoiceName) btnVoiceName.classList.remove('listening');
+      if (voiceFeedbackBox) {
+        voiceFeedbackIcon.textContent = '💡';
+        voiceFeedbackMessage.innerHTML = 'Chưa nghe rõ tên con. Bé hãy bấm nói lại hoặc chạm vào tên mình bên dưới nhé!';
+      }
+    };
+
+    reco.onend = () => {
+      isListeningVoice = false;
+      if (btnVoiceName) btnVoiceName.classList.remove('listening');
+    };
+
+    return reco;
+  }
+
+  function handleSpokenStudentName(spokenText) {
+    if (!currentClassData || !currentClassData.students) return;
+    const students = currentClassData.students;
+    const normSpoken = normalizeVietnamese(spokenText);
+
+    if (voiceFeedbackBox) {
+      voiceFeedbackBox.style.display = 'flex';
+      voiceFeedbackIcon.textContent = '🔍';
+      voiceFeedbackMessage.innerHTML = `Bé vừa nói: <em>"${spokenText}"</em>. Đang tìm tên con...`;
+    }
+
+    // 1. Phân loại theo độ trùng khớp
+    let exactMatches = [];
+    let shortNameMatches = [];
+    let lastNameMatches = [];
+
+    students.forEach(st => {
+      const fullNorm = normalizeVietnamese(st.name);
+      const parts = fullNorm.split(/\s+/);
+      const lastName = parts[parts.length - 1]; // "an", "anh"
+      const shortName = parts.slice(-2).join(' '); // "minh an", "phuc anh"
+
+      if (normSpoken === fullNorm || (shortName && normSpoken === shortName)) {
+        exactMatches.push(st);
+      } else if (normSpoken.includes(fullNorm) || (shortName && normSpoken.includes(shortName))) {
+        shortNameMatches.push(st);
+      } else if (normSpoken.includes(lastName) && lastName.length >= 2) {
+        lastNameMatches.push(st);
+      }
     });
+
+    let chosenStudent = null;
+    if (exactMatches.length === 1) {
+      chosenStudent = exactMatches[0];
+    } else if (shortNameMatches.length === 1) {
+      chosenStudent = shortNameMatches[0];
+    } else if (shortNameMatches.length > 1) {
+      chosenStudent = shortNameMatches[0];
+    } else if (lastNameMatches.length === 1) {
+      chosenStudent = lastNameMatches[0];
+    }
+
+    if (chosenStudent) {
+      if (voiceFeedbackBox) {
+        voiceFeedbackIcon.textContent = '🎉';
+        voiceFeedbackMessage.innerHTML = `Đã nhận diện: <strong style="color: #4F46E5; font-size: 15px;">${chosenStudent.name}</strong> 🌸`;
+      }
+      selectStudentAndStartAutoFlow(chosenStudent);
+    } else if (lastNameMatches.length > 1) {
+      const namesList = lastNameMatches.map(s => s.name).join(', ');
+      if (voiceFeedbackBox) {
+        voiceFeedbackIcon.textContent = '❓';
+        voiceFeedbackMessage.innerHTML = `Có nhiều bạn trùng tên (${namesList}). Bé hãy chạm vào tên mình bên dưới nhé!`;
+      }
+      speakVietnamese('Có nhiều bạn trùng tên, con hãy chạm vào tên mình trên màn hình nhé!');
+    } else {
+      if (voiceFeedbackBox) {
+        voiceFeedbackIcon.textContent = '💡';
+        voiceFeedbackMessage.innerHTML = `Chưa nghe rõ tên con. Bé hãy bấm nói lại hoặc chạm vào tên mình bên dưới nhé!`;
+      }
+      speakVietnamese('Cô chưa nghe rõ tên con. Con hãy bấm nói lại hoặc chạm vào tên mình trên màn hình nhé!');
+    }
+  }
+
+  async function selectStudentAndStartAutoFlow(st) {
+    activeStudent = st;
+    updateActiveStudentUI(st);
+    document.querySelectorAll('.student-pick-btn').forEach(b => {
+      if (b.textContent.includes(st.name)) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+
+    if (!isAutoKioskEnabled) return;
+
+    // Loa chào bé
+    speakVietnamese(`Chào bạn ${st.name}! Bé hãy đặt vở ngay ngắn vào khung nhé!`);
+
+    // Cuộn nhẹ xuống camera
+    if (cameraViewport) {
+      cameraViewport.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Tự động bật camera nếu chưa mở
+    if (!cameraStream) {
+      await startCamera();
+    }
+
+    // Bắt đầu đếm ngược 5 giây đặt vở vào khung
+    startAutoCaptureCountdown(5);
+  }
+
+  function startAutoCaptureCountdown(seconds = 5) {
+    if (kioskCountdownTimer) {
+      clearInterval(kioskCountdownTimer);
+      kioskCountdownTimer = null;
+    }
+    if (!kioskCountdownOverlay || !countdownNumber) return;
+
+    let timeLeft = seconds;
+    kioskCountdownOverlay.style.display = 'flex';
+    countdownNumber.textContent = timeLeft;
+    if (countdownBarFill) {
+      countdownBarFill.style.width = '100%';
+      countdownBarFill.style.transition = 'none';
+      setTimeout(() => {
+        if (countdownBarFill) countdownBarFill.style.transition = 'width 1s linear';
+      }, 50);
+    }
+
+    kioskCountdownTimer = setInterval(async () => {
+      timeLeft--;
+      if (countdownNumber) countdownNumber.textContent = timeLeft;
+      if (countdownBarFill) countdownBarFill.style.width = `${(timeLeft / seconds) * 100}%`;
+
+      if (timeLeft <= 0) {
+        clearInterval(kioskCountdownTimer);
+        kioskCountdownTimer = null;
+        if (kioskCountdownOverlay) kioskCountdownOverlay.style.display = 'none';
+
+        // Tự động chụp ảnh
+        snapPhoto();
+
+        // Tự động chấm điểm ngay sau 5s
+        await runGradingAnalysis();
+      }
+    }, 1000);
+  }
+
+  function startNextStudentCountdown(seconds = 5) {
+    if (kioskNextResetTimer) {
+      clearInterval(kioskNextResetTimer);
+      kioskNextResetTimer = null;
+    }
+    if (!kioskNextStudentCountdown || !nextStudentCountdownSec) return;
+
+    let timeLeft = seconds;
+    kioskNextStudentCountdown.style.display = 'block';
+    nextStudentCountdownSec.textContent = `${timeLeft}s`;
+    if (nextStudentProgressBar) {
+      nextStudentProgressBar.style.width = '100%';
+      nextStudentProgressBar.style.transition = 'none';
+      setTimeout(() => {
+        if (nextStudentProgressBar) nextStudentProgressBar.style.transition = 'width 1s linear';
+      }, 50);
+    }
+
+    kioskNextResetTimer = setInterval(() => {
+      timeLeft--;
+      if (nextStudentCountdownSec) nextStudentCountdownSec.textContent = `${timeLeft}s`;
+      if (nextStudentProgressBar) nextStudentProgressBar.style.width = `${(timeLeft / seconds) * 100}%`;
+
+      if (timeLeft <= 0) {
+        clearInterval(kioskNextResetTimer);
+        kioskNextResetTimer = null;
+        resetKioskForNextStudent();
+      }
+    }, 1000);
+  }
+
+  function resetKioskForNextStudent() {
+    if (kioskCountdownTimer) {
+      clearInterval(kioskCountdownTimer);
+      kioskCountdownTimer = null;
+    }
+    if (kioskNextResetTimer) {
+      clearInterval(kioskNextResetTimer);
+      kioskNextResetTimer = null;
+    }
+
+    capturedImageDataUrl = null;
+    activeStudent = null;
+
+    if (annotationCanvas) {
+      annotationCanvas.style.display = 'none';
+      const ctx = annotationCanvas.getContext('2d');
+      ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+    }
+    if (annotatedErrorsBox) annotatedErrorsBox.style.display = 'none';
+    if (gradingResultBox) gradingResultBox.style.display = 'none';
+    if (kioskNextStudentCountdown) kioskNextStudentCountdown.style.display = 'none';
+    if (kioskCountdownOverlay) kioskCountdownOverlay.style.display = 'none';
+
+    if (selectedStudentLabel) selectedStudentLabel.textContent = 'Chưa chọn';
+    if (selectedStudentStarsPill) selectedStudentStarsPill.style.display = 'none';
+    document.querySelectorAll('.student-pick-btn').forEach(b => b.classList.remove('active'));
+
+    // Đưa camera về trạng thái ban đầu
+    stopCamera();
+    if (capturedImagePreview) capturedImagePreview.style.display = 'none';
+    if (cameraVideo) cameraVideo.style.display = 'none';
+    if (cameraPlaceholder) cameraPlaceholder.style.display = 'block';
+    if (btnStartCamera) btnStartCamera.style.display = 'inline-flex';
+    if (btnSnapPhoto) btnSnapPhoto.style.display = 'none';
+    if (btnRetakePhoto) btnRetakePhoto.style.display = 'none';
+    if (btnAnalyzeWork) btnAnalyzeWork.style.display = 'none';
+
+    // Cuộn lên đầu trang trạm tự phục vụ
+    const kioskPanel = document.getElementById('kioskAutoPanel');
+    if (kioskPanel) {
+      kioskPanel.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (voiceFeedbackBox) {
+      voiceFeedbackBox.style.display = 'none';
+    }
+
+    // Mời bạn tiếp theo
+    speakVietnamese('Mời bạn tiếp theo bước lên nói tên nhé!');
   }
 
   // --- CÔNG NGHỆ BÚT ĐỎ CÔ GIÁO: GẠCH CHÂN CHỖ SAI & ĐÓNG DẤU LỜI PHÊ ---
@@ -1177,6 +1486,10 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         : `Bài viết của ${studentName} chưa đúng mẫu hoặc còn tẩy xoá. Cô đã gạch chân những chỗ con viết chưa đạt. Con hãy nhìn bài mẫu và viết lại nhé!`);
     }
 
+    if (isAutoKioskEnabled) {
+      startNextStudentCountdown(5);
+    }
+
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -1308,6 +1621,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
   if (btnRewriteWork) {
     btnRewriteWork.addEventListener('click', () => {
+      if (kioskNextResetTimer) { clearInterval(kioskNextResetTimer); kioskNextResetTimer = null; }
+      if (kioskNextStudentCountdown) kioskNextStudentCountdown.style.display = 'none';
       capturedImageDataUrl = null;
       if (annotationCanvas) {
         annotationCanvas.style.display = 'none';
@@ -1328,20 +1643,52 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
   if (btnScanAnother) {
     btnScanAnother.addEventListener('click', () => {
-      capturedImageDataUrl = null;
-      if (annotationCanvas) {
-        annotationCanvas.style.display = 'none';
-        const ctx = annotationCanvas.getContext('2d');
-        ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+      resetKioskForNextStudent();
+    });
+  }
+
+  if (btnNextStudentNow) {
+    btnNextStudentNow.addEventListener('click', () => {
+      resetKioskForNextStudent();
+    });
+  }
+
+  if (btnToggleAutoKiosk) {
+    btnToggleAutoKiosk.addEventListener('click', () => {
+      isAutoKioskEnabled = !isAutoKioskEnabled;
+      if (isAutoKioskEnabled) {
+        btnToggleAutoKiosk.classList.remove('off');
+        btnToggleAutoKiosk.innerHTML = '⚡ Tự Động: <strong>BẬT</strong>';
+      } else {
+        btnToggleAutoKiosk.classList.add('off');
+        btnToggleAutoKiosk.innerHTML = '⚡ Tự Động: <strong>TẮT</strong>';
+        if (kioskCountdownTimer) { clearInterval(kioskCountdownTimer); kioskCountdownTimer = null; }
+        if (kioskNextResetTimer) { clearInterval(kioskNextResetTimer); kioskNextResetTimer = null; }
+        if (kioskCountdownOverlay) kioskCountdownOverlay.style.display = 'none';
+        if (kioskNextStudentCountdown) kioskNextStudentCountdown.style.display = 'none';
       }
-      if (annotatedErrorsBox) annotatedErrorsBox.style.display = 'none';
-      gradingResultBox.style.display = 'none';
-      btnAnalyzeWork.style.display = 'none';
-      capturedImagePreview.style.display = 'none';
-      cameraPlaceholder.style.display = 'block';
-      btnStartCamera.style.display = 'inline-flex';
-      btnRetakePhoto.style.display = 'none';
-      btnSnapPhoto.style.display = 'none';
+    });
+  }
+
+  if (btnVoiceName) {
+    btnVoiceName.addEventListener('click', () => {
+      if (!speechRecognizer) {
+        speechRecognizer = initVoiceRecognition();
+      }
+      if (!speechRecognizer) {
+        alert('Trình duyệt hiện tại chưa hỗ trợ giọng nói hoặc micro chưa được bật. Bé hãy chạm vào tên mình ở danh sách bên dưới nhé!');
+        return;
+      }
+      try {
+        if (isListeningVoice) {
+          speechRecognizer.stop();
+        } else {
+          speechRecognizer.start();
+        }
+      } catch (err) {
+        console.warn('Lỗi kích hoạt micro:', err);
+        try { speechRecognizer.start(); } catch (e) {}
+      }
     });
   }
 

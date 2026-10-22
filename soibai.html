@@ -527,6 +527,232 @@
       0% { transform: scale(0.92); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
+
+    /* --- GIAO DIỆN TRẠM TỰ SOI BÀI (KIOSK TỰ ĐỘNG) --- */
+    .kiosk-auto-panel {
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 50%, #F5F3FF 100%);
+      border: 2.5px solid #818CF8;
+      border-radius: 24px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.2);
+    }
+    .kiosk-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .kiosk-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #3730A3;
+      background: #FFFFFF;
+      padding: 5px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .kiosk-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10B981;
+      display: inline-block;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulseGreen 1.6s infinite;
+    }
+    @keyframes pulseGreen {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .btn-toggle-kiosk {
+      border: none;
+      background: #4F46E5;
+      color: #FFFFFF;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .btn-toggle-kiosk.off {
+      background: #94A3B8;
+    }
+    .kiosk-voice-hero {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0;
+    }
+    .btn-voice-large {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+      color: #FFFFFF;
+      border: 3px solid #C7D2FE;
+      border-radius: 20px;
+      padding: 14px 20px;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-align: left;
+    }
+    .btn-voice-large:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(79, 70, 229, 0.45);
+    }
+    .btn-voice-large.listening {
+      background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+      border-color: #FECACA;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.5);
+      animation: listeningWave 1.2s infinite;
+    }
+    @keyframes listeningWave {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    .voice-mic-icon {
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .btn-voice-large.listening .voice-mic-icon {
+      animation: pulseMic 1s infinite alternate;
+    }
+    @keyframes pulseMic {
+      0% { transform: scale(0.9); }
+      100% { transform: scale(1.15); }
+    }
+    .voice-text-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+    .voice-main-title {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+    }
+    .voice-sub-title {
+      font-size: 12px;
+      opacity: 0.9;
+      font-weight: 600;
+    }
+    .voice-feedback-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1.5px solid #C7D2FE;
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #3730A3;
+      animation: popIn 0.3s ease;
+    }
+
+    /* Overlay đếm ngược 5 giây khi đặt vở vào camera */
+    .kiosk-countdown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(2px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      border-radius: inherit;
+      color: #FFFFFF;
+      padding: 20px;
+      box-sizing: border-box;
+      animation: popIn 0.25s ease;
+    }
+    .countdown-badge-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      background: #4F46E5;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .countdown-number {
+      font-size: 84px;
+      font-weight: 900;
+      line-height: 1;
+      color: #FDE047;
+      text-shadow: 0 4px 20px rgba(250, 204, 21, 0.6);
+      margin-bottom: 14px;
+      animation: countPulse 1s infinite;
+    }
+    @keyframes countPulse {
+      0% { transform: scale(1.15); opacity: 1; }
+      50% { transform: scale(0.95); opacity: 0.85; }
+      100% { transform: scale(1.15); opacity: 1; }
+    }
+    .countdown-bar-wrap {
+      width: 80%;
+      max-width: 280px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .countdown-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #FBBF24);
+      width: 100%;
+      transition: width 1s linear;
+    }
+
+    /* Hộp đếm ngược quay về cho bạn tiếp theo */
+    .kiosk-next-box {
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      text-align: center;
+      animation: popIn 0.3s ease;
+    }
+    .btn-next-now {
+      margin-top: 8px;
+      background: #4F46E5;
+      color: #FFFFFF;
+      border: none;
+      padding: 7px 16px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
   </style>
 </head>
 <body class="soi-bai-body">
@@ -551,6 +777,34 @@
   </header>
 
   <main class="soibai-container">
+
+    <!-- TRẠM TỰ SOI BÀI THÔNG MINH (KIOSK TỰ ĐỘNG CHO HỌC SINH) -->
+    <section class="kiosk-auto-panel" id="kioskAutoPanel">
+      <div class="kiosk-header">
+        <div class="kiosk-status-badge">
+          <span class="kiosk-pulse-dot"></span> 🤖 TRẠM TỰ PHỤC VỤ (HỌC SINH TỰ SOI BÀI)
+        </div>
+        <button type="button" id="btnToggleAutoKiosk" class="btn-toggle-kiosk" title="Bật hoặc Tắt chế độ tự động">
+          ⚡ Tự Động: <strong>BẬT</strong>
+        </button>
+      </div>
+
+      <div class="kiosk-voice-hero">
+        <button type="button" id="btnVoiceName" class="btn-voice-large" title="Bé bấm vào đây và nói to tên mình nhé!">
+          <span class="voice-mic-icon">🎙️</span>
+          <div class="voice-text-wrap">
+            <span class="voice-main-title">BÉ BẤM VÀO ĐÂY &amp; NÓI TÊN MÌNH</span>
+            <span class="voice-sub-title" id="voiceStatusText">Ví dụ: "Con là Minh An", "Phúc Anh", "Bảo Châu"...</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Khung phản hồi trạng thái nhận diện giọng nói -->
+      <div id="voiceFeedbackBox" class="voice-feedback-box" style="display: none;">
+        <span id="voiceFeedbackIcon" style="font-size: 18px;">👂</span>
+        <span id="voiceFeedbackMessage">Đang lắng nghe con nói...</span>
+      </div>
+    </section>
 
     <!-- BƯỚC 1: Chọn Học Sinh -->
     <section class="soibai-card">
@@ -648,6 +902,15 @@
         <div class="camera-overlay-grid" id="cameraOverlayGrid"></div>
         <div class="scan-laser-beam" id="scanLaserBeam"></div>
 
+        <!-- Overlay Đếm Ngược 5 Giây Tự Động Chụp (Kiosk Mode) -->
+        <div id="kioskCountdownOverlay" class="kiosk-countdown-overlay" style="display: none;">
+          <div class="countdown-badge-title">📸 BÉ GIỮ YÊN TRANG VỞ TRONG KHUNG NHÉ!</div>
+          <div class="countdown-number" id="countdownNumber">5</div>
+          <div class="countdown-bar-wrap">
+            <div class="countdown-bar-fill" id="countdownBarFill"></div>
+          </div>
+        </div>
+
         <div class="camera-placeholder" id="cameraPlaceholder">
           <div style="font-size: 48px; margin-bottom: 6px;">📖✨</div>
           <div style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">Sẵn sàng soi bài!</div>
@@ -715,6 +978,19 @@
           </button>
           <button type="button" id="btnScanAnother" class="btn-cam-action primary" style="flex: none; padding: 8px 18px; font-size: 12.5px;">
             ✨ Soi Bài Khác
+          </button>
+        </div>
+
+        <!-- Thanh Đếm Ngược 5 Giây Tự Động Quay Về (Kiosk Loop) -->
+        <div id="kioskNextStudentCountdown" class="kiosk-next-box" style="display: none;">
+          <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin-bottom: 6px;">
+            🔄 Sẵn sàng đón bạn tiếp theo sau: <strong id="nextStudentCountdownSec" style="color: #4F46E5; font-size: 16px;">5s</strong>
+          </div>
+          <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden; margin-bottom: 8px;">
+            <div id="nextStudentProgressBar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #4F46E5, #10B981); transition: width 1s linear;"></div>
+          </div>
+          <button type="button" id="btnNextStudentNow" class="btn-next-now">
+            ✨ Bạn Tiếp Theo Bước Lên Ngay
           </button>
         </div>
       </div>
