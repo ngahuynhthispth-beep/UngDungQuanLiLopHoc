@@ -138,12 +138,22 @@
         if (this.isPrimaryClass(classId)) {
           const remoteIsSample = remoteData && remoteData.students && remoteData.students.some(s => s.name === 'Đỗ Đức Anh') && remoteData.students.length === 16;
           const localIsReal = localData.students.length > 16 || !localData.students.some(s => s.name === 'Đỗ Đức Anh');
+          const localStars = (localData.students || []).reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+          const remoteStars = (remoteData && remoteData.students) ? remoteData.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0) : 0;
+
+          // Nếu máy local có 0 sao trong khi remote đã có sao thật, tuyệt đối không đẩy đè
+          if (localStars < 100 && remoteStars >= 100) {
+            console.warn('Bảo vệ dữ liệu: Local data đang có 0 sao, không đẩy đè lên Firebase!');
+            return false;
+          }
+
           const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
             (localData.students.length > remoteData.students.length) ||
             (remoteIsSample && localIsReal) ||
+            (remoteStars < 100 && localStars >= 100) ||
             ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
 
-          if (needsSync) {
+          if (needsSync && localStars >= 100) {
             console.log('Đang đẩy dữ liệu lớp 1/8 mới nhất lên Firebase Cloud...');
             localData.lastUpdated = Date.now();
             localData.classId = '1/8';
@@ -177,6 +187,14 @@
       ref.on('value', snapshot => {
         const data = snapshot.val();
         if (data && data.students) {
+          // Bảo vệ: Nếu dữ liệu remote từ Firebase bị tụt về 0 sao trong khi lớp có >= 30 em thì không nhận để tránh mất dữ liệu
+          if (this.isPrimaryClass(this.getClassId()) && data.students.length >= 30) {
+            const remoteStars = data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+            if (remoteStars < 100) {
+              console.warn('Cảnh báo: Dữ liệu nhận từ Firebase bị 0 sao, từ chối nhận để bảo vệ điểm học sinh!');
+              return;
+            }
+          }
           callback(data);
         }
       });
@@ -185,6 +203,17 @@
     // Đẩy toàn bộ dữ liệu lớp học lên Firebase
     async setClassData(data) {
       if (!this.isInitialized || !this.db) return false;
+      if (!data || !data.students || data.students.length === 0) return false;
+
+      // Bảo vệ: Tuyệt đối không cho phép đẩy danh sách 0 sao của lớp 1/8 lên Firebase
+      if (this.isPrimaryClass(this.getClassId()) && data.students.length >= 30) {
+        const totalStars = data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+        if (totalStars < 100) {
+          console.warn('Bảo vệ dữ liệu: Từ chối đẩy danh sách lớp 1/8 có tổng sao = 0 lên Firebase!');
+          return false;
+        }
+      }
+
       try {
         data.lastUpdated = Date.now();
         data.classId = this.getClassId();
@@ -430,7 +459,7 @@
     },
 
     // Lưu lựa chọn mốc 100⭐ (Quay quà hoàn về 0) hoặc mốc 200⭐ (Cộng dồn tiếp tục)
-    async setMilestoneChoice(studentId, choice) {
+    async setMilestoneChoice(studentId, choice, milestone = 100) {
       if (!this.isInitialized || !this.db) return false;
       try {
         const ref = this.getClassRef();
@@ -442,6 +471,7 @@
           student.milestoneChoice = choice;
           if (choice === 'accumulate') {
             student.accumulateBonus = true;
+            student.accumulateBonus200 = true;
           }
           classData.lastUpdated = Date.now();
           await ref.set(classData);
@@ -489,6 +519,9 @@
       // Chuyển trứng về 0 và xóa sạch giao diện cũ để tránh dài dòng rối mắt
       student.stars = 0;
       student.hatchedAt = null;
+      student.accumulateBonus = false;
+      student.accumulateBonus200 = false;
+      student.milestoneChoice = null;
       student.giftHistory = [];
       student.giftSessionSource = null;
       student.logs = [{

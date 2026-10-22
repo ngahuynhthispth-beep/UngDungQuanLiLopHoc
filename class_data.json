@@ -4044,7 +4044,8 @@
       "sleepUntil": 0,
       "stars": 100,
       "status": "active",
-      "hatchedAt": null
+      "hatchedAt": 1792630987166,
+      "firstHatchedAt": 1792630987166
     },
     {
       "firstHatchedAt": 1791858813282,

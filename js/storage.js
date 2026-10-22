@@ -165,6 +165,9 @@ const StorageManager = {
   getDefaultData(customClassId, customClassName) {
     const classId = customClassId || this.getClassId();
     const isDefaultClass = this.isPrimaryClass(classId);
+    if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
+      return JSON.parse(JSON.stringify(window.__INITIAL_DATA__));
+    }
     const className = customClassName || (isDefaultClass ? 'Lớp 1/8' : `Lớp ${classId}`);
     return {
       classId: isDefaultClass ? '1/8' : classId,
@@ -277,14 +280,8 @@ const StorageManager = {
   loadData() {
     const storageKey = this.getStorageKey();
     const isDefaultClass = this.isPrimaryClass(this.getClassId());
-
-    if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(window.__INITIAL_DATA__));
-      } catch (e) {}
-      return window.__INITIAL_DATA__;
-    }
     let data = null;
+
     try {
       const raw = localStorage.getItem(storageKey);
       if (raw) {
@@ -297,6 +294,23 @@ const StorageManager = {
     } catch (e) {
       console.warn('Could not read localStorage:', e);
     }
+
+    // Bảo vệ và tự động khôi phục dữ liệu gốc nếu bị mất hoặc rơi về 0 sao
+    if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
+      const initialTotalStars = (window.__INITIAL_DATA__.students || []).reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+      const currentTotalStars = (data && data.students) ? data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0) : 0;
+
+      // Nếu localStorage chưa có dữ liệu, hoặc dữ liệu bị tụt về 0 sao trong khi initialData có đầy đủ điểm thật:
+      if (!data || !data.students || (currentTotalStars < 100 && initialTotalStars >= 100)) {
+        console.log('🔄 Đang khôi phục dữ liệu gốc lớp 1/8 từ Initial Data (Tổng sao: ' + initialTotalStars + ' ⭐)...');
+        data = JSON.parse(JSON.stringify(window.__INITIAL_DATA__));
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(data));
+        } catch (e) {}
+        return data;
+      }
+    }
+
     if (!data) data = this.getDefaultData();
     if (this.ensureHatchedTimestamps(data)) {
       this.saveData(data);
@@ -361,20 +375,41 @@ const StorageManager = {
 
   async pullFromServer() {
     if (window.location.protocol.startsWith('http')) {
-      try {
-        const classId = this.getClassId();
-        const res = await fetch(`/api/sync?class=${encodeURIComponent(classId)}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && json.data.students) {
-            this.ensureHatchedTimestamps(json.data);
-            const storageKey = this.getStorageKey();
-            localStorage.setItem(storageKey, JSON.stringify(json.data));
-            return json.data;
+      const isStaticHosting = window.location.hostname.endsWith('github.io') || window.location.hostname.endsWith('vercel.app');
+      if (!isStaticHosting) {
+        try {
+          const classId = this.getClassId();
+          const res = await fetch(`/api/sync?class=${encodeURIComponent(classId)}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data && json.data.students) {
+              this.ensureHatchedTimestamps(json.data);
+              const storageKey = this.getStorageKey();
+              localStorage.setItem(storageKey, JSON.stringify(json.data));
+              return json.data;
+            }
           }
+        } catch (err) {
+          // Fallback to local
         }
-      } catch (err) {
-        // Fallback to local
+      } else if (this.isPrimaryClass(this.getClassId())) {
+        // Trên GitHub Pages: Kéo trực tiếp class_data.json nếu cần phục hồi dữ liệu gốc
+        try {
+          const res = await fetch('class_data.json?v=' + Date.now());
+          if (res.ok) {
+            const remoteJson = await res.json();
+            if (remoteJson && remoteJson.students && remoteJson.students.length >= 30) {
+              const currentData = this.loadData();
+              const curStars = (currentData.students || []).reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+              const remStars = remoteJson.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+              if (curStars < 100 && remStars >= 100) {
+                this.ensureHatchedTimestamps(remoteJson);
+                localStorage.setItem(this.getStorageKey(), JSON.stringify(remoteJson));
+                return remoteJson;
+              }
+            }
+          }
+        } catch (e) {}
       }
     }
     return this.loadData();
@@ -708,6 +743,7 @@ const StorageManager = {
     const sStars = sCount * 5;
     const totalStars = rStars + wStars + cStars + sStars;
 
+    let lastFbError = null;
     // 1. Ưu tiên hàng đầu: Gửi trực tiếp lên Google Firebase Đám Mây 24/24
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
       try {
@@ -727,12 +763,14 @@ const StorageManager = {
           return fbResult;
         }
       } catch (fbErr) {
+        lastFbError = fbErr;
         console.warn('Lỗi gửi Firebase, chuyển sang kênh API dự phòng:', fbErr);
       }
     }
 
-    // 2. Tiếp theo: Gọi API server để đồng bộ (nếu chạy server nội bộ)
-    if (window.location.protocol.startsWith('http')) {
+    // 2. Tiếp theo: Gọi API server để đồng bộ (chỉ chạy khi có local server Node.js, không chạy trên GitHub Pages tĩnh)
+    const isStaticHosting = window.location.hostname.endsWith('github.io') || window.location.hostname.endsWith('vercel.app');
+    if (!isStaticHosting && window.location.protocol.startsWith('http')) {
       try {
         const classId = this.getClassId();
         const res = await fetch(`/api/homework?class=${encodeURIComponent(classId)}`, {
@@ -764,6 +802,15 @@ const StorageManager = {
         console.error('Lỗi gửi API homework:', err);
         throw new Error('Không thể kết nối đến máy tính của cô giáo! Đường link có thể đã hết hạn hoặc thiết bị mất mạng. Bố mẹ vui lòng xin lại đường link Zalo mới nhất từ cô giáo nhé!');
       }
+    }
+
+    // 3. Nếu chạy trên GitHub Pages mà Firebase bị từ chối quyền (401 Rules Expired)
+    if (isStaticHosting && lastFbError) {
+      const msg = lastFbError.message || '';
+      if (msg.includes('PERMISSION_DENIED') || msg.includes('Permission denied')) {
+        throw new Error('Cơ sở dữ liệu Đám Mây Firebase đang hết hạn quyền truy cập (Rules Expired). Cô giáo hãy vào Firebase Console kích hoạt lại Rules (.read: true, .write: true) để phụ huynh gửi điểm nhé!');
+      }
+      throw new Error('Chưa thể gửi lên Đám Mây: ' + msg);
     }
 
     // Dự phòng lưu nội bộ nếu không có mạng / standalone
@@ -1079,10 +1126,10 @@ const StorageManager = {
     return student;
   },
 
-  async setMilestoneChoice(studentId, choice) {
+  async setMilestoneChoice(studentId, choice, milestone = 100) {
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
       try {
-        await window.FirebaseSync.setMilestoneChoice(studentId, choice);
+        await window.FirebaseSync.setMilestoneChoice(studentId, choice, milestone);
       } catch (e) {}
     }
     if (window.location.protocol.startsWith('http')) {
@@ -1091,7 +1138,7 @@ const StorageManager = {
         await fetch(`/api/milestone-choice?class=${encodeURIComponent(classId)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ studentId, choice })
+          body: JSON.stringify({ studentId, choice, milestone })
         });
       } catch (e) {}
     }
@@ -1101,6 +1148,7 @@ const StorageManager = {
       student.milestoneChoice = choice;
       if (choice === 'accumulate') {
         student.accumulateBonus = true;
+        student.accumulateBonus200 = true;
       }
       this.saveData(data);
     }
@@ -1176,6 +1224,9 @@ const StorageManager = {
 
     student.stars = 0;
     student.hatchedAt = null;
+    student.accumulateBonus = false;
+    student.accumulateBonus200 = false;
+    student.milestoneChoice = null;
     student.giftHistory = [];
     student.giftSessionSource = null;
     student.logs = [{

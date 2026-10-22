@@ -295,6 +295,10 @@ function saveClassData(classId, data) {
   classStore.set(cacheKey, data);
   if (isPrimaryClass(id)) {
     liveClassData = data;
+    try {
+      const initialJsPath = path.join(__dirname, 'js', 'initial-data.js');
+      fs.writeFile(initialJsPath, '// js/initial-data.js\nwindow.__INITIAL_DATA__ = ' + JSON.stringify(data) + ';\n', () => {});
+    } catch (e) {}
   }
   const filePath = getClassFilePath(id);
   fs.writeFile(filePath, JSON.stringify(data, null, 2), () => {});
@@ -304,6 +308,15 @@ function saveClassData(classId, data) {
 function syncToFirebase(data, classId = '1A') {
   if (!data || !data.students || data.students.length === 0) return;
   const id = sanitizeClassId(classId || data.classId);
+  // Bảo vệ: Tuyệt đối không đẩy danh sách 0 sao lên Firebase
+  if (isPrimaryClass(id) && data.students.length >= 30) {
+    const totalStars = data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+    if (totalStars < 100) {
+      console.warn(`[Firebase] Không đẩy dữ liệu lớp [${id}] lên Firebase vì tổng sao = ${totalStars} < 100.`);
+      return;
+    }
+  }
+
   const https = require('https');
   const targetUrl = getFirebaseUrlForClass(id);
   try {
@@ -357,6 +370,17 @@ function pullClassFromFirebase(classId = '1A') {
             return;
           }
 
+          // Bảo vệ: Nếu remote có 0 sao trong khi local có sao thật thì từ chối nhận
+          if (isPrimaryClass(id) && targetData.students.length >= 30) {
+            const remoteStars = remoteData.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+            const targetStars = targetData.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+            if (targetStars >= 100 && remoteStars < 100) {
+              console.warn(`[Firebase] Bỏ qua pull vì dữ liệu remote có tổng sao = ${remoteStars} < 100 trong khi local có ${targetStars} sao.`);
+              syncToFirebase(targetData, id);
+              return;
+            }
+          }
+
           let hasChanges = false;
           let diffStudentName = '';
           let diffStars = 0;
@@ -397,6 +421,7 @@ function pullClassFromFirebase(classId = '1A') {
                 locS.stars = 0;
                 locS.hatchedAt = null;
                 locS.accumulateBonus = false;
+                locS.accumulateBonus200 = false;
                 locS.milestoneChoice = null;
                 locS.giftHistory = [];
                 locS.lastCompletedGifts = remS.lastCompletedGifts || [];
@@ -423,6 +448,10 @@ function pullClassFromFirebase(classId = '1A') {
               if (remS.accumulateBonus !== locS.accumulateBonus) {
                 locS.accumulateBonus = remS.accumulateBonus;
                 locS.milestoneChoice = remS.milestoneChoice;
+                hasChanges = true;
+              }
+              if (remS.accumulateBonus200 !== locS.accumulateBonus200) {
+                locS.accumulateBonus200 = remS.accumulateBonus200;
                 hasChanges = true;
               }
               if (remS.logs && remS.logs.length > (locS.logs || []).length) {
@@ -905,6 +934,7 @@ const server = http.createServer((req, res) => {
             student.stars = 0;
             student.hatchedAt = null;
             student.accumulateBonus = false;
+            student.accumulateBonus200 = false;
             student.milestoneChoice = null;
             student.giftHistory = [];
             student.giftSessionSource = null;
@@ -973,7 +1003,7 @@ const server = http.createServer((req, res) => {
       req.on('data', chunk => { body += chunk; });
       req.on('end', () => {
         try {
-          const { studentId, choice } = JSON.parse(body); // choice: 'accumulate' | 'spin'
+          const { studentId, choice, milestone } = JSON.parse(body); // choice: 'accumulate' | 'spin'
           if (!liveClassData || !liveClassData.students) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Data not initialized' }));
@@ -989,6 +1019,7 @@ const server = http.createServer((req, res) => {
           student.milestoneChoice = choice;
           if (choice === 'accumulate') {
             student.accumulateBonus = true;
+            student.accumulateBonus200 = true;
           }
 
           liveClassData.lastUpdated = Date.now();

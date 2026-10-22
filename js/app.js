@@ -4161,6 +4161,15 @@ document.addEventListener('DOMContentLoaded', () => {
               return;
             }
 
+            // Không nhận dữ liệu nếu Firebase bị tụt sao về 0 trong khi máy đang có điểm thật
+            const curStars = (state.data && state.data.students) ? state.data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0) : 0;
+            const fbStars = fbData.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
+            if (curStars >= 100 && fbStars < 100) {
+              console.warn('Firebase bị 0 sao, giữ nguyên dữ liệu thật và đẩy lên Cloud...');
+              window.FirebaseSync.setClassData(state.data);
+              return;
+            }
+
             const oldMap = new Map((state.data.students || []).map(s => [s.id, s.stars || 0]));
             
             // Tìm bé vừa được cộng điểm từ nhà
