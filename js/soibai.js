@@ -65,30 +65,30 @@
   const btnSaveAdminSettings = document.getElementById('btnSaveAdminSettings');
   const btnAdminResetDefault = document.getElementById('btnAdminResetDefault');
 
-  // Dữ liệu bài mẫu chuẩn cho 2 môn học
+  // Dữ liệu bài mẫu chuẩn cho 2 môn học (3 Mức độ: 5 sao, 3 sao, 0 sao)
   const DEFAULT_WRITING_TASK = {
     title: 'Luyện viết chữ cái: Nét chữ nết người',
     type: 'writing',
-    stars: 10,
-    desc: 'Con hãy viết đúng độ cao ô ly (2 - 2,5 ly), nét chữ ngay ngắn, thẳng hàng và sạch đẹp như bài mẫu dưới đây nhé!',
+    stars: 5,
+    desc: 'Con hãy viết đúng độ cao ô ly, nét bút chì sạch đẹp, đúng mẫu chữ và không tẩy xoá như bài mẫu dưới đây nhé!',
     image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23FFFBEB'/><line x1='50' y1='60' x2='550' y2='60' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='100' x2='550' y2='100' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='140' x2='550' y2='140' stroke='%23F59E0B' stroke-width='2'/><line x1='50' y1='180' x2='550' y2='180' stroke='%23CBD5E1' stroke-width='1.5'/><line x1='50' y1='220' x2='550' y2='220' stroke='%23CBD5E1' stroke-width='1.5'/><text x='70' y='135' font-family='sans-serif' font-size='42' font-weight='bold' fill='%231E293B'>a  b  c  d  e  g  h</text><text x='70' y='215' font-family='sans-serif' font-size='36' fill='%23475569'>Nét chữ nết người Lớp 1A</text><text x='380' y='40' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23B45309'>MẪU CHUẨN Ô LY</text></svg>",
     criteria: [
-      '🌟 Mức 1 (10 ⭐): Chữ viết đều nét, đúng chữ mẫu ô ly, không tẩy xóa.',
-      '⭐ Mức 2 (5 ⭐): Bài viết tương đối đều, tẩy xóa 1 - 3 lỗi (cô gạch chân chỗ sai).',
-      '📝 Mức 3 (Viết lại bài - 0 ⭐): Bài viết chưa đúng chữ mẫu, sai ô ly hoặc lem nhem nhiều.'
+      '🌟 Mức 1 (5 ⭐): Viết chữ sạch đẹp, đúng mẫu chữ ô ly, hoàn toàn không tẩy xoá (nét chì rõ ràng, đều đặn).',
+      '⭐ Mức 2 (3 ⭐): Chữ viết tương đối đúng mẫu, còn lem nhem hoặc có vết tẩy xoá bút chì 1 - 2 chỗ.',
+      '📝 Mức 3 (Làm lại - 0 ⭐): Chữ viết sai mẫu ô ly, tẩy xoá lem nhem nhiều hoặc chưa viết bài.'
     ]
   };
 
   const DEFAULT_MATH_TASK = {
     title: 'Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10',
     type: 'math',
-    stars: 10,
-    desc: 'Bé hãy tính nhẩm cẩn thận, viết số ngay ngắn và ghi đúng kết quả của các phép tính dưới đây nhé!',
+    stars: 5,
+    desc: 'Bé hãy tính nhẩm cẩn thận, làm kết quả chính xác 100%, chữ số bút chì rõ ràng và trang vở sạch đẹp nhé!',
     image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' viewBox='0 0 600 300'><rect width='600' height='300' fill='%23F0FDF4'/><rect x='30' y='25' width='540' height='250' rx='16' fill='%23FFFFFF' stroke='%2386EFAC' stroke-width='2'/><text x='50' y='65' font-family='sans-serif' font-size='20' font-weight='bold' fill='%23166534'>ĐỀ TOÁN LỚP 1: TÍNH NHẨM &amp; SO SÁNH</text><line x1='50' y1='80' x2='550' y2='80' stroke='%23BBF7D0' stroke-width='2'/><text x='60' y='130' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>1)  3 + 2 = 5</text><text x='320' y='130' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>2)  7 - 4 = 3</text><text x='60' y='190' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>3)  8 + 2 = 10</text><text x='320' y='190' font-family='sans-serif' font-size='28' font-weight='bold' fill='%231E293B'>4)  9 - 5 = 4</text><text x='60' y='245' font-family='sans-serif' font-size='24' font-weight='bold' fill='%23059669'>5)  6 &gt; 4     6)  7 = 7</text><text x='390' y='65' font-family='sans-serif' font-size='14' font-weight='bold' fill='%23047857'>CHUẨN KIẾN THỨC</text></svg>",
     criteria: [
-      '🌟 Mức 1 (10 ⭐): Làm đúng 100% tất cả các phép tính, chữ số rõ nét, sạch đẹp.',
-      '⭐ Mức 2 (5 ⭐): Đúng phần lớn, sai hoặc tẩy xóa 1 - 2 phép tính (cô gạch chân câu sai để con sửa).',
-      '📝 Mức 3 (Tính lại bài - 0 ⭐): Sai từ 3 phép tính trở lên hoặc chưa hoàn thành trang toán.'
+      '🌟 Mức 1 (5 ⭐): Kết quả chính xác 100%, chữ số bút chì rõ nét, sạch đẹp, không tẩy xoá.',
+      '⭐ Mức 2 (3 ⭐): Đúng phần lớn, làm sai hoặc có vết tẩy xoá bút chì 1 - 2 phép tính (cô gạch chân để sửa).',
+      '📝 Mức 3 (Làm lại - 0 ⭐): Sai từ 3 phép tính trở lên, tẩy xoá lem nhem hoặc chưa hoàn thành trang toán.'
     ]
   };
 
@@ -98,7 +98,15 @@
     try {
       const saved = localStorage.getItem(STORAGE_KEY_SAMPLE_TASK);
       if (saved) {
-        return Object.assign({}, DEFAULT_SAMPLE_TASK, JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (parsed.stars > 5 || (parsed.criteria && parsed.criteria.some(c => c.includes('10 ⭐')))) {
+          const baseTask = parsed.type === 'math' ? DEFAULT_MATH_TASK : DEFAULT_WRITING_TASK;
+          parsed.stars = 5;
+          parsed.criteria = baseTask.criteria;
+          parsed.desc = baseTask.desc;
+          saveSampleTask(parsed);
+        }
+        return Object.assign({}, DEFAULT_SAMPLE_TASK, parsed);
       }
     } catch (e) {}
     return DEFAULT_SAMPLE_TASK;
@@ -127,7 +135,7 @@
     const icon = isMath ? '🔢' : '✍️';
     if (sampleTaskTitle) sampleTaskTitle.innerHTML = `<span>${icon}</span> ${currentTask.title}`;
     if (sampleTaskDesc) sampleTaskDesc.textContent = currentTask.desc;
-    if (sampleTaskRewardBadge) sampleTaskRewardBadge.textContent = `🌟 Thưởng: Lên tới +10 ⭐`;
+    if (sampleTaskRewardBadge) sampleTaskRewardBadge.textContent = `🌟 Thưởng: Lên tới +5 ⭐`;
     if (sampleTaskImage && currentTask.image) sampleTaskImage.src = currentTask.image;
 
     if (sampleCriteriaList && currentTask.criteria) {
@@ -564,7 +572,7 @@
     const isMath = currentTask && currentTask.type === 'math';
 
     if (tier === 1) {
-      // Dấu đỏ: ĐIỂM 10 ĐẸP 🌸 / ĐIỂM 10 TOÁN 🌸
+      // Dấu đỏ: ĐIỂM 5 XUẤT SẮC 🌸
       ctx.strokeStyle = '#DC2626';
       ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
       ctx.fillStyle = 'rgba(254, 242, 242, 0.9)';
@@ -573,11 +581,11 @@
 
       ctx.fillStyle = '#DC2626';
       ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
-      ctx.fillText(isMath ? '🌸 ĐIỂM 10 TOÁN 🌸' : '🌸 ĐIỂM 10 ĐẸP 🌸', 0, 0);
+      ctx.fillText(isMath ? '🌸 ĐIỂM 5 XUẤT SẮC 🌸' : '🌸 ĐIỂM 5 XUẤT SẮC 🌸', 0, 0);
       ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
-      ctx.fillText(isMath ? 'Tính đúng 100% & vở sạch!' : 'Chữ đều nét & rất sạch!', 2, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Tính đúng 100% & vở sạch!' : 'Đúng mẫu & không tẩy xoá!', 2, Math.round(nh * 0.032));
     } else if (tier === 2) {
-      // Dấu cam: ĐẠT 5 SAO ⭐ / ĐẠT 5 SAO TOÁN ⭐
+      // Dấu cam: ĐẠT 3 SAO ⭐ / ĐẠT 3 SAO TOÁN ⭐
       ctx.strokeStyle = '#EA580C';
       ctx.lineWidth = Math.max(2.5, Math.round(nw * 0.004));
       ctx.fillStyle = 'rgba(255, 247, 237, 0.9)';
@@ -586,11 +594,11 @@
 
       ctx.fillStyle = '#EA580C';
       ctx.font = `bold ${Math.max(13, Math.round(nw * 0.03))}px sans-serif`;
-      ctx.fillText(isMath ? '⭐ ĐẠT 5 SAO TOÁN' : '⭐ ĐẠT 5 SAO', 0, 0);
+      ctx.fillText(isMath ? '⭐ ĐẠT 3 SAO TOÁN' : '⭐ ĐẠT 3 SAO', 0, 0);
       ctx.font = `bold ${Math.max(9.5, Math.round(nw * 0.018))}px sans-serif`;
-      ctx.fillText(isMath ? 'Tính lại câu cô gạch chân' : 'Chú ý chỗ cô gạch chân', 0, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Tính lại câu cô gạch chân' : 'Xem lại chỗ tẩy & gạch chân', 0, Math.round(nh * 0.032));
     } else {
-      // Dấu đỏ: CÔ NHẮC: VIẾT LẠI 📝 / CÔ NHẮC: TÍNH LẠI 🔢
+      // Dấu đỏ: CÔ NHẮC: VIẾT LẠI (0⭐) / CÔ NHẮC: TÍNH LẠI (0⭐)
       ctx.strokeStyle = '#DC2626';
       ctx.lineWidth = Math.max(3, Math.round(nw * 0.005));
       ctx.fillStyle = 'rgba(254, 242, 242, 0.95)';
@@ -599,9 +607,9 @@
 
       ctx.fillStyle = '#DC2626';
       ctx.font = `bold ${Math.max(12.5, Math.round(nw * 0.028))}px sans-serif`;
-      ctx.fillText(isMath ? '✍️ CÔ NHẮC: TÍNH LẠI' : '✍️ CÔ NHẮC: VIẾT LẠI', 0, 0);
+      ctx.fillText(isMath ? '✍️ CÔ NHẮC: TÍNH LẠI (0⭐)' : '✍️ CÔ NHẮC: VIẾT LẠI (0⭐)', 0, 0);
       ctx.font = `bold ${Math.max(9, Math.round(nw * 0.017))}px sans-serif`;
-      ctx.fillText(isMath ? 'Xem phép tính gạch chân nhé' : 'Xem các nét gạch chân nhé', 0, Math.round(nh * 0.032));
+      ctx.fillText(isMath ? 'Tính lại cẩn thận con nhé' : 'Nhìn bài mẫu viết lại nhé', 0, Math.round(nh * 0.032));
     }
     ctx.restore();
 
@@ -614,23 +622,29 @@
 
     let promptText = '';
     if (task && task.type === 'math') {
-      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, tâm lý và luôn động viên học sinh.
-Hãy quan sát bức ảnh chụp bài làm MÔN TOÁN LỚP 1 (phép cộng/trừ trong phạm vi 10, 20 hoặc so sánh >, <, =) của học sinh lớp 1 sau đây và chấm bài.
+      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, tỉ mỉ và luôn động viên học sinh.
+Hãy quan sát thật kỹ bức ảnh chụp bài làm MÔN TOÁN LỚP 1 của học sinh sau đây và chấm điểm.
 Đề bài cô giao: "${task.title}".
 
-HÃY ĐỌC TỪNG PHÉP TÍNH VÀ KẾT QUẢ CỦA BÉ, KIỂM TRA ĐÚNG/SAI CHÍNH XÁC:
-Ví dụ: 3 + 2 = 5 (Đúng), 7 - 4 = 3 (Đúng), 4 + 3 = 8 (Sai - kết quả đúng là 7).
+LƯU Ý CỰC KỲ QUAN TRỌNG VỀ BÚT CHÌ:
+- Học sinh Lớp 1 làm bài HOÀN TOÀN BẰNG BÚT CHÌ. Nét bút chì có thể thanh mảnh, độ đậm nhạt khác nhau tùy lực tì tay của bé. Hãy soi thật kỹ từng nét chì để đọc chính xác từng chữ số và phép tính.
+- Phân biệt rõ nét chì viết số với VẾT TẨY XOÁ của gôm chì (vết tẩy thường làm nhòe xám, bóng mờ, lem than chì xung quanh hoặc nét chì cũ bị gôm dở dang).
 
-QUY ĐỊNH CHẤM ĐÚNG 3 MỨC ĐỘ THEO YÊU CẦU:
-1. MỨC 1 (tier = 1, stars = 10, passed = true):
-   - Làm đúng 100% tất cả các phép tính trong bài, chữ số rõ ràng, trang vở sạch đẹp không lem nhem.
-   - Nhận xét khen ngợi con tính nhẩm rất siêu, xuất sắc đạt 10 sao vàng.
-2. MỨC 2 (tier = 2, stars = 5, passed = true):
-   - Đúng phần lớn, nhưng sai 1 đến 2 phép tính hoặc có 1-2 chỗ tẩy xóa nhỏ.
-   - Nhận xét động viên con làm toán tốt đạt 5 sao, chỉ ra các câu cô gạch chân để con tính lại cho đúng.
+TIÊU CHÍ CHẤM ĐIỂM BÀI TOÁN:
+- Bài toán phải làm kết quả chính xác 100%.
+- Chữ số bút chì phải ngay ngắn, rõ nét, trang vở sạch sẽ, không tẩy xoá lem nhem.
+
+QUY ĐỊNH 3 MỨC ĐỘ CHẤM ĐIỂM THEO YÊU CẦU:
+1. MỨC 1 (tier = 1, stars = 5, passed = true):
+   - Làm đúng 100% tất cả các phép tính và kết quả chính xác tuyệt đối.
+   - Chữ số bút chì rõ ràng, trang vở sạch đẹp, hoàn toàn không tẩy xoá.
+   - Nhận xét khen ngợi con tính nhẩm rất siêu, xuất sắc đạt 5 sao vàng.
+2. MỨC 2 (tier = 2, stars = 3, passed = true):
+   - Làm đúng phần lớn, nhưng sai kết quả hoặc có vết tẩy xoá bút chì ở 1 đến 2 phép tính.
+   - Nhận xét động viên con làm toán tốt đạt 3 sao, chỉ ra các câu cô gạch chân để con tính lại cho đúng.
 3. MỨC 3 (tier = 3, stars = 0, passed = false):
-   - Sai từ 3 phép tính trở lên, hoặc tẩy xóa lem nhem nhiều, hoặc chưa làm bài / ảnh trống.
-   - Nhắc con nhìn lại đề, tính nhẩm lại cẩn thận từng phép tính và làm lại bài.
+   - Sai kết quả từ 3 phép tính trở lên, hoặc tẩy xoá lem nhem nhiều, hoặc chưa làm bài / ảnh trống.
+   - Nhắc con nhìn lại đề, tính nhẩm lại cẩn thận từng phép tính và làm lại bài (0 sao).
 
 NẾU CÓ PHÉP TÍNH SAI HOẶC TẨY XÓA Ở MỨC 2 HOẶC MỨC 3:
 - Xác định vị trí từng phép tính bị sai trong mảng "errors" để cô giáo vẽ gạch chân màu đỏ (x, y tính trên lưới 400x300):
@@ -639,38 +653,46 @@ NẾU CÓ PHÉP TÍNH SAI HOẶC TẨY XÓA Ở MỨC 2 HOẶC MỨC 3:
 TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 {
   "tier": 1,
-  "stars": 10,
+  "stars": 5,
   "passed": true,
-  "title": "XUẤT SẮC - 10 SAO TOÁN VÀNG!",
+  "title": "XUẤT SẮC - 5 SAO TOÁN VÀNG!",
   "comment": "Lời nhận xét ngọt ngào của cô giáo",
   "errors": []
 }`;
     } else {
       promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương và luôn khích lệ học sinh.
-Hãy quan sát bức ảnh chụp bài làm (luyện viết chữ) của học sinh lớp 1 sau đây và chấm bài.
+Hãy quan sát thật kỹ bức ảnh chụp bài làm LUYỆN VIẾT CHỮ của học sinh Lớp 1 sau đây và chấm bài.
 Đề bài cô giao: "${task.title}".
 
-QUY ĐỊNH CHẤM ĐÚNG 3 MỨC ĐỘ THEO YÊU CẦU:
-1. MỨC 1 (tier = 1, stars = 10, passed = true):
-   - Chữ viết đều nét, đúng chuẩn chữ mẫu ô ly, trang vở sạch đẹp không tẩy xóa.
-   - Nhận xét khen ngợi con xuất sắc đạt 10 sao.
-2. MỨC 2 (tier = 2, stars = 5, passed = true):
-   - Bài viết đều nhưng chưa đúng chữ mẫu lắm, hoặc tẩy xóa 1 - 3 lỗi nhỏ.
-   - Nhận xét động viên con đạt 5 sao và chỉ ra các chỗ cô đã gạch chân để rút kinh nghiệm.
+LƯU Ý CỰC KỲ QUAN TRỌNG VỀ BÚT CHÌ:
+- Học sinh Lớp 1 viết bài HOÀN TOÀN BẰNG BÚT CHÌ. Nét chì có thể thanh mảnh hoặc nhạt, hãy soi thật kỹ từng nét chữ ô ly, độ liền mạch của nét chì.
+- Soi thật kỹ các VẾT TẨY XOÁ: Học sinh dùng gôm tẩy bút chì thường để lại vệt xám lem nhem, bóng chì chà xát hoặc nét chì cũ bị gôm mờ.
+
+TIÊU CHÍ CHẤM ĐIỂM BÀI VIẾT:
+- Chữ viết phải sạch đẹp, đúng chuẩn mẫu chữ ô ly (độ cao, độ rộng, khoảng cách con chữ).
+- Trang vở tuyệt đối sạch sẽ, KHÔNG TẨY XOÁ.
+
+QUY ĐỊNH 3 MỨC ĐỘ CHẤM ĐIỂM THEO YÊU CẦU:
+1. MỨC 1 (tier = 1, stars = 5, passed = true):
+   - Chữ viết sạch đẹp, nắn nót, đúng chuẩn mẫu chữ ô ly, nét chì đều đặn, trang vở sạch đẹp hoàn toàn KHÔNG tẩy xoá.
+   - Nhận xét khen ngợi con nét chữ rất đẹp, đúng mẫu, xuất sắc đạt 5 sao vàng.
+2. MỨC 2 (tier = 2, stars = 3, passed = true):
+   - Bài viết tương đối đều, đúng mẫu nhưng còn 1 - 2 lỗi nhẹ về độ cao ô ly, hoặc có 1 - 2 vết tẩy xoá bút chì nhỏ.
+   - Nhận xét động viên con đạt 3 sao và chỉ ra các chỗ cô đã gạch chân để rút kinh nghiệm.
 3. MỨC 3 (tier = 3, stars = 0, passed = false):
-   - Bài viết chưa đúng chữ mẫu, lệch nhiều ô ly, chữ nghệch ngoạc hoặc tẩy xóa lem nhem nhiều (> 3 lỗi) hoặc trang vở chưa viết bài.
-   - Nhắc con nhìn bài mẫu và viết lại bài cho đẹp.
+   - Bài viết chưa đúng chữ mẫu, sai nhiều ô ly, chữ nghệch ngoạc hoặc tẩy xoá lem nhem nhiều (> 2 chỗ) hoặc trang vở chưa viết bài.
+   - Nhắc con nhìn bài mẫu, không tẩy xoá bẩn vở và viết lại bài cho đẹp (0 sao).
 
 NẾU CÓ LỖI Ở MỨC 2 HOẶC MỨC 3:
 - Xác định vị trí các chỗ viết sai hoặc tẩy xóa trong mảng "errors" để cô giáo vẽ gạch chân màu đỏ (x, y tính trên lưới 400x300):
-  { "x": 60, "y": 80, "w": 40, "h": 20, "type": "height" | "smudge", "label": "Mô tả lỗi ngắn gọn (ví dụ: Dòng 2: Nét chữ chưa đúng độ cao ô ly)" }
+  { "x": 60, "y": 80, "w": 40, "h": 20, "type": "height" | "smudge", "label": "Mô tả lỗi ngắn gọn (ví dụ: Dòng 2: Nét chữ chưa đúng độ cao ô ly hoặc có vết tẩy chì)" }
 
 TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 {
   "tier": 1,
-  "stars": 10,
+  "stars": 5,
   "passed": true,
-  "title": "XUẤT SẮC - 10 SAO VÀNG!",
+  "title": "XUẤT SẮC - 5 SAO VÀNG!",
   "comment": "Lời nhận xét của cô giáo",
   "errors": []
 }`;
@@ -750,15 +772,15 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
               paperPixels++;
               const contrastDiff = localBg - pVal;
 
-              // Nét chì chuẩn: tối hơn nền 8 - 75 đơn vị
-              if ((contrastDiff >= 8 && contrastDiff <= 75) || (pVal < 140 && localBg > 155)) {
+              // Nét chì chuẩn học sinh lớp 1: Tối hơn nền 6 - 80 đơn vị (nhận diện cả nét chì mảnh/nhạt HB & 2B)
+              if ((contrastDiff >= 6 && contrastDiff <= 80) || (pVal < 145 && localBg > 150)) {
                 pencilStrokePixels++;
                 rowStrokeCounts[y]++;
                 strokeGrid[idx] = 1;
               }
-              // Vết tẩy xóa lem chì hoặc vết bẩn đậm bất thường
-              if (contrastDiff > 75 && pVal < 110) {
-                strokeGrid[idx] = 2; // smudge
+              // Vết tẩy xoá bằng gôm chì (chỗ than chì bị miết lem loang hoặc vệt chà mờ)
+              if ((contrastDiff > 65 && pVal < 115) || (contrastDiff >= 12 && contrastDiff <= 35 && pVal > 140 && localBg > 185 && (Math.abs(top - bot) > 18 || Math.abs(left - right) > 18))) {
+                strokeGrid[idx] = 2; // smudge / vết tẩy xoá chì
               }
             }
           }
@@ -895,22 +917,22 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
               const errCount = cleanedMathErrors.length;
               if (errCount === 0) {
                 tier = 1;
-                stars = 10;
-                passed = true;
-                title = 'XUẤT SẮC - 10 SAO TOÁN VÀNG! 🌟';
-                comment = `Bài toán của ${studentName} làm rất xuất sắc! Các phép tính đều chính xác, chữ số rõ ràng và trang vở sạch đẹp. Cô khen con đạt 10 sao vàng! 🌟`;
-              } else if (errCount >= 1 && errCount <= 2) {
-                tier = 2;
                 stars = 5;
                 passed = true;
-                title = 'ĐẠT YÊU CẦU - 5 SAO TOÁN! ⭐';
-                comment = `Bài toán của ${studentName} làm khá tốt nhưng còn ${errCount} phép tính bị nhầm hoặc tẩy xóa. Cô đã gạch chân những phép tính con cần tính lại ở trên, con sửa lại nhé! Cô thưởng con 5 sao! ⭐`;
+                title = 'XUẤT SẮC - 5 SAO TOÁN VÀNG! 🌟';
+                comment = `Bài toán của ${studentName} làm rất xuất sắc! Kết quả chính xác 100%, chữ số bút chì rõ nét và trang vở sạch sẽ không tẩy xoá. Cô khen con đạt 5 sao vàng! 🌟`;
+              } else if (errCount >= 1 && errCount <= 2) {
+                tier = 2;
+                stars = 3;
+                passed = true;
+                title = 'ĐẠT YÊU CẦU - 3 SAO TOÁN! ⭐';
+                comment = `Bài toán của ${studentName} làm khá tốt nhưng còn ${errCount} phép tính làm sai kết quả hoặc có vết tẩy xoá bút chì. Cô đã gạch chân những phép tính con cần tính lại ở trên, con sửa lại nhé! Cô thưởng con 3 sao! ⭐`;
               } else {
                 tier = 3;
                 stars = 0;
                 passed = false;
-                title = 'BÉ HÃY TÍNH LẠI BÀI NHÉ! 🔢';
-                comment = `Bài toán của ${studentName} có ${errCount} phép tính chưa chính xác hoặc tẩy xóa nhiều. Cô đã gạch chân các câu sai trên bài ở trên, con hãy tính nhẩm lại cẩn thận và làm lại bài nhé! 💪`;
+                title = 'BÉ HÃY TÍNH LẠI BÀI NHÉ! (0 SAO) 🔢';
+                comment = `Bài toán của ${studentName} có ${errCount} phép tính chưa chính xác hoặc còn tẩy xoá lem nhem. Cô đã gạch chân các câu sai trên bài ở trên, con hãy tính nhẩm lại cẩn thận và làm lại bài nhé! 💪`;
               }
             }
 
@@ -1011,26 +1033,26 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
           } else {
             const errCount = cleanedErrors.length;
             if (errCount === 0) {
-              // MỨC 1: XUẤT SẮC - 10 SAO
+              // MỨC 1: XUẤT SẮC - 5 SAO
               tier = 1;
-              stars = 10;
-              passed = true;
-              title = 'XUẤT SẮC - 10 SAO VÀNG! 🌟';
-              comment = `Bài viết của ${studentName} rất ngoan! Chữ viết đều nét, đúng chuẩn chữ mẫu ô ly và trang vở sạch đẹp không tẩy xóa. Cô khen con đạt 10 sao xuất sắc! 🌟`;
-            } else if (errCount >= 1 && errCount <= 3) {
-              // MỨC 2: ĐẠT YÊU CẦU - 5 SAO
-              tier = 2;
               stars = 5;
               passed = true;
-              title = 'ĐẠT YÊU CẦU - 5 SAO! ⭐';
-              comment = `Bài viết của ${studentName} tương đối đều nét nhưng còn ${errCount} chỗ tẩy xóa hoặc chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con cần sửa ở trên, lần sau con nắn nót hơn nhé! Cô thưởng con 5 sao! ⭐`;
+              title = 'XUẤT SẮC - 5 SAO VÀNG! 🌟';
+              comment = `Bài viết của ${studentName} rất ngoan! Chữ viết sạch đẹp, đúng chuẩn mẫu chữ ô ly, nét bút chì nắn nót và hoàn toàn không tẩy xoá. Cô khen con đạt 5 sao xuất sắc! 🌟`;
+            } else if (errCount >= 1 && errCount <= 2) {
+              // MỨC 2: ĐẠT YÊU CẦU - 3 SAO
+              tier = 2;
+              stars = 3;
+              passed = true;
+              title = 'ĐẠT YÊU CẦU - 3 SAO! ⭐';
+              comment = `Bài viết của ${studentName} tương đối đều nét nhưng còn ${errCount} chỗ chưa đúng mẫu hoặc có vết tẩy xoá bút chì. Cô đã gạch chân những chỗ con cần sửa ở trên, lần sau con nắn nót hơn nhé! Cô thưởng con 3 sao! ⭐`;
             } else {
               // MỨC 3: NHẮC CON VIẾT LẠI BÀI (0 SAO)
               tier = 3;
               stars = 0;
               passed = false;
-              title = 'BÉ HÃY VIẾT LẠI BÀI NHÉ! 📝';
-              comment = `Bài viết của ${studentName} chưa đúng chữ mẫu và có ${errCount} chỗ bị lệch ô ly hoặc tẩy xóa lem nhem. Cô đã gạch chân các chỗ sai trên trang vở ở trên, con hãy nhìn bài mẫu và viết lại thật nắn nót nhé! 💪`;
+              title = 'BÉ HÃY VIẾT LẠI BÀI NHÉ! (0 SAO) 📝';
+              comment = `Bài viết của ${studentName} chưa đúng chữ mẫu ô ly hoặc có ${errCount} chỗ bị lệch ô ly, tẩy xoá lem nhem. Cô đã gạch chân các chỗ sai trên trang vở ở trên, con hãy nhìn bài mẫu và viết lại thật nắn nót nhé! 💪`;
             }
           }
 
@@ -1088,14 +1110,14 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     const studentName = activeStudent ? activeStudent.name : 'Bé';
 
     if (res.tier === 1) {
-      // MỨC 1: XUẤT SẮC (10 SAO)
+      // MỨC 1: XUẤT SẮC (5 SAO)
       resultAvatar.textContent = isMath ? '🌟🔢💮' : '🌟🐣💮';
-      resultTitle.textContent = res.title || (isMath ? 'XUẤT SẮC - 10 SAO TOÁN VÀNG!' : 'XUẤT SẮC - 10 SAO VÀNG!');
+      resultTitle.textContent = res.title || (isMath ? 'XUẤT SẮC - 5 SAO TOÁN VÀNG!' : 'XUẤT SẮC - 5 SAO VÀNG!');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#FEF3C7';
       resultStarsBadge.style.color = '#B45309';
       resultStarsBadge.style.borderColor = '#FCD34D';
-      resultStarsBadge.innerHTML = '<span>🌟</span> +10 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
+      resultStarsBadge.innerHTML = '<span>🌟</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
@@ -1106,18 +1128,18 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         window.AudioManager.playReward();
       }
 
-      speakVietnamese(isMath ? `Chúc mừng ${studentName}! Bài toán của con đạt xuất sắc 10 sao!` : `Chúc mừng ${studentName}! Bài viết của con đạt xuất sắc 10 sao!`);
-      await awardStarsToFirebase(activeStudent.id, 10, `Soi bài Mức 1 (${isMath ? 'Toán' : 'Viết'} - Xuất sắc): ${currentTask.title}`);
+      speakVietnamese(isMath ? `Chúc mừng ${studentName}! Bài toán của con kết quả chính xác và đạt xuất sắc 5 sao!` : `Chúc mừng ${studentName}! Bài viết của con sạch đẹp, đúng mẫu và đạt xuất sắc 5 sao!`);
+      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 1 (${isMath ? 'Toán' : 'Viết'} - Xuất sắc 5 sao): ${currentTask.title}`);
 
     } else if (res.tier === 2) {
-      // MỨC 2: ĐẠT YÊU CẦU (5 SAO)
+      // MỨC 2: ĐẠT YÊU CẦU (3 SAO)
       resultAvatar.textContent = isMath ? '⭐🔢👏' : '⭐🐣👏';
-      resultTitle.textContent = res.title || (isMath ? 'ĐẠT YÊU CẦU - 5 SAO TOÁN!' : 'ĐẠT YÊU CẦU - 5 SAO!');
+      resultTitle.textContent = res.title || (isMath ? 'ĐẠT YÊU CẦU - 3 SAO TOÁN!' : 'ĐẠT YÊU CẦU - 3 SAO!');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#DCFCE7';
       resultStarsBadge.style.color = '#065F46';
       resultStarsBadge.style.borderColor = '#34D399';
-      resultStarsBadge.innerHTML = '<span>⭐</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
+      resultStarsBadge.innerHTML = '<span>⭐</span> +3 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
@@ -1129,14 +1151,14 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       }
 
       speakVietnamese(isMath 
-        ? `Chúc mừng ${studentName}! Con đạt 5 sao môn Toán. Con nhớ chú ý những phép tính cô gạch chân nhé!` 
-        : `Chúc mừng ${studentName}! Con đạt 5 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
-      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 2 (${isMath ? 'Toán' : 'Viết'} - Đạt 5 sao): ${currentTask.title}`);
+        ? `Chúc mừng ${studentName}! Con đạt 3 sao môn Toán. Con nhớ xem lại những phép tính cô gạch chân nhé!` 
+        : `Chúc mừng ${studentName}! Con đạt 3 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
+      await awardStarsToFirebase(activeStudent.id, 3, `Soi bài Mức 2 (${isMath ? 'Toán' : 'Viết'} - Đạt 3 sao): ${currentTask.title}`);
 
     } else {
       // MỨC 3: NHẮC CON VIẾT LẠI / TÍNH LẠI BÀI (0 SAO)
       resultAvatar.textContent = isMath ? '🔢💪✨' : '📝💪✨';
-      resultTitle.textContent = res.title || (isMath ? 'BÉ HÃY TÍNH LẠI BÀI NHÉ!' : 'BÉ HÃY VIẾT LẠI BÀI NHÉ!');
+      resultTitle.textContent = res.title || (isMath ? 'BÉ HÃY TÍNH LẠI BÀI NHÉ! (0 SAO)' : 'BÉ HÃY VIẾT LẠI BÀI NHÉ! (0 SAO)');
       resultStarsBadge.style.display = 'inline-flex';
       resultStarsBadge.style.background = '#FFE4E6';
       resultStarsBadge.style.color = '#BE123C';
@@ -1151,8 +1173,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       }
 
       speakVietnamese(isMath 
-        ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng trên bài. Con hãy tính nhẩm lại cẩn thận nhé!` 
-        : `Bài viết của ${studentName} chưa đúng chữ mẫu. Cô đã gạch chân những chỗ con viết chưa đạt trên vở. Con hãy nhìn bài mẫu và viết lại nhé!`);
+        ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng. Con hãy tính nhẩm lại cẩn thận nhé!` 
+        : `Bài viết của ${studentName} chưa đúng mẫu hoặc còn tẩy xoá. Cô đã gạch chân những chỗ con viết chưa đạt. Con hãy nhìn bài mẫu và viết lại nhé!`);
     }
 
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
