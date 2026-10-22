@@ -12,7 +12,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="css/main.css?v=20261017_v7">
+  <link rel="stylesheet" href="css/main.css?v=20261022_v4">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
   <script>
     function openClassManageModal() {
@@ -67,6 +67,9 @@
             <button id="btnOpenClassModal" type="button" onclick="openClassManageModal()" style="padding: 4px 12px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #4F46E5, #7C3AED); color: #FFFFFF; border: none; border-radius: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35); transition: all 0.2s;" title="Đổi mã lớp hoặc tạo lớp mới cho giáo viên khác">
               🔄 Đổi Lớp
             </button>
+            <button id="btnQuickReloadApp" type="button" style="padding: 4px 10px; font-size: 12px; font-weight: 800; background: linear-gradient(135deg, #0EA5E9, #0284C7); color: #FFFFFF; border: none; border-radius: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(2,132,199,0.3);" title="Tải lại ứng dụng bản mới nhất (xóa cache)">
+              🔄 Tải Lại
+            </button>
           </div>
         </div>
       </div>
@@ -74,6 +77,10 @@
 
     <!-- Quick Classroom Tools -->
     <div class="header-actions" id="headerActionsMenu">
+      <button id="btnForceReloadApp" class="btn-header" type="button" style="background: linear-gradient(135deg, #0EA5E9, #0284C7); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35); font-weight: 800;" title="Tải lại trang và cập nhật bản mới nhất ngay lập tức">
+        🔄 <span>Tải Lại Trang</span>
+      </button>
+
       <button id="btnToolbarChangeClass" class="btn-header" type="button" onclick="openClassManageModal()" style="background: linear-gradient(135deg, #4F46E5, #6366F1); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);" title="Đổi mã lớp học hoặc tạo lớp mới cho giáo viên khác">
         🏫 <span>Đổi Lớp (<strong id="toolbarClassIdDisplay">1/8</strong>)</span>
       </button>
@@ -215,6 +222,13 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <!-- Chọn mức điểm cộng nhanh: 5 hoặc 10 -->
+          <div class="quick-step-selector" id="quickStepSelector" title="Chọn mức điểm cộng/trừ nhanh trên danh sách">
+            <span style="font-size: 11px; font-weight: 800; color: #78350F; display: inline-flex; align-items: center; gap: 2px;">⚡ Điểm:</span>
+            <button type="button" id="btnQuickStep5" class="btn-step-choice" data-step="5" title="Chọn mức cộng/trừ nhanh 5 điểm">±5 ⭐</button>
+            <button type="button" id="btnQuickStep10" class="btn-step-choice active" data-step="10" title="Chọn mức cộng/trừ nhanh 10 điểm">±10 ⭐</button>
+          </div>
+
           <!-- Nút Trượt Ngang Qua Trái / Phải (Ẩn hoàn toàn vì danh sách đã là 1 cột dọc như điện thoại) -->
           <div id="scrollNavControls" style="display: none !important;">
             <span style="font-size: 11px; font-weight: 800; color: #64748B;">Trượt:</span>
@@ -248,6 +262,13 @@
     <section id="groupsContainer" class="groups-grid" style="display: none;">
       <!-- Generated via js/app.js -->
     </section>
+
+    <!-- Nút Nổi Chuyển Nhanh Mức Điểm 5⭐ và 10⭐ (Luôn cố định trên màn hình, không bị cuộn mất) -->
+    <div class="floating-quick-step-bar" id="floatingQuickStepBar">
+      <span class="floating-step-label">⚡ Mức:</span>
+      <button type="button" class="btn-float-step" data-step="5" id="btnFloatStep5" title="Chuyển sang mức cộng/trừ 5 điểm">±5 ⭐</button>
+      <button type="button" class="btn-float-step active" data-step="10" id="btnFloatStep10" title="Chuyển sang mức cộng/trừ 10 điểm">±10 ⭐</button>
+    </div>
   </main>
 
   <!-- MODAL: Full Action Sheet For 1 Student -->
@@ -1512,15 +1533,15 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261017_v7"></script>
-  <script src="js/firebase-sync.js?v=20261017_v7"></script>
-  <script src="js/qrcode.min.js?v=20261017_v7"></script>
-  <script src="js/audio.js?v=20261017_v7"></script>
-  <script src="js/egg-evolution.js?v=20261017_v7"></script>
-  <script src="js/storage.js?v=20261017_v7"></script>
-  <script src="js/noise-meter.js?v=20261017_v7"></script>
-  <script src="js/wheel.js?v=20261017_v7"></script>
-  <script src="js/card-export.js?v=20261017_v7"></script>
-  <script src="js/app.js?v=20261017_v7"></script>
+  <script src="js/firebase-config.js?v=20261020_v1"></script>
+  <script src="js/firebase-sync.js?v=20261020_v1"></script>
+  <script src="js/qrcode.min.js?v=20261020_v1"></script>
+  <script src="js/audio.js?v=20261020_v1"></script>
+  <script src="js/egg-evolution.js?v=20261020_v1"></script>
+  <script src="js/storage.js?v=20261020_v1"></script>
+  <script src="js/noise-meter.js?v=20261020_v1"></script>
+  <script src="js/wheel.js?v=20261020_v1"></script>
+  <script src="js/card-export.js?v=20261020_v1"></script>
+  <script src="js/app.js?v=20261022_v4"></script>
 </body>
 </html>

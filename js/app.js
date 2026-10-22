@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     timerSecondsLeft: 0
   };
 
+  // Kiểm tra học sinh đã chọn chế độ tích luỹ điểm hay chưa
+  function isStudentAccumulating(student) {
+    if (!student) return false;
+    return student.accumulateBonus === true || student.milestoneChoice === 'accumulate' || student.accumulateBonus200 === true;
+  }
+
   const noiseMeter = new NoiseMeter();
   let luckyWheel = null;
 
@@ -76,6 +82,75 @@ document.addEventListener('DOMContentLoaded', () => {
     : (localStorage.getItem('vltk_pc_student_view_mode') || 'grid'); // Trên máy tính màn to mặc định grid, màn nhỏ/mini mặc định danh bạ gọn
   let currentSearchQuery = '';
   let currentGroupFilter = 'all'; // Mặc định hiển thị tất cả các tổ
+
+  // --- Quick Score Step State (Mức cộng/trừ điểm: 5 hoặc 10) ---
+  let currentQuickStep = parseInt(localStorage.getItem('magic_zoo_quick_step'), 10);
+  if (currentQuickStep !== 5 && currentQuickStep !== 10) {
+    currentQuickStep = 10; // Mặc định mức 10 điểm
+  }
+
+  const btnQuickStep5 = document.getElementById('btnQuickStep5');
+  const btnQuickStep10 = document.getElementById('btnQuickStep10');
+  const btnFloatStep5 = document.getElementById('btnFloatStep5');
+  const btnFloatStep10 = document.getElementById('btnFloatStep10');
+
+  function updateQuickStepUI() {
+    if (btnQuickStep5) btnQuickStep5.classList.toggle('active', currentQuickStep === 5);
+    if (btnQuickStep10) btnQuickStep10.classList.toggle('active', currentQuickStep === 10);
+    if (btnFloatStep5) btnFloatStep5.classList.toggle('active', currentQuickStep === 5);
+    if (btnFloatStep10) btnFloatStep10.classList.toggle('active', currentQuickStep === 10);
+  }
+
+  function setQuickStep(step) {
+    currentQuickStep = (step === 5) ? 5 : 10;
+    try {
+      localStorage.setItem('magic_zoo_quick_step', currentQuickStep.toString());
+    } catch (e) {}
+    updateQuickStepUI();
+    renderStudents();
+    showSyncToast(`⚡ Đã chuyển sang mức điểm: ±${currentQuickStep} ⭐`, '⚡');
+  }
+
+  if (btnQuickStep5) {
+    btnQuickStep5.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setQuickStep(5);
+    });
+  }
+  if (btnQuickStep10) {
+    btnQuickStep10.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setQuickStep(10);
+    });
+  }
+  if (btnFloatStep5) {
+    btnFloatStep5.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setQuickStep(5);
+    });
+  }
+  if (btnFloatStep10) {
+    btnFloatStep10.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setQuickStep(10);
+    });
+  }
+  updateQuickStepUI();
+
+  // --- App Reload Handlers (Hữu ích khi cài trên Màn hình chính / PWA) ---
+  const triggerAppReload = () => {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('reload', Date.now().toString());
+      window.location.href = url.toString();
+    } catch (e) {
+      window.location.reload();
+    }
+  };
+  const btnQuickReloadApp = document.getElementById('btnQuickReloadApp');
+  const btnForceReloadApp = document.getElementById('btnForceReloadApp');
+  if (btnQuickReloadApp) btnQuickReloadApp.addEventListener('click', triggerAppReload);
+  if (btnForceReloadApp) btnForceReloadApp.addEventListener('click', triggerAppReload);
 
   const btnViewCompact = document.getElementById('btnViewCompact');
   const btnViewGrid = document.getElementById('btnViewGrid');
@@ -154,8 +229,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    if (points > 0) {
-      if ((student.stars || 0) >= 200) {
+    // Nếu học sinh đã chọn tích luỹ điểm thì giáo viên cộng/trừ điểm bình thường, không nhắc lại thông báo lựa chọn
+    if (points > 0 && !isStudentAccumulating(student)) {
+      if ((student.stars || 0) >= 200 && !student.accumulateBonus200) {
         showSyncToast(`🏆 Bé <strong>${student.name}</strong> đã đạt 200 ⭐ (Mốc Đặc Biệt)!`, '🎁');
         openMilestoneChoiceModal(student.id, 200);
         return;
@@ -189,8 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshData(res ? res.data : null);
 
     const updated = (state.data.students || []).find(s => s.id === studentId);
-    if (updated && points > 0) {
-      if (updated.stars >= 200) {
+    if (updated && points > 0 && !isStudentAccumulating(updated)) {
+      if (updated.stars >= 200 && !updated.accumulateBonus200) {
         showSyncToast(`🏆 Chúc mừng bé <strong>${updated.name}</strong> đã đạt mốc 200 ⭐ SIÊU ĐẶC BIỆT!`, '🏆');
         openMilestoneChoiceModal(updated.id, 200);
       } else if (updated.stars >= 100 && !updated.accumulateBonus) {
@@ -342,18 +418,20 @@ document.addEventListener('DOMContentLoaded', () => {
           </span>
           <div class="compact-student-info">
             <div class="compact-name-row">
-              <span class="compact-student-name">${student.name}</span>
-              ${student.stars >= 100 ? `<span class="compact-hatched-tag">🎉 Nở</span>` : ''}
+              <span class="compact-student-name" title="${student.name}">${student.name}</span>
             </div>
-            <span class="compact-group-subtag" style="color: ${group.color};">
-              ${group.mascot} ${group.name.split('-')[0].trim()}
-            </span>
+            <div class="compact-sub-row">
+              <span class="compact-group-subtag" style="color: ${group.color};">
+                ${group.mascot} ${group.name.split('-')[0].trim()}
+              </span>
+              ${student.stars >= 200 ? `<span class="compact-hatched-tag btn-compact-open-gift" data-id="${student.id}" data-milestone="200" style="background: linear-gradient(135deg, #F59E0B, #DC2626); color: #fff; cursor: pointer;" title="Bấm để mở vòng quay Quà Đặc Biệt 200 ⭐">🏆 200⭐</span>` : student.stars >= 100 ? `<span class="compact-hatched-tag btn-compact-open-gift" data-id="${student.id}" data-milestone="100" style="cursor: pointer;" title="Bấm để mở vòng quay Quà 100 ⭐">🎉 Nở</span>` : ''}
+            </div>
           </div>
 
           <div class="compact-score-controls">
-            <!-- Nút giảm nhanh 10 điểm (mức 10) -->
-            <button type="button" class="btn-compact-delta btn-delta-minus10" data-id="${student.id}" title="Trừ -10 ⭐ cho ${student.name}">
-              -10
+            <!-- Nút giảm nhanh điểm theo mức 5 hoặc 10 -->
+            <button type="button" class="btn-compact-delta btn-delta-minus btn-delta-minus10" data-id="${student.id}" title="Trừ -${currentQuickStep} ⭐ cho ${student.name}">
+              -${currentQuickStep}
             </button>
 
             <!-- Badge hiển thị số sao & Chạm để tự đánh số điểm -->
@@ -361,9 +439,9 @@ document.addEventListener('DOMContentLoaded', () => {
               ⭐ ${student.stars}
             </div>
 
-            <!-- Nút tăng nhanh 10 điểm (mức 10) -->
-            <button type="button" class="btn-compact-delta btn-delta-plus10" data-id="${student.id}" title="Cộng +10 ⭐ cho ${student.name}">
-              +10
+            <!-- Nút tăng nhanh điểm theo mức 5 hoặc 10 -->
+            <button type="button" class="btn-compact-delta btn-delta-plus btn-delta-plus10" data-id="${student.id}" title="Cộng +${currentQuickStep} ⭐ cho ${student.name}">
+              +${currentQuickStep}
             </button>
 
             <!-- Nút mở nhanh bộ gõ tự nhập số hoặc hành vi -->
@@ -376,32 +454,39 @@ document.addEventListener('DOMContentLoaded', () => {
         // Click row (ngoài các nút điểm) mở modal chi tiết
         row.addEventListener('click', (e) => {
           if (e.target.closest('.compact-score-controls')) return;
-          if (student.stars >= 200) {
-            openMilestoneChoiceModal(student.id, 200);
+          if (e.target.closest('.btn-compact-open-gift')) {
+            const ms = parseInt(e.target.closest('.btn-compact-open-gift').dataset.milestone, 10) || 100;
+            openMilestoneChoiceModal(student.id, ms);
             return;
           }
-          if (student.stars >= 100 && !student.accumulateBonus) {
-            openMilestoneChoiceModal(student.id, 100);
-            return;
+          if (!isStudentAccumulating(student)) {
+            if (student.stars >= 200 && !student.accumulateBonus200) {
+              openMilestoneChoiceModal(student.id, 200);
+              return;
+            }
+            if (student.stars >= 100 && !student.accumulateBonus) {
+              openMilestoneChoiceModal(student.id, 100);
+              return;
+            }
           }
           openActionModal(student.id);
         });
 
-        // Nút trừ nhanh -10 điểm
-        const minus10Btn = row.querySelector('.btn-delta-minus10');
-        if (minus10Btn) {
-          minus10Btn.addEventListener('click', (e) => {
+        // Nút trừ nhanh điểm theo mức 5 hoặc 10
+        const minusStepBtn = row.querySelector('.btn-delta-minus, .btn-delta-minus10');
+        if (minusStepBtn) {
+          minusStepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            applyStudentPoints(student.id, -10, 'Nhắc nhở rèn luyện (-10 ⭐)', '⚠️', e.target);
+            applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
           });
         }
 
-        // Nút cộng nhanh +10 điểm
-        const plus10Btn = row.querySelector('.btn-delta-plus10');
-        if (plus10Btn) {
-          plus10Btn.addEventListener('click', (e) => {
+        // Nút cộng nhanh điểm theo mức 5 hoặc 10
+        const plusStepBtn = row.querySelector('.btn-delta-plus, .btn-delta-plus10');
+        if (plusStepBtn) {
+          plusStepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            applyStudentPoints(student.id, 10, 'Khen thưởng tích cực (+10 ⭐)', '⭐', e.target);
+            applyStudentPoints(student.id, currentQuickStep, `Khen thưởng tích cực (+${currentQuickStep} ⭐)`, '⭐', e.target);
           });
         }
 
@@ -440,8 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
       card.dataset.id = student.id;
 
       let hatchedBadgeHtml = '';
-      if (student.stars >= 100) {
-        hatchedBadgeHtml = `<div class="hatched-success-badge" title="Đã nở trứng thành công! Đang tiếp tục tích sao lớn lên">🎉 Đã Nở Linh Thú</div>`;
+      if (student.stars >= 200) {
+        hatchedBadgeHtml = `<div class="hatched-success-badge btn-open-gift-badge" data-id="${student.id}" data-milestone="200" style="cursor: pointer; background: linear-gradient(135deg, #F59E0B, #DC2626); box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);" title="Bé đã đạt 200 ⭐ - Bấm mở vòng quay quà Đặc Biệt!">🏆 Kỷ Lục 200⭐ (Mở Quà)</div>`;
+      } else if (student.stars >= 100) {
+        hatchedBadgeHtml = `<div class="hatched-success-badge btn-open-gift-badge" data-id="${student.id}" data-milestone="100" style="cursor: pointer;" title="Đã nở linh thú! Bấm mở quà hoặc tích điểm">🎉 Đã Nở Linh Thú</div>`;
       }
 
       card.innerHTML = `
@@ -487,23 +574,23 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="card-quick-btn-row">
-          ${student.stars >= 200 ? `
-            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift200" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #DC2626); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 200 ⭐ - Bấm mở 2 quà SIÊU ĐẶC BIỆT!">
-              🏆 KỶ LỤC 200⭐ - MỞ QUÀ ĐẶC BIỆT
+          ${(!isStudentAccumulating(student) && student.stars >= 200 && !student.accumulateBonus200) ? `
+            <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift200" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #DC2626); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 200 ⭐ - Bấm mở quà hoặc tiếp tục tích điểm!">
+              🏆 KỶ LỤC 200⭐ - MỞ QUÀ / TÍCH ĐIỂM
             </button>
-          ` : (student.stars >= 100 && !student.accumulateBonus) ? `
+          ` : (!isStudentAccumulating(student) && student.stars >= 100 && !student.accumulateBonus) ? `
             <button class="btn-fast-reward btn-card-open-gift fast-action" data-action="gift100" data-id="${student.id}" style="width: 100%; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-weight: 800; padding: 7px 10px; font-size: 11px;" title="Bé đã đạt 100 ⭐ - Bấm mở quà hoặc tích điểm!">
               🎁 ĐÃ NỞ - MỞ QUÀ / TÍCH ĐIỂM (100⭐)
             </button>
           ` : `
-            <button class="btn-fast-reward fast-action" data-action="minus10" data-id="${student.id}" style="background: #FEE2E2; color: #DC2626; border: 1.5px solid #FECDD3; font-weight: 800; padding: 6px 8px;" title="Trừ -10 ⭐">
-              -10
+            <button class="btn-fast-reward fast-action" data-action="minusStep" data-id="${student.id}" style="background: #FEE2E2; color: #DC2626; border: 1.5px solid #FECDD3; font-weight: 800; padding: 6px 8px;" title="Trừ -${currentQuickStep} ⭐">
+              -${currentQuickStep}
             </button>
             <button class="btn-fast-reward focus fast-action" data-action="focus" data-id="${student.id}" title="Tập trung chú ý nghe giảng (+3 ⭐)">
               👀 (+3)
             </button>
-            <button class="btn-fast-reward fast-action" data-action="plus10" data-id="${student.id}" style="background: #DCFCE7; color: #16A34A; border: 1.5px solid #BBF7D0; font-weight: 800; padding: 6px 8px;" title="Cộng +10 ⭐">
-              +10
+            <button class="btn-fast-reward fast-action" data-action="plusStep" data-id="${student.id}" style="background: #DCFCE7; color: #16A34A; border: 1.5px solid #BBF7D0; font-weight: 800; padding: 6px 8px;" title="Cộng +${currentQuickStep} ⭐">
+              +${currentQuickStep}
             </button>
             <button class="btn-fast-reward fast-action" data-action="dial" data-id="${student.id}" style="background: #EEF2FF; color: #4F46E5; border: 1.5px solid #C7D2FE; font-weight: 800; padding: 6px 8px;" title="Tự gõ số điểm">
               ⚡ Điểm
@@ -514,16 +601,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Click on Card opens full reward action sheet
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student') || e.target.closest('.card-stars-click')) {
+        if (e.target.closest('.btn-qr-parent') || e.target.closest('.btn-zalo-card') || e.target.closest('.fast-action') || e.target.closest('.btn-edit-student') || e.target.closest('.btn-delete-student') || e.target.closest('.card-stars-click') || e.target.closest('.btn-open-gift-badge')) {
           return;
         }
-        if (student.stars >= 200) {
-          openMilestoneChoiceModal(student.id, 200);
-          return;
-        }
-        if (student.stars >= 100 && !student.accumulateBonus) {
-          openMilestoneChoiceModal(student.id, 100);
-          return;
+        if (!isStudentAccumulating(student)) {
+          if (student.stars >= 200 && !student.accumulateBonus200) {
+            openMilestoneChoiceModal(student.id, 200);
+            return;
+          }
+          if (student.stars >= 100 && !student.accumulateBonus) {
+            openMilestoneChoiceModal(student.id, 100);
+            return;
+          }
         }
         openActionModal(student.id);
       });
@@ -538,19 +627,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Quick Fast Buttons
-      const minus10Btn = card.querySelector('.fast-action[data-action="minus10"]');
-      if (minus10Btn) {
-        minus10Btn.addEventListener('click', (e) => {
+      const minusStepBtn = card.querySelector('.fast-action[data-action="minusStep"], .fast-action[data-action="minus10"]');
+      if (minusStepBtn) {
+        minusStepBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          applyStudentPoints(student.id, -10, 'Nhắc nhở rèn luyện (-10 ⭐)', '⚠️', e.target);
+          applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
         });
       }
 
-      const plus10Btn = card.querySelector('.fast-action[data-action="plus10"]');
-      if (plus10Btn) {
-        plus10Btn.addEventListener('click', (e) => {
+      const plusStepBtn = card.querySelector('.fast-action[data-action="plusStep"], .fast-action[data-action="plus10"]');
+      if (plusStepBtn) {
+        plusStepBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          applyStudentPoints(student.id, 10, 'Khen thưởng tích cực (+10 ⭐)', '⭐', e.target);
+          applyStudentPoints(student.id, currentQuickStep, `Khen thưởng tích cực (+${currentQuickStep} ⭐)`, '⭐', e.target);
         });
       }
 
@@ -566,9 +655,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (focusBtn) {
         focusBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if ((student.stars || 0) >= 100) {
-            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
-            openGiftClaimModal(student.id);
+          if (!isStudentAccumulating(student) && (student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Mời bé chọn mở quà hoặc tiếp tục tích điểm.`, '🎁');
+            openMilestoneChoiceModal(student.id, 100);
             return;
           }
           const rect = e.target.getBoundingClientRect();
@@ -583,9 +672,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (handBtn) {
         handBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if ((student.stars || 0) >= 100) {
-            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
-            openGiftClaimModal(student.id);
+          if (!isStudentAccumulating(student) && (student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Mời bé chọn mở quà hoặc tiếp tục tích điểm.`, '🎁');
+            openMilestoneChoiceModal(student.id, 100);
             return;
           }
           const rect = e.target.getBoundingClientRect();
@@ -601,9 +690,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         quietBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          if ((student.stars || 0) >= 100) {
-            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở quà để về 0 ⭐ trước khi tích sao tiếp.`, '🎁');
-            openGiftClaimModal(student.id);
+          if (!isStudentAccumulating(student) && (student.stars || 0) >= 100) {
+            showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Mời bé chọn mở quà hoặc tiếp tục tích điểm.`, '🎁');
+            openMilestoneChoiceModal(student.id, 100);
             return;
           }
           const rect = e.target.getBoundingClientRect();
@@ -635,6 +724,15 @@ document.addEventListener('DOMContentLoaded', () => {
         giftBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           openMilestoneChoiceModal(student.id, (student.stars >= 200) ? 200 : 100);
+        });
+      }
+
+      const openGiftBadge = card.querySelector('.btn-open-gift-badge');
+      if (openGiftBadge) {
+        openGiftBadge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const ms = parseInt(openGiftBadge.dataset.milestone, 10) || 100;
+          openMilestoneChoiceModal(student.id, ms);
         });
       }
 
@@ -1007,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (inputQuickScoreNumber) {
-      inputQuickScoreNumber.value = 10;
+      inputQuickScoreNumber.value = currentQuickStep;
       updateQuickScoreLabels();
     }
 
@@ -1130,10 +1228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = btn.dataset.icon || '⭐';
 
         const student = state.data.students.find(s => s.id === studentId);
-        if (student && (student.stars || 0) >= 100 && points > 0) {
+        if (student && !isStudentAccumulating(student) && (student.stars || 0) >= 100 && points > 0) {
           actionModal.classList.remove('active');
-          showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Bắt buộc mở 2 phần quà để chuyển về 0 ⭐ bắt đầu chu kỳ mới.`, '🎁');
-          openGiftClaimModal(student.id);
+          showSyncToast(`🐣 Bé <strong>${student.name}</strong> đã đạt 100 ⭐! Mời bé chọn quay quà hoặc tiếp tục tích lũy điểm.`, '🎁');
+          openMilestoneChoiceModal(student.id, 100);
           return;
         }
 
@@ -1160,11 +1258,11 @@ document.addEventListener('DOMContentLoaded', () => {
           modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(updatedStudent.stars, updatedStudent.status);
         }
 
-        if (updatedStudent && updatedStudent.stars >= 100) {
+        if (updatedStudent && !isStudentAccumulating(updatedStudent) && updatedStudent.stars >= 100 && points > 0) {
           actionModal.classList.remove('active');
           refreshData();
           showSyncToast(`🎉 Chúc mừng bé <strong>${updatedStudent.name}</strong> đã nở trứng (100 ⭐)!`, '🏆');
-          openGiftClaimModal(updatedStudent.id);
+          openMilestoneChoiceModal(updatedStudent.id, 100);
           return;
         }
 
@@ -3463,6 +3561,7 @@ document.addEventListener('DOMContentLoaded', () => {
           studentInState.stars = updatedStudent.stars;
           studentInState.giftHistory = updatedStudent.giftHistory;
           studentInState.accumulateBonus = updatedStudent.accumulateBonus;
+          studentInState.accumulateBonus200 = updatedStudent.accumulateBonus200;
           studentInState.giftSessionSource = updatedStudent.giftSessionSource;
         }
       }
@@ -3675,9 +3774,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (choice1Title) choice1Title.textContent = 'LỰA CHỌN 1: QUAY VÒNG QUAY ĐẶC BIỆT 200 ⭐';
       if (choice1Badge) choice1Badge.textContent = 'QUÀ GIÁ TRỊ CAO 200 ⭐';
       if (choice1Desc) choice1Desc.innerHTML = 'Nhận ngay <strong>2 lượt quay quà SIÊU ĐẶC BIỆT</strong>: Được làm lớp trưởng 3 ngày, Được ba mẹ dắt đi siêu thị mua quà yêu thích, Được ăn món yêu thích, Gấu bông, Lego, Bộ cờ vua, Cờ cá ngựa...';
-      if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC GIỮ ĐIỂM VINH DANH';
-      if (choice2Badge) choice2Badge.textContent = 'GIỮ ĐIỂM KỶ LỤC';
-      if (choice2Desc) choice2Desc.innerHTML = 'Giữ nguyên điểm số 200 ⭐ để vinh danh trên bảng vàng của lớp học và quay quà sau.';
+      if (choice2Title) choice2Title.textContent = 'LỰA CHỌN 2: TIẾP TỤC TÍCH LŨY ĐIỂM';
+      if (choice2Badge) choice2Badge.textContent = 'TÍCH ĐIỂM TIẾP TỤC';
+      if (choice2Desc) choice2Desc.innerHTML = 'Tiếp tục tích lũy sao không giới hạn (cộng, trừ điểm vẫn thực hiện bình thường) để vinh danh trên bảng vàng của lớp học và quay quà sau.';
     } else {
       if (iconEl) iconEl.textContent = '🐣';
       if (titleEl) titleEl.textContent = 'CHÚC MỪNG BÉ ĐẠT MỐC 100 SAO!';
@@ -3711,13 +3810,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modal) modal.classList.remove('active');
       if (activeMilestoneStudentId) {
         const student = (state.data.students || []).find(s => s.id === activeMilestoneStudentId);
-        if (activeMilestoneType === 200) {
-          showSyncToast(`🏆 Bé <strong>${student ? student.name : ''}</strong> tiếp tục giữ điểm kỷ lục 200 ⭐!`, '⭐');
-        } else {
-          await StorageManager.setMilestoneChoice(activeMilestoneStudentId, 'accumulate');
-          refreshData();
-          showSyncToast(`🚀 Bé <strong>${student ? student.name : ''}</strong> đã chọn tích điểm cộng dồn đến mốc 200 ⭐ để săn quà Siêu Đặc Biệt!`, '🌟');
-        }
+        await StorageManager.setMilestoneChoice(activeMilestoneStudentId, 'accumulate', activeMilestoneType || 100);
+        refreshData();
+        showSyncToast(`🚀 Bé <strong>${student ? student.name : ''}</strong> tiếp tục tích lũy điểm! Điểm cộng, trừ thực hiện bình thường và không nhắc lại thông báo lựa chọn nữa.`, '🌟');
       }
     });
   }
