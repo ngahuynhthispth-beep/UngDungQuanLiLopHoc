@@ -224,10 +224,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Quản lý thời gian thao tác để chống double-click hoặc chạm nhầm dồn dập
+  const _lastStudentActionTime = {};
+
+  // --- Biến theo dõi cuộn màn hình trên cảm ứng để chống chạm nhầm nút trừ khi lướt ngón tay ---
+  let isTouchScrolling = false;
+  let touchStartY = 0;
+  let touchStartX = 0;
+
+  if (studentsContainer) {
+    studentsContainer.addEventListener('touchstart', (e) => {
+      isTouchScrolling = false;
+      if (e.touches && e.touches[0]) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    studentsContainer.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+        const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+        if (deltaX > 8 || deltaY > 8) {
+          isTouchScrolling = true;
+        }
+      }
+    }, { passive: true });
+
+    studentsContainer.addEventListener('touchend', () => {
+      setTimeout(() => {
+        isTouchScrolling = false;
+      }, 250);
+    }, { passive: true });
+  }
+
   // --- Hàm áp dụng điểm linh hoạt: Dùng chung cho nút cộng/trừ nhanh mức 10, tự đánh số và modal ---
-  function applyStudentPoints(studentId, points, reason = 'Khen thưởng', icon = '⭐', targetEl = null) {
+  function applyStudentPoints(studentId, points, reason = 'Khen thưởng', icon = '⭐', targetEl = null, skipConfirm = false) {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
+
+    // Chống bấm liên tục / double-tap giật lag cho cùng 1 học sinh (tối thiểu 1000ms)
+    const now = Date.now();
+    if (_lastStudentActionTime[studentId] && (now - _lastStudentActionTime[studentId] < 1000)) {
+      return;
+    }
+
+    // BẢO VỆ TUYỆT ĐỐI KHI TRỪ ĐIỂM: Luôn yêu cầu xác nhận để chống chạm nhầm khi cuộn màn hình trên điện thoại/máy tính bảng
+    if (points < 0 && !skipConfirm) {
+      const confirmMsg = `⚠️ XÁC NHẬN TRỪ ĐIỂM:\n\nBạn có chắc chắn muốn nhắc nhở và trừ ${points} ⭐ của bé "${student.name}" không?\n\n(Bấm HỦY nếu bạn vô tình chạm nhầm khi cuộn màn hình)`;
+      if (!window.confirm(confirmMsg)) {
+        return;
+      }
+    }
+
+    _lastStudentActionTime[studentId] = now;
 
     // Nếu học sinh đã chọn tích luỹ điểm thì giáo viên cộng/trừ điểm bình thường, không nhắc lại thông báo lựa chọn
     if (points > 0 && !isStudentAccumulating(student)) {
@@ -477,6 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (minusStepBtn) {
           minusStepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (isTouchScrolling) return;
             applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
           });
         }
@@ -486,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (plusStepBtn) {
           plusStepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (isTouchScrolling) return;
             applyStudentPoints(student.id, currentQuickStep, `Khen thưởng tích cực (+${currentQuickStep} ⭐)`, '⭐', e.target);
           });
         }
@@ -631,6 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (minusStepBtn) {
         minusStepBtn.addEventListener('click', (e) => {
           e.stopPropagation();
+          if (isTouchScrolling) return;
           applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
         });
       }
@@ -639,6 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (plusStepBtn) {
         plusStepBtn.addEventListener('click', (e) => {
           e.stopPropagation();
+          if (isTouchScrolling) return;
           applyStudentPoints(student.id, currentQuickStep, `Khen thưởng tích cực (+${currentQuickStep} ⭐)`, '⭐', e.target);
         });
       }

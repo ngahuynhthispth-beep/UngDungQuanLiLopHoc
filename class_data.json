@@ -1882,7 +1882,7 @@
         "timestamp": 1792070079907
       },
       "groupColor": "#4ECDC4",
-      "groupName": "T��� 2 - Th��� Th������ng Thái",
+      "groupName": "T��������������������������������������������������� 2 - Th��� Th������ng Thái",
       "id": "summary-1790946074970",
       "studentId": "hs-1790097391777-31",
       "studentName": "H������ơng Th���o",
@@ -1907,7 +1907,7 @@
         "icon": "🧩",
         "id": "gift-1791814806818",
         "milestone": 100,
-        "name": "Bộ lắp ráp Lê gô",
+        "name": "Bộ lắp ráp L�� gô",
         "time": "21:20, 12/10",
         "timestamp": 1791814806818
       },
@@ -1984,7 +1984,7 @@
       "delivered": false,
       "gift1": {
         "claimedBy": "parent",
-        "icon": "✏️",
+        "icon": "✏�������",
         "id": "gift-1790779314453",
         "name": "Bút chì siêu đẹp",
         "time": "21:41, 30/09",
@@ -2037,7 +2037,7 @@
       "stars": 1547
     }
   ],
-  "lastUpdated": 1793331324843,
+  "lastUpdated": 1793338995379,
   "schoolName": "Trường Tiểu học Tiểu La",
   "schoolYear": "2026 - 2027",
   "students": [
@@ -2086,119 +2086,8 @@
           "id": "log-1793186501873-hs-1790097391777-1",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-1",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791894813553",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:33"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791894807719",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:33"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791616809848",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "14:20"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1791539068983",
-          "points": 5,
-          "reason": "Soi bài đạt chuẩn: Luyện viết chữ cái: Nét chữ nết người",
-          "time": "16:44"
-        },
-        {
-          "icon": "��",
-          "id": "log-ai-1791539051326",
-          "points": 5,
-          "reason": "Soi bài đạt chuẩn: Luyện viết chữ cái: Nét chữ nết người",
-          "time": "16:44"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1791539023821",
-          "points": 5,
-          "reason": "Soi bài đạt chuẩn: Luyện viết chữ cái: Nét chữ nết người",
-          "time": "16:43"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1791538996839",
-          "points": 5,
-          "reason": "Soi bài đạt chuẩn: Luyện viết chữ cái: Nét chữ nết người",
-          "time": "16:43"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791445612281",
-          "points": 108,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 100 lượt (100⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "14:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791445583721",
-          "points": 26,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 18 lượt (18⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "14:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791264768174",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "12:32"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990471-hs-1790097391777-1",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-1",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-1",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617413-hs-1790097391777-1",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "Quốc An",
@@ -2336,185 +2225,114 @@
       "likes": 284,
       "logs": [
         {
-          "icon": "⚠️",
-          "id": "log-1793331321619",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:35"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793331320346",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:35"
-        },
-        {
           "icon": "📸",
           "id": "log-ai-1793286228965",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "22:03"
+          "time": "22:03 • 29/10/2026",
+          "timestamp": 1793286228965
         },
         {
           "icon": "📸",
           "id": "log-ai-1793286228920",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "22:03"
+          "time": "22:03 • 29/10/2026",
+          "timestamp": 1793286228920
         },
         {
           "icon": "📸",
           "id": "log-ai-1793286223634",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "22:03"
+          "time": "22:03 • 29/10/2026",
+          "timestamp": 1793286223634
         },
         {
           "icon": "📸",
           "id": "log-ai-1793286203401",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "22:03"
+          "time": "22:03 • 29/10/2026",
+          "timestamp": 1793286203401
         },
         {
           "icon": "📸",
           "id": "log-ai-1793286198195",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "22:03"
+          "time": "22:03 • 29/10/2026",
+          "timestamp": 1793286198195
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793286157982",
           "points": 35,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "22:02"
+          "time": "22:02 • 29/10/2026",
+          "timestamp": 1793286157982
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793186794489",
           "points": 26,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "18:26"
+          "time": "18:26 • 28/10/2026",
+          "timestamp": 1793186794489
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793186785917",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "18:26"
+          "time": "18:26 • 28/10/2026",
+          "timestamp": 1793186785917
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-2",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🌟",
           "id": "log-1793186383963",
           "points": 10,
           "reason": "Làm bài nhanh & chính xác",
-          "time": "18:19"
+          "time": "18:19 • 28/10/2026",
+          "timestamp": 1793186383963
         },
         {
           "icon": "⭐",
           "id": "log-1793186376362",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "18:19"
+          "time": "18:19 • 28/10/2026",
+          "timestamp": 1793186376362
         },
         {
           "icon": "⭐",
           "id": "log-1793186371161",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "18:19"
+          "time": "18:19 • 28/10/2026",
+          "timestamp": 1793186371161
         },
         {
           "icon": "⭐",
           "id": "log-1793070634684",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-2",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792593086396",
-          "points": 36,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 11 lượt (11⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792505947747",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 0 lượt (0⭐), Viết (10⭐), Dặn dò (0⭐)",
-          "time": "21:19"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792505934807",
-          "points": 7,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 0 lượt (0⭐), Viết (7⭐), Dặn dò (0⭐)",
-          "time": "21:18"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792505925130",
-          "points": 8,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (0⭐)",
-          "time": "21:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505709164",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792505572342",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "21:12"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792505572288",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "21:12"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792505548351",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Toán - Đạt 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "21:12"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792505548263",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Toán - Đạt 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "21:12"
+          "time": "10:10 • 27/10/2026",
+          "timestamp": 1793070634684
         }
       ],
       "milestoneChoice": "accumulate",
       "name": "Minh An",
       "sleepUntil": 0,
-      "stars": 1622,
+      "stars": 1642,
       "status": "active"
     },
     {
@@ -2708,189 +2526,48 @@
           "id": "log-hw-1793266735363",
           "points": 37,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "16:38"
+          "time": "16:38 • 29/10/2026",
+          "timestamp": 1793266735363
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793196397694",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:06"
+          "time": "21:06 • 28/10/2026",
+          "timestamp": 1793196397694
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-3",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793107574523",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:26"
+          "time": "20:26 • 27/10/2026",
+          "timestamp": 1793107574523
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793028937779",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:35"
+          "time": "22:35 • 26/10/2026",
+          "timestamp": 1793028937779
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792804691174",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "08:18"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792661713304",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Gấu bông xinh xắn, Được làm lớp trưởng 3 ngày)",
-          "time": "16:35"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792661686127",
-          "points": 42,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 4 cái (20⭐), Dặn dò (5⭐)",
-          "time": "16:34"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-3",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792576871997",
-          "points": 37,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (7⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "17:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792575030760",
-          "points": 32,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "16:30"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792549890159",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505693098",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:14"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792489598785",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792314317176",
-          "points": 27,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792314301456",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792253563368",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "23:12"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792065542023",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "18:59"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791894872961",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:34"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791859473455",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "09:44"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858722190",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:32"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853863411",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:11"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853529211",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:05"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853528385",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778658073",
-          "points": 17,
-          "reason": "Ph�� huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:30"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778639511",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:30"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790757462598",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "15:37"
+          "time": "08:18 • 24/10/2026",
+          "timestamp": 1792804691174
         }
       ],
       "name": "Phúc Anh",
@@ -2981,175 +2658,16 @@
           "id": "log-1793186501873-hs-1790097391777-4",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793073711291",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:01"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792729284514",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "11:21"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792659715244",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Bộ cờ vua thông minh, Được ba mẹ dắt đi siêu thị mua món quà em yêu thích)",
-          "time": "16:01"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-4",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792497701739",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:01"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792497698941",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792420979707",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:42"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792420978788",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:42"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370891284",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792158021432",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792106564283",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "06:22"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792059349595",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "17:15"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792059060774",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "17:11"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792035072426",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791901033329",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-4",
-          "points": 1,
-          "reason": "Cả l���p cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790867116398",
-          "points": 7,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (1⭐), Dặn dò (5⭐)",
-          "time": "22:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790859390979",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790859390552",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790859390124",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790859389652",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790859386094",
-          "points": 8,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:56"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243791-hs-1790097391777-4",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790732030834",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "08:33"
+          "time": "11:01 • 27/10/2026",
+          "timestamp": 1793073711291
         }
       ],
       "name": "Nguyên Bình",
@@ -3233,91 +2751,24 @@
           "id": "log-1793186501873-hs-1790097391777-5",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793023204455",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:00"
+          "time": "21:00 • 26/10/2026",
+          "timestamp": 1793023204455
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792938573893",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:29"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792679626163",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:33"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792597388180",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:43"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-5",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463895164",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:38"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370360446",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:39"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792074643734",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:30"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791964508779",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "14:55"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791859084965",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:38"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791858611127",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:30"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791732436833",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (vừa nhận: Phần quà em yêu thích, Bút chì siêu đẹp)",
-          "time": "22:27"
+          "time": "21:29 • 25/10/2026",
+          "timestamp": 1792938573893
         }
       ],
       "milestoneChoice": "accumulate",
@@ -3348,105 +2799,16 @@
           "id": "log-1793186501873-hs-1790097391777-6",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793073819006",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:03"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-6",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370174328",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:36"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791271720018",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "14:28"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-6",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1790903877068",
-          "points": 10,
-          "reason": "Khen thưởng (+10 ⭐)",
-          "time": "08:17"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790668173930",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:49"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-6",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-6",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617414-hs-1790097391777-6",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790301384456",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "08:56"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790301383557",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "08:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790231411790",
-          "points": 3,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (2⭐), Dặn dò (0⭐)",
-          "time": "13:30"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "11:03 • 27/10/2026",
+          "timestamp": 1793073819006
         }
       ],
       "name": "Bảo Đăng",
@@ -3558,154 +2920,32 @@
           "id": "log-hw-1793202724269",
           "points": 42,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Sticker 5 cái (25⭐), Dặn dò (5⭐)",
-          "time": "22:52"
+          "time": "22:52 • 28/10/2026",
+          "timestamp": 1793202724269
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-7",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793073612165",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:00"
+          "time": "11:00 • 27/10/2026",
+          "timestamp": 1793073612165
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793028638948",
           "points": 17,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:30"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792671926524",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Kẹp tóc công chúa, Cục tẩy ngộ nghĩnh)",
-          "time": "19:25"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-7",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505685327",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:14"
-        },
-        {
-          "icon": "🎲",
-          "id": "log-1792505427580",
-          "points": 1,
-          "reason": "Trúng vòng quay & trả lời bài: \"Kể một việc tốt con đã làm để ...\" (+1⭐)",
-          "time": "21:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792331059109",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:44"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858931635",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:35"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791816790559",
-          "points": 27,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "21:53"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-7",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790905560461",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "08:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790762087066",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "16:54"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-7",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790665778296",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "14:09"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-7",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617414-hs-1790097391777-7",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790579426652",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:10"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790579425937",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790554961879",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "07:22"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "22:30 • 26/10/2026",
+          "timestamp": 1793028638948
         }
       ],
       "name": "Yên Di",
@@ -3855,182 +3095,31 @@
           "id": "log-1793186501873-hs-1790097391777-8",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186446651",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:20"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "📸",
           "id": "log-ai-1793186411439",
           "points": 3,
           "reason": "Soi bài Mức 2 (Toán - Đạt 3 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "18:20"
+          "time": "18:20 • 28/10/2026",
+          "timestamp": 1793186411439
         },
         {
           "icon": "📸",
           "id": "log-ai-1793186411370",
           "points": 3,
           "reason": "Soi bài Mức 2 (Toán - Đạt 3 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "18:20"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-8",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792590359547",
-          "points": 30,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "20:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792502697182",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:24"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792483020468",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:57"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792483020442",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:57"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463705656",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:35"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792416497459",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "20:28"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370187269",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:36"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792071577188",
-          "points": 27,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "20:39"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791891530438",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Bộ lắp ráp Lê gô, Tranh cát sắc màu)",
-          "time": "18:38"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791891474314",
-          "points": 40,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Sticker 5 cái (25⭐), Dặn dò (5⭐)",
-          "time": "18:37"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791807283187",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:14"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791428148904",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:55"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791428147915",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790907993129",
-          "points": 23,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "09:26"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-8",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-8",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-8",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617414-hs-1790097391777-8",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790639385066",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "06:49"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790431638036",
-          "points": 19,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 12 lượt (12⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:07"
+          "time": "18:20 • 28/10/2026",
+          "timestamp": 1793186411370
         }
       ],
       "milestoneChoice": "accumulate",
       "name": "Ánh Dương",
       "previousHatchedAt": 1791891474314,
       "sleepUntil": 0,
-      "stars": 123,
+      "stars": 133,
       "status": "active"
     },
     {
@@ -4211,189 +3300,56 @@
           "id": "log-hw-1793287365835",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:22"
+          "time": "22:22 • 29/10/2026",
+          "timestamp": 1793287365835
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793191341821",
           "points": 42,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (7⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "19:42"
+          "time": "19:42 • 28/10/2026",
+          "timestamp": 1793191341821
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-9",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793109251920",
           "points": 30,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:54"
+          "time": "20:54 • 27/10/2026",
+          "timestamp": 1793109251920
         },
         {
           "icon": "⭐",
           "id": "log-1793071035512",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:17"
+          "time": "10:17 • 27/10/2026",
+          "timestamp": 1793071035512
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793025077389",
           "points": 31,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "21:31"
+          "time": "21:31 • 26/10/2026",
+          "timestamp": 1793025077389
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792847803415",
           "points": 31,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "20:16"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-9",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792473718120",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "12:21"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792473716246",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "12:21"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792422665010",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "22:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792422570358",
-          "points": 40,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "22:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792422568914",
-          "points": 40,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "22:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792342784666",
-          "points": 45,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "23:59"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792072318060",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:51"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791809173449",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Bút chì siêu đẹp, Bút chì siêu đẹp)",
-          "time": "19:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791809104897",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791707970059",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "15:39"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-9",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790773480901",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "20:04"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667856423",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:44"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-9",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-9",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617414-hs-1790097391777-9",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790562325475",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "09:25"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790438721806",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "23:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790217425679",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "09:37"
+          "time": "20:16 • 24/10/2026",
+          "timestamp": 1792847803415
         }
       ],
       "milestoneChoice": "accumulate",
@@ -4486,175 +3442,24 @@
           "id": "log-1793186501873-hs-1790097391777-10",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🥚",
           "id": "log-cycle-1793154306777",
           "points": 0,
           "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Sổ tay mini đáng yêu, Bút chì siêu đẹp)",
-          "time": "09:25"
+          "time": "09:25 • 28/10/2026",
+          "timestamp": 1793154306777
         },
         {
           "icon": "⭐",
           "id": "log-1793071025995",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:17"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100774-hs-1790097391777-10",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792479866981",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:04"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792479866944",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:04"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370372231",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:39"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792070825645",
-          "points": 47,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 5 cái (25⭐), Dặn dò (5⭐)",
-          "time": "20:27"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792070742441",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:25"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792035035690",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:30"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791900987763",
-          "points": 20,
-          "reason": "Khen thưởng (+20 ⭐)",
-          "time": "21:16"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791861563790",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:19"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791859604407",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:46"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791858589710",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:29"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853469588",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:04"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791798888306",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Cục tẩy ngộ nghĩnh, Cục tẩy ngộ nghĩnh)",
-          "time": "16:54"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791798843905",
-          "points": 52,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (7⭐), Sticker 5 cái (25⭐), Dặn dò (5⭐)",
-          "time": "16:54"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791798792312",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791696938328",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "12:35"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791001404543",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "11:23"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791001349598",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "11:22"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990472-hs-1790097391777-10",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-10",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790670155131",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "15:22"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-10",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
+          "time": "10:17 • 27/10/2026",
+          "timestamp": 1793071025995
         }
       ],
       "name": "Phạm Bảo Hân",
@@ -4721,175 +3526,40 @@
           "id": "log-1793186554928",
           "points": 1,
           "reason": "Trúng vòng quay & trả lời bài: \"Điền dấu >, <, = :  47 + 12 .....\" (+1⭐)",
-          "time": "18:22"
+          "time": "18:22 • 28/10/2026",
+          "timestamp": 1793186554928
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-11",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⚠️",
           "id": "log-1793071119257",
           "points": -5,
           "reason": "Nhắc nhở rèn luyện (-5 ⭐)",
-          "time": "10:18"
+          "time": "10:18 • 27/10/2026",
+          "timestamp": 1793071119257
         },
         {
           "icon": "⭐",
           "id": "log-1793071015051",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793071015051
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792817686567",
           "points": 70,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Sticker 11 cái (55⭐), Dặn dò (5⭐)",
-          "time": "11:54"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-11",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370457890",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:40"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792297088126",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Được ba mẹ dắt đi siêu thị mua món quà em yêu thích, Gấu bông xinh xắn)",
-          "time": "11:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900970519",
-          "points": -1,
-          "reason": "Nhắc nhở (-1 ⭐)",
-          "time": "21:16"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900949959",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900948227",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900947227",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900946219",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900945137",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900942853",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900941846",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900941422",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900940415",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900939834",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900936989",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900936807",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900936447",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900935306",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900934708",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900853702",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:14"
+          "time": "11:54 • 24/10/2026",
+          "timestamp": 1792817686567
         }
       ],
       "name": "Công Hậu",
@@ -4961,147 +3631,32 @@
           "id": "log-1793186501873-hs-1790097391777-12",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793106395881",
           "points": 17,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:06"
+          "time": "20:06 • 27/10/2026",
+          "timestamp": 1793106395881
         },
         {
           "icon": "⭐",
           "id": "log-1793073927153",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:05"
+          "time": "11:05 • 27/10/2026",
+          "timestamp": 1793073927153
         },
         {
           "icon": "⭐",
           "id": "log-1793070658928",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792678752181",
-          "points": 60,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (5⭐), Sticker 10 cái (50⭐), Dặn dò (0⭐)",
-          "time": "21:19"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-12",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480263858",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:11"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480263832",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:11"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370182087",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:36"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792070901410",
-          "points": 70,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 10 cái (50⭐), Dặn dò (5⭐)",
-          "time": "20:28"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791894877662",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:34"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791383803698",
-          "points": 5,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:36"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791298403353",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791208692403",
-          "points": 23,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "20:58"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791207518023",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "20:38"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-12",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790775597314",
-          "points": 33,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 25 lượt (25⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "20:39"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-12",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-12",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617415-hs-1790097391777-12",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "10:10 • 27/10/2026",
+          "timestamp": 1793070658928
         }
       ],
       "milestoneChoice": "accumulate",
@@ -5146,147 +3701,8 @@
           "id": "log-1793186501873-hs-1790097391777-13",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792714786456",
-          "points": 67,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 9 cái (45⭐), Dặn dò (5⭐)",
-          "time": "07:19"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-13",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792464049756",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:40"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370448097",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:40"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792315126556",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "16:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792315115339",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "16:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900859908",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:14"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791425077477",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:04"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791336523656",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:28"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791271565998",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "14:26"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-13",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🗣️",
-          "id": "log-1790669988488",
-          "points": -5,
-          "reason": "Nói chuyện và làm việc riêng",
-          "time": "15:19"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-13",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-13",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617415-hs-1790097391777-13",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790424687618",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:11"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790302953971",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "09:22"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790301344173",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "08:55"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790301343375",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "08:55"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "Hà Kha",
@@ -5493,182 +3909,80 @@
           "id": "log-hw-1793283751106",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:22"
+          "time": "21:22 • 29/10/2026",
+          "timestamp": 1793283751106
         },
         {
           "icon": "⭐",
           "id": "log-1793239562376",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:06"
+          "time": "09:06 • 29/10/2026",
+          "timestamp": 1793239562376
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793200737405",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:18"
+          "time": "22:18 • 28/10/2026",
+          "timestamp": 1793200737405
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-14",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🥚",
           "id": "log-cycle-1793154080954",
           "points": 0,
           "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Kẹp tóc công chúa, Tranh cát sắc màu)",
-          "time": "09:21"
+          "time": "09:21 • 28/10/2026",
+          "timestamp": 1793154080954
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793146642424",
           "points": 11,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "07:17"
+          "time": "07:17 • 28/10/2026",
+          "timestamp": 1793146642424
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793111625537",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:33"
+          "time": "21:33 • 27/10/2026",
+          "timestamp": 1793111625537
         },
         {
           "icon": "⭐",
           "id": "log-1793070664012",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:11"
+          "time": "10:11 • 27/10/2026",
+          "timestamp": 1793070664012
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793024300133",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:18"
+          "time": "21:18 • 26/10/2026",
+          "timestamp": 1793024300133
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793024293174",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:18"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792729294573",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "11:21"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792681453415",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:04"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792659750423",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Kẹp tóc công chúa, Tranh cát sắc màu)",
-          "time": "16:02"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-14",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792589793711",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:36"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792459060057",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "08:17"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370529242",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:42"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792334457944",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792224918647",
-          "points": 40,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 25 lượt (25⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "15:15"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791814816111",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Cục tẩy ngộ nghĩnh, Cục tẩy ngộ nghĩnh)",
-          "time": "21:20"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791814730822",
-          "points": 24,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 9 lượt (9⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:18"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791733150130",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:39"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791377856736",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:57"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791377846917",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:57"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363175563",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:52"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363174840",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:52"
+          "time": "21:18 • 26/10/2026",
+          "timestamp": 1793024293174
         }
       ],
       "name": "Minh Khang",
@@ -5879,189 +4193,48 @@
           "id": "log-hw-1793325217140",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "08:53"
+          "time": "08:53 • 30/10/2026",
+          "timestamp": 1793325217140
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793247016003",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "11:10"
+          "time": "11:10 • 29/10/2026",
+          "timestamp": 1793247016003
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-15",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793156709782",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "10:05"
+          "time": "10:05 • 28/10/2026",
+          "timestamp": 1793156709782
         },
         {
           "icon": "⭐",
           "id": "log-1793071013267",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793071013267
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792900460029",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "10:54"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792725510680",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Phần quà đặc biệt tự chọn, Được ba mẹ dắt đi siêu thị mua món quà em yêu thích)",
-          "time": "10:18"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792690748340",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "00:39"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792663128935",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:58"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-15",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792559965765",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "12:19"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792497691599",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "19:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792466393002",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "10:19"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370931826",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792315110253",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "16:18"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792314311747",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "16:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792162818205",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 13 lượt (13⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:00"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792035047004",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:30"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791942460204",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "08:47"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791811489477",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791598409738",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "09:13"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791430553292",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:35"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363070287",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363069585",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363068877",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-15",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790683846087",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:10"
+          "time": "10:54 • 25/10/2026",
+          "timestamp": 1792900460029
         }
       ],
       "name": "Gia Khánh",
@@ -6260,7 +4433,7 @@
           "icon": "🐴",
           "id": "gift-1793154391879",
           "milestone": 200,
-          "name": "Bộ cờ cá ngựa vui nhộn",
+          "name": "B�� cờ cá ngựa vui nhộn",
           "time": "09:26, 28/10",
           "timestamp": 1793154391879
         }
@@ -6273,182 +4446,48 @@
           "id": "log-hw-1793282331285",
           "points": 17,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:58"
+          "time": "20:58 • 29/10/2026",
+          "timestamp": 1793282331285
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-16",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🥚",
           "id": "log-cycle-1793154391879",
           "points": 0,
           "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Được ăn một món ăn em yêu thích, Bộ cờ cá ngựa vui nhộn)",
-          "time": "09:26"
+          "time": "09:26 • 28/10/2026",
+          "timestamp": 1793154391879
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793105611978",
           "points": 17,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:53"
+          "time": "19:53 • 27/10/2026",
+          "timestamp": 1793105611978
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793028389817",
           "points": 18,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:26"
+          "time": "22:26 • 26/10/2026",
+          "timestamp": 1793028389817
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792933512495",
           "points": 19,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:05"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792724477603",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792680959024",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792593327910",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (5⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "21:35"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-16",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792508851075",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:07"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505832239",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792416857544",
-          "points": 42,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Sticker 5 cái (25⭐), Dặn dò (5⭐)",
-          "time": "20:34"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792391484947",
-          "points": 28,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (7⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "13:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370858226",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:47"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792078262082",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791903342263",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:55"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858813282",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:33"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791818397307",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:19"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791731411702",
-          "points": 21,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:10"
-        },
-        {
-          "icon": "��",
-          "id": "log-hw-1791540629126",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "17:10"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363085390",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363084606",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363083940",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791332081420",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "07:14"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791208383961",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "20:53"
+          "time": "20:05 • 25/10/2026",
+          "timestamp": 1792933512495
         }
       ],
       "name": "Minh Khôi",
@@ -6586,188 +4625,22 @@
           "id": "log-hw-1793201657017",
           "points": 108,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 96 lượt (96⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:34"
+          "time": "22:34 • 28/10/2026",
+          "timestamp": 1793201657017
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-17",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186326109",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186324952",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186318868",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792684261206",
-          "points": 37,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "22:51"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792599030594",
-          "points": 50,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "23:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-17",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792507867565",
-          "points": 128,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 116 lượt (116⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:51"
-        },
-        {
-          "icon": "🥱",
-          "id": "log-1792505766225",
-          "points": -5,
-          "reason": "Không tập trung chú ý",
-          "time": "21:16"
-        },
-        {
-          "icon": "🚨",
-          "id": "log-1792505764981",
-          "points": -10,
-          "reason": "Nhắc nhở mức 10 điểm",
-          "time": "21:16"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370213134",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:36"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792051808103",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791906066316",
-          "points": 32,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:41"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858945192",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:35"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853967222",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:12"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791818784904",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Bút chì siêu đẹp, Tranh cát sắc màu)",
-          "time": "22:26"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791818679569",
-          "points": 64,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 52 lượt (52⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790781203837",
-          "points": 28,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "22:13"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790695702038",
-          "points": 45,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 38 lượt (38⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "22:28"
-        },
-        {
-          "icon": "🥱",
-          "id": "log-1790668009971",
-          "points": -5,
-          "reason": "Không tập trung chú ý",
-          "time": "14:46"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-17",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-17",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617415-hs-1790097391777-17",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790517666750",
-          "points": 23,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "21:01"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790238772101",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "15:32"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "Đăng Khôi",
       "previousHatchedAt": 1791818679569,
       "sleepUntil": 0,
-      "stars": 322,
+      "stars": 352,
       "status": "active"
     },
     {
@@ -6963,189 +4836,40 @@
           "id": "log-hw-1793280070748",
           "points": 13,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:21"
+          "time": "20:21 • 29/10/2026",
+          "timestamp": 1793280070748
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793191735945",
           "points": 32,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:48"
+          "time": "19:48 • 28/10/2026",
+          "timestamp": 1793191735945
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-18",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793022674189",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:51"
+          "time": "20:51 • 26/10/2026",
+          "timestamp": 1793022674189
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792753549496",
           "points": 32,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "18:05"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792724479251",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792676972320",
-          "points": 34,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 22 lượt (22⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:49"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-18",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792591039685",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:57"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792497629887",
-          "points": 36,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 24 lượt (24⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:00"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792419594575",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:19"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370865149",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:47"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792248776378",
-          "points": 28,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 16 lượt (16⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:52"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792077065673",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Tranh cát sắc màu, Kẹp tóc công chúa)",
-          "time": "22:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792076990532",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791901823696",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:30"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791815199668",
-          "points": 19,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:26"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791625225067",
-          "points": 26,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 14 lượt (14⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "16:40"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363086959",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363086222",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:51"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1790909954142",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:59"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1790909938353",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:58"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-18",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-18",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667841453",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:44"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-18",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-18",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
+          "time": "18:05 • 23/10/2026",
+          "timestamp": 1792753549496
         }
       ],
       "name": "Minh Khuê",
@@ -7342,189 +5066,56 @@
           "id": "log-hw-1793317911170",
           "points": 27,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "06:51"
+          "time": "06:51 • 30/10/2026",
+          "timestamp": 1793317911170
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793201672306",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:34"
+          "time": "22:34 • 28/10/2026",
+          "timestamp": 1793201672306
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-19",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793110254045",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:10"
+          "time": "21:10 • 27/10/2026",
+          "timestamp": 1793110254045
         },
         {
           "icon": "⭐",
           "id": "log-1793073605841",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:00"
+          "time": "11:00 • 27/10/2026",
+          "timestamp": 1793073605841
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793021987331",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:39"
+          "time": "20:39 • 26/10/2026",
+          "timestamp": 1793021987331
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792932377582",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792677140525",
-          "points": 37,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "20:52"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-19",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792592654018",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792501841280",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:10"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370275001",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:37"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792077996476",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:26"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791898143537",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Bút chì siêu đẹp, Bút chì siêu đẹp)",
-          "time": "20:29"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791898096503",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:28"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791858597439",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:29"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-19",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790895346672",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "05:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790812505445",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "06:55"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-19",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790689480860",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "20:44"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790670010333",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "15:20"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-19",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-19",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617415-hs-1790097391777-19",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790608225950",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "22:10"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790562262499",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "09:24"
+          "time": "19:46 • 25/10/2026",
+          "timestamp": 1792932377582
         }
       ],
       "milestoneChoice": "accumulate",
@@ -7734,189 +5325,80 @@
           "id": "log-hw-1793282815108",
           "points": 26,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "21:06"
+          "time": "21:06 • 29/10/2026",
+          "timestamp": 1793282815108
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793196935835",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "21:15"
+          "time": "21:15 • 28/10/2026",
+          "timestamp": 1793196935835
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-20",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🥚",
           "id": "log-cycle-1793154032031",
           "points": 0,
           "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Phần quà em yêu thích, Sổ tay mini đáng yêu)",
-          "time": "09:20"
+          "time": "09:20 • 28/10/2026",
+          "timestamp": 1793154032031
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793104912233",
           "points": 35,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:41"
+          "time": "19:41 • 27/10/2026",
+          "timestamp": 1793104912233
         },
         {
           "icon": "⚠️",
           "id": "log-1793071698055",
           "points": -5,
           "reason": "Nhắc nhở rèn luyện (-5 ⭐)",
-          "time": "10:28"
+          "time": "10:28 • 27/10/2026",
+          "timestamp": 1793071698055
         },
         {
           "icon": "⭐",
           "id": "log-1793070988032",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793070988032
         },
         {
           "icon": "⭐",
           "id": "log-1793019531628",
           "points": 10,
           "reason": "Khen thưởng (+10 ⭐)",
-          "time": "19:58"
+          "time": "19:58 • 26/10/2026",
+          "timestamp": 1793019531628
         },
         {
           "icon": "⚠️",
           "id": "log-1793019505325",
           "points": -10,
           "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "19:58"
+          "time": "19:58 • 26/10/2026",
+          "timestamp": 1793019505325
         },
         {
           "icon": "🌟",
           "id": "log-1793019393546",
           "points": 10,
           "reason": "Làm bài nhanh & chính xác",
-          "time": "19:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792673219653",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "19:46"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-20",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792586753479",
-          "points": 30,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "19:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792506443531",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:27"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792483049787",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:57"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792483049755",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:57"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792462985155",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Phần quà đặc biệt tự chọn, Gấu bông xinh xắn)",
-          "time": "09:23"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792417910366",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:51"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792330167555",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:29"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792083321837",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "23:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791895242482",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "19:40"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791854409837",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:20"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791854408593",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:20"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791854407737",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:20"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791809834291",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:57"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791551043124",
-          "points": 30,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:04"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791428141061",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:55"
+          "time": "19:56 • 26/10/2026",
+          "timestamp": 1793019393546
         }
       ],
       "name": "Vy Lê",
@@ -7935,84 +5417,8 @@
           "id": "log-1793186501873-hs-1790097391777-21",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-21",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463800632",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:36"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463797628",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:36"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363189049",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:53"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791363188125",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:53"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791271712321",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "14:28"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-21",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "��",
-          "id": "log-1790665802408-hs-1790097391777-21",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-21",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-21",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "Bảo Long",
@@ -8068,77 +5474,8 @@
           "id": "log-1793186501873-hs-1790097391777-22",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792724461379",
-          "points": 5,
-          "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:01"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-22",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463659399",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:34"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370424429",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792288960614",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "09:02"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791853857051",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:10"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791598225023",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "09:10"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791337218530",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790942175628",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "18:56"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1790932598314",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (vừa nhận: Bút chì siêu đẹp, Cục tẩy ngộ nghĩnh)",
-          "time": "16:16"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "Huyền My",
@@ -8156,154 +5493,16 @@
           "id": "log-1793186501873-hs-1790097391777-23",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793148535581",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792726299879",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "10:31"
-        },
-        {
-          "icon": "🎲",
-          "id": "log-1792593155738",
-          "points": 1,
-          "reason": "Trúng vòng quay & trả lời bài: \"Tìm từ chỉ hoạt động trong câu...\" (+1⭐)",
-          "time": "21:32"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792372710632",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:18"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792372709477",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:18"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370897959",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791164719600",
-          "points": 5,
-          "reason": "Khen thưởng (+5 ⭐)",
-          "time": "08:45"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1790906293370",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:58"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-23",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790731949428",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "08:32"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667755601",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:42"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667754850",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:42"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790579377905",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:09"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219378500-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219373989-hs-1790097391777-23",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "07:48 • 28/10/2026",
+          "timestamp": 1793148535581
         }
       ],
       "name": "Hoàng Ngân",
@@ -8440,176 +5639,17 @@
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-24",
           "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "reason": "Cả lớp c��ng chăm ngoan",
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793071000178",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792725396918",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Được ba mẹ dắt đi siêu thị mua món quà em yêu thích, Được ba mẹ dắt đi siêu thị mua món quà em yêu thích)",
-          "time": "10:16"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792683343589",
-          "points": 45,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "22:35"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-24",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792508908373",
-          "points": 32,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:08"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480413898",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:13"
-        },
-        {
-          "icon": "��",
-          "id": "log-ai-1792480413862",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:13"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792420249940",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:30"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792108557702",
-          "points": 50,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 35 lượt (35⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "06:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791936499860",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:08"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791807643042",
-          "points": 45,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 30 lượt (30⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:20"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791727543807",
-          "points": 55,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 40 lượt (40⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:05"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790776862471",
-          "points": 38,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 30 lượt (30⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "21:01"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790757328558",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790757327652",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790757326436",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790757325147",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790757323911",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "��",
-          "id": "log-1790757322168",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "15:35"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790690980549",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "21:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790690895600",
-          "points": 9,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "21:08"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-24",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-24",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-24",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793071000178
         }
       ],
       "name": "Minh Nhật",
@@ -8640,119 +5680,8 @@
           "id": "log-1793186501873-hs-1790097391777-25",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792549870524",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370974461",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:49"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858709166",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1790906130310",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:55"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1790906128975",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:55"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790868686570",
-          "points": 21,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 14 lượt (14⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "22:31"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-25",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "🌟",
-          "id": "log-1790668038425",
-          "points": 3,
-          "reason": "Làm bài nhanh & chính xác",
-          "time": "14:47"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "��",
-          "id": "log-1790665617417-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219378500-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219373989-hs-1790097391777-25",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         }
       ],
       "name": "An Nhiên",
@@ -8916,210 +5845,127 @@
           "id": "log-hw-1793195456399",
           "points": 32,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:50"
+          "time": "20:50 • 28/10/2026",
+          "timestamp": 1793195456399
         },
         {
           "icon": "📸",
           "id": "log-ai-1793195310966",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "20:48"
+          "time": "20:48 • 28/10/2026",
+          "timestamp": 1793195310966
         },
         {
           "icon": "📸",
           "id": "log-ai-1793195310949",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "20:48"
+          "time": "20:48 • 28/10/2026",
+          "timestamp": 1793195310949
         },
         {
           "icon": "📸",
           "id": "log-ai-1793195284425",
           "points": 5,
           "reason": "Soi bài Mức 1 (Viết - Xuất sắc 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "20:48"
+          "time": "20:48 • 28/10/2026",
+          "timestamp": 1793195284425
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-26",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793148531418",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
+          "time": "07:48 • 28/10/2026",
+          "timestamp": 1793148531418
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793111992191",
           "points": 30,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:39"
+          "time": "21:39 • 27/10/2026",
+          "timestamp": 1793111992191
         },
         {
           "icon": "📸",
           "id": "log-ai-1793111791098",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:36"
+          "time": "21:36 • 27/10/2026",
+          "timestamp": 1793111791098
         },
         {
           "icon": "📸",
           "id": "log-ai-1793111791072",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:36"
+          "time": "21:36 • 27/10/2026",
+          "timestamp": 1793111791072
         },
         {
           "icon": "📸",
           "id": "log-ai-1793111602411",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:33"
+          "time": "21:33 • 27/10/2026",
+          "timestamp": 1793111602411
         },
         {
           "icon": "📸",
           "id": "log-ai-1793111602387",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:33"
+          "time": "21:33 • 27/10/2026",
+          "timestamp": 1793111602387
         },
         {
           "icon": "⭐",
           "id": "log-1793073602921",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:00"
+          "time": "11:00 • 27/10/2026",
+          "timestamp": 1793073602921
         },
         {
           "icon": "⚠️",
           "id": "log-1793072200990",
           "points": -5,
           "reason": "Nhắc nhở rèn luyện (-5 ⭐)",
-          "time": "10:36"
+          "time": "10:36 • 27/10/2026",
+          "timestamp": 1793072200990
         },
         {
           "icon": "⭐",
           "id": "log-1793071039836",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793002795163",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:19"
+          "time": "10:17 • 27/10/2026",
+          "timestamp": 1793071039836
         },
         {
           "icon": "⚠️",
           "id": "log-1793002794364",
           "points": -10,
           "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:19"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792680941366",
-          "points": 5,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:55"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792680941348",
-          "points": 5,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:55"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792680911001",
-          "points": 5,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792680521487",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:48"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792659810257",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Sổ tay mini đáng yêu, Kẹp tóc công chúa)",
-          "time": "16:03"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792659787698",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "16:03"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792659786326",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "16:03"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792659501543",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:58"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792593964573",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:46"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792593964551",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "21:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792593833561",
-          "points": 45,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "21:43"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-26",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792499005344",
-          "points": 32,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:23"
+          "time": "15:19 • 26/10/2026",
+          "timestamp": 1793002794364
         }
       ],
       "milestoneChoice": "accumulate",
       "name": "Hoàng Phúc",
       "previousHatchedAt": 1792659787698,
       "sleepUntil": 0,
-      "stars": 131,
+      "stars": 141,
       "status": "active"
     },
     {
@@ -9204,175 +6050,16 @@
           "id": "log-1793186501873-hs-1790097391777-27",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793070676327",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792651889693",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "13:51"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792419491592",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:18"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370511795",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:41"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791848722550",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Bộ lắp ráp Lê gô, Bộ lắp ráp Lê gô)",
-          "time": "06:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791816934787",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:55"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791762014792",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "06:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791762009340",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "06:40"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1790906109145",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "08:55"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790770638026",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:17"
-        },
-        {
-          "icon": "🚀",
-          "id": "log-1790732243792-hs-1790097391777-27",
-          "points": 2,
-          "reason": "Tổ xuất sắc dẫn đầu (Tổ 2 - Thỏ Thông Thái)",
-          "time": "08:37"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790668129867",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:48"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "����",
-          "id": "log-1790579435959",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:10"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790579435220",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:10"
-        },
-        {
-          "icon": "��",
-          "id": "log-hw-1790425786952",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:29"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790301092789",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "08:51"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219378500-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "👏",
-          "id": "log-1790219373989-hs-1790097391777-27",
-          "points": 1,
-          "reason": "Tổ hợp tác tốt (Tổ 2 - Thỏ Thông Thái)",
-          "time": "10:09"
-        },
-        {
-          "icon": "��",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "10:11 • 27/10/2026",
+          "timestamp": 1793070676327
         }
       ],
       "name": "Uyên Phương",
@@ -9483,7 +6170,7 @@
         },
         {
           "claimedBy": "parent",
-          "icon": "🎀",
+          "icon": "����",
           "id": "gift-1792596763548",
           "milestone": 100,
           "name": "Kẹp tóc công chúa",
@@ -9499,175 +6186,32 @@
           "id": "log-hw-1793200090265",
           "points": 14,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "22:08"
+          "time": "22:08 • 28/10/2026",
+          "timestamp": 1793200090265
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-28",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793070653368",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:10"
+          "time": "10:10 • 27/10/2026",
+          "timestamp": 1793070653368
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793024205525",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:16"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792596763548",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Cục tẩy ngộ nghĩnh, Kẹp tóc công chúa)",
-          "time": "22:32"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792596717630",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:31"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-28",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792508117837",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "21:55"
-        },
-        {
-          "icon": "🚨",
-          "id": "log-1792505742487",
-          "points": -10,
-          "reason": "Nhắc nhở mức 10 điểm",
-          "time": "21:15"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792423730968",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "22:28"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792071636768",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "20:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792071590369",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "20:39"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792035091995",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791210256707",
-          "points": 11,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:24"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-28",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778507203",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:28"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778501412",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:28"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778498890",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:28"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790778456835",
-          "points": 10,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:27"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-28",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-28",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-28",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790562321860",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "09:25"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790216122693",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "09:15"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-init-1790097391777",
-          "points": 0,
-          "reason": "Bắt đầu ấp trứng kỳ diệu!",
-          "time": "00:16"
+          "time": "21:16 • 26/10/2026",
+          "timestamp": 1793024205525
         }
       ],
       "name": "Hoàng Quân",
@@ -9910,182 +6454,88 @@
           "id": "log-hw-1793197539299",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:25"
+          "time": "21:25 • 28/10/2026",
+          "timestamp": 1793197539299
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-29",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "📸",
           "id": "log-ai-1793105821796",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "19:57"
+          "time": "19:57 • 27/10/2026",
+          "timestamp": 1793105821796
         },
         {
           "icon": "📸",
           "id": "log-ai-1793105821692",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "19:57"
+          "time": "19:57 • 27/10/2026",
+          "timestamp": 1793105821692
         },
         {
           "icon": "📸",
           "id": "log-ai-1793105782726",
           "points": 3,
           "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "19:56"
+          "time": "19:56 • 27/10/2026",
+          "timestamp": 1793105782726
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793105492837",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:51"
+          "time": "19:51 • 27/10/2026",
+          "timestamp": 1793105492837
         },
         {
           "icon": "📸",
           "id": "log-ai-1793105414876",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "19:50"
+          "time": "19:50 • 27/10/2026",
+          "timestamp": 1793105414876
         },
         {
           "icon": "📸",
           "id": "log-ai-1793105414790",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "19:50"
+          "time": "19:50 • 27/10/2026",
+          "timestamp": 1793105414790
         },
         {
           "icon": "⭐",
           "id": "log-1793071007389",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793071007389
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793019095826",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:51"
+          "time": "19:51 • 26/10/2026",
+          "timestamp": 1793019095826
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792827709768",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "14:41"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792714822799",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:20"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792650814870",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "13:33"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-29",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792549854540",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:30"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792543460330",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:44"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792463875276",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:37"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792423787876",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:29"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370977571",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:49"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792153081236",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:18"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792115188331",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Bộ cờ cá ngựa vui nhộn, Bộ cờ cá ngựa vui nhộn)",
-          "time": "08:46"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792115153873",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "08:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792115130389",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "08:45"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791895874507",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:51"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791807114898",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791716262487",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "17:57"
+          "time": "14:41 • 24/10/2026",
+          "timestamp": 1792827709768
         }
       ],
       "milestoneChoice": "accumulate",
@@ -10270,189 +6720,48 @@
           "id": "log-hw-1793271304959",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "17:55"
+          "time": "17:55 • 29/10/2026",
+          "timestamp": 1793271304959
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793189762312",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "19:16"
+          "time": "19:16 • 28/10/2026",
+          "timestamp": 1793189762312
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-30",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793099637478",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "18:13"
+          "time": "18:13 • 27/10/2026",
+          "timestamp": 1793099637478
         },
         {
           "icon": "⭐",
           "id": "log-1793073684416",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:01"
+          "time": "11:01 • 27/10/2026",
+          "timestamp": 1793073684416
         },
         {
           "icon": "��",
           "id": "log-hw-1793016122945",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:02"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792668927937",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "18:35"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792659646907",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Kẹp tóc công chúa, Bút chì siêu đẹp)",
-          "time": "16:00"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-30",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792582106820",
-          "points": 35,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Sticker 3 cái (15⭐), Dặn dò (5⭐)",
-          "time": "18:28"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792498362294",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:12"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792457182351",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:46"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370938384",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792063834474",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "18:30"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792035015057",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:30"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791900869293",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:14"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791861560179",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:19"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791858580762",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "09:29"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791853461135",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "08:04"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791807874994",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Tranh cát sắc màu, Tranh cát sắc màu)",
-          "time": "19:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791807842898",
-          "points": 79,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 64 lượt (64⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791807785447",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:23"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790939776140",
-          "points": 21,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "18:16"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-30",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "��",
-          "id": "log-hw-1790853106859",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "18:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790768057639",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "18:34"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790680781608",
-          "points": 18,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "18:19"
+          "time": "19:02 • 26/10/2026",
+          "timestamp": 1793016122945
         }
       ],
       "name": "Tuệ Tâm",
@@ -10641,189 +6950,104 @@
           "id": "log-hw-1793280949253",
           "points": 19,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 7 lượt (7⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:35"
+          "time": "20:35 • 29/10/2026",
+          "timestamp": 1793280949253
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793194995395",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:43"
+          "time": "20:43 • 28/10/2026",
+          "timestamp": 1793194995395
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-31",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793107194354",
           "points": 15,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:19"
+          "time": "20:19 • 27/10/2026",
+          "timestamp": 1793107194354
         },
         {
           "icon": "⭐",
           "id": "log-1793070685971",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:11"
+          "time": "10:11 • 27/10/2026",
+          "timestamp": 1793070685971
         },
         {
           "icon": "⭐",
           "id": "log-1793070683888",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:11"
+          "time": "10:11 • 27/10/2026",
+          "timestamp": 1793070683888
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793015252841",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "18:47"
+          "time": "18:47 • 26/10/2026",
+          "timestamp": 1793015252841
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763661724",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:54"
+          "time": "20:54 • 23/10/2026",
+          "timestamp": 1792763661724
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763661660",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:54"
+          "time": "20:54 • 23/10/2026",
+          "timestamp": 1792763661660
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763635352",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:53"
+          "time": "20:53 • 23/10/2026",
+          "timestamp": 1792763635352
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763591712",
           "points": 3,
           "reason": "Soi bài Mức 2 (Toán - Đạt 3 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:53"
+          "time": "20:53 • 23/10/2026",
+          "timestamp": 1792763591712
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763417354",
           "points": 5,
           "reason": "Soi bài Mức 1 (Viết - Xuất sắc 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "20:50"
+          "time": "20:50 • 23/10/2026",
+          "timestamp": 1792763417354
         },
         {
           "icon": "📸",
           "id": "log-ai-1792763364780",
           "points": 5,
           "reason": "Soi bài Mức 1 (Toán - Xuất sắc 5 sao): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:49"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792672348780",
-          "points": 26,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 14 lượt (14⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:32"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792659509892",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:58"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-31",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792590888550",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 3 lượt (3⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:54"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792502526892",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:22"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792465354044",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "10:02"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792415322533",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:08"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370492658",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:41"
-        },
-        {
-          "icon": "��",
-          "id": "log-ai-1792156473403",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:14"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792156445568",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Toán - Xuất sắc): Bài toán: Phép tính cộng trừ & So sánh trong phạm vi 10",
-          "time": "20:14"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792156308648",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "20:11"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792073957697",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 4 lượt (4⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:19"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792070092799",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Tranh cát sắc màu, Tranh cát sắc màu)",
-          "time": "20:14"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791893219081",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "19:06"
+          "time": "20:49 • 23/10/2026",
+          "timestamp": 1792763364780
         }
       ],
       "milestoneChoice": "accumulate",
@@ -10964,175 +7188,24 @@
           "id": "log-1793186501873-hs-1790097391777-32",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🥚",
           "id": "log-cycle-1793154463274",
           "points": 0,
           "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Bộ cờ vua thông minh, Gấu bông xinh xắn)",
-          "time": "09:27"
+          "time": "09:27 • 28/10/2026",
+          "timestamp": 1793154463274
         },
         {
           "icon": "⭐",
           "id": "log-1793073676582",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "11:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792684404340",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "22:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792684353419",
-          "points": 33,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 21 lượt (21⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:52"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792594756317",
-          "points": 38,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 26 lượt (26⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:59"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-32",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505701504",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:15"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480178890",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:09"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480178849",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792334218978",
-          "points": 37,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 25 lượt (25⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "21:36"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792154644490",
-          "points": 48,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 36 lượt (36⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:44"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791901290169",
-          "points": 30,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 15 lượt (15⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:21"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791901055091",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1791861250890",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:14"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791859091741",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:38"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791803574599",
-          "points": 42,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 30 lượt (30⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "18:12"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791720489191",
-          "points": 52,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 40 lượt (40⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:08"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791720431914",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 100⭐: Phần quà em yêu thích, Phần quà em yêu thích)",
-          "time": "19:07"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791720410551",
-          "points": 37,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 25 lượt (25⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:06"
-        },
-        {
-          "icon": "��",
-          "id": "log-hw-1791720347166",
-          "points": 32,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 20 lượt (20⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:05"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-32",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790769279954",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "18:54"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-32",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-32",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
+          "time": "11:01 • 27/10/2026",
+          "timestamp": 1793073676582
         }
       ],
       "name": "Anh Thư",
@@ -11317,186 +7390,67 @@
       "likes": 1,
       "logs": [
         {
-          "icon": "⚠️",
-          "id": "log-1793331324839",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:35"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793331323971",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "10:35"
-        },
-        {
           "icon": "🏠",
           "id": "log-hw-1793311465294",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "05:04"
+          "time": "05:04 • 30/10/2026",
+          "timestamp": 1793311465294
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-33",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793107600494",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:26"
+          "time": "20:26 • 27/10/2026",
+          "timestamp": 1793107600494
         },
         {
           "icon": "⭐",
           "id": "log-1793070640707",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:10"
+          "time": "10:10 • 27/10/2026",
+          "timestamp": 1793070640707
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793060640015",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:24"
+          "time": "07:24 • 27/10/2026",
+          "timestamp": 1793060640015
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792940875881",
           "points": 20,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:07"
+          "time": "22:07 • 25/10/2026",
+          "timestamp": 1792940875881
         },
         {
           "icon": "🏠",
           "id": "log-hw-1792769041346",
           "points": 25,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:24"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792596553444",
-          "points": 16,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:29"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-33",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792506934938",
-          "points": 56,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 41 lượt (41⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:35"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792482979879",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:56"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792482979848",
-          "points": 10,
-          "reason": "Soi bài Mức 1 (Viết - Xuất sắc): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:56"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792421334493",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Được làm lớp trưởng 3 ngày, Được làm lớp trưởng 3 ngày)",
-          "time": "21:48"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792421281196",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Bộ cờ cá ngựa vui nhộn, Bộ cờ cá ngựa vui nhộn)",
-          "time": "21:48"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792421255695",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 200⭐: Bộ xếp hình Lê gô cao cấp, Gấu bông xinh xắn)",
-          "time": "21:47"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792421203509",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:46"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370440425",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:40"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370356267",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:39"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792334523528",
-          "points": 25,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "21:42"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792065654907",
-          "points": 20,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "19:00"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792051778470",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "15:09"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791899246262",
-          "points": 28,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 13 lượt (13⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:47"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791859077305",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:37"
+          "time": "22:24 • 23/10/2026",
+          "timestamp": 1792769041346
         }
       ],
       "milestoneChoice": "accumulate",
       "name": "Bảo Trân",
       "previousHatchedAt": 1791899246262,
       "sleepUntil": 0,
-      "stars": 194,
+      "stars": 214,
       "status": "active"
     },
     {
@@ -11633,194 +7587,45 @@
           "id": "log-hw-1793288915058",
           "points": 21,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "22:48"
+          "time": "22:48 • 29/10/2026",
+          "timestamp": 1793288915058
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793288904888",
           "points": 16,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:48"
+          "time": "22:48 • 29/10/2026",
+          "timestamp": 1793288904888
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-34",
           "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186345548",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:19"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186342793",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:19"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186342089",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:19"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186341417",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:19"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186338221",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186336731",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186336189",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1793186335433",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "18:18"
+          "reason": "Cả l���p cùng chăm ngoan",
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793110257422",
           "points": 22,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 12 lượt (12⭐), Viết (5⭐), Dặn dò (5⭐)",
-          "time": "21:10"
+          "time": "21:10 • 27/10/2026",
+          "timestamp": 1793110257422
         },
         {
           "icon": "🏠",
           "id": "log-hw-1793109407273",
           "points": 41,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 26 lượt (26⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "20:56"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792679844044",
-          "points": 46,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 26 lượt (26⭐), Viết (10⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "21:37"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792594950076",
-          "points": 49,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 24 lượt (24⭐), Viết (10⭐), Sticker 2 cái (10⭐), Dặn dò (5⭐)",
-          "time": "22:02"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-34",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792543724456",
-          "points": 60,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 45 lượt (45⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "07:48"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792508812535",
-          "points": 31,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 16 lượt (16⭐), Viết (10⭐), Dặn dò (5⭐)",
-          "time": "22:06"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505850217",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505849488",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505849020",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505845330",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505842957",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "⚠️",
-          "id": "log-1792505840917",
-          "points": -10,
-          "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "21:17"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480438705",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:13"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792480438678",
-          "points": 5,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 5 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "14:13"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792424110905",
-          "points": 28,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 16 lượt (16⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:35"
+          "time": "20:56 • 27/10/2026",
+          "timestamp": 1793109407273
         }
       ],
       "name": "Nhã Uyên",
       "sleepUntil": 0,
-      "stars": 434,
+      "stars": 514,
       "status": "active"
     },
     {
@@ -11846,42 +7651,16 @@
           "id": "log-1793186501873-hs-1790097391777-35",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793070642852",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-35",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1792370417487",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "07:40"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1792330913140",
-          "points": 8,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "20:41"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1792330907461",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp trứng mới (vừa nhận: Phần quà em yêu thích, Tranh cát sắc màu)",
-          "time": "20:41"
+          "time": "10:10 • 27/10/2026",
+          "timestamp": 1793070642852
         }
       ],
       "name": "Ngọc Uyên",
@@ -12014,7 +7793,7 @@
           "icon": "🎁",
           "id": "gift-1791726523867",
           "milestone": 300,
-          "name": "Phần quà em yêu thích",
+          "name": "Ph��n quà em yêu thích",
           "time": "20:48, 11/10",
           "timestamp": 1791726523867
         },
@@ -12036,182 +7815,48 @@
           "id": "log-hw-1793279033695",
           "points": 18,
           "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Sticker 1 cái (5⭐), Dặn dò (5⭐)",
-          "time": "20:03"
+          "time": "20:03 • 29/10/2026",
+          "timestamp": 1793279033695
         },
         {
           "icon": "🏆",
           "id": "log-1793186501873-hs-1790097391777-36",
           "points": 1,
           "reason": "Cả lớp cùng chăm ngoan",
-          "time": "18:21"
+          "time": "18:21 • 28/10/2026",
+          "timestamp": 1793186501873
         },
         {
           "icon": "⭐",
           "id": "log-1793071010013",
           "points": 5,
           "reason": "Khen thưởng tích cực (+5 ⭐)",
-          "time": "10:16"
+          "time": "10:16 • 27/10/2026",
+          "timestamp": 1793071010013
         },
         {
           "icon": "⚠️",
           "id": "log-1793002577792",
           "points": -10,
           "reason": "Nhắc nhở rèn luyện (-10 ⭐)",
-          "time": "15:16"
+          "time": "15:16 • 26/10/2026",
+          "timestamp": 1793002577792
         },
         {
           "icon": "⭐",
           "id": "log-1793002574324",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "15:16"
+          "time": "15:16 • 26/10/2026",
+          "timestamp": 1793002574324
         },
         {
           "icon": "⭐",
           "id": "log-1793002572377",
           "points": 10,
           "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "15:16"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792722371689",
-          "points": 3,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "09:26"
-        },
-        {
-          "icon": "📸",
-          "id": "log-ai-1792722371659",
-          "points": 3,
-          "reason": "Soi bài Mức 2 (Viết - Đạt 3 sao): Luyện viết chữ cái: Nét chữ nết người",
-          "time": "09:26"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1792593100775-hs-1790097391777-36",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "21:31"
-        },
-        {
-          "icon": "��",
-          "id": "log-hw-1792077168677",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 1 lượt (1⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "22:12"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791898638483",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "20:37"
-        },
-        {
-          "icon": "⭐",
-          "id": "log-1791858794853",
-          "points": 10,
-          "reason": "Khen thưởng tích cực (+10 ⭐)",
-          "time": "09:33"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791809939351",
-          "points": 22,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (7⭐), Dặn dò (5⭐)",
-          "time": "19:58"
-        },
-        {
-          "icon": "🥚",
-          "id": "log-cycle-1791726544773",
-          "points": 0,
-          "reason": "Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc 300⭐: Kẹp tóc công chúa, Kẹp tóc công chúa)",
-          "time": "20:49"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1791726480338",
-          "points": 332,
-          "reason": "Phụ huynh gửi đi��m ở nhà: Đọc 5 lượt (5⭐), Viết (7⭐), Sticker 63 cái (315⭐), Dặn dò (5⭐)",
-          "time": "20:48"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790905990473-hs-1790097391777-36",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "08:53"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790863265057",
-          "points": 17,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 10 lượt (10⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "21:01"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790686504258",
-          "points": 14,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 6 lượt (6⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "19:55"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667811731",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:43"
-        },
-        {
-          "icon": "👀",
-          "id": "log-1790667811159",
-          "points": 3,
-          "reason": "Tập trung chú ý nghe giảng",
-          "time": "14:43"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665802408-hs-1790097391777-36",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:10"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665641261-hs-1790097391777-36",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:07"
-        },
-        {
-          "icon": "🏆",
-          "id": "log-1790665617417-hs-1790097391777-36",
-          "points": 1,
-          "reason": "Cả lớp cùng chăm ngoan",
-          "time": "14:06"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790603041173",
-          "points": 13,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (3⭐), Dặn dò (5⭐)",
-          "time": "20:44"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790512490736",
-          "points": 15,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 8 lượt (8⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:34"
-        },
-        {
-          "icon": "🏠",
-          "id": "log-hw-1790424401742",
-          "points": 12,
-          "reason": "Phụ huynh gửi điểm ở nhà: Đọc 5 lượt (5⭐), Viết (2⭐), Dặn dò (5⭐)",
-          "time": "19:06"
+          "time": "15:16 • 26/10/2026",
+          "timestamp": 1793002572377
         }
       ],
       "name": "Hải Yến",

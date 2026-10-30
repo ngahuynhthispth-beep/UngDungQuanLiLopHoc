@@ -959,12 +959,15 @@
 
       <!-- Timeline of today's accomplishments -->
       <div class="timeline-card">
-        <div class="timeline-title">
-          <span>🌟</span> Nhật Ký Việc Tốt & Rèn Luyện Của Con
+        <div class="timeline-title" style="display: flex; flex-direction: column; align-items: flex-start; gap: 3px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>🌟</span> <span>Nhật Ký Việc Tốt & Rèn Luyện</span>
+          </div>
+          <div style="font-size: 11px; color: #64748B; font-weight: 600;">(Lưu giữ 7 ngày gần nhất để phụ huynh tiện theo dõi)</div>
         </div>
         <div id="parentLogsList">
           <p style="text-align: center; color: #94A3B8; font-size: 14px; padding: 20px 0;">
-            Chưa có hoạt động nào được ghi nhận hôm nay.
+            Đang tải dữ liệu...
           </p>
         </div>
       </div>
@@ -1138,13 +1141,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261030_v1"></script>
-  <script src="js/firebase-sync.js?v=20261030_v1"></script>
-  <script src="js/audio.js?v=20261030_v1"></script>
-  <script src="js/egg-evolution.js?v=20261030_v1"></script>
-  <script src="js/initial-data.js?v=20261030_v1"></script>
-  <script src="js/storage.js?v=20261030_v1"></script>
-  <script src="js/wheel.js?v=20261030_v1"></script>
+  <script src="js/firebase-config.js?v=20261030_v2"></script>
+  <script src="js/firebase-sync.js?v=20261030_v2"></script>
+  <script src="js/audio.js?v=20261030_v2"></script>
+  <script src="js/egg-evolution.js?v=20261030_v2"></script>
+  <script src="js/initial-data.js?v=20261030_v2"></script>
+  <script src="js/storage.js?v=20261030_v2"></script>
+  <script src="js/wheel.js?v=20261030_v2"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1898,24 +1901,80 @@
           row.classList.toggle('current', rowStage === stage.level);
         });
 
-        // Render Logs
+        // Render Logs (Tự động cập nhật ngày tháng & tự động lọc giữ 7 ngày gần nhất)
         const logsContainer = document.getElementById('parentLogsList');
-        if (student.logs && student.logs.length > 0) {
-          logsContainer.innerHTML = student.logs.map(log => `
-            <div class="log-item">
-              <div class="log-icon">${log.icon || '⭐'}</div>
-              <div class="log-info">
-                <div class="log-reason">${log.reason}</div>
-                <div class="log-time">${log.time || 'Gần đây'}</div>
+        const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+
+        function formatParentLogTime(log) {
+          if (!log) return 'Gần đây';
+          let ts = log.timestamp;
+          if (!ts && log.id) {
+            const m = String(log.id).match(/(\d{12,14})/);
+            if (m) {
+              const parsed = parseInt(m[1], 10);
+              if (parsed > 1500000000000 && parsed < 2500000000000) {
+                ts = parsed;
+              }
+            }
+          }
+          if (ts) {
+            const d = new Date(ts);
+            const h = String(d.getHours()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${h}:${min} • ${day}/${month}/${year}`;
+          }
+          if (log.time) {
+            return log.time;
+          }
+          return 'Gần đây';
+        }
+
+        // Tự động lọc bỏ các log quá 1 tuần (7 ngày) theo yêu cầu
+        const recentLogs = (student.logs || []).filter(log => {
+          let ts = log.timestamp;
+          if (!ts && log.id) {
+            const m = String(log.id).match(/(\d{12,14})/);
+            if (m) {
+              const parsed = parseInt(m[1], 10);
+              if (parsed > 1500000000000 && parsed < 2500000000000) {
+                ts = parsed;
+              }
+            }
+          }
+          if (ts) {
+            return (now - ts) <= ONE_WEEK_MS;
+          }
+          return true;
+        });
+
+        if (recentLogs && recentLogs.length > 0) {
+          logsContainer.innerHTML = recentLogs.map(log => {
+            const isMinus = (log.points || 0) < 0;
+            const formattedTime = formatParentLogTime(log);
+            return `
+              <div class="log-item" style="${isMinus ? 'background: #FFF1F2; border: 1px solid #FECDD3;' : ''}">
+                <div class="log-icon">${log.icon || (isMinus ? '⚠️' : '⭐')}</div>
+                <div class="log-info">
+                  <div class="log-reason" style="${isMinus ? 'color: #9F1239; font-weight: 700;' : ''}">${log.reason}</div>
+                  <div class="log-time" style="${isMinus ? 'color: #E11D48; font-weight: 700;' : ''}">
+                    ${isMinus ? '⚠️ Thời gian nhắc nhở: ' : '⏰ '}${formattedTime}
+                  </div>
+                </div>
+                <div class="log-points" style="${isMinus ? 'color: #E11D48; background: #FFE4E6;' : ''}">${log.points > 0 ? '+' : ''}${log.points} ⭐</div>
               </div>
-              <div class="log-points" style="${log.points < 0 ? 'color: #E11D48; background: #FFE4E6;' : ''}">${log.points > 0 ? '+' : ''}${log.points} ⭐</div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         } else {
           logsContainer.innerHTML = `
-            <p style="text-align: center; color: #94A3B8; font-size: 14px; padding: 20px 0;">
-              Chưa có hoạt động nào được ghi nhận hôm nay.
-            </p>
+            <div style="text-align: center; color: #64748B; font-size: 13px; padding: 22px 12px; background: #F8FAFC; border-radius: 14px; border: 1px dashed #CBD5E1;">
+              <div style="font-size: 26px; margin-bottom: 6px;">🌈</div>
+              <div style="font-weight: 700; color: #334155;">Chưa có hoạt động nào trong 7 ngày gần nhất</div>
+              <div style="font-size: 11px; color: #94A3B8; margin-top: 4px;">Hệ thống tự động hiển thị nhật ký trong 1 tuần để phụ huynh tiện theo dõi.</div>
+            </div>
           `;
         }
 

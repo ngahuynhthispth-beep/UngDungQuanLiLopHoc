@@ -290,10 +290,11 @@
 
       if (!student.logs) student.logs = [];
       const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} • ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
       const reasonDetail = `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐)${sCount > 0 ? `, Sticker ${sCount} cái (${sStars}⭐)` : ''}, Dặn dò (${cStars}⭐)`;
       student.logs.unshift({
         id: 'log-hw-' + Date.now(),
+        timestamp: Date.now(),
         time: timeStr,
         points: actualAdded,
         reason: reasonDetail,
@@ -443,9 +444,11 @@
         student.giftSessionSource = null;
 
         if (!student.logs) student.logs = [];
+        const cycleTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} • ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
         student.logs.unshift({
           id: 'log-cycle-' + Date.now(),
-          time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+          timestamp: Date.now(),
+          time: cycleTimeStr,
           points: 0,
           reason: `Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc ${currentMilestone}⭐: ${summaryEntry.gift1 ? summaryEntry.gift1.name : ''}, ${record.name})`,
           icon: '🥚'

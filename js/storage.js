@@ -416,11 +416,41 @@ const StorageManager = {
   },
 
   // Helper methods
-  getTimeString() {
-    const d = new Date();
+  getTimeString(date = new Date()) {
+    const d = date instanceof Date ? date : new Date(date);
     const h = String(d.getHours()).padStart(2, '0');
     const m = String(d.getMinutes()).padStart(2, '0');
-    return `${h}:${m}`;
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const y = d.getFullYear();
+    return `${h}:${m} • ${day}/${month}/${y}`;
+  },
+
+  // Tự động lọc bỏ các log quá 1 tuần (7 ngày) để phụ huynh theo dõi tiện lợi, không bị dồn ứ gây nhầm lẫn
+  cleanOldLogs(logs, maxDays = 7) {
+    if (!Array.isArray(logs)) return [];
+    const now = Date.now();
+    const maxAgeMs = maxDays * 24 * 60 * 60 * 1000;
+    const validLogs = logs.filter(log => {
+      let ts = log.timestamp;
+      if (!ts && log.id) {
+        const m = String(log.id).match(/(\d{12,14})/);
+        if (m) {
+          const parsed = parseInt(m[1], 10);
+          if (parsed > 1500000000000 && parsed < 2500000000000) {
+            ts = parsed;
+          }
+        }
+      }
+      if (ts) {
+        return (now - ts) <= maxAgeMs;
+      }
+      return true;
+    });
+    if (validLogs.length === 0 && logs.length > 0) {
+      return [logs[0]];
+    }
+    return validLogs;
   },
 
   addPointsToStudent(studentId, points, reason, icon = '⭐') {
@@ -452,12 +482,14 @@ const StorageManager = {
     if (!student.logs) student.logs = [];
     student.logs.unshift({
       id: 'log-' + Date.now(),
+      timestamp: Date.now(),
       time: this.getTimeString(),
       points,
       reason,
       icon
     });
-    // Keep max 25 recent logs
+    // Tự động lọc log trong vòng 7 ngày & tối đa 25 log
+    student.logs = this.cleanOldLogs(student.logs, 7);
     if (student.logs.length > 25) {
       student.logs = student.logs.slice(0, 25);
     }
@@ -494,11 +526,13 @@ const StorageManager = {
       if (!s.logs) s.logs = [];
       s.logs.unshift({
         id: 'log-' + Date.now() + '-' + s.id,
+        timestamp: Date.now(),
         time: this.getTimeString(),
         points: sActual,
         reason: `${reason} (${group.name})`,
         icon
       });
+      s.logs = this.cleanOldLogs(s.logs, 7);
       if (s.logs.length > 25) s.logs = s.logs.slice(0, 25);
     });
 
@@ -525,11 +559,13 @@ const StorageManager = {
       if (!s.logs) s.logs = [];
       s.logs.unshift({
         id: 'log-' + Date.now() + '-' + s.id,
+        timestamp: Date.now(),
         time: this.getTimeString(),
         points: sActual,
         reason,
         icon
       });
+      s.logs = this.cleanOldLogs(s.logs, 7);
       if (s.logs.length > 25) s.logs = s.logs.slice(0, 25);
     });
     this.saveData(data);
@@ -546,11 +582,13 @@ const StorageManager = {
     if (!student.logs) student.logs = [];
     student.logs.unshift({
       id: 'log-' + Date.now(),
+      timestamp: Date.now(),
       time: this.getTimeString(),
       points: 0,
       reason: 'Thú cưng đi ngủ (Tĩnh tâm 2 phút để giữ trật tự)',
       icon: '💤'
     });
+    student.logs = this.cleanOldLogs(student.logs, 7);
 
     this.saveData(data);
     return { student, data };
@@ -566,11 +604,13 @@ const StorageManager = {
     if (!student.logs) student.logs = [];
     student.logs.unshift({
       id: 'log-' + Date.now(),
+      timestamp: Date.now(),
       time: this.getTimeString(),
       points: 1,
       reason: 'Bé đã ngồi ngoan, thú cưng thức dậy!',
       icon: '✨'
     });
+    student.logs = this.cleanOldLogs(student.logs, 7);
     student.stars += 1;
 
     this.saveData(data);
@@ -719,11 +759,13 @@ const StorageManager = {
       if (!s.logs) s.logs = [];
       s.logs.unshift({
         id: 'log-reset-' + Date.now(),
+        timestamp: Date.now(),
         time: this.getTimeString(),
         points: 0,
         reason: 'Bắt đầu chu kỳ ấp trứng mới (0 sao)',
         icon: '🥚'
       });
+      s.logs = this.cleanOldLogs(s.logs, 7);
       if (s.logs.length > 25) s.logs = s.logs.slice(0, 25);
     });
     data.groups.forEach(g => {
@@ -853,11 +895,13 @@ const StorageManager = {
     const reasonDetail = `Phụ huynh gửi điểm ở nhà: Đọc ${rCount} lượt (${rStars}⭐), Viết (${wStars}⭐)${sCount > 0 ? `, Sticker ${sCount} cái (${sStars}⭐)` : ''}, Dặn dò (${cStars}⭐)`;
     student.logs.unshift({
       id: 'log-hw-' + Date.now(),
+      timestamp: Date.now(),
       time: this.getTimeString(),
       points: totalStars,
       reason: reasonDetail,
       icon: '🏠'
     });
+    student.logs = this.cleanOldLogs(student.logs, 7);
     if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
 
     this.saveData(data);
@@ -1115,11 +1159,13 @@ const StorageManager = {
       if (!student.logs) student.logs = [];
       student.logs.unshift({
         id: 'log-cycle-' + Date.now(),
-        time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        timestamp: Date.now(),
+        time: this.getTimeString(),
         points: 0,
         reason: `Bắt đầu chu kỳ ấp mới (vừa nhận quà mốc ${currentMilestone}⭐: ${summaryEntry.gift1 ? summaryEntry.gift1.name : ''}, ${record.name})`,
         icon: '🥚'
       });
+      student.logs = this.cleanOldLogs(student.logs, 7);
       if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
     }
 
@@ -1232,6 +1278,7 @@ const StorageManager = {
     student.giftSessionSource = null;
     student.logs = [{
       id: 'log-cycle-' + Date.now(),
+      timestamp: Date.now(),
       time: this.getTimeString(),
       points: 0,
       reason: `Bắt đầu chu kỳ ấp trứng mới (vừa nhận: ${summaryEntry.gift1.name}, ${summaryEntry.gift2.name})`,
