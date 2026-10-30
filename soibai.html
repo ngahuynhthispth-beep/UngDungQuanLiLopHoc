@@ -475,6 +475,85 @@
       box-shadow: 0 8px 24px rgba(244, 63, 94, 0.2);
     }
 
+    /* Teacher Approval Box */
+    .teacher-approval-box {
+      background: #FFFFFF;
+      border: 2.5px dashed #4F46E5;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin: 14px 0 10px 0;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(79, 70, 229, 0.1);
+    }
+    .approval-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .approval-icon {
+      font-size: 24px;
+    }
+    .approval-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1E293B;
+      letter-spacing: 0.3px;
+    }
+    .approval-subtitle {
+      font-size: 13px;
+      color: #475569;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .approval-buttons-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-approval-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-approval-action.approve {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      border: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+    .btn-approval-action.approve:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.45);
+    }
+    .btn-approval-action.reject {
+      background: #FFF1F2;
+      color: #BE123C;
+      border: 1.5px solid #FDA4AF;
+      box-shadow: 0 2px 8px rgba(244, 63, 94, 0.15);
+    }
+    .btn-approval-action.reject:hover {
+      background: #FFE4E6;
+      transform: translateY(-2px);
+    }
+    .approval-status-message {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      animation: popIn 0.3s ease;
+    }
+
     #annotationCanvas {
       position: absolute;
       top: 0;
@@ -969,6 +1048,26 @@
           "Em viết chữ rất đều và đẹp, các con chữ ngay ngắn thẳng hàng. Cô khen con nhé!"
         </div>
 
+        <!-- HỘP XÁC NHẬN CỦA CÔ GIÁO TRƯỚC KHI CHUYỂN ĐIỂM -->
+        <div id="teacherApprovalBox" class="teacher-approval-box">
+          <div class="approval-header">
+            <span class="approval-icon">👩‍🏫</span>
+            <span class="approval-title">CÔ CÓ ĐỒNG Ý VỚI SỐ ĐIỂM ĐÃ CHẤM KHÔNG?</span>
+          </div>
+          <div id="teacherApprovalSubtitle" class="approval-subtitle">
+            AI đề xuất: <strong id="approvalStarsText" style="color: #D97706; font-size: 14.5px;">+5 ⭐</strong> cho học sinh.
+          </div>
+          <div class="approval-buttons-group">
+            <button type="button" id="btnTeacherApprove" class="btn-approval-action approve">
+              <span>✅</span> ĐỒNG Ý & CHUYỂN ĐIỂM
+            </button>
+            <button type="button" id="btnTeacherReject" class="btn-approval-action reject">
+              <span>🔄</span> KHÔNG ĐỒNG Ý (CHẤM LẠI)
+            </button>
+          </div>
+          <div id="approvalStatusMsg" class="approval-status-message" style="display: none;"></div>
+        </div>
+
         <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
           <button type="button" id="btnSpeakComment" class="btn-cam-action secondary" style="flex: none; padding: 8px 14px; font-size: 12.5px;">
             🔊 Đọc Lời Nhận Xét
@@ -1079,6 +1178,6 @@
   <script src="js/initial-data.js?v=20261022_v5"></script>
   <script src="js/storage.js?v=20261022_v5"></script>
   <script src="js/audio.js?v=20261022_v5"></script>
-  <script src="js/soibai.js?v=20261022_v5"></script>
+  <script src="js/soibai.js?v=20261030_v3"></script>
 </body>
 </html>

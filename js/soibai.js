@@ -50,6 +50,16 @@
   const btnRewriteWork = document.getElementById('btnRewriteWork');
   const btnScanAnother = document.getElementById('btnScanAnother');
 
+  // Teacher Approval Box DOM Elements
+  const teacherApprovalBox = document.getElementById('teacherApprovalBox');
+  const teacherApprovalSubtitle = document.getElementById('teacherApprovalSubtitle');
+  const approvalStarsText = document.getElementById('approvalStarsText');
+  const btnTeacherApprove = document.getElementById('btnTeacherApprove');
+  const btnTeacherReject = document.getElementById('btnTeacherReject');
+  const approvalStatusMsg = document.getElementById('approvalStatusMsg');
+  let pendingGradingResult = null;
+  let isApprovalHandled = false;
+
   // Kiosk Auto Mode DOM Elements (Trạm Tự Soi Bài)
   const btnVoiceName = document.getElementById('btnVoiceName');
   const voiceStatusText = document.getElementById('voiceStatusText');
@@ -494,19 +504,24 @@
       lastGradingResult = result;
       await showGradingResult(result);
     } catch (err) {
-      console.error('Lỗi phân tích bài:', err);
-      // Fallback nhẹ nhàng
-      const fallbackRes = {
-        tier: 2,
-        passed: true,
-        stars: 3,
-        title: isMath ? 'ĐẠT YÊU CẦU - 3 SAO TOÁN! ⭐' : 'ĐẠT YÊU CẦU - 3 SAO! ⭐',
-        comment: isMath
-          ? `Bài toán của ${activeStudent.name} khá sạch đẹp, các phép tính rõ ràng. Cô cộng 3 sao thưởng cho con nhé!`
-          : `Bài viết của ${activeStudent.name} khá sạch đẹp, nét chữ ngay ngắn. Cô cộng 3 sao thưởng cho con nhé!`
-      };
-      lastGradingResult = fallbackRes;
-      await showGradingResult(fallbackRes);
+      console.warn('Lỗi khi gọi AI Gemini Vision, chuyển sang phân tích Computer Vision nội bộ:', err);
+      try {
+        const heuristicRes = await gradeWithVisionHeuristics(capturedImageDataUrl, currentTask);
+        lastGradingResult = heuristicRes;
+        await showGradingResult(heuristicRes);
+      } catch (hErr) {
+        console.error('Lỗi khi phân tích Computer Vision:', hErr);
+        // Fallback an toàn tuyệt đối: 0 sao, yêu cầu cô/con căn chỉnh lại trang vở
+        const safeFallbackRes = {
+          tier: 3,
+          passed: false,
+          stars: 0,
+          title: 'CHƯA NHẬN DIỆN ĐƯỢC BÀI LÀM (0 SAO) ⚠️',
+          comment: `Hệ thống chưa nhận diện rõ trang vở bài làm của ${activeStudent.name || 'bé'} (ảnh có thể bị rung mờ, thiếu sáng hoặc chưa đúng vị trí). Con/cô hãy đặt trang vở ngay ngắn và chụp lại nhé!`
+        };
+        lastGradingResult = safeFallbackRes;
+        await showGradingResult(safeFallbackRes);
+      }
     } finally {
       scanLaserBeam.style.display = 'none';
       if (btnAnalyzeWork) {
@@ -931,9 +946,26 @@
 
     let promptText = '';
     if (task && task.type === 'math') {
-      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, tỉ mỉ và luôn động viên học sinh.
+      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, tỉ mỉ, công tâm và luôn khích lệ học sinh.
 Hãy quan sát thật kỹ bức ảnh chụp bài làm MÔN TOÁN LỚP 1 của học sinh sau đây và chấm điểm.
 Đề bài cô giao: "${task.title}".
+
+QUY TẮC BẮT BUỘC SỐ 1 - KIỂM TRA ĐỐI TƯỢNG TRONG ẢNH:
+- Bạn PHẢI quan sát xem bức ảnh có thực sự là TRANG VỞ BÀI TẬP / BÀI LÀM CỦA HỌC SINH LỚP 1 hay không.
+- NẾU ẢNH CHỤP LÀ:
+  + MẶT BÀN (mặt bàn gỗ, vân gỗ, mặt bàn nhựa, bàn giáo viên, sàn nhà, tường, đồ vật...).
+  + BÀN TAY, NGƯỜI, HOẶC ĐỒ CHƠI / ĐỒ VẬT XUNG QUANH KHÔNG PHẢI TRANG VỞ BÀI LÀM.
+  + HOẶC TRANG GIẤY TRẮNG TINH CHƯA LÀM BÀI TOÁN NÀO.
+  -> BẮT BUỘC TRẢ VỀ:
+  {
+    "tier": 3,
+    "stars": 0,
+    "passed": false,
+    "title": "CHƯA NHẬN DIỆN ĐƯỢC BÀI LÀM (0 SAO) ⚠️",
+    "comment": "Hệ thống phát hiện ảnh chụp là mặt bàn hoặc đồ vật, chưa thấy trang vở bài làm của học sinh. Con/cô hãy đặt trang vở bài làm ngay ngắn trước camera để chấm nhé!",
+    "errors": []
+  }
+  TUYỆT ĐỐI KHÔNG CHẤM 3 SAO HOẶC 5 SAO KHI KHÔNG PHẢI TRANG VỞ BÀI LÀM TOÁN!
 
 LƯU Ý CỰC KỲ QUAN TRỌNG VỀ BÚT CHÌ:
 - Học sinh Lớp 1 làm bài HOÀN TOÀN BẰNG BÚT CHÌ. Nét bút chì có thể thanh mảnh, độ đậm nhạt khác nhau tùy lực tì tay của bé. Hãy soi thật kỹ từng nét chì để đọc chính xác từng chữ số và phép tính.
@@ -969,9 +1001,26 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
   "errors": []
 }`;
     } else {
-      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương và luôn khích lệ học sinh.
+      promptText = `Bạn là cô giáo tiểu học dạy Lớp 1 tại Việt Nam, rất hiền hậu, giàu tình thương, công tâm và luôn khích lệ học sinh.
 Hãy quan sát thật kỹ bức ảnh chụp bài làm LUYỆN VIẾT CHỮ của học sinh Lớp 1 sau đây và chấm bài.
 Đề bài cô giao: "${task.title}".
+
+QUY TẮC BẮT BUỘC SỐ 1 - KIỂM TRA ĐỐI TƯỢNG TRONG ẢNH:
+- Bạn PHẢI quan sát xem bức ảnh có thực sự là TRANG VỞ BÀI TẬP / BÀI LÀM CỦA HỌC SINH LỚP 1 hay không.
+- NẾU ẢNH CHỤP LÀ:
+  + MẶT BÀN (mặt bàn gỗ, vân gỗ, mặt bàn nhựa, bàn giáo viên, sàn nhà, tường, đồ vật...).
+  + BÀN TAY, KHUÔN MẶT, NGƯỜI, HOẶC ĐỒ DÙNG KHÔNG PHẢI TRANG BÀI LÀM.
+  + HOẶC TRANG GIẤY TRẮNG TINH CHƯA VIẾT BÀI NÀO.
+  -> BẮT BUỘC TRẢ VỀ:
+  {
+    "tier": 3,
+    "stars": 0,
+    "passed": false,
+    "title": "CHƯA NHẬN DIỆN ĐƯỢC BÀI LÀM (0 SAO) ⚠️",
+    "comment": "Hệ thống phát hiện ảnh chụp là mặt bàn hoặc đồ vật, chưa thấy trang vở bài làm của học sinh. Con/cô hãy đặt trang vở bài làm ngay ngắn trước camera để chấm nhé!",
+    "errors": []
+  }
+  TUYỆT ĐỐI KHÔNG CHẤM 3 SAO HOẶC 5 SAO KHI KHÔNG PHẢI TRANG VỞ BÀI LÀM!
 
 LƯU Ý CỰC KỲ QUAN TRỌNG VỀ BÚT CHÌ:
 - Học sinh Lớp 1 viết bài HOÀN TOÀN BẰNG BÚT CHÌ. Nét chì có thể thanh mảnh hoặc nhạt, hãy soi thật kỹ từng nét chữ ô ly, độ liền mạch của nét chì.
@@ -1048,11 +1097,63 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
         const imgData = ctx.getImageData(0, 0, W, H).data;
 
-        // Chuyển sang mảng độ xám grayscale
+        // 1. Phân tích màu sắc & độ bão hòa toàn cục (Global Color & Saturation Analysis)
+        // Để nhận diện: TRANG GIẤY VỞ TRẮNG vs MẶT BÀN GỖ / ĐỒ VẬT XUNG QUANH
         const gray = new Uint8Array(W * H);
-        for (let i = 0, p = 0; i < imgData.length; i += 4, p++) {
-          const r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
-          gray[p] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        let whitePaperCount = 0;
+        let coloredObjectCount = 0;
+        let totalSampled = 0;
+        let totalLuminance = 0;
+
+        for (let y = 0; y < H; y++) {
+          for (let x = 0; x < W; x++) {
+            const p = y * W + x;
+            const i = p * 4;
+            const r = imgData[i], g = imgData[i + 1], b = imgData[i + 2];
+            const yVal = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+            gray[p] = yVal;
+
+            if (x % 2 === 0 && y % 2 === 0) {
+              totalSampled++;
+              totalLuminance += yVal;
+
+              const maxC = Math.max(r, g, b);
+              const minC = Math.min(r, g, b);
+              const colorDiff = maxC - minC;
+
+              // Nền giấy vở học sinh: Sáng (yVal >= 125) và màu trung tính xám/trắng (colorDiff <= 38)
+              if (yVal >= 125 && colorDiff <= 38) {
+                whitePaperCount++;
+              }
+              // Bề mặt có màu đậm (mặt bàn gỗ vàng/nâu, đồ chơi, bàn nhựa, da người, vải...)
+              // Mặt bàn gỗ tự nhiên thường có sắc vàng nâu với maxC - minC >= 40
+              if (colorDiff >= 40 && maxC >= 70) {
+                coloredObjectCount++;
+              }
+            }
+          }
+        }
+
+        const avgBrightness = totalLuminance / totalSampled;
+        const paperRatio = whitePaperCount / totalSampled;
+        const coloredRatio = coloredObjectCount / totalSampled;
+
+        // BỘ LỌC CHẶN MẶT BÀN GỖ & ĐỒ VẬT:
+        // Nếu tỷ lệ giấy trắng < 28%, hoặc tỷ lệ bề mặt có màu > 42%, hoặc quá tối (< 90):
+        if (paperRatio < 0.28 || coloredRatio > 0.42 || avgBrightness < 90) {
+          setTimeout(() => {
+            resolve({
+              tier: 3,
+              stars: 0,
+              passed: false,
+              isNotNotebook: true,
+              title: 'CHƯA NHẬN DIỆN ĐƯỢC BÀI LÀM (0 SAO) ⚠️',
+              comment: 'Hệ thống nhận thấy ảnh chụp là mặt bàn hoặc đồ vật xung quanh (chưa nhận diện được trang vở bài làm của học sinh). Con/cô hãy đặt trang vở bài làm ngay ngắn và đủ sáng trước camera rồi chụp lại nhé!',
+              errors: [],
+              metrics: { paperRatio, coloredRatio, avgBrightness }
+            });
+          }, 800);
+          return;
         }
 
         // Vùng tập trung vào trang vở (80% trung tâm và nửa dưới bức ảnh)
@@ -1077,18 +1178,19 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
             const right = gray[y * W + Math.min(W - 1, x + 3)];
             const localBg = (top + bot + left + right) / 4;
 
-            if (localBg > 65) {
+            // Nét bút chì chỉ được tính trên nền giấy trắng sáng (localBg > 120)
+            if (localBg > 120) {
               paperPixels++;
               const contrastDiff = localBg - pVal;
 
-              // Nét chì chuẩn học sinh lớp 1: Tối hơn nền 6 - 80 đơn vị (nhận diện cả nét chì mảnh/nhạt HB & 2B)
-              if ((contrastDiff >= 6 && contrastDiff <= 80) || (pVal < 145 && localBg > 150)) {
+              // Nét chì chuẩn học sinh lớp 1: Tối hơn nền 8 - 85 đơn vị
+              if ((contrastDiff >= 8 && contrastDiff <= 85) || (pVal < 140 && localBg > 150)) {
                 pencilStrokePixels++;
                 rowStrokeCounts[y]++;
                 strokeGrid[idx] = 1;
               }
               // Vết tẩy xoá bằng gôm chì (chỗ than chì bị miết lem loang hoặc vệt chà mờ)
-              if ((contrastDiff > 65 && pVal < 115) || (contrastDiff >= 12 && contrastDiff <= 35 && pVal > 140 && localBg > 185 && (Math.abs(top - bot) > 18 || Math.abs(left - right) > 18))) {
+              if ((contrastDiff > 65 && pVal < 115) || (contrastDiff >= 14 && contrastDiff <= 38 && pVal > 140 && localBg > 185 && (Math.abs(top - bot) > 18 || Math.abs(left - right) > 18))) {
                 strokeGrid[idx] = 2; // smudge / vết tẩy xoá chì
               }
             }
@@ -1206,7 +1308,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
           const cleanedMathErrors = mergeCloseErrors(mathErrors);
           const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
-          const hasMathWork = (strokeRatio >= 0.004 && lines.length >= 1) || (strokeRatio >= 0.007);
+          const hasMathWork = (strokeRatio >= 0.004 && lines.length >= 1 && eqIndex >= 2) || (strokeRatio >= 0.007 && eqIndex >= 1);
 
           setTimeout(() => {
             const studentName = activeStudent ? activeStudent.name : 'bé';
@@ -1216,12 +1318,12 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
             let comment = '';
             let passed = false;
 
-            if (!hasMathWork) {
+            if (!hasMathWork || eqIndex < 2) {
               tier = 3;
               stars = 0;
               passed = false;
-              title = 'BÉ HÃY LÀM BÀI TOÁN NHÉ! 🔢';
-              comment = `Ảnh bài làm chưa rõ nét bút chì hoặc trang vở bài tập Toán còn để trống. ${studentName} hãy tính nhẩm cẩn thận, viết số rõ ràng và soi lại cho cô chấm nhé!`;
+              title = 'CHƯA NHẬN DIỆN ĐƯỢC PHÉP TÍNH (0 SAO) ⚠️';
+              comment = `Hệ thống chưa tìm thấy các phép tính môn Toán trên trang vở của ${studentName} (ảnh có thể là mặt bàn, để trống hoặc thiếu sáng). Con/cô hãy đặt trang vở ngay ngắn và chụp lại nhé!`;
             } else {
               const errCount = cleanedMathErrors.length;
               if (errCount === 0) {
@@ -1261,6 +1363,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         // --- NHÁNH CHẤM BÀI LUYỆN VIẾT CHỮ Ô LY ---
         const detectedErrors = [];
         let lineIdx = 0;
+        let wordCount = 0;
 
         for (const line of lines) {
           lineIdx++;
@@ -1288,6 +1391,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
               if (inWord) {
                 const wordWidth = x - wordStart;
                 if (wordWidth >= 6 && strokeCount >= 4) {
+                  wordCount++;
                   const wordHeight = wordYMax - wordYMin;
                   // Lỗi 1: Tẩy xóa lem nhem
                   if (wordSmudges >= 3) {
@@ -1322,7 +1426,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
         const cleanedErrors = mergeCloseErrors(detectedErrors);
         const strokeRatio = paperPixels > 0 ? (pencilStrokePixels / paperPixels) : 0;
-        const hasWriting = (strokeRatio >= 0.005 && lines.length >= 2) || (strokeRatio >= 0.008);
+        const hasWriting = (strokeRatio >= 0.005 && lines.length >= 2 && wordCount >= 3) || (strokeRatio >= 0.008 && wordCount >= 2);
 
         setTimeout(() => {
           const studentName = activeStudent ? activeStudent.name : 'bé';
@@ -1332,13 +1436,13 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
           let comment = '';
           let passed = false;
 
-          if (!hasWriting) {
-            // Mức 3: Chưa có chữ hoặc ảnh trống
+          if (!hasWriting || wordCount < 2 || lines.length < 2) {
+            // Mức 3: Chưa có chữ hoặc ảnh trống / mặt bàn
             tier = 3;
             stars = 0;
             passed = false;
-            title = 'BÉ HÃY VIẾT LẠI BÀI NHÉ! 📝';
-            comment = 'Ảnh bài làm chưa rõ nét chữ bút chì hoặc trang vở còn để trống. Bé hãy nắn nót viết bài và soi lại cho cô chấm nhé!';
+            title = 'CHƯA NHẬN DIỆN ĐƯỢC BÀI VIẾT (0 SAO) ⚠️';
+            comment = `Hệ thống chưa nhận diện được các dòng chữ viết ô ly của ${studentName} (ảnh có thể là mặt bàn, để trống hoặc thiếu sáng). Con/cô hãy đặt trang vở bài làm ngay ngắn và soi lại cho cô chấm nhé!`;
           } else {
             const errCount = cleanedErrors.length;
             if (errCount === 0) {
@@ -1380,9 +1484,11 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     });
   }
 
-  // Hiển thị kết quả chấm 3 Mức Độ & Cộng sao vào Firebase
+  // Hiển thị kết quả chấm 3 Mức Độ & Chờ Cô Giáo Phê Duyệt Trước Khi Chuyển Điểm
   async function showGradingResult(res) {
     gradingResultBox.style.display = 'block';
+    pendingGradingResult = res;
+    isApprovalHandled = false;
 
     // 1. Vẽ các nét gạch chân màu đỏ của cô giáo lên ảnh chụp
     if (capturedImagePreview) {
@@ -1426,19 +1532,13 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       resultStarsBadge.style.background = '#FEF3C7';
       resultStarsBadge.style.color = '#B45309';
       resultStarsBadge.style.borderColor = '#FCD34D';
-      resultStarsBadge.innerHTML = '<span>🌟</span> +5 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
+      resultStarsBadge.innerHTML = '<span>⏳</span> ĐỀ XUẤT: +5 SAO (ĐANG CHỜ CÔ PHÊ DUYỆT)';
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
-      if (window.confetti) {
-        window.confetti({ particleCount: 110, spread: 85, origin: { y: 0.6 } });
-      }
-      if (window.AudioManager && window.AudioManager.playReward) {
-        window.AudioManager.playReward();
-      }
-
-      speakVietnamese(isMath ? `Chúc mừng ${studentName}! Bài toán của con kết quả chính xác và đạt xuất sắc 5 sao!` : `Chúc mừng ${studentName}! Bài viết của con sạch đẹp, đúng mẫu và đạt xuất sắc 5 sao!`);
-      await awardStarsToFirebase(activeStudent.id, 5, `Soi bài Mức 1 (${isMath ? 'Toán' : 'Viết'} - Xuất sắc 5 sao): ${currentTask.title}`);
+      speakVietnamese(isMath 
+        ? `AI chấm bài của ${studentName} đạt xuất sắc 5 sao. Cô hãy xem và xác nhận chuyển điểm cho bé nhé!` 
+        : `AI chấm bài viết của ${studentName} đạt xuất sắc 5 sao. Cô hãy xem và xác nhận chuyển điểm cho bé nhé!`);
 
     } else if (res.tier === 2) {
       // MỨC 2: ĐẠT YÊU CẦU (3 SAO)
@@ -1448,21 +1548,13 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       resultStarsBadge.style.background = '#DCFCE7';
       resultStarsBadge.style.color = '#065F46';
       resultStarsBadge.style.borderColor = '#34D399';
-      resultStarsBadge.innerHTML = '<span>⭐</span> +3 SAO ĐÃ ĐƯỢC CỘNG VÀO LINH THÚ!';
+      resultStarsBadge.innerHTML = '<span>⏳</span> ĐỀ XUẤT: +3 SAO (ĐANG CHỜ CÔ PHÊ DUYỆT)';
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
-      if (window.confetti) {
-        window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-      }
-      if (window.AudioManager && window.AudioManager.playReward) {
-        window.AudioManager.playReward();
-      }
-
       speakVietnamese(isMath 
-        ? `Chúc mừng ${studentName}! Con đạt 3 sao môn Toán. Con nhớ xem lại những phép tính cô gạch chân nhé!` 
-        : `Chúc mừng ${studentName}! Con đạt 3 sao. Con nhớ chú ý những chỗ cô gạch chân nhé!`);
-      await awardStarsToFirebase(activeStudent.id, 3, `Soi bài Mức 2 (${isMath ? 'Toán' : 'Viết'} - Đạt 3 sao): ${currentTask.title}`);
+        ? `AI chấm bài của ${studentName} đạt 3 sao môn Toán. Cô hãy xem và xác nhận chuyển điểm nhé!` 
+        : `AI chấm bài của ${studentName} đạt 3 sao. Cô hãy xem và xác nhận chuyển điểm nhé!`);
 
     } else {
       // MỨC 3: NHẮC CON VIẾT LẠI / TÍNH LẠI BÀI (0 SAO)
@@ -1472,22 +1564,49 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       resultStarsBadge.style.background = '#FFE4E6';
       resultStarsBadge.style.color = '#BE123C';
       resultStarsBadge.style.borderColor = '#FDA4AF';
-      resultStarsBadge.innerHTML = isMath 
-        ? '<span>⚠️</span> CẦN TÍNH LẠI BÀI (0 SAO)' 
-        : '<span>⚠️</span> CẦN LUYỆN VIẾT LẠI (0 SAO)';
+      resultStarsBadge.innerHTML = res.isNotNotebook
+        ? '<span>⚠️</span> CHƯA NHẬN DIỆN ĐƯỢC BÀI LÀM (0 SAO)'
+        : (isMath ? '<span>⚠️</span> CẦN TÍNH LẠI BÀI (0 SAO)' : '<span>⚠️</span> CẦN LUYỆN VIẾT LẠI (0 SAO)');
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) {
         btnRewriteWork.style.display = 'inline-flex';
         btnRewriteWork.innerHTML = isMath ? '🔢 Tính Lại & Soi Lại Bài' : '✏️ Viết Lại & Soi Lại Bài';
       }
 
-      speakVietnamese(isMath 
-        ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng. Con hãy tính nhẩm lại cẩn thận nhé!` 
-        : `Bài viết của ${studentName} chưa đúng mẫu hoặc còn tẩy xoá. Cô đã gạch chân những chỗ con viết chưa đạt. Con hãy nhìn bài mẫu và viết lại nhé!`);
+      speakVietnamese(res.isNotNotebook
+        ? `Chưa nhận diện được trang vở bài làm của ${studentName}. Cô hãy kiểm tra lại nhé!`
+        : (isMath 
+          ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng.` 
+          : `Bài viết của ${studentName} chưa đúng mẫu. Cô đã gạch chân những chỗ con cần rèn lại.`));
     }
 
-    if (isAutoKioskEnabled) {
-      startNextStudentCountdown(5);
+    // Hiển thị hộp phê duyệt của cô giáo
+    if (teacherApprovalBox) {
+      teacherApprovalBox.style.display = 'block';
+      if (approvalStatusMsg) approvalStatusMsg.style.display = 'none';
+      if (btnTeacherApprove) {
+        btnTeacherApprove.style.display = 'inline-flex';
+        btnTeacherApprove.disabled = false;
+        btnTeacherApprove.style.opacity = '1';
+        if (res.stars > 0) {
+          btnTeacherApprove.innerHTML = `<span>✅</span> ĐỒNG Ý & CHUYỂN +${res.stars} ⭐ CHO BÉ`;
+        } else {
+          btnTeacherApprove.innerHTML = `<span>✅</span> ĐỒNG Ý (NHẮC BÉ LÀM LẠI)`;
+        }
+      }
+      if (btnTeacherReject) {
+        btnTeacherReject.style.display = 'inline-flex';
+        btnTeacherReject.disabled = false;
+        btnTeacherReject.style.opacity = '1';
+        btnTeacherReject.innerHTML = `<span>🔄</span> KHÔNG ĐỒNG Ý (CHẤM LẠI)`;
+      }
+      if (approvalStarsText) {
+        if (res.stars > 0) {
+          approvalStarsText.innerHTML = `+${res.stars} ⭐ (${res.tier === 1 ? 'Mức 1: Xuất sắc 5 sao' : 'Mức 2: Đạt yêu cầu 3 sao'})`;
+        } else {
+          approvalStarsText.innerHTML = `0 ⭐ (${res.isNotNotebook ? 'Chưa nhận diện được bài làm' : 'Cần làm lại bài'})`;
+        }
+      }
     }
 
     gradingResultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1602,6 +1721,112 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
     btnSpeakComment.addEventListener('click', () => {
       if (lastGradingResult && lastGradingResult.comment) {
         speakVietnamese(lastGradingResult.comment);
+      }
+    });
+  }
+
+  // --- XỬ LÝ PHÊ DUYỆT ĐIỂM CỦA CÔ GIÁO ---
+  if (btnTeacherApprove) {
+    btnTeacherApprove.addEventListener('click', async () => {
+      if (isApprovalHandled || !pendingGradingResult || !activeStudent) return;
+      isApprovalHandled = true;
+
+      btnTeacherApprove.disabled = true;
+      btnTeacherApprove.style.opacity = '0.6';
+      if (btnTeacherReject) btnTeacherReject.style.display = 'none';
+
+      const res = pendingGradingResult;
+      const isMath = currentTask && currentTask.type === 'math';
+      const studentName = activeStudent.name || 'Bé';
+
+      if (res.stars > 0) {
+        const reason = res.tier === 1
+          ? `Soi bài Mức 1 (${isMath ? 'Toán' : 'Viết'} - Xuất sắc 5 sao): ${currentTask ? currentTask.title : ''}`
+          : `Soi bài Mức 2 (${isMath ? 'Toán' : 'Viết'} - Đạt 3 sao): ${currentTask ? currentTask.title : ''}`;
+
+        await awardStarsToFirebase(activeStudent.id, res.stars, reason);
+
+        if (window.confetti) {
+          window.confetti({ particleCount: res.stars === 5 ? 110 : 50, spread: 75, origin: { y: 0.6 } });
+        }
+        if (window.AudioManager && window.AudioManager.playReward) {
+          window.AudioManager.playReward();
+        }
+
+        resultStarsBadge.innerHTML = `<span>🎉</span> ĐÃ CHUYỂN THÀNH CÔNG +${res.stars} SAO ĐẾN LINH THÚ!`;
+        resultStarsBadge.style.background = '#DCFCE7';
+        resultStarsBadge.style.color = '#065F46';
+        resultStarsBadge.style.borderColor = '#34D399';
+
+        if (approvalStatusMsg) {
+          approvalStatusMsg.style.display = 'block';
+          approvalStatusMsg.style.background = '#ECFDF5';
+          approvalStatusMsg.style.color = '#065F46';
+          approvalStatusMsg.style.border = '1.5px solid #A7F3D0';
+          approvalStatusMsg.innerHTML = `🎉 <strong>Cô đã đồng ý!</strong> Đã chuyển thành công <strong>+${res.stars} ⭐</strong> đến tài khoản của bé <strong>${studentName}</strong>!`;
+        }
+
+        speakVietnamese(res.tier === 1
+          ? `Chúc mừng ${studentName}! Cô đã đồng ý bài của con xuất sắc và chuyển 5 sao vào linh thú!`
+          : `Chúc mừng ${studentName}! Cô đã chuyển 3 sao vào linh thú cho con nhé!`);
+      } else {
+        if (approvalStatusMsg) {
+          approvalStatusMsg.style.display = 'block';
+          approvalStatusMsg.style.background = '#FFFBEB';
+          approvalStatusMsg.style.color = '#92400E';
+          approvalStatusMsg.style.border = '1.5px solid #FCD34D';
+          approvalStatusMsg.innerHTML = `📝 <strong>Cô đã xác nhận:</strong> Không cộng sao lượt này (0 sao). Nhắc nhở bé <strong>${studentName}</strong> làm lại bài cẩn thận.`;
+        }
+        speakVietnamese(`Bài làm của ${studentName} cần xem lại. Con hãy nhìn bài mẫu và làm lại cẩn thận nhé!`);
+      }
+
+      if (isAutoKioskEnabled) {
+        startNextStudentCountdown(5);
+      }
+    });
+  }
+
+  if (btnTeacherReject) {
+    btnTeacherReject.addEventListener('click', () => {
+      if (!pendingGradingResult) return;
+      isApprovalHandled = true;
+
+      // TUYỆT ĐỐI KHÔNG CHUYỂN ĐIỂM (không gọi awardStarsToFirebase)
+      if (btnTeacherApprove) btnTeacherApprove.style.display = 'none';
+      btnTeacherReject.style.display = 'none';
+
+      resultStarsBadge.style.background = '#FEE2E2';
+      resultStarsBadge.style.color = '#DC2626';
+      resultStarsBadge.style.borderColor = '#FCA5A5';
+      resultStarsBadge.innerHTML = '<span>❌</span> ĐÃ HỦY KẾT QUẢ CHẤM - KHÔNG CHUYỂN ĐIỂM!';
+
+      if (approvalStatusMsg) {
+        approvalStatusMsg.style.display = 'block';
+        approvalStatusMsg.style.background = '#FEF2F2';
+        approvalStatusMsg.style.color = '#991B1B';
+        approvalStatusMsg.style.border = '1.5px solid #FECACA';
+        approvalStatusMsg.innerHTML = `
+          <div style="font-size: 14px; font-weight: 800; margin-bottom: 6px;">❌ Cô KHÔNG ĐỒNG Ý với kết quả đã chấm!</div>
+          <div style="font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 12px;">Hệ thống <strong>KHÔNG chuyển điểm</strong> đến học sinh. Cô hãy căn chỉnh lại bài làm hoặc bấm nút bên dưới để chấm lại ngay:</div>
+          <button type="button" id="btnRetryGradingImmediately" class="btn-cam-action primary" style="padding: 10px 20px; font-size: 13.5px; margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+            <span>📸</span> Căn Chỉnh Lại & Chấm Lại Ngay
+          </button>
+        `;
+
+        const retryBtn = document.getElementById('btnRetryGradingImmediately');
+        if (retryBtn) {
+          retryBtn.addEventListener('click', () => {
+            gradingResultBox.style.display = 'none';
+            if (annotationCanvas) {
+              annotationCanvas.style.display = 'none';
+              const ctx = annotationCanvas.getContext('2d');
+              ctx.clearRect(0, 0, annotationCanvas.width, annotationCanvas.height);
+            }
+            if (annotatedErrorsBox) annotatedErrorsBox.style.display = 'none';
+            capturedImageDataUrl = null;
+            startCamera();
+          });
+        }
       }
     });
   }

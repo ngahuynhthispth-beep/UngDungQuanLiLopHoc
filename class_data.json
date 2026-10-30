@@ -874,29 +874,6 @@
     },
     {
       "claimedBy": "parent",
-      "completed": false,
-      "dateStr": "13/10/2026",
-      "delivered": false,
-      "gift1": {
-        "claimedBy": "parent",
-        "icon": "📓",
-        "id": "gift-1791891556548",
-        "milestone": 100,
-        "name": "Sổ tay mini đáng yêu",
-        "time": "18:39, 13/10",
-        "timestamp": 1791891556548
-      },
-      "groupColor": "#96CEB4",
-      "groupName": "Tổ 4 - Hổ Vui Vẻ",
-      "id": "summary-1791891556548",
-      "milestone": 100,
-      "studentId": "hs-1790097391777-8",
-      "studentName": "Ánh Dương",
-      "timeStr": "18:39",
-      "timestamp": 1791891556548
-    },
-    {
-      "claimedBy": "parent",
       "completed": true,
       "dateStr": "13/10/2026",
       "delivered": false,
@@ -2957,17 +2934,7 @@
     {
       "accumulateBonus": true,
       "firstHatchedAt": 1791891474314,
-      "giftHistory": [
-        {
-          "claimedBy": "parent",
-          "icon": "📓",
-          "id": "gift-1791891556548",
-          "milestone": 100,
-          "name": "Sổ tay mini đáng yêu",
-          "time": "18:39, 13/10",
-          "timestamp": 1791891556548
-        }
-      ],
+      "giftHistory": [],
       "giftSessionSource": "parent",
       "group": 4,
       "hatchCount": 1,

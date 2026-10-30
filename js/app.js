@@ -2871,16 +2871,16 @@ document.addEventListener('DOMContentLoaded', () => {
               }
 
               let gifts = s.giftHistory || [];
-              if (!gifts || gifts.length === 0) {
-                if (s.lastCompletedGifts && s.lastCompletedGifts.length > 0) {
+              if (!gifts || gifts.length < 2) {
+                if (s.lastCompletedGifts && s.lastCompletedGifts.length >= 2) {
                   gifts = s.lastCompletedGifts;
                 } else {
-                  const rec = (state.data.giftSummaryRecords || []).find(r => r.studentId === s.id);
+                  const rec = (state.data.giftSummaryRecords || []).find(r => r.studentId === s.id && r.completed);
                   if (rec) {
                     const list = [];
                     if (rec.gift1) list.push(rec.gift1);
                     if (rec.gift2) list.push(rec.gift2);
-                    if (list.length > 0) gifts = list;
+                    if (list.length >= 2) gifts = list;
                   }
                 }
               }
@@ -3694,7 +3694,17 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // Đã hoàn thành 2 lượt: TỰ ĐỘNG HOÀN VỀ 0 ĐIỂM KHÔNG CẦN THAO TÁC, KHÔNG CHO QUAY NỮA
         giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+        giftResultIcon.textContent = '🏆';
+        const curStudent = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+        const studentDisplayName = curStudent ? curStudent.name : 'bé';
+        giftResultTitle.textContent = `Bé ${studentDisplayName} đã mở đủ 2 phần quà!`;
+        const g1 = gifts[0] ? `${gifts[0].icon || '🎁'} ${gifts[0].name}` : 'Quà lượt 1';
+        const g2 = gifts[1] ? `${gifts[1].icon || '🎁'} ${gifts[1].name}` : (giftData ? `${giftData.icon || '🎁'} ${giftData.name}` : 'Quà lượt 2');
         giftResultDesc.innerHTML = `
+          <div style="background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 14px; padding: 12px; margin: 10px 0; text-align: left;">
+            <div style="font-weight: 800; color: #92400E; margin-bottom: 6px; font-size: 14px;">🎁 Lượt 1: ${g1}</div>
+            <div style="font-weight: 800; color: #92400E; font-size: 14px;">🎁 Lượt 2: ${g2}</div>
+          </div>
           <div style="font-size: 15px; font-weight: 800; color: #E11D48; margin-top: 6px;">
             🌟 CHÚC MỪNG CON ĐÃ MỞ XONG 2 LƯỢT QUÀ! 🌟
           </div>
@@ -3752,16 +3762,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isCurrentHatched = (Number(student.stars) || 0) >= 100;
     let gifts = student.giftHistory || [];
-    if (!isCurrentHatched && (!gifts || gifts.length === 0)) {
-      if (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) {
+    if (!gifts || gifts.length < 2) {
+      if (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2) {
         gifts = student.lastCompletedGifts;
       } else {
-        const summary = (state.data.giftSummaryRecords || []).find(r => r.studentId === student.id);
+        const summary = (state.data.giftSummaryRecords || []).find(r => r.studentId === student.id && r.completed);
         if (summary) {
           const sGifts = [];
           if (summary.gift1) sGifts.push(summary.gift1);
           if (summary.gift2) sGifts.push(summary.gift2);
-          if (sGifts.length > 0) gifts = sGifts;
+          if (sGifts.length >= 2) gifts = sGifts;
         }
       }
     }
