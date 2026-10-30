@@ -2816,7 +2816,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 hatchedDateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
               }
 
-              const gifts = s.giftHistory || [];
+              let gifts = s.giftHistory || [];
+              if (!gifts || gifts.length === 0) {
+                if (s.lastCompletedGifts && s.lastCompletedGifts.length > 0) {
+                  gifts = s.lastCompletedGifts;
+                } else {
+                  const rec = (state.data.giftSummaryRecords || []).find(r => r.studentId === s.id);
+                  if (rec) {
+                    const list = [];
+                    if (rec.gift1) list.push(rec.gift1);
+                    if (rec.gift2) list.push(rec.gift2);
+                    if (list.length > 0) gifts = list;
+                  }
+                }
+              }
+
               let giftColHtml = '';
               if (gifts.length === 0) {
                 giftColHtml = `
@@ -2837,7 +2851,7 @@ document.addEventListener('DOMContentLoaded', () => {
               } else {
                 giftColHtml = `
                   <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-                    ${gifts.map(g => `<span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8;">${g.icon || '🎁'} ${g.name}</span>`).join('')}
+                    ${gifts.map((g, i) => `<span class="gift-tag-badge" style="background: #FCE7F3; color: #BE185D; border-color: #FBCFE8;">Lượt ${i + 1}: ${g.icon || '🎁'} ${g.name}</span>`).join('')}
                     <div style="font-size: 10px; color: #059669; font-weight: 700;">✅ Đã nhận đủ 2 quà</div>
                   </div>
                 `;
@@ -2988,6 +3002,13 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="gift-tag-badge" style="background: ${rec.gift2 ? '#FEF3C7' : '#F1F5F9'}; color: ${rec.gift2 ? '#92400E' : '#64748B'}; border: 1px solid ${rec.gift2 ? '#FCD34D' : '#CBD5E1'}; font-weight: 700;">
                 ${rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : '⏳ Chờ quay lượt 2'}
               </span>
+              ${(!rec.gift2 || !rec.completed) ? `
+                <div style="margin-top: 4px;">
+                  <button type="button" class="btn-fast-reward btn-open-turn2-from-summary" data-id="${rec.studentId}" style="padding: 2px 8px; font-size: 10px; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; border-radius: 10px; border: none; cursor: pointer;">
+                    🎁 Mở lượt 2
+                  </button>
+                </div>
+              ` : ''}
             </td>
             <td style="text-align: center; font-size: 12px; color: #64748B;">
               ${rec.timeStr || ''} (${rec.dateStr || ''})
@@ -3011,6 +3032,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (giftSummaryCountText) {
         giftSummaryCountText.textContent = `Tổng cộng: ${records.length} bé đã quay quà | Đã trao quà: ${deliveredCount}/${records.length} bé`;
       }
+
+      giftSummaryTableContainer.querySelectorAll('.btn-open-turn2-from-summary').forEach(btn => {
+        btn.addEventListener('click', () => {
+          giftSummaryModal.classList.remove('active');
+          openGiftClaimModal(btn.dataset.id);
+        });
+      });
 
       giftSummaryTableContainer.querySelectorAll('.btn-toggle-delivery').forEach(btn => {
         btn.addEventListener('click', async () => {
@@ -3576,9 +3604,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // THÔNG BÁO CHO GIÁO VIÊN BIẾT ĐỂ CHUẨN BỊ QUÀ NGAY
       const curStudent = (state.data.students || []).find(s => s.id === activeGiftStudentId);
+      const allCurrentGifts = (updatedStudent && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length > 0)
+        ? updatedStudent.lastCompletedGifts
+        : gifts;
       showTeacherGiftNotification({
         studentName: curStudent ? curStudent.name : 'Học sinh',
         gift: giftData,
+        gifts: allCurrentGifts,
         milestone: activeGiftMilestone,
         source: 'teacher'
       });
@@ -3664,7 +3696,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const gifts = student.giftHistory || [];
+    const isCurrentHatched = (Number(student.stars) || 0) >= 100;
+    let gifts = student.giftHistory || [];
+    if (!isCurrentHatched && (!gifts || gifts.length === 0)) {
+      if (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) {
+        gifts = student.lastCompletedGifts;
+      } else {
+        const summary = (state.data.giftSummaryRecords || []).find(r => r.studentId === student.id);
+        if (summary) {
+          const sGifts = [];
+          if (summary.gift1) sGifts.push(summary.gift1);
+          if (summary.gift2) sGifts.push(summary.gift2);
+          if (sGifts.length > 0) gifts = sGifts;
+        }
+      }
+    }
+
     giftClaimStudentName.textContent = student.name;
     renderGiftClaimHistory(gifts);
 
@@ -3673,44 +3720,82 @@ document.addEventListener('DOMContentLoaded', () => {
     btnModeWheel.classList.add('active');
     btnModeBlindBag.classList.remove('active');
 
-    // KHÓA QUAY CHÉO: Nếu đã quay ở trang phụ huynh thì không quay trang giáo viên nữa và danh sách quà được hiện lên!
-    const claimedByParent = (student.giftSessionSource === 'parent') || gifts.some(g => g.claimedBy === 'parent');
-    const parentLockedBox = document.getElementById('giftParentLockedBox');
-    const parentLockedList = document.getElementById('giftParentLockedGiftsList');
+    const modeSelector = document.getElementById('giftClaimModeSelector');
+    const parentLockedBox = document.getElementById('giftParentLockedBox') || document.getElementById('giftClaimLockedArea');
+    const parentLockedList = document.getElementById('giftParentLockedGiftsList') || document.getElementById('giftClaimLockedList');
+
+    // KHÓA QUAY CHÉO: Nếu đã quay ở trang phụ huynh thì không quay trang giáo viên nữa (hoặc mở lượt 2 nếu mới quay 1 lượt)
+    const claimedByParent = isCurrentHatched
+      ? ((student.giftSessionSource === 'parent') || gifts.some(g => g.claimedBy === 'parent'))
+      : ((student.giftSessionSource === 'parent') || gifts.some(g => g.claimedBy === 'parent'));
 
     if (claimedByParent) {
-      giftClaimTurnBadge.textContent = '🔒 Đã quay tại trang Phụ Huynh';
-      giftWheelArea.style.display = 'none';
-      giftBlindBagArea.style.display = 'none';
-      giftResultBox.style.display = 'none';
-      if (parentLockedBox) parentLockedBox.style.display = 'block';
-      if (parentLockedList) {
-        parentLockedList.innerHTML = gifts.map((g, idx) => `
-          <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; border: 1.5px solid #FBCFE8;">
-            <span style="font-size: 26px;">${g.icon || '🎁'}</span>
-            <div style="flex: 1; text-align: left;">
-              <div style="font-weight: 800; color: #1E293B;">Lượt ${idx + 1}: ${g.name}</div>
-              <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong'} (Ba mẹ quay ở nhà)</div>
+      if (gifts.length >= 2) {
+        giftClaimTurnBadge.textContent = '🔒 Đã quay tại trang Phụ Huynh (2/2 lượt)';
+        if (modeSelector) modeSelector.style.display = 'none';
+        giftWheelArea.style.display = 'none';
+        giftBlindBagArea.style.display = 'none';
+        giftResultBox.style.display = 'none';
+        if (parentLockedBox) parentLockedBox.style.display = 'block';
+        if (parentLockedList) {
+          parentLockedList.innerHTML = gifts.map((g, idx) => `
+            <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; border: 1.5px solid #FBCFE8;">
+              <span style="font-size: 26px;">${g.icon || '🎁'}</span>
+              <div style="flex: 1; text-align: left;">
+                <div style="font-weight: 800; color: #1E293B;">Lượt ${idx + 1}: ${g.name}</div>
+                <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.time || (g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong')} (Ba mẹ quay ở nhà)</div>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
+        giftClaimModal.classList.add('active');
+        return;
+      } else {
+        // Bé mới quay 1 lượt ở nhà, thông báo rõ và cho phép cô giáo hỗ trợ quay tiếp lượt 2 tại lớp
+        giftClaimTurnBadge.textContent = 'Lượt mở quà: 2 / 2 (Lượt 1 quay ở nhà)';
+        if (parentLockedBox) {
+          parentLockedBox.style.display = 'block';
+          if (parentLockedList) {
+            parentLockedList.innerHTML = gifts.map((g, idx) => `
+              <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; border: 1.5px solid #FBCFE8;">
+                <span style="font-size: 22px;">${g.icon || '🎁'}</span>
+                <div style="flex: 1; text-align: left;">
+                  <div style="font-weight: 800; color: #1E293B; font-size: 13px;">Lượt ${idx + 1}: ${g.name}</div>
+                  <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.time || 'Ở nhà'}</div>
+                </div>
+              </div>
+            `).join('') + `
+              <div style="font-size: 12px; color: #059669; font-weight: 700; margin-top: 6px;">
+                👉 Bé vẫn còn <strong>1 lượt mở quà nữa</strong>! Cô giáo có thể cho con quay ngay bên dưới:
+              </div>
+            `;
+          }
+        }
       }
-      giftClaimModal.classList.add('active');
-      return;
     } else {
       if (parentLockedBox) parentLockedBox.style.display = 'none';
     }
 
     const giftItems = StorageManager.getGiftItems(milestone);
+    const hasFinished = isCurrentHatched
+      ? (gifts.length >= 2)
+      : (gifts.length >= 2 || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2));
 
-    if (gifts.length >= 2) {
+    if (hasFinished) {
       giftClaimTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+      if (modeSelector) modeSelector.style.display = 'none';
       giftWheelArea.style.display = 'none';
       giftBlindBagArea.style.display = 'none';
       giftResultBox.style.display = 'block';
       giftResultIcon.textContent = '🏆';
       giftResultTitle.textContent = `Bé ${student.name} đã mở đủ 2 phần quà!`;
+      const g1 = gifts[0] ? `${gifts[0].icon || '🎁'} ${gifts[0].name}` : 'Quà lượt 1';
+      const g2 = gifts[1] ? `${gifts[1].icon || '🎁'} ${gifts[1].name}` : 'Quà lượt 2';
       giftResultDesc.innerHTML = `
+        <div style="background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 10px; margin: 8px 0; font-size: 13px; font-weight: 800; color: #92400E; text-align: left;">
+          🎁 Lượt 1: ${g1}<br>
+          🎁 Lượt 2: ${g2}
+        </div>
         <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
           👉 Điểm đã được tự động hoàn về 0 ⭐ để bắt đầu chu kỳ ấp mới! Quà đã lưu trong Bảng Tổng Hợp Quà của cô giáo.
         </div>
@@ -3725,6 +3810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshData();
       });
     } else {
+      if (modeSelector) modeSelector.style.display = 'flex';
       giftClaimTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
       giftResultBox.style.display = 'none';
       giftWheelArea.style.display = 'flex';
@@ -3826,7 +3912,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- THÔNG BÁO CHO GIÁO VIÊN BIẾT HỌC SINH QUAY TRÚNG QUÀ GÌ ĐỂ CHUẨN BỊ ---
-  function showTeacherGiftNotification({ studentName, gift, milestone, source }) {
+  function showTeacherGiftNotification({ studentName, gift, gifts, milestone, source }) {
     const banner = document.getElementById('teacherGiftNoticeBanner');
     const desc = document.getElementById('noticeGiftDesc');
     if (!banner || !desc) return;
@@ -3834,11 +3920,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const sourceLabel = source === 'parent' ? 'Ba mẹ quay tại nhà (trang Phụ Huynh)' : 'Quay tại lớp học';
     const milestoneLabel = milestone === 200 ? 'Mốc Kỷ Lục 200 ⭐ (ĐẶC BIỆT)' : 'Mốc 100 ⭐';
 
+    const giftList = (gifts && Array.isArray(gifts) && gifts.length > 0)
+      ? gifts
+      : (gift ? (Array.isArray(gift) ? gift : [gift]) : []);
+
+    let giftTextHtml = '';
+    if (giftList.length >= 2) {
+      giftTextHtml = `đủ <strong>2 món quà</strong>: 
+        <div style="margin: 6px 0; display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #FEF3C7; color: #92400E; border: 1.5px solid #FCD34D; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 800;">
+            🎁 Lượt 1: ${giftList[0].icon || '🎁'} ${giftList[0].name}
+          </span>
+          <span style="background: #FEF3C7; color: #92400E; border: 1.5px solid #FCD34D; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 800;">
+            🎁 Lượt 2: ${giftList[1].icon || '🎁'} ${giftList[1].name}
+          </span>
+        </div>`;
+    } else if (giftList.length === 1) {
+      giftTextHtml = `món quà: <strong style="color: #E11D48; font-size: 15px;">${giftList[0].icon || '🎁'} ${giftList[0].name}</strong> <span style="font-size: 12px; color: #059669; font-weight: 700;">(Lượt 1 - còn 1 lượt quay nữa)</span>`;
+    } else {
+      giftTextHtml = `<strong style="color: #E11D48; font-size: 15px;">Phần quà may mắn</strong>`;
+    }
+
     desc.innerHTML = `
-      Bé <strong style="color: #4F46E5; font-size: 15px;">${studentName}</strong> vừa quay trúng: 
-      <strong style="color: #E11D48; font-size: 15px;">${gift.icon || '🎁'} ${gift.name}</strong> 
-      (${milestoneLabel} - ${sourceLabel}). 
-      <strong>Thầy/Cô hãy chuẩn bị món quà này để trao cho bé nhé!</strong>
+      Bé <strong style="color: #4F46E5; font-size: 15px;">${studentName}</strong> vừa quay trúng ${giftTextHtml}
+      <div style="margin-top: 4px; font-size: 12px; color: #475569;">
+        (${milestoneLabel} - ${sourceLabel}) • <strong style="color: #059669;">Thầy/Cô hãy chuẩn bị quà để trao cho bé nhé!</strong>
+      </div>
     `;
 
     banner.style.display = 'flex';
@@ -3847,8 +3954,9 @@ document.addEventListener('DOMContentLoaded', () => {
       window.soundFx.playHatch();
     }
 
+    const toastGiftNames = giftList.map((g, i) => `Lượt ${i + 1}: ${g.name}`).join(' & ');
     showSyncToast(
-      `🎁 <strong>THÔNG BÁO CHUẨN BỊ QUÀ:</strong> Bé <strong>${studentName}</strong> vừa trúng <strong>${gift.name}</strong>!`,
+      `🎁 <strong>THÔNG BÁO QUÀ:</strong> Bé <strong>${studentName}</strong> vừa trúng ${toastGiftNames || 'quà'}!`,
       '🎉'
     );
   }
@@ -4069,9 +4177,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem(StorageManager.KEY, JSON.stringify(payload.data));
                 refreshData(payload.data);
               }
+              const pGifts = (payload.gifts && payload.gifts.length > 0)
+                ? payload.gifts
+                : (payload.gift ? [payload.gift] : []);
               showTeacherGiftNotification({
                 studentName: payload.studentName,
                 gift: payload.gift || { name: 'Phần quà bí mật', icon: '🎁' },
+                gifts: pGifts,
                 milestone: payload.milestone || 100,
                 source: payload.source || 'parent'
               });
@@ -4190,9 +4302,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newSummaries.length > oldSummaries.length) {
               const latestRec = newSummaries[0];
               if (latestRec && latestRec.claimedBy === 'parent') {
+                const gList = [];
+                if (latestRec.gift1) gList.push(latestRec.gift1);
+                if (latestRec.gift2) gList.push(latestRec.gift2);
                 showTeacherGiftNotification({
                   studentName: latestRec.studentName,
                   gift: latestRec.gift2 || latestRec.gift1 || { name: 'Quà may mắn', icon: '🎁' },
+                  gifts: gList,
                   milestone: latestRec.milestone || 100,
                   source: 'parent'
                 });
@@ -4201,9 +4317,13 @@ document.addEventListener('DOMContentLoaded', () => {
               const latestRec = newSummaries[0];
               const oldRec = oldSummaries.find(r => r.id === latestRec.id);
               if (oldRec && !oldRec.completed && latestRec.completed && latestRec.claimedBy === 'parent') {
+                const gList = [];
+                if (latestRec.gift1) gList.push(latestRec.gift1);
+                if (latestRec.gift2) gList.push(latestRec.gift2);
                 showTeacherGiftNotification({
                   studentName: latestRec.studentName,
                   gift: latestRec.gift2 || { name: 'Quà may mắn', icon: '🎁' },
+                  gifts: gList,
                   milestone: latestRec.milestone || 100,
                   source: 'parent'
                 });

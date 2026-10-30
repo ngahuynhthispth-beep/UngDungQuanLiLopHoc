@@ -7,7 +7,7 @@
   <meta name="description" content="Cổng thông tin phụ huynh theo dõi tiến trình ấp trứng, tự điền điểm rèn luyện đọc, viết và dặn dò tại nhà.">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
-  <link rel="stylesheet" href="css/main.css?v=20261017_v7">
+  <link rel="stylesheet" href="css/main.css?v=20261030_v1">
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1138,13 +1138,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261022_v5"></script>
-  <script src="js/firebase-sync.js?v=20261022_v5"></script>
-  <script src="js/audio.js?v=20261022_v5"></script>
-  <script src="js/egg-evolution.js?v=20261022_v5"></script>
-  <script src="js/initial-data.js?v=20261022_v5"></script>
-  <script src="js/storage.js?v=20261022_v5"></script>
-  <script src="js/wheel.js?v=20261022_v5"></script>
+  <script src="js/firebase-config.js?v=20261030_v1"></script>
+  <script src="js/firebase-sync.js?v=20261030_v1"></script>
+  <script src="js/audio.js?v=20261030_v1"></script>
+  <script src="js/egg-evolution.js?v=20261030_v1"></script>
+  <script src="js/initial-data.js?v=20261030_v1"></script>
+  <script src="js/storage.js?v=20261030_v1"></script>
+  <script src="js/wheel.js?v=20261030_v1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1974,8 +1974,8 @@
                     <!-- Nút 1: Quay quà ngay -->
                     <button type="button" id="btnParentQuickSpin" style="background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; font-size: 13px; font-weight: 800; padding: 12px 8px; border-radius: 16px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35); display: flex; flex-direction: column; align-items: center; gap: 4px;">
                       <span style="font-size: 22px;">🎁</span>
-                      <span>Quay Quà (${milestone}⭐)</span>
-                      <span style="font-size: 10.5px; opacity: 0.9;">Mở 2 lượt quà</span>
+                      <span>${gifts.length === 1 ? `Quay Tiếp Lượt 2 (${milestone}⭐)` : `Quay Quà (${milestone}⭐)`}</span>
+                      <span style="font-size: 10.5px; opacity: 0.9;">${gifts.length === 1 ? 'Mở lượt quà thứ 2' : 'Mở 2 lượt quà'}</span>
                     </button>
 
                     <!-- Nút 2: Tích lũy điểm tiếp -->
@@ -2235,6 +2235,9 @@
 
           if (!isCompleted && gifts.length === 1) {
             parentGiftTurnBadge.textContent = `Lượt mở quà: 2 / 2`;
+            if (btnParentSpinWheel) {
+              btnParentSpinWheel.textContent = '🚀 BẮT ĐẦU QUAY LƯỢT 2!';
+            }
             parentGiftResultDesc.innerHTML = `
               <div style="font-size: 14px; font-weight: 700; color: #059669; margin-top: 6px;">
                 🎉 Chúc mừng con! Con vẫn còn <strong>1 lượt mở quà nữa</strong>!
@@ -2252,6 +2255,8 @@
               if (parentCurrentGiftMode === 'blindbag') {
                 const giftItems = StorageManager.getGiftItems(parentActiveGiftMilestone);
                 renderParentBlindBags(giftItems);
+              } else {
+                if (parentLuckyWheel) parentLuckyWheel.draw();
               }
             });
           } else {
@@ -2286,6 +2291,8 @@
             });
 
             // Khóa hoàn toàn vùng quay và túi mù
+            const modeSelector = btnParentModeWheel ? btnParentModeWheel.parentElement : null;
+            if (modeSelector) modeSelector.style.display = 'none';
             parentGiftWheelArea.style.display = 'none';
             parentGiftBlindBagArea.style.display = 'none';
           }
@@ -2318,36 +2325,40 @@
         }
 
         const gifts = student.giftHistory || [];
-        const hasFinished = (gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2);
-        const displayGifts = hasFinished && student.lastCompletedGifts && student.lastCompletedGifts.length > 0 
-          ? student.lastCompletedGifts 
-          : gifts;
+        const isCurrentHatched = (Number(student.stars) || 0) >= 100;
+        const hasFinished = isCurrentHatched
+          ? (gifts.length >= 2)
+          : ((gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2));
+        const displayGifts = isCurrentHatched
+          ? gifts
+          : (gifts.length > 0 ? gifts : (student.lastCompletedGifts && student.lastCompletedGifts.length > 0 ? student.lastCompletedGifts : []));
 
         parentGiftClaimStudentName.textContent = student.name;
         renderParentClaimHistory(displayGifts);
 
-        parentCurrentGiftMode = 'wheel';
-        btnParentModeWheel.classList.add('active');
-        btnParentModeBlindBag.classList.remove('active');
+        const modeSelector = btnParentModeWheel ? btnParentModeWheel.parentElement : null;
 
         // KHÓA QUAY CHÉO: Nếu đã quay với giáo viên ở lớp thì không cho quay ở trang phụ huynh nữa
-        const claimedByTeacher = (student.giftSessionSource === 'teacher') || gifts.some(g => g.claimedBy === 'teacher');
+        const claimedByTeacher = isCurrentHatched
+          ? ((student.giftSessionSource === 'teacher') || gifts.some(g => g.claimedBy === 'teacher'))
+          : ((student.giftSessionSource === 'teacher') || gifts.some(g => g.claimedBy === 'teacher') || (student.lastCompletedGifts && student.lastCompletedGifts.some(g => g.claimedBy === 'teacher')));
         const teacherLockedBox = document.getElementById('parentTeacherLockedBox');
         const teacherLockedList = document.getElementById('parentTeacherLockedGiftsList');
 
         if (claimedByTeacher) {
           parentGiftTurnBadge.textContent = '🔒 Đã nhận quà tại lớp học';
+          if (modeSelector) modeSelector.style.display = 'none';
           parentGiftWheelArea.style.display = 'none';
           parentGiftBlindBagArea.style.display = 'none';
           parentGiftResultBox.style.display = 'none';
           if (teacherLockedBox) teacherLockedBox.style.display = 'block';
           if (teacherLockedList) {
-            teacherLockedList.innerHTML = gifts.map((g, idx) => `
+            teacherLockedList.innerHTML = displayGifts.map((g, idx) => `
               <div style="display: flex; align-items: center; gap: 10px; background: #FFF; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; border: 1.5px solid #FDE68A;">
                 <span style="font-size: 26px;">${g.icon || '🎁'}</span>
                 <div style="flex: 1; text-align: left;">
                   <div style="font-weight: 800; color: #1E293B;">Lượt ${idx + 1}: ${g.name}</div>
-                  <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong'} (Tại lớp cùng cô giáo)</div>
+                  <div style="font-size: 11px; color: #64748B;">Nhận lúc: ${g.time || (g.claimedAt ? new Date(g.claimedAt).toLocaleString('vi-VN') : 'Vừa xong')} (Tại lớp cùng cô giáo)</div>
                 </div>
               </div>
             `).join('');
@@ -2362,6 +2373,7 @@
 
         if (hasFinished) {
           parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
+          if (modeSelector) modeSelector.style.display = 'none';
           parentGiftWheelArea.style.display = 'none';
           parentGiftBlindBagArea.style.display = 'none';
           parentGiftResultBox.style.display = 'block';
@@ -2379,15 +2391,25 @@
             </div>
           `;
           parentGiftNextActionArea.innerHTML = `
-            <button type="button" class="btn-header" onclick="document.getElementById('parentGiftClaimModal').classList.remove('active')">
+            <button type="button" class="btn-header" onclick="document.getElementById('parentGiftClaimModal').classList.remove('active'); if (typeof renderChildView === 'function') renderChildView();">
               Đóng
             </button>
           `;
         } else {
+          if (modeSelector) modeSelector.style.display = 'flex';
           parentGiftTurnBadge.textContent = `Lượt mở quà: ${gifts.length + 1} / 2`;
           parentGiftResultBox.style.display = 'none';
+
+          parentCurrentGiftMode = 'wheel';
+          btnParentModeWheel.classList.add('active');
+          btnParentModeBlindBag.classList.remove('active');
+
           parentGiftWheelArea.style.display = 'flex';
           parentGiftBlindBagArea.style.display = 'none';
+
+          if (btnParentSpinWheel) {
+            btnParentSpinWheel.textContent = gifts.length === 1 ? '🚀 BẮT ĐẦU QUAY LƯỢT 2!' : '🚀 BẮT ĐẦU QUAY NGAY!';
+          }
 
           initParentLuckyWheel(giftItems);
           renderParentBlindBags(giftItems);
@@ -2496,47 +2518,90 @@
       }
 
       if (closeParentGiftClaimBtn) {
-        closeParentGiftClaimBtn.addEventListener('click', () => parentGiftClaimModal.classList.remove('active'));
+        closeParentGiftClaimBtn.addEventListener('click', () => {
+          parentGiftClaimModal.classList.remove('active');
+          if (typeof renderChildView === 'function') renderChildView();
+        });
       }
+
+      // Đóng modal khi bấm vào vùng nền mờ
+      parentGiftClaimModal.addEventListener('click', (e) => {
+        if (e.target === parentGiftClaimModal) {
+          parentGiftClaimModal.classList.remove('active');
+          if (typeof renderChildView === 'function') renderChildView();
+        }
+      });
 
       if (btnParentModeWheel && btnParentModeBlindBag) {
         btnParentModeWheel.addEventListener('click', () => {
+          const student = (data.students || []).find(s => s.id === currentId);
+          if (!student) return;
+          const gifts = student.giftHistory || [];
+          const isCurrentHatched = (Number(student.stars) || 0) >= 100;
+          const hasFinished = isCurrentHatched
+            ? (gifts.length >= 2)
+            : ((gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2));
+          if (hasFinished) return;
+
           parentCurrentGiftMode = 'wheel';
           btnParentModeWheel.classList.add('active');
           btnParentModeBlindBag.classList.remove('active');
-          const student = (data.students || []).find(s => s.id === currentId);
-          const gifts = (student && student.giftHistory) || [];
-          if (gifts.length < 2) {
-            parentGiftWheelArea.style.display = 'flex';
-            parentGiftBlindBagArea.style.display = 'none';
-            if (parentLuckyWheel) parentLuckyWheel.draw();
+          parentGiftBlindBagArea.style.display = 'none';
+          parentGiftWheelArea.style.display = 'flex';
+
+          if (!parentLuckyWheel) {
+            const giftItems = StorageManager.getGiftItems(parentActiveGiftMilestone);
+            initParentLuckyWheel(giftItems);
           }
+          if (parentLuckyWheel) parentLuckyWheel.draw();
         });
 
         btnParentModeBlindBag.addEventListener('click', () => {
+          const student = (data.students || []).find(s => s.id === currentId);
+          if (!student) return;
+          const gifts = student.giftHistory || [];
+          const isCurrentHatched = (Number(student.stars) || 0) >= 100;
+          const hasFinished = isCurrentHatched
+            ? (gifts.length >= 2)
+            : ((gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2));
+          if (hasFinished) return;
+
           parentCurrentGiftMode = 'blindbag';
           btnParentModeBlindBag.classList.add('active');
           btnParentModeWheel.classList.remove('active');
-          const student = (data.students || []).find(s => s.id === currentId);
-          const gifts = (student && student.giftHistory) || [];
-          if (gifts.length < 2) {
-            parentGiftWheelArea.style.display = 'none';
-            parentGiftBlindBagArea.style.display = 'flex';
-          }
+          parentGiftWheelArea.style.display = 'none';
+          parentGiftBlindBagArea.style.display = 'flex';
+
+          const giftItems = StorageManager.getGiftItems(parentActiveGiftMilestone);
+          renderParentBlindBags(giftItems);
         });
       }
 
       if (btnParentSpinWheel) {
         btnParentSpinWheel.addEventListener('click', () => {
-          if (!parentLuckyWheel || parentLuckyWheel.isSpinning || isParentClaiming) return;
+          if (parentLuckyWheel && parentLuckyWheel.isSpinning) return;
+          if (isParentClaiming) return;
           const student = (data.students || []).find(s => s.id === currentId);
-          if (!student || ((student.giftHistory || []).length >= 2)) return;
+          if (!student) return;
+          const gifts = student.giftHistory || [];
+          const isCurrentHatched = (Number(student.stars) || 0) >= 100;
+          const hasFinished = isCurrentHatched
+            ? (gifts.length >= 2)
+            : ((gifts.length >= 2) || (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2));
+          if (hasFinished) return;
 
-          parentLuckyWheel.spin((winner) => {
-            if (winner && winner.giftData) {
-              handleParentGiftAward(winner.giftData);
-            }
-          });
+          if (!parentLuckyWheel) {
+            const giftItems = StorageManager.getGiftItems(parentActiveGiftMilestone);
+            initParentLuckyWheel(giftItems);
+          }
+
+          if (parentLuckyWheel) {
+            parentLuckyWheel.spin((winner) => {
+              if (winner && winner.giftData) {
+                handleParentGiftAward(winner.giftData);
+              }
+            });
+          }
         });
       }
 
@@ -2599,7 +2664,7 @@
       setInterval(checkLiveConnection, 6000);
 
       // Quản lý phiên bản app & làm mới cập nhật tự động từ cô giáo
-      const APP_VERSION = '20261009_v5';
+      const APP_VERSION = '20261030_v1';
       const lastAppVer = localStorage.getItem('parent_app_version');
       const appUpdateBanner = document.getElementById('parentAppUpdateBanner');
       const parentAppUpdateModal = document.getElementById('parentAppUpdateModal');

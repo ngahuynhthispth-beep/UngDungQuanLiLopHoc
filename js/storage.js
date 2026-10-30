@@ -1107,6 +1107,7 @@ const StorageManager = {
       student.stars = 0;
       student.hatchedAt = null;
       student.accumulateBonus = false;
+      student.accumulateBonus200 = false;
       student.milestoneChoice = null;
       student.giftHistory = [];
       student.giftSessionSource = null;
