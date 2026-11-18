@@ -8,7 +8,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="css/main.css?v=20261022_v4">
+  <link rel="stylesheet" href="css/main.css?v=20261118_v2">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
   <script>
     function openClassManageModal() {
@@ -220,6 +220,11 @@
           <input type="text" id="inputSearchStudent" placeholder="Tìm nhanh tên học sinh..." autocomplete="off">
           <button type="button" id="btnClearSearchStudent" style="display: none; background: none; border: none; font-size: 16px; cursor: pointer; color: #94A3B8;">&times;</button>
         </div>
+
+        <!-- Nút Mic nói ngay trên giao diện chính cạnh ô tìm kiếm -->
+        <button type="button" id="btnToolbarVoiceMic" class="btn-voice-toolbar" title="Bấm để nói ngay lệnh: 'Cộng/Trừ + Tên bé + Số điểm'">
+          🎙️ <span>Nói Chấm Điểm</span>
+        </button>
 
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
           <!-- Chọn mức điểm cộng nhanh: 5 hoặc 10 -->
@@ -1572,6 +1577,20 @@
       if (e.key === 'Escape') closeClassManageModal();
     });
   </script>
+
+  <!-- THANH TRẠNG THÁI NỔI THÔNG MINH KHI ĐỌC LỆNH (DYNAMIC ISLAND) -->
+  <div id="floatingVoiceLiveBar" class="floating-voice-live-bar">
+    <span class="mic-pulse-dot" style="font-size: 16px;">🔴</span>
+    <span id="floatingVoiceLiveText" style="font-size: 14px; font-weight: 700;">Đang nghe cô nói...</span>
+  </div>
+
+  <!-- NÚT MICRO NỔI TRỰC TIẾP TRÊN MÀN HÌNH (BẤM NÓI NGAY MỌI LÚC) -->
+  <div id="floatingVoiceContainer" class="floating-voice-container">
+    <button type="button" id="floatingVoiceBtn" class="floating-voice-btn" title="Bấm vào để nói ngay: 'Cộng/Trừ + Tên bé + Số điểm'">
+      <span class="voice-fab-icon">🎙️</span>
+      <span class="voice-fab-text">Nói Chấm Điểm</span>
+    </button>
+  </div>
 
   <!-- Khung thông báo đồng bộ realtime khi học sinh/phụ huynh gửi điểm -->
   <div id="liveSyncToastContainer" class="live-sync-toast-container"></div>

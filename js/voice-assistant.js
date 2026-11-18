@@ -401,24 +401,67 @@
 
     // Cập nhật giao diện khi Micro Bật / Tắt
     updateUiState(isListening) {
-      const btn = document.getElementById('btnVoiceAssistant');
+      const btnHeader = document.getElementById('btnVoiceAssistant');
+      const btnToolbar = document.getElementById('btnToolbarVoiceMic');
+      const btnFloating = document.getElementById('floatingVoiceBtn');
+      const liveBar = document.getElementById('floatingVoiceLiveBar');
+      const liveText = document.getElementById('floatingVoiceLiveText');
       const modal = document.getElementById('voiceAssistantModal');
       const wave = document.getElementById('voiceWaveAnim');
       const statusText = document.getElementById('voiceStatusText');
 
-      if (btn) {
+      // 1. Nút trên Header
+      if (btnHeader) {
         if (isListening) {
-          btn.classList.add('recording-active');
-          btn.innerHTML = `<span class="mic-pulse-dot">🔴</span> Đang Lắng Nghe...`;
+          btnHeader.classList.add('recording-active');
+          btnHeader.innerHTML = `<span class="mic-pulse-dot">🔴</span> Đang Nghe...`;
         } else {
-          btn.classList.remove('recording-active');
-          btn.innerHTML = `🎙️ Mic AI Chấm Điểm`;
+          btnHeader.classList.remove('recording-active');
+          btnHeader.innerHTML = `🎙️ Mic AI Chấm Điểm`;
         }
       }
 
-      if (modal) {
+      // 2. Nút ngay trên thanh tìm kiếm danh sách học sinh
+      if (btnToolbar) {
         if (isListening) {
-          modal.classList.add('active');
+          btnToolbar.classList.add('listening');
+          btnToolbar.innerHTML = `<span class="mic-pulse-dot">🔴</span> Đang Nghe...`;
+        } else {
+          btnToolbar.classList.remove('listening');
+          btnToolbar.innerHTML = `🎙️ <span>Nói Chấm Điểm</span>`;
+        }
+      }
+
+      // 3. Nút Micro nổi cố định ở góc màn hình
+      if (btnFloating) {
+        if (isListening) {
+          btnFloating.classList.add('listening');
+          btnFloating.innerHTML = `<span class="voice-fab-icon mic-pulse-dot">🔴</span> <span class="voice-fab-text">Đang nghe cô nói...</span>`;
+        } else {
+          btnFloating.classList.remove('listening');
+          btnFloating.innerHTML = `<span class="voice-fab-icon">🎙️</span> <span class="voice-fab-text">Nói Chấm Điểm</span>`;
+        }
+      }
+
+      // 4. Thanh trạng thái nổi thông minh Dynamic Island trên đầu màn hình
+      if (liveBar) {
+        if (isListening) {
+          liveBar.classList.add('active');
+          if (liveText) {
+            liveText.innerHTML = `🔴 <strong>Đang lắng nghe...</strong> <em>(Nói: "Trừ Gia Hưng 5 điểm" hoặc "Cộng Minh An 10 điểm")</em>`;
+          }
+        } else {
+          setTimeout(() => {
+            if (!this.isListening && liveBar) {
+              liveBar.classList.remove('active');
+            }
+          }, 1200);
+        }
+      }
+
+      // 5. Cập nhật modal (nếu modal đang mở)
+      if (modal && modal.classList.contains('active')) {
+        if (isListening) {
           if (statusText) statusText.innerHTML = 'Cô hãy nói: <strong>"Cộng (hoặc Trừ) + Tên học sinh + Số điểm"</strong>...';
           if (wave) wave.style.display = 'flex';
         } else {
@@ -429,13 +472,17 @@
 
     updateTranscriptDisplay(rawText, parsedCmd = null) {
       const transcriptEl = document.getElementById('voiceTranscriptResult');
-      if (transcriptEl) {
-        if (parsedCmd && (parsedCmd.student || parsedCmd.isClassWide)) {
-          const actionBadge = parsedCmd.isNegative 
-            ? `<span style="background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[-] TRỪ ${parsedCmd.points} ⭐</span>`
-            : `<span style="background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[+] CỘNG ${parsedCmd.points} ⭐</span>`;
-          const name = parsedCmd.isClassWide ? 'Cả Lớp' : parsedCmd.student.name;
+      const liveBar = document.getElementById('floatingVoiceLiveBar');
+      const liveText = document.getElementById('floatingVoiceLiveText');
 
+      if (parsedCmd && (parsedCmd.student || parsedCmd.isClassWide)) {
+        const actionBadge = parsedCmd.isNegative 
+          ? `<span style="background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[-] TRỪ ${parsedCmd.points} ⭐</span>`
+          : `<span style="background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[+] CỘNG ${parsedCmd.points} ⭐</span>`;
+        const name = parsedCmd.isClassWide ? 'Cả Lớp' : parsedCmd.student.name;
+
+        // Cập nhật trên modal (nếu mở)
+        if (transcriptEl) {
           transcriptEl.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
               <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
@@ -444,8 +491,24 @@
               </div>
             </div>
           `;
-        } else {
-          transcriptEl.innerHTML = `💬 <em>"${rawText}"</em>`;
+        }
+
+        // Cập nhật trên thanh trạng thái nổi Dynamic Island
+        if (liveBar && liveText) {
+          liveBar.classList.add('active');
+          liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} cho bé <strong>${name}</strong>`;
+          setTimeout(() => {
+            if (liveBar) liveBar.classList.remove('active');
+          }, 3200);
+        }
+      } else {
+        if (transcriptEl) transcriptEl.innerHTML = `💬 <em>"${rawText}"</em>`;
+        if (liveBar && liveText) {
+          liveBar.classList.add('active');
+          liveText.innerHTML = `💬 <em>"${rawText}"</em> (Chưa rõ tên bé)`;
+          setTimeout(() => {
+            if (liveBar) liveBar.classList.remove('active');
+          }, 2500);
         }
       }
     }
@@ -462,6 +525,7 @@
 
   // Khởi tạo các nút bấm giao diện khi DOM sẵn sàng
   document.addEventListener('DOMContentLoaded', () => {
+    // 1. Nút trên Header
     const btnVoice = document.getElementById('btnVoiceAssistant');
     if (btnVoice) {
       btnVoice.addEventListener('click', () => {
@@ -469,6 +533,23 @@
       });
     }
 
+    // 2. Nút ngay trên thanh tìm kiếm giao diện chính
+    const btnToolbar = document.getElementById('btnToolbarVoiceMic');
+    if (btnToolbar) {
+      btnToolbar.addEventListener('click', () => {
+        window.VoiceAssistant.toggleListening();
+      });
+    }
+
+    // 3. Nút Micro nổi cố định ở góc dưới màn hình
+    const btnFloating = document.getElementById('floatingVoiceBtn');
+    if (btnFloating) {
+      btnFloating.addEventListener('click', () => {
+        window.VoiceAssistant.toggleListening();
+      });
+    }
+
+    // Nút trong modal
     const btnCloseModal = document.getElementById('btnCloseVoiceModal');
     if (btnCloseModal) {
       btnCloseModal.addEventListener('click', () => {
