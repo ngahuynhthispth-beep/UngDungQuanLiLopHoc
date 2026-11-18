@@ -85,15 +85,58 @@
       this.isListening = false;
       this.isSupported = false;
       this.synth = window.speechSynthesis || null;
+      this.cachedVoices = [];
+      this.audioPlayer = null;
       this.lastTranscript = '';
 
+      this.loadVoices();
       if (this.synth && this.synth.onvoiceschanged !== undefined) {
-        this.synth.onvoiceschanged = () => {
-          try { this.synth.getVoices(); } catch (e) {}
-        };
+        this.synth.onvoiceschanged = () => this.loadVoices();
       }
 
       this.init();
+    }
+
+    loadVoices() {
+      if (!this.synth) return;
+      try {
+        const v = this.synth.getVoices();
+        if (v && v.length) {
+          this.cachedVoices = v;
+        }
+      } catch (e) {}
+    }
+
+    getAudioPlayer() {
+      if (!this.audioPlayer) {
+        this.audioPlayer = document.getElementById('voiceFeedbackAudio');
+      }
+      if (!this.audioPlayer) {
+        this.audioPlayer = document.createElement('audio');
+        this.audioPlayer.id = 'voiceFeedbackAudio';
+        this.audioPlayer.setAttribute('referrerpolicy', 'no-referrer');
+        this.audioPlayer.style.display = 'none';
+        this.audioPlayer.preload = 'auto';
+        document.body.appendChild(this.audioPlayer);
+      }
+      return this.audioPlayer;
+    }
+
+    // Mở khóa âm thanh Web Audio và thẻ Audio TTS ngay khi người dùng chạm/bấm Micro
+    unlockAudio() {
+      if (window.soundFx) {
+        if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
+        if (typeof window.soundFx.init === 'function') window.soundFx.init();
+      }
+      const player = this.getAudioPlayer();
+      if (player) {
+        player.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        const p = player.play();
+        if (p !== undefined) {
+          p.then(() => player.pause()).catch(() => {});
+        }
+      }
+      this.loadVoices();
     }
 
     init() {
@@ -161,6 +204,7 @@
     }
 
     toggleListening() {
+      this.unlockAudio();
       if (!this.isSupported) {
         alert('Trình duyệt hiện tại chưa hỗ trợ nhận diện giọng nói Tiếng Việt.\nVui lòng sử dụng Google Chrome, Cốc Cốc hoặc Safari trên iPhone/iPad.');
         return;
@@ -174,6 +218,7 @@
     }
 
     start() {
+      this.unlockAudio();
       if (!this.recognition) return;
       try {
         this.recognition.start();
@@ -360,10 +405,13 @@
         if (typeof window.refreshData === 'function') window.refreshData();
 
         const feedback = cmd.isNegative 
-          ? `Đã nhắc nhở trừ ${cmd.points} sao của cả lớp.` 
+          ? `Đã nhắc nhở trừ ${cmd.points} sao của cả lớp!` 
           : `Đã cộng ${cmd.points} sao cho cả lớp cùng chăm ngoan!`;
 
-        this.speakFeedback(feedback);
+        setTimeout(() => {
+          this.speakFeedback(feedback);
+        }, 400);
+
         this.showStatusToast(`🎙️ <strong>Cả Lớp</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${reason})`, '🌟');
         return;
       }
@@ -376,7 +424,9 @@
         }
         const msg = `Không tìm thấy học sinh trong câu nói: "${cmd.raw}". Cô hãy đọc rõ theo cú pháp: "Cộng [Tên] [Số điểm]" hoặc "Trừ [Tên] [Số điểm]".`;
         this.showStatusToast(msg, '❓');
-        this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc lại nhé.');
+        setTimeout(() => {
+          this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc lại nhé.');
+        }, 400);
         return;
       }
 
@@ -386,78 +436,100 @@
       // Tìm thẻ học sinh trên màn hình để tạo hiệu ứng sao bay
       const studentEl = document.querySelector(`.student-card[data-id="${student.id}"], [data-id="${student.id}"]`);
 
-      // Luôn phát âm thanh chuông Ting Ting hoặc Tiếng Nhắc nhở lập tức
-      if (window.soundFx) {
-        if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
-          window.soundFx.playPenalty();
-        } else if (typeof window.soundFx.playStar === 'function') {
-          window.soundFx.playStar();
-        }
-      }
-
       if (typeof window.applyStudentPoints === 'function') {
         // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
         window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, studentEl, true);
       } else {
+        if (window.soundFx) {
+          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
+          } else if (typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
+        }
         const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
         if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
         this.showStatusToast(`🎙️ Bé <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
       }
 
-      // Phản hồi giọng nói trợ lý AI sau khi chuông reo (trì hoãn 320ms để nghe rõ cả tiếng chuông lẫn giọng nói)
+      // Phản hồi giọng nói trợ lý AI sau khi chuông reo (trì hoãn 400ms để nghe rõ cả tiếng chuông lẫn giọng nói)
       const feedbackText = cmd.isNegative 
         ? `Đã trừ ${cmd.points} sao của bạn ${student.name}!`
         : `Đã cộng ${cmd.points} sao cho bạn ${student.name}!`;
 
       setTimeout(() => {
         this.speakFeedback(feedbackText);
-      }, 320);
+      }, 400);
     }
 
     // Phát âm thanh phản hồi giọng nói (Ưu tiên Google Cloud TTS Tiếng Việt, dự phòng WebSpeech)
     speakFeedback(text) {
       if (!text) return;
       const cleanText = text.replace(/[!⭐⚠️🎙️✨🎉]/g, '').trim();
+      const player = this.getAudioPlayer();
 
-      // 1. Thử phát qua Google Translate TTS (Audio MP3 trực tiếp - Giọng Tiếng Việt chuẩn 100%)
-      try {
-        const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURIComponent(cleanText);
-        const audio = document.createElement('audio');
-        audio.referrerPolicy = 'no-referrer';
-        audio.src = url;
-        audio.playbackRate = 1.05;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(err => {
-            console.warn('Google TTS audio play blocked/failed, trying Web Speech Synthesis:', err);
-            this.fallbackWebSpeech(cleanText);
-          });
+      // Danh sách các nguồn TTS Tiếng Việt chuẩn
+      const sources = [
+        'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURIComponent(cleanText),
+        'https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=vi&client=gtx&q=' + encodeURIComponent(cleanText),
+        'https://translate.google.com.vn/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURIComponent(cleanText)
+      ];
+
+      let idx = 0;
+      let isPlaying = false;
+
+      const playNextSource = () => {
+        if (isPlaying) return;
+        if (idx < sources.length) {
+          const url = sources[idx++];
+          player.src = url;
+          player.playbackRate = 1.05;
+          const p = player.play();
+          if (p !== undefined) {
+            p.then(() => {
+              isPlaying = true;
+            }).catch(err => {
+              console.warn(`TTS source ${idx} lỗi:`, err);
+              playNextSource();
+            });
+          }
+        } else {
+          // Fallback sang Web Speech Synthesis nếu không tải được audio online
+          this.fallbackWebSpeech(cleanText);
         }
-      } catch (e) {
-        this.fallbackWebSpeech(cleanText);
-      }
+      };
+
+      player.onerror = () => {
+        if (!isPlaying) playNextSource();
+      };
+
+      playNextSource();
     }
 
     fallbackWebSpeech(text) {
       if (!this.synth) return;
       try {
-        const voices = this.synth.getVoices() || [];
-        // CHỈ cho phép phát bằng WebSpeech nếu tìm thấy giọng Tiếng Việt thực sự
-        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang === 'vi' || (v.lang && v.lang.startsWith('vi')));
+        this.synth.cancel();
+        const voices = (this.cachedVoices && this.cachedVoices.length) ? this.cachedVoices : (this.synth.getVoices() || []);
         
-        // Tuyệt đối không dùng giọng Tiếng Anh (như Microsoft David) để đọc Tiếng Việt
-        if (!viVoice) {
-          console.warn('Thiết bị không có giọng tiếng Việt SAPI, bỏ qua giọng tiếng Anh để không bị đọc sai.');
-          return;
-        }
+        // Tìm giọng Tiếng Việt
+        let viVoice = voices.find(v => {
+          const l = (v.lang || '').toLowerCase();
+          const n = (v.name || '').toLowerCase();
+          return l.includes('vi-vn') || l === 'vi' || l.startsWith('vi_') || n.includes('vietnam') || n.includes('tiếng việt') || n.includes('hoaimy') || n.includes('namminh');
+        });
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'vi-VN';
-        utterance.rate = 1.05;
-        utterance.pitch = 1.05;
-        utterance.voice = viVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
 
-        this.synth.speak(utterance);
+        if (viVoice) {
+          utterance.voice = viVoice;
+          this.synth.speak(utterance);
+        } else {
+          console.warn('Thiết bị không có giọng tiếng Việt SAPI.');
+        }
       } catch (e) {
         console.warn('Fallback WebSpeech error:', e);
       }
@@ -606,7 +678,10 @@
   // Khởi tạo các nút bấm giao diện khi DOM sẵn sàng
   document.addEventListener('DOMContentLoaded', () => {
     function triggerMicAction() {
-      // 1. Mở khóa âm thanh Web Audio ngay trong tương tác bấm của người dùng
+      // 1. Mở khóa âm thanh Web Audio và thẻ Audio TTS ngay trong tương tác bấm của người dùng
+      if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
+        window.VoiceAssistant.unlockAudio();
+      }
       if (window.soundFx) {
         if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
         if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
