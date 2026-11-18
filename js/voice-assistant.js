@@ -79,6 +79,18 @@
     return null;
   }
 
+  // Nối danh sách tên học sinh theo ngữ pháp tiếng Việt tự nhiên:
+  // 1 bé: "Minh An"
+  // 2 bé: "Minh An và Bảo Hân"
+  // 3+ bé: "Minh An, Bảo Hân và Gia Hưng"
+  function formatStudentNamesList(studentList) {
+    if (!studentList || !studentList.length) return '';
+    const names = studentList.map(s => (s && s.name ? s.name.trim() : String(s)));
+    if (names.length === 1) return names[0];
+    if (names.length === 2) return `${names[0]} và ${names[1]}`;
+    return `${names.slice(0, -1).join(', ')} và ${names[names.length - 1]}`;
+  }
+
   class VoiceAssistant {
     constructor() {
       this.recognition = null;
@@ -251,7 +263,7 @@
         if (!cand) continue;
         const normalized = normalizeTranscript(cand, students);
         const parsed = this.parseCommandGrammar(cand, normalized, students);
-        if (parsed.student || parsed.isClassWide) {
+        if ((parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide) {
           bestCommand = parsed;
           break;
         }
@@ -316,8 +328,9 @@
       else if (clean.includes('cham ngoan')) reason = 'Chăm ngoan gương mẫu';
       else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
 
-      // 5. Tìm học sinh khớp nhất
-      const student = isClassWide ? null : this.findBestStudentMatch(clean, students);
+      // 5. Tìm danh sách học sinh khớp trong câu nói (hỗ trợ nhiều bạn cùng lúc)
+      const matchedStudents = isClassWide ? [] : this.findAllStudentMatches(clean, students);
+      const student = matchedStudents.length > 0 ? matchedStudents[0] : null;
 
       return {
         raw,
@@ -326,54 +339,93 @@
         isNegative,
         points,
         reason,
-        student
+        student,
+        students: matchedStudents
       };
     }
 
-    // Tìm kiếm học sinh khớp nhất từ câu nói
-    findBestStudentMatch(cleanTranscript, students) {
-      if (!students || students.length === 0) return null;
+    // Tìm kiếm toàn bộ học sinh được nhắc tên trong câu nói (hỗ trợ gọi nhiều bạn cùng lúc)
+    findAllStudentMatches(cleanTranscript, students) {
+      if (!students || students.length === 0 || !cleanTranscript) return [];
 
       // Sắp xếp theo độ dài họ tên giảm dần (để "Phạm Bảo Hân" được ưu tiên trước "Bảo Hân")
       const sortedStudents = [...students].sort((a, b) => b.name.length - a.name.length);
 
-      // Bước 1: Khớp chính xác cả họ tên hoặc 2 từ cuối (vd: 'gia hung', 'pham bao han', 'minh an', 'hai yen')
+      let workingText = ' ' + cleanTranscript.toLowerCase() + ' ';
+      const matchedWithIndex = [];
+      const matchedIds = new Set();
+
+      // Bước 1: Khớp chính xác cả họ tên (vd: 'pham bao han', 'minh an', 'gia hung', 'quoc an')
       for (const s of sortedStudents) {
         const sClean = removeVietnameseTones(s.name);
-        if (new RegExp('\\b' + sClean + '\\b', 'i').test(cleanTranscript)) {
-          return s;
+        if (!sClean) continue;
+        const reg = new RegExp('\\b' + sClean + '\\b', 'i');
+        const match = workingText.match(reg);
+        if (match) {
+          if (!matchedIds.has(s.id)) {
+            matchedWithIndex.push({ student: s, index: match.index });
+            matchedIds.add(s.id);
+          }
+          workingText = workingText.replace(reg, ' ___ ');
         }
       }
 
-      // Bước 2: Khớp 2 từ cuối nếu tên có 3 từ (vd: 'Bảo Hân' trong 'Phạm Bảo Hân')
+      // Bước 2: Khớp 2 từ cuối nếu tên có 3 từ trở lên (vd: 'Bảo Hân' trong 'Phạm Bảo Hân')
+      // Chỉ khớp nếu 2 từ cuối này KHÔNG trùng với tên đầy đủ của bạn khác đã có
       for (const s of sortedStudents) {
+        if (matchedIds.has(s.id)) continue;
         const parts = removeVietnameseTones(s.name).split(' ');
-        if (parts.length >= 2) {
+        if (parts.length >= 3) {
           const twoLast = parts.slice(-2).join(' ');
-          if (new RegExp('\\b' + twoLast + '\\b', 'i').test(cleanTranscript)) {
-            return s;
+          const isConflict = students.some(other => other.id !== s.id && removeVietnameseTones(other.name) === twoLast);
+          if (!isConflict) {
+            const reg = new RegExp('\\b' + twoLast + '\\b', 'i');
+            const match = workingText.match(reg);
+            if (match) {
+              matchedWithIndex.push({ student: s, index: match.index });
+              matchedIds.add(s.id);
+              workingText = workingText.replace(reg, ' ___ ');
+            }
           }
         }
       }
 
-      // Bước 3: Khớp tên chính (nếu tên này là duy nhất trong cả lớp 36 bạn)
-      // Ví dụ: trong lớp chỉ có 1 bạn tên Hưng (Gia Hưng), 1 bạn tên Yến (Hải Yến), 1 bạn tên Thảo (Hương Thảo)
+      // Bước 3: Khớp tên gọi đơn duy nhất trong lớp (nếu trong lớp chỉ có 1 bạn mang tên này)
+      // Ví dụ: chỉ có 1 bạn tên Hưng (Gia Hưng), 1 bạn tên Yến (Hải Yến), 1 bạn tên Thảo (Hương Thảo)
+      const stopwords = new Set(['di', 'cho', 'va', 'ra', 'co', 'em', 'ban', 'con', 'lop', 'to', 'cac', 'nhe', 'nha', 'mot', 'hai', 'ba', 'bon', 'nam', 'sau', 'bay', 'tam', 'chin', 'muoi']);
       const lastNameCounts = {};
       students.forEach(s => {
         const parts = removeVietnameseTones(s.name).split(' ');
         const l = parts[parts.length - 1];
-        lastNameCounts[l] = (lastNameCounts[l] || 0) + 1;
+        if (l) lastNameCounts[l] = (lastNameCounts[l] || 0) + 1;
       });
 
       for (const s of sortedStudents) {
+        if (matchedIds.has(s.id)) continue;
         const parts = removeVietnameseTones(s.name).split(' ');
         const l = parts[parts.length - 1];
-        if (lastNameCounts[l] === 1 && new RegExp('\\b' + l + '\\b', 'i').test(cleanTranscript)) {
-          return s;
+        if (!l || stopwords.has(l)) continue;
+
+        if (lastNameCounts[l] === 1) {
+          const reg = new RegExp('\\b' + l + '\\b', 'i');
+          const match = workingText.match(reg);
+          if (match) {
+            matchedWithIndex.push({ student: s, index: match.index });
+            matchedIds.add(s.id);
+            workingText = workingText.replace(reg, ' ___ ');
+          }
         }
       }
 
-      return null;
+      // Sắp xếp lại danh sách học sinh theo đúng thứ tự xuất hiện trong câu nói của giáo viên
+      matchedWithIndex.sort((a, b) => a.index - b.index);
+      return matchedWithIndex.map(m => m.student);
+    }
+
+    // Tìm kiếm học sinh khớp nhất từ câu nói (hàm tương thích ngược)
+    findBestStudentMatch(cleanTranscript, students) {
+      const matches = this.findAllStudentMatches(cleanTranscript, students);
+      return matches.length > 0 ? matches[0] : null;
     }
 
     // Thực thi câu lệnh đã phân tích
@@ -416,9 +468,12 @@
         return;
       }
 
-      // 2. Trường hợp áp dụng cho MỘT HỌC SINH
-      const student = cmd.student;
-      if (!student) {
+      // 2. Trường hợp áp dụng cho HỌC SINH (HỖ TRỢ 1 HOẶC NHIỀU BẠN CÙNG LÚC)
+      const targetStudents = (cmd.students && cmd.students.length > 0) 
+        ? cmd.students 
+        : (cmd.student ? [cmd.student] : []);
+
+      if (targetStudents.length === 0) {
         if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
           window.soundFx.playPenalty();
         }
@@ -432,34 +487,44 @@
 
       const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
       const icon = cmd.isNegative ? '⚠️' : '⭐';
+      const namesText = formatStudentNamesList(targetStudents);
 
-      // Tìm thẻ học sinh trên màn hình để tạo hiệu ứng sao bay
-      const studentEl = document.querySelector(`.student-card[data-id="${student.id}"], [data-id="${student.id}"]`);
+      // Thực thi cộng / trừ điểm cho từng học sinh với độ trễ nhỏ để hiệu ứng sao bay và âm thanh diễn ra mượt mà
+      targetStudents.forEach((student, idx) => {
+        setTimeout(() => {
+          const studentEl = document.querySelector(`.student-card[data-id="${student.id}"], [data-id="${student.id}"]`);
 
-      if (typeof window.applyStudentPoints === 'function') {
-        // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
-        window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, studentEl, true);
-      } else {
-        if (window.soundFx) {
-          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
-            window.soundFx.playPenalty();
-          } else if (typeof window.soundFx.playStar === 'function') {
-            window.soundFx.playStar();
+          if (typeof window.applyStudentPoints === 'function') {
+            // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
+            window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, studentEl, true);
+          } else {
+            if (window.soundFx) {
+              if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+                window.soundFx.playPenalty();
+              } else if (typeof window.soundFx.playStar === 'function') {
+                window.soundFx.playStar();
+              }
+            }
+            const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
+            if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
           }
-        }
-        const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
-        if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
-        this.showStatusToast(`🎙️ Bé <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
-      }
+        }, idx * 140);
+      });
 
-      // Phản hồi giọng nói trợ lý AI sau khi chuông reo (trì hoãn 400ms để nghe rõ cả tiếng chuông lẫn giọng nói)
+      // Hiển thị thông báo Toast với danh sách học sinh
+      const actionText = cmd.isNegative ? 'trừ' : 'cộng';
+      const toastSubject = targetStudents.length > 1 ? `các bé <strong>${namesText}</strong>` : `bé <strong>${namesText}</strong>`;
+      this.showStatusToast(`🎙️ Đã ${actionText} ${Math.abs(actualPoints)} ⭐ cho ${toastSubject} (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
+
+      // Phản hồi giọng nói trợ lý AI sau khi hoàn tất hiệu ứng (trì hoãn tương ứng số lượng bé để nghe rõ chuông và giọng nói)
       const feedbackText = cmd.isNegative 
-        ? `Đã trừ ${cmd.points} sao của bạn ${student.name}!`
-        : `Đã cộng ${cmd.points} sao cho bạn ${student.name}!`;
+        ? `Đã trừ ${cmd.points} sao của ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}!`
+        : `Đã cộng ${cmd.points} sao cho ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}!`;
 
+      const voiceDelay = Math.max(500, targetStudents.length * 140 + 250);
       setTimeout(() => {
         this.speakFeedback(feedbackText);
-      }, 400);
+      }, voiceDelay);
     }
 
     // Phát âm thanh phản hồi giọng nói (Ưu tiên Google Cloud TTS Tiếng Việt, dự phòng WebSpeech)
@@ -611,11 +676,20 @@
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
 
-      if (parsedCmd && (parsedCmd.student || parsedCmd.isClassWide)) {
+      const hasTarget = parsedCmd && (parsedCmd.isClassWide || (parsedCmd.students && parsedCmd.students.length > 0) || parsedCmd.student);
+
+      if (hasTarget) {
         const actionBadge = parsedCmd.isNegative 
           ? `<span style="background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[-] TRỪ ${parsedCmd.points} ⭐</span>`
           : `<span style="background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[+] CỘNG ${parsedCmd.points} ⭐</span>`;
-        const name = parsedCmd.isClassWide ? 'Cả Lớp' : parsedCmd.student.name;
+        
+        let targetText = 'Cả Lớp';
+        let prefix = '';
+        if (!parsedCmd.isClassWide) {
+          const list = (parsedCmd.students && parsedCmd.students.length > 0) ? parsedCmd.students : (parsedCmd.student ? [parsedCmd.student] : []);
+          targetText = formatStudentNamesList(list);
+          prefix = list.length > 1 ? 'cho các bé: ' : 'cho bé: ';
+        }
 
         // Cập nhật trên modal (nếu mở)
         if (transcriptEl) {
@@ -623,7 +697,7 @@
             <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
               <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
               <div style="font-size: 15px; font-weight: 800; color: #1E293B; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-                ${actionBadge} <span>cho bé: <strong style="color: #6D28D9;">${name}</strong></span>
+                ${actionBadge} <span>${prefix}<strong style="color: #6D28D9;">${targetText}</strong></span>
               </div>
             </div>
           `;
@@ -632,10 +706,10 @@
         // Cập nhật trên thanh trạng thái nổi Dynamic Island
         if (liveBar && liveText) {
           liveBar.classList.add('active');
-          liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} cho bé <strong>${name}</strong>`;
+          liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong>`;
           setTimeout(() => {
             if (liveBar) liveBar.classList.remove('active');
-          }, 3200);
+          }, 3500);
         }
       } else {
         if (transcriptEl) transcriptEl.innerHTML = `💬 <em>"${rawText}"</em>`;
