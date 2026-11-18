@@ -2635,6 +2635,79 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', handleSaveCurrentListToHome);
   });
 
+  // Action: Xoay vòng tổ hàng tháng (1 ➔ 2 ➔ 3 ➔ 4 ➔ 1)
+  function handleRotateGroups() {
+    const students = state.data.students || [];
+    if (students.length === 0) {
+      alert('Lớp chưa có học sinh nào để xoay vòng tổ!');
+      return;
+    }
+
+    const confirmed = confirm(
+      '🔄 Cô có muốn XOAY VÒNG TỔ hàng tháng cho toàn bộ học sinh không?\n\n' +
+      '• Tổ 1 ➔ chuyển sang Tổ 2\n' +
+      '• Tổ 2 ➔ chuyển sang Tổ 3\n' +
+      '• Tổ 3 ➔ chuyển sang Tổ 4\n' +
+      '• Tổ 4 ➔ chuyển về Tổ 1\n\n' +
+      '(Số sao và lịch sử rèn luyện của các em vẫn được giữ nguyên trọn vẹn)'
+    );
+    if (!confirmed) return;
+
+    // Tịnh tiến tổ: curGroup -> ((curGroup % 4) + 1)
+    students.forEach(s => {
+      const curGroup = parseInt(s.group, 10) || 1;
+      s.group = (curGroup % 4) + 1;
+    });
+
+    renderCurrentStudentsTable();
+    if (window.soundFx && typeof window.soundFx.playStar === 'function') {
+      window.soundFx.playStar();
+    }
+    showSyncToast('🔄 Đã xoay vòng tổ thành công! Cô hãy bấm "💾 Lưu Danh Sách" để hoàn tất cập nhật vào trang chủ.', '🔄');
+  }
+
+  // Action: Bốc thăm ngẫu nhiên chia đều 4 tổ
+  function handleShuffleGroups() {
+    const students = state.data.students || [];
+    if (students.length === 0) {
+      alert('Lớp chưa có học sinh nào để bốc thăm tổ!');
+      return;
+    }
+
+    const confirmed = confirm(
+      '🎲 Cô có muốn BỐC THĂM NGẪU NHIÊN chia đều học sinh vào 4 Tổ không?\n\n' +
+      'Hệ thống sẽ xáo trộn ngẫu nhiên và chia đều học sinh vào mỗi tổ (khoảng 9 em/tổ).\n' +
+      '(Số sao và lịch sử rèn luyện của các em vẫn được giữ nguyên)'
+    );
+    if (!confirmed) return;
+
+    // Fisher-Yates shuffle
+    const indices = students.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
+    // Chia đều lần lượt vào Tổ 1, 2, 3, 4
+    indices.forEach((studentIdx, rank) => {
+      students[studentIdx].group = (rank % 4) + 1;
+    });
+
+    renderCurrentStudentsTable();
+    if (window.soundFx && typeof window.soundFx.playCheer === 'function') {
+      window.soundFx.playCheer();
+    }
+    showSyncToast('🎲 Đã bốc thăm ngẫu nhiên 4 tổ! Cô hãy bấm "💾 Lưu Danh Sách" để cập nhật vào trang chủ.', '🎲');
+  }
+
+  // Gắn sự kiện đổi chỗ hàng tháng
+  document.querySelectorAll('.btn-rotate-groups').forEach(btn => {
+    btn.addEventListener('click', handleRotateGroups);
+  });
+  document.querySelectorAll('.btn-shuffle-groups').forEach(btn => {
+    btn.addEventListener('click', handleShuffleGroups);
+  });
+
   // Action 5: Export CSV
   btnExportStudentsCsv.addEventListener('click', () => {
     const csvData = StorageManager.exportCSV();
