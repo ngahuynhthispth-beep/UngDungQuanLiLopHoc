@@ -422,7 +422,9 @@
       // 1. Thử phát qua Google Translate TTS (Audio MP3 trực tiếp - Giọng Tiếng Việt chuẩn 100%)
       try {
         const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURIComponent(cleanText);
-        const audio = new Audio(url);
+        const audio = document.createElement('audio');
+        audio.referrerPolicy = 'no-referrer';
+        audio.src = url;
         audio.playbackRate = 1.05;
         const playPromise = audio.play();
         if (playPromise !== undefined) {
@@ -439,14 +441,21 @@
     fallbackWebSpeech(text) {
       if (!this.synth) return;
       try {
+        const voices = this.synth.getVoices() || [];
+        // CHỈ cho phép phát bằng WebSpeech nếu tìm thấy giọng Tiếng Việt thực sự
+        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang === 'vi' || (v.lang && v.lang.startsWith('vi')));
+        
+        // Tuyệt đối không dùng giọng Tiếng Anh (như Microsoft David) để đọc Tiếng Việt
+        if (!viVoice) {
+          console.warn('Thiết bị không có giọng tiếng Việt SAPI, bỏ qua giọng tiếng Anh để không bị đọc sai.');
+          return;
+        }
+
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'vi-VN';
         utterance.rate = 1.05;
         utterance.pitch = 1.05;
-
-        const voices = this.synth.getVoices() || [];
-        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang === 'vi' || (v.lang && v.lang.startsWith('vi')));
-        if (viVoice) utterance.voice = viVoice;
+        utterance.voice = viVoice;
 
         this.synth.speak(utterance);
       } catch (e) {
