@@ -2656,7 +2656,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               ${hwToday ? `
                 <div style="font-size: 11px; color: #4F46E5; font-weight: 700; margin-top: 4px;">
-                  📖 Đọc ${hwToday.readingCount} lần • ✍️ Viết mức ${hwToday.writingStars} • 🎒 Dặn dò (+${hwToday.choresStars}⭐)
+                  📖 Đọc ${hwToday.readingCount} lần • ✍️ Viết ${hwToday.writingStars === 10 ? '3 sao (+10⭐)' : (hwToday.writingStars === 7 ? '2 sao (+7⭐)' : (hwToday.writingStars === 5 ? '1 sao (+5⭐)' : `${hwToday.writingStars}⭐`))} • 🎒 Dặn dò (+${hwToday.choresStars}⭐)
                 </div>
               ` : ''}
             </div>
@@ -3235,7 +3235,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { student: s, record: rec } = item;
       const group = (groups || []).find(g => g.id === s.group) || { name: `Tổ ${s.group}`, color: '#FF6B6B' };
       const readingText = rec.readingCount > 0 ? `${rec.readingCount} lần (+${rec.readingStars}⭐)` : 'Chưa đọc';
-      const writingText = rec.writingStars > 0 ? `+${rec.writingStars} ⭐` : 'Chưa chấm';
+      const writingText = rec.writingStars > 0 ? (rec.writingStars === 10 ? '3 sao (+10⭐)' : (rec.writingStars === 7 ? '2 sao (+7⭐)' : (rec.writingStars === 5 ? '1 sao (+5⭐)' : `+${rec.writingStars} ⭐`))) : 'Chưa chấm';
       const stickerText = (rec.stickerCount > 0) ? `<span style="background: #FCE7F3; color: #BE185D; padding: 3px 8px; border-radius: 10px; font-weight: 800; font-size: 11px;">${rec.stickerCount} cái (+${rec.stickerStars || (rec.stickerCount * 5)}⭐)</span>` : '<span style="color: #94A3B8; font-size: 12px;">0</span>';
       const choreHtml = rec.choresDone 
         ? `<span style="background: #D1FAE5; color: #047857; padding: 3px 8px; border-radius: 10px; font-weight: 800; font-size: 11px;">✅ Đạt (+5⭐)</span>`
@@ -3363,7 +3363,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const r = item.record;
         const choreText = r.choresDone ? ' • Dặn dò ✅' : '';
         const stickerText = (r.stickerCount > 0) ? ` • Sticker ${r.stickerCount} cái (+${r.stickerStars || (r.stickerCount * 5)}⭐)` : '';
-        text += `${idx + 1}. Bé ${item.student.name} (${item.group.name.split('-')[0].trim()}): Đọc ${r.readingCount} lần, Viết ${r.writingStars}⭐${stickerText}${choreText} ➔ +${r.totalStars} ⭐\n`;
+        const writingZalo = r.writingStars === 10 ? 'Viết 3 sao (10⭐)' : (r.writingStars === 7 ? 'Viết 2 sao (7⭐)' : (r.writingStars === 5 ? 'Viết 1 sao (5⭐)' : `Viết ${r.writingStars}⭐`));
+        text += `${idx + 1}. Bé ${item.student.name} (${item.group.name.split('-')[0].trim()}): Đọc ${r.readingCount} lần, ${writingZalo}${stickerText}${choreText} ➔ +${r.totalStars} ⭐\n`;
       });
 
       const dayTotalStars = submissions.reduce((sum, item) => sum + (item.record.totalStars || 0), 0);

@@ -822,28 +822,28 @@
         <div class="task-block">
           <div class="task-title">
             <span>✍️ 2. Luyện Viết Bài Nắn Nót</span>
-            <span id="writingStarsDisplay" class="task-points-pill">+7 ⭐</span>
+            <span id="writingStarsDisplay" class="task-points-pill">+7 ⭐ (2 sao)</span>
           </div>
           <div class="task-desc">
-            Chọn 1 trong 3 mức độ nắn nót của con hôm nay:
+            Chọn số sao được chấm trong vở: <strong>1 sao = 5 điểm</strong>, <strong>2 sao = 7 điểm</strong>, <strong>3 sao = 10 điểm</strong>:
           </div>
 
           <div class="writing-levels-grid">
             <div class="writing-btn" data-stars="5">
-              <div class="writing-stars" style="font-size: 15px;">⭐⭐⭐⭐⭐</div>
-              <div class="writing-title">Mức 1 (+5 ⭐)</div>
+              <div class="writing-stars" style="font-size: 22px;">⭐</div>
+              <div class="writing-title">1 Sao (5 điểm)</div>
               <div class="writing-sub">Viết xong bài</div>
             </div>
 
             <div class="writing-btn selected" data-stars="7">
-              <div class="writing-stars" style="font-size: 15px;">⭐⭐⭐⭐⭐⭐⭐</div>
-              <div class="writing-title">Mức 2 (+7 ⭐)</div>
+              <div class="writing-stars" style="font-size: 22px;">⭐⭐</div>
+              <div class="writing-title">2 Sao (7 điểm)</div>
               <div class="writing-sub">Nắn nót, đúng nét</div>
             </div>
 
             <div class="writing-btn" data-stars="10">
-              <div class="writing-stars" style="font-size: 15px;">🌟 10 SAO</div>
-              <div class="writing-title">Mức 3 (+10 ⭐)</div>
+              <div class="writing-stars" style="font-size: 22px;">⭐⭐⭐</div>
+              <div class="writing-title">3 Sao (10 điểm)</div>
               <div class="writing-sub">Xuất sắc, sạch đẹp</div>
             </div>
           </div>
@@ -1141,13 +1141,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261118_v1"></script>
-  <script src="js/firebase-sync.js?v=20261118_v1"></script>
-  <script src="js/audio.js?v=20261118_v1"></script>
-  <script src="js/egg-evolution.js?v=20261118_v1"></script>
-  <script src="js/initial-data.js?v=20261118_v1"></script>
-  <script src="js/storage.js?v=20261118_v1"></script>
-  <script src="js/wheel.js?v=20261118_v1"></script>
+  <script src="js/firebase-config.js?v=20261118_v3"></script>
+  <script src="js/firebase-sync.js?v=20261118_v3"></script>
+  <script src="js/audio.js?v=20261118_v3"></script>
+  <script src="js/egg-evolution.js?v=20261118_v3"></script>
+  <script src="js/initial-data.js?v=20261118_v3"></script>
+  <script src="js/storage.js?v=20261118_v3"></script>
+  <script src="js/wheel.js?v=20261118_v3"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1569,11 +1569,14 @@
           }
         });
 
-        // Writing (Mức 1: 5⭐, Mức 2: 7⭐, Mức 3: 10⭐)
+        // Writing (1 sao = 5 điểm, 2 sao = 7 điểm, 3 sao = 10 điểm)
         writingButtons.forEach(btn => {
           btn.classList.toggle('selected', parseInt(btn.dataset.stars, 10) === writingStars);
         });
-        if (writingStarsDisplay) writingStarsDisplay.textContent = `+${writingStars} ⭐`;
+        if (writingStarsDisplay) {
+          const starLabel = writingStars === 10 ? ' (3 sao)' : (writingStars === 7 ? ' (2 sao)' : (writingStars === 5 ? ' (1 sao)' : ''));
+          writingStarsDisplay.textContent = `+${writingStars} ⭐${starLabel}`;
+        }
 
         // Chores (+5⭐)
         choresCheckbox.checked = choresDone;
