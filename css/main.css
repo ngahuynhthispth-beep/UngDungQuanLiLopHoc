@@ -2319,6 +2319,37 @@ body {
   padding: 4px 8px;
 }
 
+/* ========================================================
+   STYLES CHO TRỢ LÝ GIỌNG NÓI AI (VOICE ASSISTANT)
+   ======================================================== */
+@keyframes voiceWave {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+.recording-active {
+  background: linear-gradient(135deg, #EF4444, #DC2626) !important;
+  color: #FFFFFF !important;
+  animation: pulseRecording 1.4s infinite !important;
+}
+
+@keyframes pulseRecording {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.mic-pulse-dot {
+  display: inline-block;
+  animation: blinkDot 1s infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+
 
 
 

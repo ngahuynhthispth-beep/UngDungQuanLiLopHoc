@@ -1167,6 +1167,7 @@ const StorageManager = {
       });
       student.logs = this.cleanOldLogs(student.logs, 7);
       if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
+      this.cleanOldGiftSummaries(14);
     }
 
     this.saveData(data);
@@ -1315,7 +1316,27 @@ const StorageManager = {
     }
   },
 
+  // Tự động làm sạch các bản ghi quà cũ hơn số ngày quy định (mặc định 14 ngày = 2 tuần)
+  cleanOldGiftSummaries(days = 14) {
+    const data = this.loadData();
+    if (!data.giftSummaryRecords || !Array.isArray(data.giftSummaryRecords)) return [];
+    const cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+    const beforeCount = data.giftSummaryRecords.length;
+    data.giftSummaryRecords = data.giftSummaryRecords.filter(r => {
+      const ts = r.timestamp || (r.gift1 && r.gift1.timestamp) || 0;
+      return ts >= cutoff;
+    });
+    if (data.giftSummaryRecords.length !== beforeCount) {
+      this.saveData(data);
+      if (window.FirebaseSync && typeof window.FirebaseSync.setClassData === 'function') {
+        window.FirebaseSync.setClassData(data);
+      }
+    }
+    return data.giftSummaryRecords;
+  },
+
   getGiftSummaryRecords() {
+    this.cleanOldGiftSummaries(14);
     const data = this.loadData();
     return data.giftSummaryRecords || [];
   },

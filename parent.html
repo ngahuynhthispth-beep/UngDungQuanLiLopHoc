@@ -1141,13 +1141,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261030_v2"></script>
-  <script src="js/firebase-sync.js?v=20261030_v2"></script>
-  <script src="js/audio.js?v=20261030_v2"></script>
-  <script src="js/egg-evolution.js?v=20261030_v2"></script>
-  <script src="js/initial-data.js?v=20261030_v2"></script>
-  <script src="js/storage.js?v=20261030_v2"></script>
-  <script src="js/wheel.js?v=20261030_v2"></script>
+  <script src="js/firebase-config.js?v=20261118_v1"></script>
+  <script src="js/firebase-sync.js?v=20261118_v1"></script>
+  <script src="js/audio.js?v=20261118_v1"></script>
+  <script src="js/egg-evolution.js?v=20261118_v1"></script>
+  <script src="js/initial-data.js?v=20261118_v1"></script>
+  <script src="js/storage.js?v=20261118_v1"></script>
+  <script src="js/wheel.js?v=20261118_v1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -1512,6 +1512,17 @@
               applyData(parsed);
             }
           } catch (err) {}
+        }
+      });
+
+      // Tự động kiểm tra và làm mới dữ liệu khi phụ huynh mở lại tab/ứng dụng trên điện thoại
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          StorageManager.pullFromServer().then(serverData => {
+            if (serverData && serverData.students) {
+              applyData(serverData);
+            }
+          });
         }
       });
 

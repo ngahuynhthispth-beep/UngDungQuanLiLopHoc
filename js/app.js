@@ -263,15 +263,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    // Chống bấm liên tục / double-tap giật lag cho cùng 1 học sinh (tối thiểu 1000ms)
+    // Chống bấm liên tục / chạm nhầm cho cùng 1 học sinh (1000ms cho cộng, 5000ms cho trừ điểm)
     const now = Date.now();
-    if (_lastStudentActionTime[studentId] && (now - _lastStudentActionTime[studentId] < 1000)) {
+    const minCooldown = points < 0 ? 5000 : 1000;
+    if (_lastStudentActionTime[studentId] && (now - _lastStudentActionTime[studentId] < minCooldown)) {
+      if (points < 0) {
+        showSyncToast(`⏳ Thao tác trừ điểm cần cách nhau ít nhất 5 giây để tránh trừ nhầm nhiều lần.`, '⚠️');
+      }
       return;
     }
 
-    // BẢO VỆ TUYỆT ĐỐI KHI TRỪ ĐIỂM: Luôn yêu cầu xác nhận để chống chạm nhầm khi cuộn màn hình trên điện thoại/máy tính bảng
+    // BẢO VỆ TUYỆT ĐỐI KHI TRỪ ĐIỂM (Đặc biệt buổi tối ngoài giờ học 18h00 - 07h00)
+    const currentHour = new Date().getHours();
+    const isNightTime = (currentHour >= 18 || currentHour < 7);
     if (points < 0 && !skipConfirm) {
-      const confirmMsg = `⚠️ XÁC NHẬN TRỪ ĐIỂM:\n\nBạn có chắc chắn muốn nhắc nhở và trừ ${points} ⭐ của bé "${student.name}" không?\n\n(Bấm HỦY nếu bạn vô tình chạm nhầm khi cuộn màn hình)`;
+      const confirmMsg = isNightTime
+        ? `🌙 CẢNH BÁO TRỪ ĐIỂM BUỔI TỐI (${currentHour}h ngoài giờ học):\n\nBạn có CHẮC CHẮN muốn nhắc nhở và trừ ${points} ⭐ của bé "${student.name}" không?\n\n(Bấm HỦY nếu bạn vô tình chạm nhầm khi lướt điện thoại/máy tính bảng!)`
+        : `⚠️ XÁC NHẬN TRỪ ĐIỂM:\n\nBạn có chắc chắn muốn nhắc nhở và trừ ${points} ⭐ của bé "${student.name}" không?\n\n(Bấm HỦY nếu bạn vô tình chạm nhầm khi cuộn màn hình)`;
       if (!window.confirm(confirmMsg)) {
         return;
       }
@@ -528,6 +536,11 @@ document.addEventListener('DOMContentLoaded', () => {
           minusStepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (isTouchScrolling) return;
+            const hour = new Date().getHours();
+            if (hour >= 18 || hour < 7) {
+              showSyncToast(`🌙 Buổi tối (18h-7h): Khóa nút trừ nhanh trên danh sách để chống chạm nhầm khi lướt máy. Vui lòng bấm vào tên bé ${student.name} để mở bảng chi tiết nếu cần trừ điểm!`, '🌙');
+              return;
+            }
             applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
           });
         }
@@ -684,6 +697,11 @@ document.addEventListener('DOMContentLoaded', () => {
         minusStepBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           if (isTouchScrolling) return;
+          const hour = new Date().getHours();
+          if (hour >= 18 || hour < 7) {
+            showSyncToast(`🌙 Buổi tối (18h-7h): Khóa nút trừ nhanh trên thẻ để chống chạm nhầm khi lướt máy. Vui lòng bấm vào thẻ của bé ${student.name} để mở bảng chi tiết nếu cần trừ điểm!`, '🌙');
+            return;
+          }
           applyStudentPoints(student.id, -currentQuickStep, `Nhắc nhở rèn luyện (-${currentQuickStep} ⭐)`, '⚠️', e.target);
         });
       }
@@ -2870,20 +2888,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 hatchedDateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
               }
 
+              // Học sinh trong danh sách đã nở (stars >= 100): Chỉ dùng quà trong chu kỳ hiện tại!
               let gifts = s.giftHistory || [];
-              if (!gifts || gifts.length < 2) {
-                if (s.lastCompletedGifts && s.lastCompletedGifts.length >= 2) {
-                  gifts = s.lastCompletedGifts;
-                } else {
-                  const rec = (state.data.giftSummaryRecords || []).find(r => r.studentId === s.id && r.completed);
-                  if (rec) {
-                    const list = [];
-                    if (rec.gift1) list.push(rec.gift1);
-                    if (rec.gift2) list.push(rec.gift2);
-                    if (list.length >= 2) gifts = list;
-                  }
-                }
-              }
 
               let giftColHtml = '';
               if (gifts.length === 0) {
@@ -2996,6 +3002,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const giftSummaryCountText = document.getElementById('giftSummaryCountText');
 
   function openGiftSummaryModal() {
+    StorageManager.cleanOldGiftSummaries(14);
     const records = StorageManager.getGiftSummaryRecords();
     if (!records || records.length === 0) {
       giftSummaryTableContainer.innerHTML = `
@@ -3003,83 +3010,80 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="font-size: 44px; margin-bottom: 8px;">🎁📋</div>
           <div style="font-size: 16px; font-weight: 800; color: #1E293B;">Chưa có phần quà nào được ghi nhận</div>
           <p style="font-size: 13px; color: #64748B; margin-top: 6px; max-width: 440px; margin-left: auto; margin-right: auto;">
-            Khi học sinh đạt đủ 100 ⭐ và hoàn tất quay 2 lượt quà (trên máy cô hoặc phụ huynh), hệ thống sẽ tự động lưu vào bảng này và chuyển trứng của bé về 0 ⭐ để bắt đầu chu kỳ ấp mới.
+            Khi học sinh đạt đủ 100 ⭐ và hoàn tất quay 2 lượt quà (trên máy cô hoặc phụ huynh), hệ thống sẽ tự động lưu vào bảng này. Những bạn đã có quà từ 2 tuần trước được tự động xóa để bảng luôn tinh gọn.
           </p>
         </div>
       `;
       if (giftSummaryCountText) giftSummaryCountText.textContent = 'Tổng cộng: 0 lượt quay';
     } else {
       let html = `
-        <table class="hatched-table">
-          <thead>
-            <tr>
-              <th style="width: 40px; text-align: center;">STT</th>
-              <th>Học Sinh</th>
-              <th>Tổ</th>
-              <th>🎁 Quà Lượt 1</th>
-              <th>🎁 Quà Lượt 2</th>
-              <th style="text-align: center;">Thời Gian</th>
-              <th style="text-align: center;">Nơi Quay</th>
-              <th style="text-align: center; width: 120px;">Trạng Thái</th>
-            </tr>
-          </thead>
-          <tbody>
+        <div class="gift-summary-list" style="display: flex; flex-direction: column; gap: 8px; padding: 6px;">
       `;
 
       records.forEach((rec, idx) => {
         const sourceLabel = rec.claimedBy === 'parent' 
-          ? '<span style="background: #E0E7FF; color: #4338CA; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">🏠 Phụ huynh</span>' 
-          : '<span style="background: #FCE7F3; color: #BE185D; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">👩‍🏫 Tại lớp</span>';
+          ? '<span style="background: #E0E7FF; color: #4338CA; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;">🏠 Ba mẹ quay</span>' 
+          : '<span style="background: #FCE7F3; color: #BE185D; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;">👩‍🏫 Tại lớp</span>';
 
         const isDelivered = !!rec.delivered;
+        const g1 = rec.gift1 ? `${rec.gift1.icon || '🎁'} ${rec.gift1.name}` : 'Quà lượt 1';
+        const g2 = rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : (rec.completed ? 'Quà lượt 2' : null);
 
         html += `
-          <tr style="${isDelivered ? 'background: #F0FDF4;' : ''}">
-            <td style="text-align: center; font-weight: 800; color: #64748B;">${idx + 1}</td>
-            <td>
-              <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${rec.studentName}</div>
-              <div style="font-size: 11px; font-weight: 700; color: ${rec.milestone === 200 ? '#D97706' : '#2563EB'};">
-                ${rec.milestone === 200 ? '👑 Mốc 200 ⭐ (Đặc biệt)' : '🎁 Mốc 100 ⭐'}
-              </div>
-            </td>
-            <td>
-              <span style="background: ${rec.groupColor || '#64748B'}; color: #FFF; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 10px;">
-                ${(rec.groupName || '').split('-')[0].trim()}
-              </span>
-            </td>
-            <td>
-              <span class="gift-tag-badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-weight: 700;">
-                ${rec.gift1 ? `${rec.gift1.icon || '🎁'} ${rec.gift1.name}` : 'Quà 1'}
-              </span>
-            </td>
-            <td>
-              <span class="gift-tag-badge" style="background: ${rec.gift2 ? '#FEF3C7' : '#F1F5F9'}; color: ${rec.gift2 ? '#92400E' : '#64748B'}; border: 1px solid ${rec.gift2 ? '#FCD34D' : '#CBD5E1'}; font-weight: 700;">
-                ${rec.gift2 ? `${rec.gift2.icon || '🎁'} ${rec.gift2.name}` : '⏳ Chờ quay lượt 2'}
-              </span>
-              ${(!rec.gift2 || !rec.completed) ? `
-                <div style="margin-top: 4px;">
-                  <button type="button" class="btn-fast-reward btn-open-turn2-from-summary" data-id="${rec.studentId}" style="padding: 2px 8px; font-size: 10px; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; border-radius: 10px; border: none; cursor: pointer;">
-                    🎁 Mở lượt 2
-                  </button>
+          <div class="gift-summary-item-card" style="background: #FFFFFF; border: 1.5px solid ${isDelivered ? '#A7F3D0' : '#E2E8F0'}; border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; ${isDelivered ? 'background: #F0FDF4;' : ''}">
+            
+            <!-- Thông tin học sinh -->
+            <div style="display: flex; align-items: center; gap: 8px; min-width: 150px;">
+              <span style="font-weight: 800; color: #94A3B8; font-size: 13px; width: 22px; text-align: center;">#${idx + 1}</span>
+              <div>
+                <div style="font-weight: 800; color: #1E293B; font-size: 14px;">${rec.studentName}</div>
+                <div style="display: flex; align-items: center; gap: 5px; margin-top: 2px;">
+                  <span style="background: ${rec.groupColor || '#64748B'}; color: #FFF; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 8px;">
+                    ${(rec.groupName || '').split('-')[0].trim()}
+                  </span>
+                  <span style="font-size: 11px; font-weight: 700; color: ${rec.milestone === 200 ? '#D97706' : '#2563EB'};">
+                    ${rec.milestone === 200 ? '👑 200⭐' : '🎁 100⭐'}
+                  </span>
                 </div>
-              ` : ''}
-            </td>
-            <td style="text-align: center; font-size: 12px; color: #64748B;">
-              ${rec.timeStr || ''} (${rec.dateStr || ''})
-            </td>
-            <td style="text-align: center;">
-              ${sourceLabel}
-            </td>
-            <td style="text-align: center;">
-              <button class="btn-fast-reward btn-toggle-delivery" data-id="${rec.id}" style="padding: 4px 10px; font-size: 12px; margin: 0 auto; background: ${isDelivered ? '#10B981' : '#F1F5F9'}; color: ${isDelivered ? '#FFF' : '#475569'}; border: 1px solid ${isDelivered ? '#059669' : '#CBD5E1'}; cursor: pointer;">
+              </div>
+            </div>
+
+            <!-- Khung ngắn gọn đầy đủ 2 phần quà -->
+            <div style="flex: 1; min-width: 250px; background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 10px; padding: 6px 10px;">
+              <div style="font-size: 12px; font-weight: 800; color: #92400E; display: flex; flex-direction: column; gap: 3px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="color: #D97706; white-space: nowrap;">🎁 Lượt 1:</span>
+                  <span style="color: #1E293B; font-weight: 700;">${g1}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="color: #D97706; white-space: nowrap;">🎁 Lượt 2:</span>
+                  ${g2 
+                    ? `<span style="color: #1E293B; font-weight: 700;">${g2}</span>`
+                    : `<span style="color: #DC2626; font-style: italic; font-size: 11px;">⏳ Chờ quay lượt 2</span>
+                       <button type="button" class="btn-fast-reward btn-open-turn2-from-summary" data-id="${rec.studentId}" style="padding: 1px 6px; font-size: 10px; background: linear-gradient(135deg, #EC4899, #BE185D); color: #fff; border-radius: 6px; border: none; cursor: pointer; margin-left: 4px;">
+                         🎁 Mở ngay
+                       </button>`
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Thời gian & Trạng thái phát quà -->
+            <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-end; min-width: 160px;">
+              <div style="text-align: right; font-size: 11px; color: #64748B;">
+                <div>${rec.timeStr || ''} (${rec.dateStr || ''})</div>
+                <div style="margin-top: 2px;">${sourceLabel}</div>
+              </div>
+              <button class="btn-fast-reward btn-toggle-delivery" data-id="${rec.id}" style="padding: 5px 10px; font-size: 11px; font-weight: 800; border-radius: 8px; background: ${isDelivered ? '#10B981' : '#FFF'}; color: ${isDelivered ? '#FFF' : '#334155'}; border: 1.5px solid ${isDelivered ? '#059669' : '#CBD5E1'}; cursor: pointer; white-space: nowrap;">
                 ${isDelivered ? '✅ Đã phát' : '⏳ Chờ phát'}
               </button>
-            </td>
-          </tr>
+            </div>
+
+          </div>
         `;
       });
 
-      html += `</tbody></table>`;
+      html += `</div>`;
       giftSummaryTableContainer.innerHTML = html;
 
       const deliveredCount = records.filter(r => r.delivered).length;
@@ -3762,7 +3766,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isCurrentHatched = (Number(student.stars) || 0) >= 100;
     let gifts = student.giftHistory || [];
-    if (!gifts || gifts.length < 2) {
+    // TUYỆT ĐỐI KHÔNG lấy quà cũ (lastCompletedGifts) khi bé đang nở trứng ở chu kỳ hiện tại (stars >= 100)
+    // Chỉ fallback về lastCompletedGifts khi bé chưa nở (stars < 100) để tham khảo quà cũ
+    if (!isCurrentHatched && (!gifts || gifts.length < 2)) {
       if (student.lastCompletedGifts && student.lastCompletedGifts.length >= 2) {
         gifts = student.lastCompletedGifts;
       } else {
