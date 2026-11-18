@@ -87,6 +87,12 @@
       this.synth = window.speechSynthesis || null;
       this.lastTranscript = '';
 
+      if (this.synth && this.synth.onvoiceschanged !== undefined) {
+        this.synth.onvoiceschanged = () => {
+          try { this.synth.getVoices(); } catch (e) {}
+        };
+      }
+
       this.init();
     }
 
@@ -122,9 +128,12 @@
           this.updateUiState(false);
           let errMsg = 'Không nhận diện được giọng nói.';
           if (event.error === 'not-allowed') {
-            errMsg = 'Trình duyệt chưa được cấp quyền dùng Micro. Vui lòng cho phép quyền Micro để sử dụng.';
+            errMsg = 'Trình duyệt chưa được cấp quyền dùng Micro. Cô hãy bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ để BẬT Micro nhé!';
           } else if (event.error === 'no-speech') {
             errMsg = 'Chưa nghe thấy cô nói gì. Hãy nhấn Micro và thử nói lại nhé!';
+          }
+          if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
           }
           this.showStatusToast(errMsg, '⚠️');
         };
@@ -335,6 +344,15 @@
         const reason = cmd.isNegative ? 'Nhắc nhở chung cả lớp' : 'Cả lớp cùng chăm ngoan';
         const icon = cmd.isNegative ? '⚠️' : '⭐';
 
+        // Luôn phát âm thanh chuông hiệu ứng tức thì
+        if (window.soundFx) {
+          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
+          } else if (typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
+        }
+
         students.forEach(s => {
           window.StorageManager.addPointsToStudent(s.id, actualPoints, reason, icon);
         });
@@ -353,7 +371,10 @@
       // 2. Trường hợp áp dụng cho MỘT HỌC SINH
       const student = cmd.student;
       if (!student) {
-        const msg = `Không tìm thấy học sinh trong câu nói: "${cmd.raw}". Cô hãy đọc rõ theo cú pháp: "Trừ Gia Hưng 5 điểm" hoặc "Cộng Minh An 10 điểm".`;
+        if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        }
+        const msg = `Không tìm thấy học sinh trong câu nói: "${cmd.raw}". Cô hãy đọc rõ theo cú pháp: "Cộng [Tên] [Số điểm]" hoặc "Trừ [Tên] [Số điểm]".`;
         this.showStatusToast(msg, '❓');
         this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc lại nhé.');
         return;
@@ -362,21 +383,32 @@
       const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
       const icon = cmd.isNegative ? '⚠️' : '⭐';
 
+      // Tìm thẻ học sinh trên màn hình để tạo hiệu ứng sao bay
+      const studentEl = document.querySelector(`.student-card[data-id="${student.id}"], [data-id="${student.id}"]`);
+
       if (typeof window.applyStudentPoints === 'function') {
         // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
-        window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, null, true);
+        window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, studentEl, true);
       } else {
-        window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
-        if (typeof window.refreshData === 'function') window.refreshData();
+        // Fallback an toàn nếu applyStudentPoints chưa sẵn sàng
+        if (window.soundFx) {
+          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
+          } else if (typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
+        }
+        const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
+        if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
+        this.showStatusToast(`🎙️ Bé <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
       }
 
-      // Phản hồi giọng nói (TTS) & Thông báo màn hình
+      // Phản hồi giọng nói (TTS)
       const feedbackText = cmd.isNegative 
         ? `Đã trừ ${cmd.points} sao của bạn ${student.name}!`
         : `Đã cộng ${cmd.points} sao cho bạn ${student.name}!`;
 
       this.speakFeedback(feedbackText);
-      this.showStatusToast(`🎙️ <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
     }
 
     // Phát âm thanh phản hồi giọng nói (Text-To-Speech)
@@ -389,8 +421,8 @@
         utterance.rate = 1.08; // Tốc độ nhanh nhẹn tự nhiên
         utterance.pitch = 1.1;
 
-        const voices = this.synth.getVoices();
-        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
+        const voices = this.synth.getVoices() || [];
+        const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang === 'vi' || (v.lang && v.lang.startsWith('vi')));
         if (viVoice) utterance.voice = viVoice;
 
         this.synth.speak(utterance);
@@ -516,6 +548,22 @@
     showStatusToast(msg, icon = '🎙️') {
       if (typeof window.showSyncToast === 'function') {
         window.showSyncToast(msg, icon);
+      } else {
+        const container = document.getElementById('liveSyncToastContainer');
+        if (container) {
+          const toast = document.createElement('div');
+          toast.className = 'live-sync-toast';
+          toast.innerHTML = `
+            <span style="font-size: 26px;">${icon}</span>
+            <div>${msg}</div>
+          `;
+          container.appendChild(toast);
+
+          setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 400);
+          }, 4500);
+        }
       }
     }
   }

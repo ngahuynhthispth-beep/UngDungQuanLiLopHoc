@@ -304,6 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (targetEl) {
       const rect = targetEl.getBoundingClientRect();
       createFloatingStar(rect.left + rect.width / 2, rect.top, points > 0 ? (icon || '⭐') : '⚠️');
+    } else {
+      createFloatingStar(window.innerWidth / 2, window.innerHeight / 2, points > 0 ? (icon || '⭐') : '⚠️');
     }
 
     if (points < 0) {
@@ -333,6 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  // Gắn ra window để các module (như Trợ lý giọng nói VoiceAssistant) có thể gọi trực tiếp
+  window.applyStudentPoints = applyStudentPoints;
 
   // --- Render Thanh Chọn Tổ Dạng Tab/Chips Như Danh Bạ Điện Thoại ---
   function renderGroupFilterChips(groups, students) {
@@ -961,6 +966,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderGroups();
     renderParentHwQuickBar();
   }
+
+  window.refreshData = refreshData;
 
   // --- Full Action Sheet Modal for 1 Student ---
   function openActionModal(studentId) {
@@ -4201,6 +4208,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4500);
   }
 
+  window.showSyncToast = showSyncToast;
+
   // Kết nối Realtime tự động với máy chủ (Server-Sent Events)
   function setupRealtimeServerSync() {
     if (window.location.protocol.startsWith('http') && window.EventSource) {
@@ -4665,6 +4674,11 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFirebaseCloudSync();
   setupRealtimeServerSync();
   setupClassManagement();
+
+  // Đảm bảo gán toàn bộ API điều khiển điểm ra window
+  window.applyStudentPoints = applyStudentPoints;
+  window.refreshData = refreshData;
+  window.showSyncToast = showSyncToast;
 
   // Initial render
   refreshData();
