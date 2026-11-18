@@ -386,40 +386,63 @@
       // Tìm thẻ học sinh trên màn hình để tạo hiệu ứng sao bay
       const studentEl = document.querySelector(`.student-card[data-id="${student.id}"], [data-id="${student.id}"]`);
 
+      // Luôn phát âm thanh chuông Ting Ting hoặc Tiếng Nhắc nhở lập tức
+      if (window.soundFx) {
+        if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        } else if (typeof window.soundFx.playStar === 'function') {
+          window.soundFx.playStar();
+        }
+      }
+
       if (typeof window.applyStudentPoints === 'function') {
         // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
         window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, studentEl, true);
       } else {
-        // Fallback an toàn nếu applyStudentPoints chưa sẵn sàng
-        if (window.soundFx) {
-          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
-            window.soundFx.playPenalty();
-          } else if (typeof window.soundFx.playStar === 'function') {
-            window.soundFx.playStar();
-          }
-        }
         const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
         if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
         this.showStatusToast(`🎙️ Bé <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
       }
 
-      // Phản hồi giọng nói (TTS)
+      // Phản hồi giọng nói trợ lý AI sau khi chuông reo (trì hoãn 320ms để nghe rõ cả tiếng chuông lẫn giọng nói)
       const feedbackText = cmd.isNegative 
         ? `Đã trừ ${cmd.points} sao của bạn ${student.name}!`
         : `Đã cộng ${cmd.points} sao cho bạn ${student.name}!`;
 
-      this.speakFeedback(feedbackText);
+      setTimeout(() => {
+        this.speakFeedback(feedbackText);
+      }, 320);
     }
 
-    // Phát âm thanh phản hồi giọng nói (Text-To-Speech)
+    // Phát âm thanh phản hồi giọng nói (Ưu tiên Google Cloud TTS Tiếng Việt, dự phòng WebSpeech)
     speakFeedback(text) {
+      if (!text) return;
+      const cleanText = text.replace(/[!⭐⚠️🎙️✨🎉]/g, '').trim();
+
+      // 1. Thử phát qua Google Translate TTS (Audio MP3 trực tiếp - Giọng Tiếng Việt chuẩn 100%)
+      try {
+        const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURIComponent(cleanText);
+        const audio = new Audio(url);
+        audio.playbackRate = 1.05;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.warn('Google TTS audio play blocked/failed, trying Web Speech Synthesis:', err);
+            this.fallbackWebSpeech(cleanText);
+          });
+        }
+      } catch (e) {
+        this.fallbackWebSpeech(cleanText);
+      }
+    }
+
+    fallbackWebSpeech(text) {
       if (!this.synth) return;
       try {
-        this.synth.cancel(); // Dừng câu đang đọc dở nếu có
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'vi-VN';
-        utterance.rate = 1.08; // Tốc độ nhanh nhẹn tự nhiên
-        utterance.pitch = 1.1;
+        utterance.rate = 1.05;
+        utterance.pitch = 1.05;
 
         const voices = this.synth.getVoices() || [];
         const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang === 'vi' || (v.lang && v.lang.startsWith('vi')));
@@ -427,7 +450,7 @@
 
         this.synth.speak(utterance);
       } catch (e) {
-        console.warn('TTS error:', e);
+        console.warn('Fallback WebSpeech error:', e);
       }
     }
 
@@ -573,28 +596,32 @@
 
   // Khởi tạo các nút bấm giao diện khi DOM sẵn sàng
   document.addEventListener('DOMContentLoaded', () => {
+    function triggerMicAction() {
+      // 1. Mở khóa âm thanh Web Audio ngay trong tương tác bấm của người dùng
+      if (window.soundFx) {
+        if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
+        if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
+      }
+      // 2. Chuyển đổi trạng thái nghe của Micro
+      window.VoiceAssistant.toggleListening();
+    }
+
     // 1. Nút trên Header
     const btnVoice = document.getElementById('btnVoiceAssistant');
     if (btnVoice) {
-      btnVoice.addEventListener('click', () => {
-        window.VoiceAssistant.toggleListening();
-      });
+      btnVoice.addEventListener('click', triggerMicAction);
     }
 
     // 2. Nút ngay trên thanh tìm kiếm giao diện chính
     const btnToolbar = document.getElementById('btnToolbarVoiceMic');
     if (btnToolbar) {
-      btnToolbar.addEventListener('click', () => {
-        window.VoiceAssistant.toggleListening();
-      });
+      btnToolbar.addEventListener('click', triggerMicAction);
     }
 
     // 3. Nút Micro nổi cố định ở góc dưới màn hình
     const btnFloating = document.getElementById('floatingVoiceBtn');
     if (btnFloating) {
-      btnFloating.addEventListener('click', () => {
-        window.VoiceAssistant.toggleListening();
-      });
+      btnFloating.addEventListener('click', triggerMicAction);
     }
 
     // Nút trong modal
@@ -609,9 +636,7 @@
 
     const btnToggleInModal = document.getElementById('btnToggleVoiceInModal');
     if (btnToggleInModal) {
-      btnToggleInModal.addEventListener('click', () => {
-        window.VoiceAssistant.toggleListening();
-      });
+      btnToggleInModal.addEventListener('click', triggerMicAction);
     }
   });
 

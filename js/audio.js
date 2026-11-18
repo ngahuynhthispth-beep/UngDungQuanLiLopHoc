@@ -23,37 +23,68 @@ class SoundEffects {
     return this.isMuted;
   }
 
+  unmute() {
+    this.isMuted = false;
+    localStorage.setItem('class_app_muted', 'false');
+    this.init();
+  }
+
+  // Âm thanh báo hiệu Micro bắt đầu lắng nghe
+  playMicBeep() {
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(659.25, now); // E5
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.25);
+    } catch (e) {
+      console.warn('playMicBeep error:', e);
+    }
+  }
+
   // Tiếng Ting lấp lánh khi cộng sao
   playStar() {
-    if (this.isMuted) return;
     this.init();
     if (!this.ctx) return;
 
-    const now = this.ctx.currentTime;
-    const osc1 = this.ctx.createOscillator();
-    const osc2 = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+    try {
+      const now = this.ctx.currentTime;
+      const osc1 = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
 
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(987.77, now); // B5
-    osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.1); // E6
-    osc1.frequency.exponentialRampToValueAtTime(1975.53, now + 0.25); // B6
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, now); // B5
+      osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.1); // E6
+      osc1.frequency.exponentialRampToValueAtTime(1975.53, now + 0.25); // B6
 
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(1318.51, now);
-    osc2.frequency.exponentialRampToValueAtTime(2637.02, now + 0.2);
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(1318.51, now);
+      osc2.frequency.exponentialRampToValueAtTime(2637.02, now + 0.2);
 
-    gain.gain.setValueAtTime(0.3, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      gain.gain.setValueAtTime(0.35, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
 
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(this.ctx.destination);
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(this.ctx.destination);
 
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + 0.45);
-    osc2.stop(now + 0.45);
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.45);
+      osc2.stop(now + 0.45);
+    } catch (e) {
+      console.warn('playStar error:', e);
+    }
   }
 
   // Tiếng quả trứng lắc rắc rắc
