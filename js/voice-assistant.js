@@ -1,6 +1,8 @@
 /**
  * Voice Assistant for Classroom Management - Lớp 1/8 Trường TH Tiểu La
  * Chế độ Micro Nhận Diện Giọng Nói Tự Động Tìm Tên Học Sinh Cộng / Trừ Điểm Trong Giờ Dạy
+ * Thiết kế chuẩn theo cú pháp: [Cộng / Trừ] + [Tên học sinh] + [Số điểm]
+ * Tự động sửa lỗi nhận diện âm thanh thường gặp (VD: "Trừ Gia Hưng 5 điểm" bị nghe thành "Trần Gia Hưng 5 điểm")
  */
 
 (function () {
@@ -18,26 +20,60 @@
       .trim();
   }
 
+  // Chuẩn hóa lỗi nhận diện âm thanh thường gặp của Google Web Speech API
+  function normalizeTranscript(rawTranscript, students) {
+    if (!rawTranscript) return '';
+    let text = rawTranscript.trim();
+
+    // 1. Chuẩn hóa lỗi nghe nhầm của từ "Trừ":
+    // Google STT tiếng Việt thường xuyên nghe "Trừ" thành "Trần", "Từ", "Trực", "Chừ", "Chữ", "Trú", "Trúng", "Trả"
+    text = text.replace(/^(cô|thầy|em|tôi)\s+(trần|từ|trực|chừ|chữ|trú|trúng|trả)\b/i, 'Trừ ');
+    text = text.replace(/^(cô|thầy|em|tôi)\s+(trừ)\b/i, 'Trừ ');
+    text = text.replace(/^(cô|thầy|em|tôi)\s+(cộng)\b/i, 'Cộng ');
+    text = text.replace(/^(trần|từ|trực|chừ|chữ|trú|trúng|trả)\b/i, 'Trừ ');
+
+    // 2. Chuẩn hóa lỗi nghe nhầm của từ "Cộng":
+    // Thường nhận diện thành "Cổng", "Cọng", "Chọn"
+    text = text.replace(/^(cổng|cọng|chọn)\b/i, 'Cộng ');
+    // Nếu bắt đầu bằng "Công" nhưng từ tiếp theo KHÔNG PHẢI là "Hậu" (học sinh Công Hậu) -> thực chất là "Cộng"
+    text = text.replace(/^(công)\s+(?!hậu\b)/i, 'Cộng ');
+
+    // 3. Chuẩn hóa "trần [tên học sinh]" ở bất kỳ vị trí nào (vì lớp 1/8 không có bạn nào họ Trần)
+    if (Array.isArray(students)) {
+      students.forEach(s => {
+        const sClean = removeVietnameseTones(s.name);
+        const reg = new RegExp('\\b(trần|từ|trực|chừ)\\s+(' + sClean + ')\\b', 'gi');
+        text = text.replace(reg, 'Trừ $2');
+      });
+    }
+
+    return text;
+  }
+
   // Chuyển đổi từ ngữ chỉ số lượng tiếng Việt thành số
   function parseVietnameseNumber(text) {
     if (!text) return null;
-    const clean = text.toLowerCase();
+    const clean = removeVietnameseTones(text);
 
-    // Tìm số dạng chữ số trực tiếp: 1, 2, 5, 10, ...
-    const digitMatch = clean.match(/\b(\d+)\b/);
+    // Tìm số dạng chữ số trực tiếp: 1, 2, 5, 10, ... (kèm từ điểm/sao/diem)
+    const digitMatch = clean.match(/\b(\d+)\s*(diem|sao|star|d|p)?\b/);
     if (digitMatch) {
       return parseInt(digitMatch[1], 10);
     }
 
     const numMap = {
-      'nửa': 1, 'một': 1, 'mốt': 1, 'hai': 2, 'ba': 3, 'bốn': 4,
-      'năm': 5, 'lăm': 5, 'sáu': 6, 'bảy': 7, 'bẩy': 7, 'tám': 8,
-      'chín': 9, 'mười': 10, 'mười lăm': 15, 'hai mươi': 20
+      'muoi lam': 15, 'mười lăm': 15, 'hai muoi': 20, 'hai mươi': 20,
+      'nua': 1, 'nửa': 1, 'mot': 1, 'một': 1, 'mot': 1, 'mốt': 1,
+      'hai': 2, 'ba': 3, 'bon': 4, 'bốn': 4,
+      'nam': 5, 'năm': 5, 'lam': 5, 'lăm': 5, 'sau': 6, 'sáu': 6,
+      'bay': 7, 'bảy': 7, 'bay': 7, 'bẩy': 7, 'tam': 8, 'tám': 8,
+      'chin': 9, 'chín': 9, 'muoi': 10, 'mười': 10
     };
 
     for (const [w, n] of Object.entries(numMap)) {
-      const regex = new RegExp(`\\b${w}\\b`, 'i');
-      if (regex.test(clean)) return n;
+      if (new RegExp('\\b' + removeVietnameseTones(w) + '\\s*(diem|sao)?\\b', 'i').test(clean)) {
+        return n;
+      }
     }
 
     return null;
@@ -49,7 +85,6 @@
       this.isListening = false;
       this.isSupported = false;
       this.synth = window.speechSynthesis || null;
-      this.activeModal = null;
       this.lastTranscript = '';
 
       this.init();
@@ -67,9 +102,9 @@
       try {
         this.recognition = new SpeechRecognition();
         this.recognition.lang = 'vi-VN';
-        this.recognition.continuous = false; // Nhận diện theo từng câu lệnh
+        this.recognition.continuous = false; // Từng câu lệnh dứt khoát
         this.recognition.interimResults = false;
-        this.recognition.maxAlternatives = 3;
+        this.recognition.maxAlternatives = 5; // Lấy nhiều phương án để bắt lỗi STT tốt nhất
 
         this.recognition.onstart = () => {
           this.isListening = true;
@@ -98,10 +133,17 @@
           const results = event.results;
           if (!results || results.length === 0) return;
 
-          // Lấy kết quả tốt nhất
-          const transcript = results[0][0].transcript.trim();
-          this.lastTranscript = transcript;
-          this.processCommand(transcript);
+          // Thu thập tất cả các phương án nhận diện được từ Google STT
+          const alternatives = [];
+          for (let i = 0; i < results[0].length; i++) {
+            if (results[0][i] && results[0][i].transcript) {
+              alternatives.push(results[0][i].transcript.trim());
+            }
+          }
+
+          const primaryTranscript = alternatives[0] || '';
+          this.lastTranscript = primaryTranscript;
+          this.processCommand(primaryTranscript, alternatives);
         };
       } catch (e) {
         console.error('Không thể khởi tạo SpeechRecognition:', e);
@@ -109,7 +151,6 @@
       }
     }
 
-    // Bật / Tắt lắng nghe
     toggleListening() {
       if (!this.isSupported) {
         alert('Trình duyệt hiện tại chưa hỗ trợ nhận diện giọng nói Tiếng Việt.\nVui lòng sử dụng Google Chrome, Cốc Cốc hoặc Safari trên iPhone/iPad.');
@@ -141,156 +182,201 @@
       }
     }
 
-    // Xử lý câu lệnh ngôn ngữ tự nhiên tiếng Việt
-    processCommand(transcript) {
+    // Xử lý câu lệnh nhận diện theo cấu trúc chuẩn: [Cộng / Trừ] + [Tên học sinh] + [Số điểm]
+    processCommand(transcript, alternatives = []) {
       if (!transcript) return;
-      const raw = transcript.toLowerCase();
-      const clean = removeVietnameseTones(transcript);
 
-      // Cập nhật text câu lệnh hiển thị trên popup
-      this.updateTranscriptDisplay(transcript);
-
-      // Lấy danh sách học sinh hiện tại từ StorageManager
       const data = (window.StorageManager && window.StorageManager.loadData()) || { students: [] };
       const students = data.students || [];
 
+      // Thử phân tích qua tất cả các phương án nhận diện (candidates)
+      const candidates = [transcript, ...(alternatives || [])];
+      let bestCommand = null;
+
+      for (const cand of candidates) {
+        if (!cand) continue;
+        const normalized = normalizeTranscript(cand, students);
+        const parsed = this.parseCommandGrammar(cand, normalized, students);
+        if (parsed.student || parsed.isClassWide) {
+          bestCommand = parsed;
+          break;
+        }
+      }
+
+      // Fallback về transcript gốc nếu không khớp
+      if (!bestCommand) {
+        const normalized = normalizeTranscript(transcript, students);
+        bestCommand = this.parseCommandGrammar(transcript, normalized, students);
+      }
+
+      this.executeParsedCommand(bestCommand, students);
+    }
+
+    // Bộ phân tích ngữ pháp tiếng Việt theo cú pháp chuẩn của giáo viên
+    parseCommandGrammar(raw, normalized, students) {
+      const clean = removeVietnameseTones(normalized);
+
       // 1. Kiểm tra lệnh cho CẢ LỚP
       const isClassWide = clean.includes('ca lop') || clean.includes('toan lop') || clean.includes('tat ca lop') || clean.includes('tat ca cac ban');
-      if (isClassWide) {
-        this.handleClassWideCommand(transcript, clean);
-        return;
+
+      // 2. Xác định hành động (Cộng hay Trừ)
+      let isNegative = false;
+      let actionFound = false;
+
+      const firstWord = clean.split(' ')[0];
+      // Nếu từ đầu tiên là nhóm Trừ (bao gồm cả các từ Google nghe nhầm như tran, tu, truc, chu)
+      if (['tru', 'tran', 'tu', 'phat', 'nhac', 'bot', 'rut'].includes(firstWord)) {
+        isNegative = true;
+        actionFound = true;
+      } else if (['cong', 'khen', 'thuong', 'cho', 'tang', 'them', 'cham'].includes(firstWord)) {
+        isNegative = false;
+        actionFound = true;
       }
 
-      // 2. Tìm học sinh trong danh sách
-      const matchedStudent = this.findBestStudentMatch(clean, students);
-      if (!matchedStudent) {
-        const msg = `Không tìm thấy học sinh trong câu nói: "${transcript}". Cô hãy đọc rõ tên bé (VD: "Khen Minh An 5 sao", "Trừ 2 sao Gia Hưng")`;
-        this.showStatusToast(msg, '❓');
-        this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc rõ họ tên bé nhé.');
-        return;
+      if (!actionFound) {
+        const negativeWords = ['tru', 'tran', 'tu', 'phat', 'nhac nho', 'nhac', 'bot', 'rut', 'mat trat tu', 'noi chuyen', 'vi pham', 'loi', 'chua ngoan', 'quay cop', 'khong lam', 'quen vo'];
+        for (const nw of negativeWords) {
+          if (new RegExp('\\b' + nw + '\\b', 'i').test(clean)) {
+            isNegative = true;
+            actionFound = true;
+            break;
+          }
+        }
       }
 
-      // 3. Xác định loại lệnh: Cộng hay Trừ điểm
-      const negativeKeywords = [
-        'tru', 'phat', 'nhac nho', 'mat trat tu', 'noi chuyen', 'vi pham', 
-        'chua ngoan', 'quay cop', 'khong lam', 'quen vo', 'nghich', 'on ao'
-      ];
-      const isNegative = negativeKeywords.some(kw => clean.includes(kw));
-
-      // 4. Xác định số điểm
-      let points = parseVietnameseNumber(transcript);
+      // 3. Trích xuất số điểm
+      let points = parseVietnameseNumber(normalized);
       if (!points || points <= 0 || points > 100) {
-        // Mặc định: Trừ 2 hoặc 5 sao, Cộng 5 sao
-        points = isNegative ? 2 : 5;
+        points = isNegative ? 2 : 5; // Mặc định nếu cô không đọc số điểm
       }
 
-      // 5. Trích xuất lý do
+      // 4. Trích xuất lý do (nếu cô có nói thêm lý do)
       let reason = isNegative ? 'Nhắc nhở qua giọng nói' : 'Khen thưởng qua giọng nói';
       if (clean.includes('mat trat tu')) reason = 'Mất trật tự trong giờ học';
       else if (clean.includes('noi chuyen')) reason = 'Nói chuyện riêng trong lớp';
       else if (clean.includes('khong lam bai') || clean.includes('chua lam bai')) reason = 'Chưa làm bài tập';
-      else if (clean.includes('quen vo')) reason = 'Quên sách vở dụng cụ học tập';
+      else if (clean.includes('quen vo')) reason = 'Quên sách vở đồ dùng học tập';
       else if (clean.includes('phat bieu')) reason = 'Hăng hái phát biểu xây dựng bài';
       else if (clean.includes('doc to') || clean.includes('doc bai to')) reason = 'Đọc bài to rõ ràng';
       else if (clean.includes('viet dep') || clean.includes('chu dep')) reason = 'Chữ viết sạch đẹp nắn nót';
       else if (clean.includes('cham ngoan')) reason = 'Chăm ngoan gương mẫu';
-      else if (clean.includes('lam bai nhanh') || clean.includes('lam dung')) reason = 'Làm bài nhanh và chính xác';
+      else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
 
-      // 6. Thực thi áp dụng điểm
-      const actualPoints = isNegative ? -points : points;
-      const icon = isNegative ? '⚠️' : '⭐';
+      // 5. Tìm học sinh khớp nhất
+      const student = isClassWide ? null : this.findBestStudentMatch(clean, students);
 
-      if (typeof window.applyStudentPoints === 'function') {
-        // Gọi applyStudentPoints với skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
-        window.applyStudentPoints(matchedStudent.id, actualPoints, reason, icon, null, true);
-      } else {
-        window.StorageManager.addPointsToStudent(matchedStudent.id, actualPoints, reason, icon);
-        if (typeof window.refreshData === 'function') window.refreshData();
-      }
-
-      // 7. Âm thanh & Phản hồi giọng nói (TTS)
-      const feedbackText = isNegative 
-        ? `Đã trừ ${points} sao của bạn ${matchedStudent.name}. Lý do: ${reason}!`
-        : `Đã cộng ${points} sao cho bạn ${matchedStudent.name}!`;
-
-      this.speakFeedback(feedbackText);
-      this.showStatusToast(`🎙️ <strong>${matchedStudent.name}</strong>: ${isNegative ? '-' : '+'}${points} ⭐ (${reason})`, isNegative ? '⚠️' : '🌟');
+      return {
+        raw,
+        normalized,
+        isClassWide,
+        isNegative,
+        points,
+        reason,
+        student
+      };
     }
 
     // Tìm kiếm học sinh khớp nhất từ câu nói
     findBestStudentMatch(cleanTranscript, students) {
       if (!students || students.length === 0) return null;
 
-      // Danh sách học sinh kèm tên không dấu
-      const list = students.map(s => {
-        const fullClean = removeVietnameseTones(s.name);
-        const parts = fullClean.split(' ');
-        const lastName = parts[parts.length - 1]; // Tên chính (ví dụ: An, Anh, Hưng, Yến)
-        const twoLastNames = parts.length >= 2 ? `${parts[parts.length - 2]} ${parts[parts.length - 1]}` : fullClean;
-        return {
-          student: s,
-          fullClean,
-          twoLastNames,
-          lastName
-        };
-      });
+      // Sắp xếp theo độ dài họ tên giảm dần (để "Phạm Bảo Hân" được ưu tiên trước "Bảo Hân")
+      const sortedStudents = [...students].sort((a, b) => b.name.length - a.name.length);
 
-      // Ưu tiên 1: Khớp chính xác cả họ và tên hoặc 2 từ cuối (ví dụ "Phạm Bảo Hân", "Bảo Hân", "Đăng Khôi", "Minh Khôi", "Hải Yến")
-      // Sắp xếp theo độ dài giảm dần để tên dài được kiểm tra trước (tránh "Bảo Hân" đè "Phạm Bảo Hân")
-      const sortedByLength = [...list].sort((a, b) => b.fullClean.length - a.fullClean.length);
-      for (const item of sortedByLength) {
-        if (cleanTranscript.includes(item.fullClean)) {
-          return item.student;
+      // Bước 1: Khớp chính xác cả họ tên hoặc 2 từ cuối (vd: 'gia hung', 'pham bao han', 'minh an', 'hai yen')
+      for (const s of sortedStudents) {
+        const sClean = removeVietnameseTones(s.name);
+        if (new RegExp('\\b' + sClean + '\\b', 'i').test(cleanTranscript)) {
+          return s;
         }
       }
 
-      for (const item of sortedByLength) {
-        if (cleanTranscript.includes(item.twoLastNames)) {
-          return item.student;
-        }
-      }
-
-      // Ưu tiên 2: Khớp tên chính (nếu tên đó là DUY NHẤT trong lớp)
-      // Ví dụ: trong lớp chỉ có 1 bạn tên "Yến" (Hải Yến), 1 bạn tên "Hưng" (Gia Hưng), 1 bạn tên "Dương" (Ánh Dương), 1 bạn tên "Thảo" (Hương Thảo)
-      const lastNameCounts = {};
-      list.forEach(item => {
-        lastNameCounts[item.lastName] = (lastNameCounts[item.lastName] || 0) + 1;
-      });
-
-      for (const item of list) {
-        // Chỉ khớp tên đơn nếu tên này là duy nhất trong cả lớp 36 bạn
-        if (lastNameCounts[item.lastName] === 1) {
-          const regex = new RegExp(`\\b${item.lastName}\\b`, 'i');
-          if (regex.test(cleanTranscript)) {
-            return item.student;
+      // Bước 2: Khớp 2 từ cuối nếu tên có 3 từ (vd: 'Bảo Hân' trong 'Phạm Bảo Hân')
+      for (const s of sortedStudents) {
+        const parts = removeVietnameseTones(s.name).split(' ');
+        if (parts.length >= 2) {
+          const twoLast = parts.slice(-2).join(' ');
+          if (new RegExp('\\b' + twoLast + '\\b', 'i').test(cleanTranscript)) {
+            return s;
           }
+        }
+      }
+
+      // Bước 3: Khớp tên chính (nếu tên này là duy nhất trong cả lớp 36 bạn)
+      // Ví dụ: trong lớp chỉ có 1 bạn tên Hưng (Gia Hưng), 1 bạn tên Yến (Hải Yến), 1 bạn tên Thảo (Hương Thảo)
+      const lastNameCounts = {};
+      students.forEach(s => {
+        const parts = removeVietnameseTones(s.name).split(' ');
+        const l = parts[parts.length - 1];
+        lastNameCounts[l] = (lastNameCounts[l] || 0) + 1;
+      });
+
+      for (const s of sortedStudents) {
+        const parts = removeVietnameseTones(s.name).split(' ');
+        const l = parts[parts.length - 1];
+        if (lastNameCounts[l] === 1 && new RegExp('\\b' + l + '\\b', 'i').test(cleanTranscript)) {
+          return s;
         }
       }
 
       return null;
     }
 
-    // Xử lý lệnh thưởng / phạt cả lớp
-    handleClassWideCommand(transcript, clean) {
-      const isNegative = clean.includes('tru') || clean.includes('phat');
-      let points = parseVietnameseNumber(transcript) || (isNegative ? 2 : 1);
-      const actualPoints = isNegative ? -points : points;
-      const reason = isNegative ? 'Nhắc nhở chung cả lớp' : 'Cả lớp cùng chăm ngoan';
-      const icon = isNegative ? '⚠️' : '⭐';
+    // Thực thi câu lệnh đã phân tích
+    executeParsedCommand(cmd, students) {
+      if (!cmd) return;
 
-      const data = (window.StorageManager && window.StorageManager.loadData()) || { students: [] };
-      (data.students || []).forEach(s => {
-        window.StorageManager.addPointsToStudent(s.id, actualPoints, reason, icon);
-      });
+      // Hiển thị câu lệnh trên popup
+      this.updateTranscriptDisplay(cmd.raw, cmd);
 
-      if (typeof window.refreshData === 'function') window.refreshData();
+      // 1. Trường hợp áp dụng cho CẢ LỚP
+      if (cmd.isClassWide) {
+        const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
+        const reason = cmd.isNegative ? 'Nhắc nhở chung cả lớp' : 'Cả lớp cùng chăm ngoan';
+        const icon = cmd.isNegative ? '⚠️' : '⭐';
 
-      const feedback = isNegative 
-        ? `Đã nhắc nhở trừ ${points} sao của cả lớp.` 
-        : `Đã cộng ${points} sao cho cả lớp cùng chăm ngoan!`;
+        students.forEach(s => {
+          window.StorageManager.addPointsToStudent(s.id, actualPoints, reason, icon);
+        });
 
-      this.speakFeedback(feedback);
-      this.showStatusToast(`🎙️ <strong>Cả Lớp</strong>: ${isNegative ? '-' : '+'}${points} ⭐ (${reason})`, '🌟');
+        if (typeof window.refreshData === 'function') window.refreshData();
+
+        const feedback = cmd.isNegative 
+          ? `Đã nhắc nhở trừ ${cmd.points} sao của cả lớp.` 
+          : `Đã cộng ${cmd.points} sao cho cả lớp cùng chăm ngoan!`;
+
+        this.speakFeedback(feedback);
+        this.showStatusToast(`🎙️ <strong>Cả Lớp</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${reason})`, '🌟');
+        return;
+      }
+
+      // 2. Trường hợp áp dụng cho MỘT HỌC SINH
+      const student = cmd.student;
+      if (!student) {
+        const msg = `Không tìm thấy học sinh trong câu nói: "${cmd.raw}". Cô hãy đọc rõ theo cú pháp: "Trừ Gia Hưng 5 điểm" hoặc "Cộng Minh An 10 điểm".`;
+        this.showStatusToast(msg, '❓');
+        this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc lại nhé.');
+        return;
+      }
+
+      const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
+      const icon = cmd.isNegative ? '⚠️' : '⭐';
+
+      if (typeof window.applyStudentPoints === 'function') {
+        // skipConfirm = true vì giáo viên đã trực tiếp ra lệnh bằng giọng nói
+        window.applyStudentPoints(student.id, actualPoints, cmd.reason, icon, null, true);
+      } else {
+        window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
+        if (typeof window.refreshData === 'function') window.refreshData();
+      }
+
+      // Phản hồi giọng nói (TTS) & Thông báo màn hình
+      const feedbackText = cmd.isNegative 
+        ? `Đã trừ ${cmd.points} sao của bạn ${student.name}!`
+        : `Đã cộng ${cmd.points} sao cho bạn ${student.name}!`;
+
+      this.speakFeedback(feedbackText);
+      this.showStatusToast(`🎙️ <strong>${student.name}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
     }
 
     // Phát âm thanh phản hồi giọng nói (Text-To-Speech)
@@ -300,10 +386,9 @@
         this.synth.cancel(); // Dừng câu đang đọc dở nếu có
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'vi-VN';
-        utterance.rate = 1.05; // Tốc độ tự nhiên, hơi nhanh 1 chút cho cô đỡ phải chờ
+        utterance.rate = 1.08; // Tốc độ nhanh nhẹn tự nhiên
         utterance.pitch = 1.1;
 
-        // Ưu tiên chọn giọng tiếng Việt chất lượng cao nếu có
         const voices = this.synth.getVoices();
         const viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi'));
         if (viVoice) utterance.voice = viVoice;
@@ -334,7 +419,7 @@
       if (modal) {
         if (isListening) {
           modal.classList.add('active');
-          if (statusText) statusText.textContent = 'Cô hãy nói lệnh (VD: "Khen Minh An 5 sao", "Trừ 2 sao Gia Hưng")...';
+          if (statusText) statusText.innerHTML = 'Cô hãy nói: <strong>"Cộng (hoặc Trừ) + Tên học sinh + Số điểm"</strong>...';
           if (wave) wave.style.display = 'flex';
         } else {
           if (wave) wave.style.display = 'none';
@@ -342,10 +427,26 @@
       }
     }
 
-    updateTranscriptDisplay(text) {
+    updateTranscriptDisplay(rawText, parsedCmd = null) {
       const transcriptEl = document.getElementById('voiceTranscriptResult');
       if (transcriptEl) {
-        transcriptEl.innerHTML = `💬 <em>"${text}"</em>`;
+        if (parsedCmd && (parsedCmd.student || parsedCmd.isClassWide)) {
+          const actionBadge = parsedCmd.isNegative 
+            ? `<span style="background: #FEE2E2; color: #DC2626; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[-] TRỪ ${parsedCmd.points} ⭐</span>`
+            : `<span style="background: #DCFCE7; color: #16A34A; padding: 2px 8px; border-radius: 8px; font-weight: 800;">[+] CỘNG ${parsedCmd.points} ⭐</span>`;
+          const name = parsedCmd.isClassWide ? 'Cả Lớp' : parsedCmd.student.name;
+
+          transcriptEl.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
+              <div style="font-size: 15px; font-weight: 800; color: #1E293B; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                ${actionBadge} <span>cho bé: <strong style="color: #6D28D9;">${name}</strong></span>
+              </div>
+            </div>
+          `;
+        } else {
+          transcriptEl.innerHTML = `💬 <em>"${rawText}"</em>`;
+        }
       }
     }
 

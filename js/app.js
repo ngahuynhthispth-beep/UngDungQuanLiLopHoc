@@ -263,11 +263,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    // Chống bấm liên tục / chạm nhầm cho cùng 1 học sinh (1000ms cho cộng, 5000ms cho trừ điểm)
+    // Chống bấm liên tục / chạm nhầm cho cùng 1 học sinh (1000ms cho cộng, 5000ms cho trừ điểm chạm màn hình, 1500ms khi ra lệnh giọng nói)
     const now = Date.now();
-    const minCooldown = points < 0 ? 5000 : 1000;
+    const minCooldown = points < 0 ? (skipConfirm ? 1500 : 5000) : 1000;
     if (_lastStudentActionTime[studentId] && (now - _lastStudentActionTime[studentId] < minCooldown)) {
-      if (points < 0) {
+      if (points < 0 && !skipConfirm) {
         showSyncToast(`⏳ Thao tác trừ điểm cần cách nhau ít nhất 5 giây để tránh trừ nhầm nhiều lần.`, '⚠️');
       }
       return;
