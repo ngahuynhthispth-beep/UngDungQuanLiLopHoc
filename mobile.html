@@ -970,13 +970,16 @@
 
       <!-- Panel 3: Current List -->
       <div id="panelCurrentList" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
           <div style="font-size: 14px; font-weight: 800; color: #334155;">
             Tổng số: <span id="currentTotalStudents" style="color: #FF5E7E;">0</span> học sinh
           </div>
-          <div style="display: flex; gap: 8px;">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <button id="btnSaveCurrentListToHomeTop" class="btn-header primary btn-save-students-list" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; font-size: 13px; font-weight: 800; padding: 7px 16px; border-radius: 10px; border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              💾 Lưu Danh Sách
+            </button>
             <button id="btnExportStudentsCsv" class="btn-header" style="font-size: 12px; padding: 6px 12px;">
-              💾 Tải Danh Sách Về (CSV)
+              📥 Tải CSV
             </button>
             <button id="btnClearAllStudents" class="btn-header" style="font-size: 12px; padding: 6px 12px; color: #E11D48; border-color: #FECDD3;">
               🗑️ Xóa Hết
@@ -984,9 +987,13 @@
           </div>
         </div>
 
-        <div id="currentStudentsTableContainer" style="max-height: 260px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px;">
+        <div id="currentStudentsTableContainer" style="max-height: 280px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px; margin-bottom: 12px;">
           <!-- Table rendered here -->
         </div>
+
+        <button id="btnSaveCurrentListToHome" class="btn-header primary btn-save-students-list" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; padding: 12px 24px; font-weight: 800; font-size: 15px; border-radius: 14px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; border: none;">
+          💾 LƯU DANH SÁCH & CẬP NHẬT VÀO TRANG CHỦ
+        </button>
       </div>
     </div>
   </div>
@@ -1603,17 +1610,17 @@
   <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261118_v6"></script>
-  <script src="js/firebase-sync.js?v=20261118_v6"></script>
-  <script src="js/qrcode.min.js?v=20261118_v6"></script>
-  <script src="js/audio.js?v=20261118_v6"></script>
-  <script src="js/egg-evolution.js?v=20261118_v6"></script>
-  <script src="js/initial-data.js?v=20261118_v6"></script>
-  <script src="js/storage.js?v=20261118_v6"></script>
-  <script src="js/noise-meter.js?v=20261118_v6"></script>
-  <script src="js/wheel.js?v=20261118_v6"></script>
-  <script src="js/card-export.js?v=20261118_v6"></script>
-  <script src="js/voice-assistant.js?v=20261118_v6"></script>
-  <script src="js/app.js?v=20261118_v6"></script>
+  <script src="js/firebase-config.js?v=20261118_v7"></script>
+  <script src="js/firebase-sync.js?v=20261118_v7"></script>
+  <script src="js/qrcode.min.js?v=20261118_v7"></script>
+  <script src="js/audio.js?v=20261118_v7"></script>
+  <script src="js/egg-evolution.js?v=20261118_v7"></script>
+  <script src="js/initial-data.js?v=20261118_v7"></script>
+  <script src="js/storage.js?v=20261118_v7"></script>
+  <script src="js/noise-meter.js?v=20261118_v7"></script>
+  <script src="js/wheel.js?v=20261118_v7"></script>
+  <script src="js/card-export.js?v=20261118_v7"></script>
+  <script src="js/voice-assistant.js?v=20261118_v7"></script>
+  <script src="js/app.js?v=20261118_v7"></script>
 </body>
 </html>

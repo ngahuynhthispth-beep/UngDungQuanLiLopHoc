@@ -1467,16 +1467,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const student = (state.data.students || []).find(s => s.id === studentId);
     if (!student) return;
 
-    const confirmed = confirm(`⚠️ Cô có chắc chắn muốn xóa học sinh "${student.name}" khỏi danh sách lớp không?\n\nThao tác này sẽ đồng bộ ngay lập tức lên Đám Mây và điện thoại phụ huynh.`);
+    const confirmed = confirm(`⚠️ Cô có chắc chắn muốn xóa học sinh "${student.name}" khỏi danh sách lớp không?\n\nThao tác này sẽ đồng bộ ngay lập tức lên Đám Mây và cập nhật vào trang chủ.`);
     if (!confirmed) return;
 
+    state.data.students = (state.data.students || []).filter(s => s.id !== studentId);
     StorageManager.deleteStudent(studentId);
+
+    if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+      window.FirebaseSync.setClassData(state.data);
+    }
 
     if (actionModal && actionModal.classList.contains('active') && state.selectedStudentId === studentId) {
       actionModal.classList.remove('active');
     }
     closeEditStudentModal();
-    refreshData();
+    refreshData(state.data);
+    if (typeof renderCurrentStudentsTable === 'function') {
+      renderCurrentStudentsTable();
+    }
     showSyncToast(`🗑️ Đã xóa học sinh <strong>${student.name}</strong> thành công!`, '🗑️');
   }
 
@@ -1499,8 +1507,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const student = (state.data.students || []).find(s => s.id === studentId);
+      if (student) {
+        student.name = newName;
+        student.group = newGroup;
+      }
+
       StorageManager.updateStudentName(studentId, newName);
       StorageManager.updateStudentGroup(studentId, newGroup);
+
+      if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+        window.FirebaseSync.setClassData(state.data);
+      }
 
       closeEditStudentModal();
 
@@ -1509,7 +1527,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalTitle) modalTitle.textContent = `Khen thưởng: ${newName}`;
       }
 
-      refreshData();
+      refreshData(state.data);
+      if (typeof renderCurrentStudentsTable === 'function') {
+        renderCurrentStudentsTable();
+      }
       showSyncToast(`✅ Đã cập nhật thông tin học sinh <strong>${newName}</strong>! Đã đồng bộ lên Đám Mây.`, '✏️');
     });
   }
@@ -2472,9 +2493,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Action 4: Render current students in table
   function renderCurrentStudentsTable() {
     const { students, groups } = state.data;
-    currentTotalStudents.textContent = students.length;
+    if (currentTotalStudents) currentTotalStudents.textContent = (students || []).length;
 
-    if (students.length === 0) {
+    if (!students || students.length === 0) {
       currentStudentsTableContainer.innerHTML = `
         <div style="padding: 24px; text-align: center; color: #94A3B8; font-size: 14px;">
           Lớp hiện chưa có học sinh nào. Cô hãy dán danh sách hoặc tải file lên nhé!
@@ -2485,13 +2506,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let html = `
       <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-        <thead style="background: #F8FAFC; position: sticky; top: 0;">
+        <thead style="background: #F8FAFC; position: sticky; top: 0; z-index: 2;">
           <tr>
-            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">STT</th>
-            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">Họ và Tên</th>
-            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">Tổ</th>
-            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">Sao</th>
-            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center;">Thao tác</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; width: 45px; text-align: center;">STT</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0;">Họ và Tên (Sửa trực tiếp)</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; width: 130px;">Tổ</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; width: 75px; text-align: center;">Sao</th>
+            <th style="padding: 10px; border-bottom: 2px solid #E2E8F0; text-align: center; width: 85px;">Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -2499,23 +2520,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     students.forEach((s, idx) => {
       html += `
-        <tr style="border-bottom: 1px solid #F1F5F9;">
-          <td style="padding: 8px 10px; color: #64748B;">${idx + 1}</td>
-          <td style="padding: 8px 10px; font-weight: 700; color: #1E293B;">${s.name}</td>
+        <tr style="border-bottom: 1px solid #F1F5F9;" data-student-id="${s.id}">
+          <td style="padding: 8px 10px; color: #64748B; font-weight: 700; text-align: center;">${idx + 1}</td>
           <td style="padding: 8px 10px;">
-            <select class="select-change-group" data-id="${s.id}" style="padding: 4px 8px; border-radius: 8px; border: 1px solid #CBD5E1; font-family: inherit; font-size: 12px; font-weight: 600;">
+            <input type="text" class="input-student-name" data-id="${s.id}" value="${s.name}" style="width: 100%; padding: 6px 10px; border: 1.5px solid #CBD5E1; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; color: #1E293B; box-sizing: border-box; background: #fff;" title="Bấm vào để sửa tên học sinh trực tiếp">
+          </td>
+          <td style="padding: 8px 10px;">
+            <select class="select-change-group" data-id="${s.id}" style="width: 100%; padding: 6px 8px; border-radius: 8px; border: 1.5px solid #CBD5E1; font-family: inherit; font-size: 12px; font-weight: 700; background: #fff; cursor: pointer; color: #1E293B;">
               ${groups.map(g => `
-                <option value="${g.id}" ${g.id === s.group ? 'selected' : ''}>${g.name.split('-')[0].trim()}</option>
+                <option value="${g.id}" ${Number(g.id) === Number(s.group) ? 'selected' : ''}>${(g.name || '').split('-')[0].trim()}</option>
               `).join('')}
             </select>
           </td>
-          <td style="padding: 8px 10px; font-weight: 800; color: #D97706;">⭐ ${s.stars}</td>
+          <td style="padding: 8px 10px; font-weight: 800; color: #D97706; text-align: center;">⭐ ${s.stars || 0}</td>
           <td style="padding: 8px 10px; text-align: center; white-space: nowrap;">
-            <button class="btn-edit-student-table" data-id="${s.id}" style="background: #EEF2FF; border: none; color: #4338CA; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-right: 4px;" title="Sửa tên học sinh">
-              ✏️
-            </button>
-            <button class="btn-delete-student" data-id="${s.id}" style="background: #FEE2E2; border: none; color: #DC2626; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px;" title="Xóa học sinh này">
-              🗑️
+            <button class="btn-delete-student" data-id="${s.id}" data-name="${s.name}" style="background: #FEE2E2; border: 1px solid #FECDD3; color: #DC2626; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="Xóa học sinh này">
+              🗑️ Xóa
             </button>
           </td>
         </tr>
@@ -2529,17 +2549,12 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStudentsTableContainer.querySelectorAll('.select-change-group').forEach(select => {
       select.addEventListener('change', (e) => {
         const studentId = e.target.dataset.id;
-        const newGroup = e.target.value;
+        const newGroup = parseInt(e.target.value, 10) || 1;
+        const student = (state.data.students || []).find(s => s.id === studentId);
+        if (student) {
+          student.group = newGroup;
+        }
         StorageManager.updateStudentGroup(studentId, newGroup);
-        refreshData();
-      });
-    });
-
-    // Attach edit student
-    currentStudentsTableContainer.querySelectorAll('.btn-edit-student-table').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const studentId = btn.dataset.id;
-        openEditStudentModal(studentId);
       });
     });
 
@@ -2547,11 +2562,78 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStudentsTableContainer.querySelectorAll('.btn-delete-student').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const studentId = btn.dataset.id;
-        deleteStudentConfirm(studentId);
-        renderCurrentStudentsTable();
+        const studentName = btn.dataset.name || 'học sinh';
+        if (confirm(`⚠️ Cô có chắc chắn muốn xóa học sinh "${studentName}" khỏi danh sách lớp không?\n\nThao tác này sẽ cập nhật vào trang chủ và đồng bộ lên Đám Mây.`)) {
+          state.data.students = (state.data.students || []).filter(s => s.id !== studentId);
+          StorageManager.deleteStudent(studentId);
+          if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+            window.FirebaseSync.setClassData(state.data);
+          }
+          refreshData(state.data);
+          renderCurrentStudentsTable();
+          showSyncToast(`🗑️ Đã xóa học sinh <strong>${studentName}</strong> thành công!`, '🗑️');
+        }
       });
     });
   }
+
+  // Action: Lưu danh sách học sinh & tổ, cập nhật vào trang chủ và Đám Mây
+  async function handleSaveCurrentListToHome() {
+    if (!currentStudentsTableContainer) return;
+
+    const nameInputs = currentStudentsTableContainer.querySelectorAll('.input-student-name');
+    const groupSelects = currentStudentsTableContainer.querySelectorAll('.select-change-group');
+
+    // Cập nhật tất cả họ tên và tổ từ bảng vào state.data.students
+    (nameInputs || []).forEach(input => {
+      const studentId = input.dataset.id;
+      const newName = (input.value || '').trim();
+      const student = (state.data.students || []).find(s => s.id === studentId);
+      if (student && newName) {
+        student.name = newName;
+      }
+    });
+
+    (groupSelects || []).forEach(select => {
+      const studentId = select.dataset.id;
+      const newGroup = parseInt(select.value, 10) || 1;
+      const student = (state.data.students || []).find(s => s.id === studentId);
+      if (student) {
+        student.group = newGroup;
+      }
+    });
+
+    // 1. Lưu vào StorageManager (localStorage)
+    StorageManager.saveData(state.data);
+
+    // 2. Đồng bộ tức thì lên Google Firebase Đám Mây
+    if (window.FirebaseSync && typeof window.FirebaseSync.setClassData === 'function') {
+      try {
+        await window.FirebaseSync.setClassData(state.data);
+      } catch (err) {
+        console.warn('Lỗi đồng bộ Firebase khi lưu danh sách:', err);
+      }
+    }
+
+    // 3. Cập nhật giao diện trang chủ ngay lập tức (danh sách học sinh, bộ lọc tổ, tổng số học sinh, bảng thi đua tổ)
+    refreshData(state.data);
+
+    // 4. Đóng modal nhập học sinh
+    if (importModal) {
+      importModal.classList.remove('active');
+    }
+
+    // 5. Âm thanh chuông chúc mừng và Toast thông báo
+    if (window.soundFx && typeof window.soundFx.playCheer === 'function') {
+      window.soundFx.playCheer();
+    }
+    showSyncToast('🎉 Đã lưu danh sách học sinh và cập nhật thành công vào trang chủ!', '✅');
+  }
+
+  // Gắn sự kiện click cho các nút Lưu danh sách
+  document.querySelectorAll('.btn-save-students-list').forEach(btn => {
+    btn.addEventListener('click', handleSaveCurrentListToHome);
+  });
 
   // Action 5: Export CSV
   btnExportStudentsCsv.addEventListener('click', () => {
@@ -2567,8 +2649,13 @@ document.addEventListener('DOMContentLoaded', () => {
   btnClearAllStudents.addEventListener('click', () => {
     if (confirm('⚠️ Cô có chắc muốn xóa toàn bộ học sinh để làm mới lớp học?')) {
       StorageManager.clearAllStudents();
+      state.data = StorageManager.loadData();
+      if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+        window.FirebaseSync.setClassData(state.data);
+      }
+      refreshData(state.data);
       renderCurrentStudentsTable();
-      refreshData();
+      showSyncToast('🗑️ Đã làm mới toàn bộ danh sách lớp!', '🗑️');
     }
   });
 
@@ -4346,9 +4433,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Lắng nghe thay đổi trực tiếp từ Firebase (phụ huynh nộp bài tập từ nhà)
         window.FirebaseSync.onClassDataChange((fbData) => {
           if (fbData && fbData.students) {
-            // Không nhận dữ liệu nếu Firebase ít học sinh hơn danh sách thực tế của lớp (ví dụ 16 em mẫu vs 36 em thật)
-            if (state.data && state.data.students && state.data.students.length > fbData.students.length) {
-              console.warn('Firebase có ít học sinh hơn danh sách thực tế, đồng bộ dữ liệu thật lên Cloud...');
+            // Không nhận dữ liệu nếu Firebase chứa danh sách mẫu 16 học sinh cũ
+            if (fbData.students.length <= 16 && fbData.students.some(s => s.name === 'Đỗ Đức Anh')) {
+              console.warn('Firebase chứa dữ liệu mẫu 16 học sinh, đồng bộ dữ liệu thật lên Cloud...');
               window.FirebaseSync.setClassData(state.data);
               return;
             }

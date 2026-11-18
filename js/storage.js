@@ -286,8 +286,8 @@ const StorageManager = {
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         data = JSON.parse(raw);
-        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu cũ thì bỏ qua (chỉ áp dụng bảo vệ cho lớp chính)
-        if (isDefaultClass && data && data.students && (data.students.length < 30 || data.students.some(s => s.name === 'Đỗ Đức Anh'))) {
+        // Kiểm tra nếu dữ liệu trong localStorage là dữ liệu mẫu 16 học sinh cũ thì bỏ qua (chỉ áp dụng bảo vệ cho lớp chính)
+        if (isDefaultClass && data && data.students && data.students.length === 16 && data.students.some(s => s.name === 'Đỗ Đức Anh')) {
           data = null;
         }
       }
@@ -320,16 +320,12 @@ const StorageManager = {
 
   saveData(data) {
     const isDefaultClass = this.isPrimaryClass(this.getClassId());
-    if (isDefaultClass && (!data || !data.students || data.students.length < 30)) {
-      console.warn('Bảo vệ dữ liệu lớp 1/8: Không lưu danh sách học sinh bị thiếu.');
+    if (!data || !data.students || data.students.length === 0) {
+      console.warn('Không thể lưu danh sách lớp rỗng.');
       return;
     }
     if (isDefaultClass && data.students.some(s => s.name === 'Đỗ Đức Anh') && data.students.length === 16) {
       console.warn('Bảo vệ dữ liệu lớp 1/8: Không ghi đè dữ liệu mẫu 16 học sinh.');
-      return;
-    }
-    if (!data || !data.students || data.students.length === 0) {
-      console.warn('Không thể lưu danh sách lớp rỗng.');
       return;
     }
 
