@@ -538,6 +538,50 @@ body {
   box-shadow: 0 4px 12px rgba(112, 82, 255, 0.25);
 }
 
+.group-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed #E2E8F0;
+}
+
+.group-actions-row-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-group-action.plus-5 {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+}
+
+.btn-group-action.plus-10 {
+  background: linear-gradient(135deg, #7052FF, #4ECDC4);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(112, 82, 255, 0.25);
+}
+
+.btn-group-action.minus-5 {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+}
+
+.btn-group-action.minus-10 {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.25);
+}
+
+.btn-group-action:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
 /* Quick Reward Floating Modal / Action Sheet */
 .modal-backdrop {
   position: fixed;

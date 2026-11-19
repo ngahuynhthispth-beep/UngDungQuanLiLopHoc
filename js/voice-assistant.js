@@ -269,7 +269,7 @@
         if (!cand) continue;
         const normalized = normalizeTranscript(cand, students);
         const parsed = this.parseCommandGrammar(cand, normalized, students);
-        const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide;
+        const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide || parsed.targetGroupId;
         if (hasTarget) {
           // Ưu tiên phương án nhận diện có hành động rõ ràng (Cộng hoặc Trừ)
           if (parsed.actionFound) {
@@ -295,8 +295,15 @@
     parseCommandGrammar(raw, normalized, students) {
       const clean = removeVietnameseTones(normalized);
 
-      // 1. Kiểm tra lệnh cho CẢ LỚP
+      // 1. Kiểm tra lệnh cho CẢ LỚP hoặc CHO TỔ
       const isClassWide = clean.includes('ca lop') || clean.includes('toan lop') || clean.includes('tat ca lop') || clean.includes('tat ca cac ban');
+
+      // Kiểm tra lệnh theo TỔ (ví dụ: "cộng tổ 1 5 điểm", "trừ tổ 2 10 điểm", "tổ 3 cộng 5 sao")
+      let targetGroupId = null;
+      const groupMatch = clean.match(/\b(?:to|nhom)\s+([1-4])\b/i);
+      if (groupMatch) {
+        targetGroupId = parseInt(groupMatch[1], 10);
+      }
 
       // 2. Xác định hành động (Cộng hay Trừ)
       let isNegative = false;
@@ -364,14 +371,15 @@
       else if (clean.includes('cham ngoan')) reason = 'Chăm ngoan gương mẫu';
       else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
 
-      // 5. Tìm danh sách học sinh khớp trong câu nói (hỗ trợ nhiều bạn cùng lúc)
-      const matchedStudents = isClassWide ? [] : this.findAllStudentMatches(clean, students);
+      // 5. Tìm danh sách học sinh khớp trong câu nói (nếu không phải lệnh cho cả lớp hay cho tổ)
+      const matchedStudents = (isClassWide || targetGroupId) ? [] : this.findAllStudentMatches(clean, students);
       const student = matchedStudents.length > 0 ? matchedStudents[0] : null;
 
       return {
         raw,
         normalized,
         isClassWide,
+        targetGroupId,
         isNegative,
         actionFound,
         actionUnknown: !actionFound,
@@ -517,6 +525,36 @@
         }, 400);
 
         this.showStatusToast(`🎙️ <strong>Cả Lớp</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${reason})`, '🌟');
+        return;
+      }
+
+      // 1.5. Trường hợp áp dụng cho TỔ (ví dụ: "Cộng tổ 1 5 điểm", "Trừ tổ 2 10 điểm")
+      if (cmd.targetGroupId) {
+        const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
+        const icon = cmd.isNegative ? '⚠️' : '⭐';
+        const reason = cmd.reason || (cmd.isNegative ? 'Nhắc nhở thi đua tổ' : 'Khen thưởng thi đua tổ');
+
+        if (window.soundFx) {
+          if (cmd.isNegative && typeof window.soundFx.playPenalty === 'function') {
+            window.soundFx.playPenalty();
+          } else if (typeof window.soundFx.playStar === 'function') {
+            window.soundFx.playStar();
+          }
+        }
+
+        const res = window.StorageManager.addPointsToGroup(cmd.targetGroupId, actualPoints, reason, icon);
+        if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
+
+        const groupName = (res && res.group && res.group.name) || `Tổ ${cmd.targetGroupId}`;
+        const feedback = cmd.isNegative 
+          ? `Đã trừ ${cmd.points} sao của ${groupName}!` 
+          : `Đã cộng ${cmd.points} sao cho ${groupName}!`;
+
+        setTimeout(() => {
+          this.speakFeedback(feedback);
+        }, 400);
+
+        this.showStatusToast(`🎙️ <strong>${groupName}</strong>: ${cmd.isNegative ? '-' : '+'}${cmd.points} ⭐ (${reason})`, cmd.isNegative ? '⚠️' : '🌟');
         return;
       }
 
@@ -750,7 +788,7 @@
         return;
       }
 
-      const hasTarget = parsedCmd && (parsedCmd.isClassWide || (parsedCmd.students && parsedCmd.students.length > 0) || parsedCmd.student);
+      const hasTarget = parsedCmd && (parsedCmd.isClassWide || parsedCmd.targetGroupId || (parsedCmd.students && parsedCmd.students.length > 0) || parsedCmd.student);
 
       if (hasTarget) {
         const actionBadge = parsedCmd.isNegative 
@@ -759,7 +797,10 @@
         
         let targetText = 'Cả Lớp';
         let prefix = '';
-        if (!parsedCmd.isClassWide) {
+        if (parsedCmd.targetGroupId) {
+          targetText = `Tổ ${parsedCmd.targetGroupId}`;
+          prefix = 'cho: ';
+        } else if (!parsedCmd.isClassWide) {
           const list = (parsedCmd.students && parsedCmd.students.length > 0) ? parsedCmd.students : (parsedCmd.student ? [parsedCmd.student] : []);
           targetText = formatStudentNamesList(list);
           prefix = list.length > 1 ? 'cho các bé: ' : 'cho bé: ';

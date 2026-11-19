@@ -884,29 +884,89 @@ document.addEventListener('DOMContentLoaded', () => {
           `).join('')}
         </div>
 
-        <div class="group-actions-row">
-          <button class="btn-group-action reward" data-gid="${group.id}">
-            👏 Thưởng Tổ (+1 ⭐)
-          </button>
-          <button class="btn-group-action super" data-gid="${group.id}">
-            🚀 Xuất sắc (+2 ⭐)
-          </button>
+        <div class="group-actions-container">
+          <div style="font-size: 12px; font-weight: 800; color: #475569; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+            <span>⚡ Chấm điểm thi đua tổ:</span>
+            <span style="font-size: 11px; color: #94A3B8; font-weight: 700;">Mức ±5 ⭐ và ±10 ⭐</span>
+          </div>
+
+          <!-- Hàng 1: Nút Cộng Điểm (+5 và +10) -->
+          <div class="group-actions-row-grid">
+            <button type="button" class="btn-group-action plus-5" data-gid="${group.id}" data-points="5" title="Khen thưởng tổ +5 sao">
+              👏 Thưởng +5 ⭐
+            </button>
+            <button type="button" class="btn-group-action plus-10" data-gid="${group.id}" data-points="10" title="Tổ xuất sắc +10 sao">
+              🚀 Xuất Sắc +10 ⭐
+            </button>
+          </div>
+
+          <!-- Hàng 2: Nút Trừ Điểm (-5 và -10) -->
+          <div class="group-actions-row-grid">
+            <button type="button" class="btn-group-action minus-5" data-gid="${group.id}" data-points="-5" title="Nhắc nhở tổ -5 sao">
+              ⚠️ Nhắc Nhở -5 ⭐
+            </button>
+            <button type="button" class="btn-group-action minus-10" data-gid="${group.id}" data-points="-10" title="Trừ điểm vi phạm tổ -10 sao">
+              🛑 Trừ Tổ -10 ⭐
+            </button>
+          </div>
         </div>
       `;
 
-      card.querySelector('.btn-group-action.reward').addEventListener('click', (e) => {
+      // 1. Thưởng +5 sao
+      card.querySelector('.btn-group-action.plus-5').addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect();
         createFloatingStar(rect.left + rect.width / 2, rect.top, '🌟');
-        window.soundFx.playCheer();
-        StorageManager.addPointsToGroup(group.id, 1, 'Tổ hợp tác tốt', '👏');
+        if (window.soundFx && typeof window.soundFx.playCheer === 'function') {
+          window.soundFx.playCheer();
+        }
+        StorageManager.addPointsToGroup(group.id, 5, 'Tổ hợp tác tốt', '👏');
+        if (typeof showSyncToast === 'function') {
+          showSyncToast(`👏 Đã cộng <strong>+5 ⭐</strong> cho <strong>${group.name}</strong> (${members.length} bạn)`, '🌟');
+        }
         refreshData();
       });
 
-      card.querySelector('.btn-group-action.super').addEventListener('click', (e) => {
+      // 2. Xuất sắc +10 sao
+      card.querySelector('.btn-group-action.plus-10').addEventListener('click', (e) => {
         const rect = e.target.getBoundingClientRect();
         createFloatingStar(rect.left + rect.width / 2, rect.top, '🚀');
-        window.soundFx.playHatch();
-        StorageManager.addPointsToGroup(group.id, 2, 'Tổ xuất sắc dẫn đầu', '🚀');
+        if (window.soundFx && typeof window.soundFx.playHatch === 'function') {
+          window.soundFx.playHatch();
+        }
+        StorageManager.addPointsToGroup(group.id, 10, 'Tổ xuất sắc dẫn đầu', '🚀');
+        if (typeof showSyncToast === 'function') {
+          showSyncToast(`🚀 Đã cộng <strong>+10 ⭐</strong> cho <strong>${group.name}</strong> (${members.length} bạn)`, '🎉');
+        }
+        refreshData();
+      });
+
+      // 3. Nhắc nhở -5 sao (có xác nhận an toàn chống chạm nhầm)
+      card.querySelector('.btn-group-action.minus-5').addEventListener('click', () => {
+        const confirmed = confirm(`⚠️ XÁC NHẬN NHẮC NHỞ TỔ:\n\nBạn có chắc chắn muốn nhắc nhở và trừ 5 ⭐ của "${group.name}" (${members.length} học sinh) không?\n\n(Tất cả học sinh trong tổ sẽ bị trừ 5 ⭐)`);
+        if (!confirmed) return;
+
+        if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        }
+        StorageManager.addPointsToGroup(group.id, -5, 'Nhắc nhở tổ rèn luyện', '⚠️');
+        if (typeof showSyncToast === 'function') {
+          showSyncToast(`⚠️ Đã trừ <strong>-5 ⭐</strong> của <strong>${group.name}</strong> (${members.length} bạn)`, '⚠️');
+        }
+        refreshData();
+      });
+
+      // 4. Trừ tổ -10 sao (có xác nhận an toàn chống chạm nhầm)
+      card.querySelector('.btn-group-action.minus-10').addEventListener('click', () => {
+        const confirmed = confirm(`🛑 XÁC NHẬN TRỪ ĐIỂM TỔ:\n\nBạn có CHẮC CHẮN muốn trừ 10 ⭐ của "${group.name}" (${members.length} học sinh) không?\n\n(Tất cả học sinh trong tổ sẽ bị trừ 10 ⭐)`);
+        if (!confirmed) return;
+
+        if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        }
+        StorageManager.addPointsToGroup(group.id, -10, 'Trừ điểm vi phạm tổ', '🛑');
+        if (typeof showSyncToast === 'function') {
+          showSyncToast(`🛑 Đã trừ <strong>-10 ⭐</strong> của <strong>${group.name}</strong> (${members.length} bạn)`, '🛑');
+        }
         refreshData();
       });
 
