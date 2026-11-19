@@ -25,29 +25,35 @@
     if (!rawTranscript) return '';
     let text = rawTranscript.trim();
 
-    // 1. Chuẩn hóa lỗi nghe nhầm của từ "Trừ":
-    // Google STT tiếng Việt thường xuyên nghe "Trừ" thành "Trần", "Từ", "Trực", "Chừ", "Chữ", "Trú", "Trúng", "Trả"
-    text = text.replace(/^(cô|thầy|em|tôi)\s+(trần|từ|trực|chừ|chữ|trú|trúng|trả)\b/i, 'Trừ ');
-    text = text.replace(/^(cô|thầy|em|tôi)\s+(trừ)\b/i, 'Trừ ');
-    text = text.replace(/^(cô|thầy|em|tôi)\s+(cộng)\b/i, 'Cộng ');
-    text = text.replace(/^(trần|từ|trực|chừ|chữ|trú|trúng|trả)\b/i, 'Trừ ');
+    // Loại bỏ ký tự đặc biệt ở đầu câu mà Google STT có thể chèn vào (dấu gạch ngang, ba chấm, ngoặc...)
+    text = text.replace(/^[-–—.…,:;!?~"'\s]+/, '');
 
-    // 2. Chuẩn hóa lỗi nghe nhầm của từ "Cộng":
-    // Thường nhận diện thành "Cổng", "Cọng", "Chọn"
-    text = text.replace(/^(cổng|cọng|chọn)\b/i, 'Cộng ');
+    // Biến thể đồng âm Google STT tiếng Việt thường nghe nhầm từ "Trừ":
+    // "Trần", "Từ", "Trực", "Chừ", "Chữ", "Trú", "Trúng", "Trả", "Chờ", "Chớ", "Chở", "Chứ", "Chức", "Chưa", "Chửa", "Trợ", "Trở", "Trớ", "Trù", "Trùm", "Trùng", "Thử", "Thứ", "Thừ"
+    const truVariants = 'trần|từ|trực|chừ|chữ|trú|trúng|trả|chờ|chớ|chở|chứ|chức|chưa|chửa|trợ|trở|trớ|trù|trùm|trùng|thử|thứ|thừ';
+
+    // 1. Chuẩn hóa đại từ + từ trừ (vd: "Cô trừ", "Cô chờ", "Cô trần", "Em trừ"...) -> thay bằng "Trừ "
+    text = text.replace(new RegExp('^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\\s+(?:' + truVariants + '|trừ|bớt|phạt)(?:\\s+|$)', 'iu'), 'Trừ ');
+
+    // 2. Chuẩn hóa từ trừ đứng đầu câu (vd: "Trần", "Chờ", "Chớ", "Chứ", "Từ", "Trực", "Thử", "Bớt", "Phạt"...) -> thay bằng "Trừ "
+    text = text.replace(new RegExp('^(?:' + truVariants + '|trừ|bớt|phạt)(?:\\s+|$)', 'iu'), 'Trừ ');
+
+    // 3. Chuẩn hóa từ cộng đứng đầu câu hoặc sau đại từ
+    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:cộng|khen|thưởng|tặng)(?:\s+|$)/iu, 'Cộng ');
+    text = text.replace(/^(?:cổng|cọng|chọn|cộng)(?:\s+|$)/iu, 'Cộng ');
     // Nếu bắt đầu bằng "Công" nhưng từ tiếp theo KHÔNG PHẢI là "Hậu" (học sinh Công Hậu) -> thực chất là "Cộng"
-    text = text.replace(/^(công)\s+(?!hậu\b)/i, 'Cộng ');
+    text = text.replace(/^(?:công)\s+(?!hậu(?:\s+|$))/iu, 'Cộng ');
 
-    // 3. Chuẩn hóa "trần [tên học sinh]" ở bất kỳ vị trí nào (vì lớp 1/8 không có bạn nào họ Trần)
+    // 4. Chuẩn hóa "... [từ trừ] + [tên học sinh]" ở bất kỳ vị trí nào trong câu
     if (Array.isArray(students)) {
       students.forEach(s => {
         const sClean = removeVietnameseTones(s.name);
-        const reg = new RegExp('\\b(trần|từ|trực|chừ)\\s+(' + sClean + ')\\b', 'gi');
-        text = text.replace(reg, 'Trừ $2');
+        const reg = new RegExp('(?:^|[\\s,;!?])(?:' + truVariants + '|trừ|bớt|phạt)\\s+(?:điểm\\s+)?(?:của\\s+|cho\\s+|bạn\\s+|bé\\s+|em\\s+)?(' + s.name + '|' + sClean + ')(?=[\\s,;!?]|$)', 'giu');
+        text = text.replace(reg, ' Trừ $1 ');
       });
     }
 
-    return text;
+    return text.trim().replace(/\s+/g, ' ');
   }
 
   // Chuyển đổi từ ngữ chỉ số lượng tiếng Việt thành số
@@ -263,9 +269,16 @@
         if (!cand) continue;
         const normalized = normalizeTranscript(cand, students);
         const parsed = this.parseCommandGrammar(cand, normalized, students);
-        if ((parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide) {
-          bestCommand = parsed;
-          break;
+        const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide;
+        if (hasTarget) {
+          // Ưu tiên phương án nhận diện có hành động rõ ràng (Cộng hoặc Trừ)
+          if (parsed.actionFound) {
+            bestCommand = parsed;
+            break;
+          }
+          if (!bestCommand) {
+            bestCommand = parsed;
+          }
         }
       }
 
@@ -290,19 +303,21 @@
       let actionFound = false;
 
       const firstWord = clean.split(' ')[0];
-      // Nếu từ đầu tiên là nhóm Trừ (bao gồm cả các từ Google nghe nhầm như tran, tu, truc, chu)
-      if (['tru', 'tran', 'tu', 'phat', 'nhac', 'bot', 'rut'].includes(firstWord)) {
+
+      // Nhóm từ khoá chỉ hành động TRỪ (bao gồm cả các từ nghe nhầm phổ biến của Google STT)
+      const negativeWords = [
+        'tru', 'tran', 'tu', 'truc', 'chu', 'cho', 'phat', 'nhac nho', 'nhac', 'bot', 'rut', 'ha',
+        'mat trat tu', 'noi chuyen', 'vi pham', 'loi', 'chua ngoan', 'quay cop', 'khong lam bai',
+        'chua lam bai', 'quen vo', 'quen sach'
+      ];
+
+      // Ưu tiên 1: Kiểm tra hành động Trừ
+      if (['tru', 'bot', 'phat', 'nhac', 'rut', 'ha'].includes(firstWord)) {
         isNegative = true;
         actionFound = true;
-      } else if (['cong', 'khen', 'thuong', 'cho', 'tang', 'them', 'cham'].includes(firstWord)) {
-        isNegative = false;
-        actionFound = true;
-      }
-
-      if (!actionFound) {
-        const negativeWords = ['tru', 'tran', 'tu', 'phat', 'nhac nho', 'nhac', 'bot', 'rut', 'mat trat tu', 'noi chuyen', 'vi pham', 'loi', 'chua ngoan', 'quay cop', 'khong lam', 'quen vo'];
+      } else {
         for (const nw of negativeWords) {
-          if (new RegExp('\\b' + nw + '\\b', 'i').test(clean)) {
+          if (new RegExp('(?:^|[\\s,;!?])' + nw + '(?=[\\s,;!?]|$)', 'i').test(clean)) {
             isNegative = true;
             actionFound = true;
             break;
@@ -310,10 +325,31 @@
         }
       }
 
+      // Ưu tiên 2: Nếu không phải hành động Trừ, kiểm tra nhóm CỘNG
+      if (!actionFound) {
+        const positiveWords = [
+          'cong', 'khen', 'thuong', 'tang', 'them', 'cham ngoan', 'phat bieu', 'doc to', 'viet dep',
+          'chu dep', 'lam dung', 'lam nhanh', 'tich cuc', 'gioi', 'xuat sac'
+        ];
+
+        if (['cong', 'khen', 'thuong', 'tang', 'them', 'cham'].includes(firstWord)) {
+          isNegative = false;
+          actionFound = true;
+        } else {
+          for (const pw of positiveWords) {
+            if (new RegExp('(?:^|[\\s,;!?])' + pw + '(?=[\\s,;!?]|$)', 'i').test(clean)) {
+              isNegative = false;
+              actionFound = true;
+              break;
+            }
+          }
+        }
+      }
+
       // 3. Trích xuất số điểm
       let points = parseVietnameseNumber(normalized);
       if (!points || points <= 0 || points > 100) {
-        points = isNegative ? 2 : 5; // Mặc định nếu cô không đọc số điểm
+        points = isNegative ? 2 : 5; // Mặc định: trừ 2 hoặc cộng 5 nếu cô không đọc số điểm
       }
 
       // 4. Trích xuất lý do (nếu cô có nói thêm lý do)
@@ -337,6 +373,8 @@
         normalized,
         isClassWide,
         isNegative,
+        actionFound,
+        actionUnknown: !actionFound,
         points,
         reason,
         student,
@@ -432,8 +470,22 @@
     executeParsedCommand(cmd, students) {
       if (!cmd) return;
 
-      // Hiển thị câu lệnh trên popup
+      // Hiển thị câu lệnh trên popup & Dynamic Island
       this.updateTranscriptDisplay(cmd.raw, cmd);
+
+      // 0. Trường hợp KHÔNG XÁC ĐỊNH ĐƯỢC HÀNH ĐỘNG CỘNG HAY TRỪ
+      // (Bảo vệ tuyệt đối: Tránh trường hợp máy nghe bập bõm rồi tự động cộng điểm nhầm)
+      if (cmd.actionUnknown) {
+        if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        }
+        const msg = `Chưa rõ cô muốn CỘNG hay TRỪ điểm. Cô hãy đọc rõ: "Cộng [Tên]..." hoặc "Trừ [Tên]...". (Máy nghe được: "${cmd.raw}")`;
+        this.showStatusToast(msg, '❓');
+        setTimeout(() => {
+          this.speakFeedback('Chưa rõ cộng hay trừ. Cô vui lòng đọc lại kèm từ Cộng hoặc Trừ nhé.');
+        }, 400);
+        return;
+      }
 
       // 1. Trường hợp áp dụng cho CẢ LỚP
       if (cmd.isClassWide) {
@@ -675,6 +727,28 @@
       const transcriptEl = document.getElementById('voiceTranscriptResult');
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
+
+      // 1. Trường hợp không rõ Cộng hay Trừ
+      if (parsedCmd && parsedCmd.actionUnknown) {
+        if (transcriptEl) {
+          transcriptEl.innerHTML = `
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
+              <div style="font-size: 14px; font-weight: 700; color: #DC2626; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <span>⚠️ Chưa rõ CỘNG hay TRỪ. Cô hãy nói kèm từ: <strong>"Cộng"</strong> hoặc <strong>"Trừ"</strong> nhé!</span>
+              </div>
+            </div>
+          `;
+        }
+        if (liveBar && liveText) {
+          liveBar.classList.add('active');
+          liveText.innerHTML = `⚠️ Nghe được: <em>"${rawText}"</em> (Chưa rõ lệnh Cộng hay Trừ)`;
+          setTimeout(() => {
+            if (liveBar) liveBar.classList.remove('active');
+          }, 3500);
+        }
+        return;
+      }
 
       const hasTarget = parsedCmd && (parsedCmd.isClassWide || (parsedCmd.students && parsedCmd.students.length > 0) || parsedCmd.student);
 
