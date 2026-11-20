@@ -182,7 +182,6 @@ const StorageManager = {
         { id: 4, name: 'Tổ 4 - Hổ Vui Vẻ', mascot: '🐯', color: '#96CEB4', stars: 0 }
       ],
       students: isDefaultClass ? [
-        { id: 'hs-1790097391777-1', name: 'Quốc An', group: 4, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-2', name: 'Minh An', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-3', name: 'Phúc Anh', group: 3, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
         { id: 'hs-1790097391777-4', name: 'Nguyên Bình', group: 2, stars: 0, status: 'active', sleepUntil: 0, likes: 0 },
@@ -290,12 +289,18 @@ const StorageManager = {
         if (isDefaultClass && data && data.students && data.students.length === 16 && data.students.some(s => s.name === 'Đỗ Đức Anh')) {
           data = null;
         }
+        if (isDefaultClass && data && data.students) {
+          data.students = data.students.filter(s => s.id !== 'hs-1790097391777-1' && s.name !== 'Quốc An');
+        }
       }
     } catch (e) {
       console.warn('Could not read localStorage:', e);
     }
 
     // Bảo vệ và tự động khôi phục dữ liệu gốc nếu bị mất hoặc rơi về 0 sao
+    if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+      window.__INITIAL_DATA__.students = window.__INITIAL_DATA__.students.filter(s => s.id !== 'hs-1790097391777-1' && s.name !== 'Quốc An');
+    }
     if (isDefaultClass && window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students && window.__INITIAL_DATA__.students.length >= 30) {
       const initialTotalStars = (window.__INITIAL_DATA__.students || []).reduce((sum, s) => sum + (Number(s.stars) || 0), 0);
       const currentTotalStars = (data && data.students) ? data.students.reduce((sum, s) => sum + (Number(s.stars) || 0), 0) : 0;
@@ -681,16 +686,23 @@ const StorageManager = {
 
   deleteStudent(studentId) {
     const data = this.loadData();
-    data.students = data.students.filter(s => s.id !== studentId);
+    data.students = (data.students || []).filter(s => s.id !== studentId);
+    if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+      window.__INITIAL_DATA__.students = window.__INITIAL_DATA__.students.filter(s => s.id !== studentId);
+    }
     this.saveData(data);
     return data;
   },
 
   updateStudentName(studentId, newName) {
     const data = this.loadData();
-    const student = data.students.find(s => s.id === studentId);
+    const student = (data.students || []).find(s => s.id === studentId);
     if (student) {
       student.name = (newName || '').trim();
+      if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+        const initStudent = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
+        if (initStudent) initStudent.name = student.name;
+      }
       this.saveData(data);
     }
     return data;
@@ -698,9 +710,13 @@ const StorageManager = {
 
   updateStudentGroup(studentId, newGroupId) {
     const data = this.loadData();
-    const student = data.students.find(s => s.id === studentId);
+    const student = (data.students || []).find(s => s.id === studentId);
     if (student) {
-      student.group = parseInt(newGroupId, 10);
+      student.group = parseInt(newGroupId, 10) || 1;
+      if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+        const initStudent = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
+        if (initStudent) initStudent.group = student.group;
+      }
       this.saveData(data);
     }
     return data;

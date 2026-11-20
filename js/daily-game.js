@@ -20,6 +20,7 @@
       this.selectedGroupFilter = 'all'; // 'all' | 1 | 2 | 3 | 4
       this.selectionViewMode = 'list'; // 'list' (danh sách dòng ngang) | 'grid' (thẻ vuông)
       this.searchQuery = '';
+      this.instantMode = true; // Mặc định bật chế độ siêu tốc ra đòn tức thì (theo yêu cầu của cô)
 
       this.choices = [
         { id: 'rock', name: 'BÚA', emoji: '✊', beats: 'scissors', color: '#EF4444' },
@@ -132,6 +133,8 @@
         this.renderSelectionView();
       } else if (this.currentView === 'arena') {
         this.renderArenaView();
+      } else if (this.currentView === 'celebration') {
+        this.renderCelebrationView();
       }
     }
 
@@ -184,17 +187,22 @@
                 🟢 Chỉ Chọn Bé Ngoan Hôm Nay
               </button>
               <button type="button" id="dmgBtnSelectAll" class="btn-header" style="font-size: 12px; font-weight: 700;">
-                👥 Chọn Cả Lớp (36 bạn)
+                👥 Chọn Cả Lớp (${totalCount} bạn)
               </button>
               <button type="button" id="dmgBtnClearAll" class="btn-header" style="font-size: 12px; color: #64748B;">
                 ❌ Bỏ chọn hết
               </button>
             </div>
 
-            <!-- Nút Bắt đầu thi đấu Oẳn tù tì -->
-            <button type="button" id="dmgBtnStartArena" class="btn-header primary" style="background: linear-gradient(135deg, #FF6B6B, #EE5253); padding: 9px 22px; font-size: 15px; font-weight: 800; border-radius: 20px; box-shadow: 0 4px 15px rgba(238, 82, 83, 0.4);" ${selectedCount === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-              🚀 BẮT ĐẦU VÒNG ĐẤU OẲN TÙ TÌ ▶
-            </button>
+            <!-- 2 LỰA CHỌN TRAO KẸO: 1 CHẠM SIÊU TỐC TOÀN THỂ HOẶC ĐẤU TỪNG BÉ -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+              <button type="button" id="dmgBtnAwardAllDirectly" class="btn-header primary" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #FFF; padding: 9px 18px; font-size: 14px; font-weight: 900; border-radius: 20px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); display: inline-flex; align-items: center; gap: 6px;" ${selectedCount === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Trao kẹo siêu tốc và vinh danh tất cả bé ngoan chỉ trong 3 giây!">
+                🎉 TRAO KẸO TẤT CẢ (1 CHẠM)
+              </button>
+              <button type="button" id="dmgBtnStartArena" class="btn-header" style="background: linear-gradient(135deg, #FF6B6B, #EE5253); color: #FFF; border: none; padding: 9px 18px; font-size: 14px; font-weight: 800; border-radius: 20px; box-shadow: 0 4px 14px rgba(238, 82, 83, 0.35); display: inline-flex; align-items: center; gap: 6px;" ${selectedCount === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} title="Chơi oẳn tù tì đối kháng từng bé với máy">
+                ⚔️ Đấu Từng Bé ▶
+              </button>
+            </div>
           </div>
 
           <!-- THANH LỌC HÀNG NGANG THEO TỔ & TÌM KIẾM (LIST VIEW NHANH) -->
@@ -453,7 +461,12 @@
         });
       }
 
-      // Nút Bắt đầu thi đấu
+      // Nút Trao Kẹo Tất Cả Bé Ngoan (1 Chạm Siêu Tốc)
+      document.getElementById('dmgBtnAwardAllDirectly')?.addEventListener('click', () => {
+        this.awardAllSelectedStudents();
+      });
+
+      // Nút Bắt đầu thi đấu Oẳn tù tì từng bé
       document.getElementById('dmgBtnStartArena')?.addEventListener('click', () => {
         if (this.selectedStudentIds.size === 0) return;
         this.currentView = 'arena';
@@ -478,11 +491,18 @@
           if (badgeCountEl) {
             badgeCountEl.textContent = this.selectedStudentIds.size;
           }
+          const hasSelected = (this.selectedStudentIds.size > 0);
           const btnStart = document.getElementById('dmgBtnStartArena');
           if (btnStart) {
-            btnStart.disabled = (this.selectedStudentIds.size === 0);
-            btnStart.style.opacity = (this.selectedStudentIds.size === 0) ? '0.5' : '1';
-            btnStart.style.cursor = (this.selectedStudentIds.size === 0) ? 'not-allowed' : 'pointer';
+            btnStart.disabled = !hasSelected;
+            btnStart.style.opacity = hasSelected ? '1' : '0.5';
+            btnStart.style.cursor = hasSelected ? 'pointer' : 'not-allowed';
+          }
+          const btnAwardAll = document.getElementById('dmgBtnAwardAllDirectly');
+          if (btnAwardAll) {
+            btnAwardAll.disabled = !hasSelected;
+            btnAwardAll.style.opacity = hasSelected ? '1' : '0.5';
+            btnAwardAll.style.cursor = hasSelected ? 'pointer' : 'not-allowed';
           }
 
           // Cập nhật giao diện của item được bấm
@@ -530,9 +550,14 @@
         <div style="display: flex; flex-direction: column; gap: 14px; text-align: center;">
           <!-- Thanh điều hướng trên sàn đấu -->
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: #F8FAFC; border-radius: 16px; padding: 8px 14px; border: 1.5px solid #E2E8F0;">
-            <button type="button" id="dmgBtnBackToSelection" class="btn-header" style="font-size: 13px; font-weight: 700;">
-              ⬅️ Đổi Danh Sách Bé
-            </button>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" id="dmgBtnBackToSelection" class="btn-header" style="font-size: 13px; font-weight: 700;">
+                ⬅️ Danh Sách Bé
+              </button>
+              <button type="button" id="dmgBtnGoToCelebration" class="btn-header primary" style="background: linear-gradient(135deg, #F59E0B, #D97706); font-size: 13px; font-weight: 800;" title="Xem bảng vinh danh nhận kẹo toàn lớp">
+                🏆 Bảng Vinh Danh
+              </button>
+            </div>
 
             <div style="display: flex; align-items: center; gap: 8px;">
               <span style="font-size: 13px; font-weight: 800; color: #475569;">
@@ -626,8 +651,19 @@
             </div>
           </div>
 
-          <!-- BÀN PHÍM 3 NÚT BẤM CHO BÉ (BÚA - KÉO - BAO) -->
-          <div style="background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 20px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          <!-- BÀN PHÍM 3 NÚT BẤM CHO BÉ (BÚA - KÉO - BAO) & TÙY CHỌN TỐC ĐỘ -->
+          <div style="background: #FFFFFF; border: 2px solid #E2E8F0; border-radius: 20px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <!-- THANH TÙY CHỌN TỐC ĐỘ & MỞ HỘP KẸO MAY MẮN SIÊU NHANH -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; padding: 8px 12px; background: #F8FAFC; border-radius: 14px; border: 1.5px solid #E2E8F0;">
+              <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: #4F46E5; cursor: pointer;">
+                <input type="checkbox" id="dmgToggleInstantMode" ${this.instantMode ? 'checked' : ''} style="accent-color: #4F46E5; width: 16px; height: 16px; cursor: pointer;">
+                ⚡ Ra chiêu tức thì (Bỏ đếm ngược 3..2..1, chơi siêu tốc 1s/bé)
+              </label>
+              <button type="button" id="dmgBtnInstantLuckyBox" class="btn-header primary" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: #FFF; border: none; padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 900; cursor: pointer; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35); display: inline-flex; align-items: center; gap: 5px;" title="Chạm mở kẹo may mắn vị dâu/sô-cô-la/sữa nhận kẹo liền trong 1 giây!">
+                🎁 Mở Hộp Kẹo May Mắn (1 Chạm)
+              </button>
+            </div>
+
             <div style="font-size: 13px; font-weight: 800; color: #64748B; margin-bottom: 10px;">
               👇 Bé hãy chạm vào 1 trong 3 nút dưới đây để ra đòn (hoặc cô bấm theo lời bé nói):
             </div>
@@ -652,6 +688,21 @@
       document.getElementById('dmgBtnBackToSelection')?.addEventListener('click', () => {
         this.currentView = 'selection';
         this.render();
+      });
+
+      document.getElementById('dmgBtnGoToCelebration')?.addEventListener('click', () => {
+        this.currentView = 'celebration';
+        this.render();
+      });
+
+      // Toggle chế độ siêu tốc ra đòn tức thì
+      document.getElementById('dmgToggleInstantMode')?.addEventListener('change', (e) => {
+        this.instantMode = e.target.checked;
+      });
+
+      // Nút mở hộp kẹo may mắn 1 chạm
+      document.getElementById('dmgBtnInstantLuckyBox')?.addEventListener('click', () => {
+        this.playInstantLuckyBox(currentStudent);
       });
 
       document.getElementById('dmgBtnPrevStudent')?.addEventListener('click', () => {
@@ -720,7 +771,23 @@
 
       const aiChoiceObj = this.choices.find(c => c.id === aiChoiceId);
 
-      // Bắt đầu đếm ngược 3 nhịp kịch tính
+      // Chế độ siêu tốc ra đòn tức thì (không cần chờ đếm ngược 3..2..1)
+      if (this.instantMode) {
+        if (countdownText) {
+          countdownText.innerHTML = '<span style="font-size: 18px; font-weight: 900; color: #10B981;">⚡ RA CHIÊU!</span>';
+        }
+        if (playerHandEl) playerHandEl.classList.add('dmg-hand-animating');
+        if (aiHandEl) aiHandEl.classList.add('dmg-hand-animating');
+        if (window.soundFx && typeof window.soundFx.playWheelTick === 'function') {
+          window.soundFx.playWheelTick();
+        }
+        this.countdownTimer = setTimeout(() => {
+          this.resolveRound(playerChoiceObj, aiChoiceObj, currentStudent);
+        }, 220);
+        return;
+      }
+
+      // Bắt đầu đếm ngược 3 nhịp kịch tính (khi tắt chế độ siêu tốc)
       let count = 3;
       const countPhrases = ['Oẳn tù tì...', 'Ra cái gì...', 'Ra cái này!'];
 
@@ -927,6 +994,202 @@
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 2800);
       }
+    }
+
+    // ==========================================
+    // PHƯƠNG ÁN SIÊU TỐC 1: TRAO KẸO TOÀN THỂ 1 CHẠM (3 GIÂY)
+    // ==========================================
+    awardAllSelectedStudents() {
+      if (this.selectedStudentIds.size === 0) {
+        alert('Cô vui lòng chọn ít nhất 1 học sinh ngoan để trao kẹo nhé!');
+        return;
+      }
+
+      // Đánh dấu tất cả các bé được chọn là đã nhận kẹo
+      this.selectedStudentIds.forEach(id => {
+        this.wonCandyStudentIds.add(id);
+      });
+
+      if (window.soundFx) {
+        if (typeof window.soundFx.playCheer === 'function') window.soundFx.playCheer();
+        if (typeof window.soundFx.playHatch === 'function') window.soundFx.playHatch();
+      }
+
+      this.triggerCandyBurst();
+
+      if (window.VoiceAssistant && typeof window.VoiceAssistant.speakFeedback === 'function') {
+        window.VoiceAssistant.speakFeedback(`Hoan hô! Đã trao kẹo cho ${this.selectedStudentIds.size} bé ngoan của Lớp Một Tám!`);
+      }
+
+      this.currentView = 'celebration';
+      this.render();
+    }
+
+    // ==========================================
+    // PHƯƠNG ÁN SIÊU TỐC 2: MỞ HỘP KẸO MAY MẮN 1 CHẠM (CHO TỪNG BÉ)
+    // ==========================================
+    playInstantLuckyBox(currentStudent) {
+      if (this.isRoundPlaying) return;
+      this.isRoundPlaying = true;
+
+      const candyFlavors = [
+        { name: 'Kẹo Mút Cầu Vồng', emoji: '🍭', color: '#EC4899' },
+        { name: 'Kẹo Dâu Tây Ngọt Lịm', emoji: '🍓', color: '#EF4444' },
+        { name: 'Kẹo Sô-cô-la Béo Ngậy', emoji: '🍫', color: '#854D0E' },
+        { name: 'Kẹo Trái Cây Bảy Sắc', emoji: '🍬', color: '#10B981' },
+        { name: 'Kẹo Sữa Mật Ong', emoji: '🍯', color: '#F59E0B' }
+      ];
+      const flavor = candyFlavors[Math.floor(Math.random() * candyFlavors.length)];
+
+      this.wonCandyStudentIds.add(currentStudent.id);
+
+      if (window.soundFx) {
+        if (typeof window.soundFx.playCheer === 'function') window.soundFx.playCheer();
+        if (typeof window.soundFx.playStar === 'function') window.soundFx.playStar();
+      }
+
+      this.triggerCandyBurst();
+
+      if (window.VoiceAssistant && typeof window.VoiceAssistant.speakFeedback === 'function') {
+        window.VoiceAssistant.speakFeedback(`Chúc mừng ${currentStudent.name} nhận được ${flavor.name}!`);
+      }
+
+      const resultBanner = document.getElementById('dmgResultBanner');
+      if (resultBanner) {
+        resultBanner.style.display = 'block';
+        resultBanner.style.background = '#FEF3C7';
+        resultBanner.style.border = '2px solid #FCD34D';
+        resultBanner.style.color = '#78350F';
+        resultBanner.innerHTML = `
+          <div style="font-size: 28px; margin-bottom: 4px;">${flavor.emoji}✨🎁🎉</div>
+          <div style="font-size: 20px; font-weight: 900; color: #B45309;">
+            ${currentStudent.name.toUpperCase()} ĐÃ MỞ ĐƯỢC ${flavor.name.toUpperCase()}!
+          </div>
+          <div style="font-size: 14px; font-weight: 700; color: #92400E; margin-top: 4px;">
+            Bé xuất sắc nhận được <strong>1 phần ${flavor.name} ${flavor.emoji}</strong> từ cô giáo!
+          </div>
+          <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" id="dmgBtnNextAfterLucky" class="btn-header primary" style="background: linear-gradient(135deg, #10B981, #059669); font-size: 14px; padding: 10px 20px; font-weight: 800; border-radius: 18px;">
+              🎲 Gọi Bạn Tiếp Theo ▶
+            </button>
+            <button type="button" id="dmgBtnCelebrateFromArena" class="btn-header" style="font-size: 13px; font-weight: 700; border-radius: 18px;">
+              🏆 Xem Bảng Vinh Danh
+            </button>
+          </div>
+        `;
+
+        document.getElementById('dmgBtnNextAfterLucky')?.addEventListener('click', () => {
+          this.pickNextStudent();
+        });
+        document.getElementById('dmgBtnCelebrateFromArena')?.addEventListener('click', () => {
+          this.currentView = 'celebration';
+          this.render();
+        });
+      }
+
+      this.isRoundPlaying = false;
+    }
+
+    // ==========================================
+    // MÀN HÌNH 3: BẢNG VINH DANH BÉ NGOAN ĐƯỢC NHẬN KẸO TOÀN LỚP
+    // ==========================================
+    renderCelebrationView() {
+      const totalAwarded = this.wonCandyStudentIds.size;
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 14px; text-align: center;">
+          <!-- BANNER VINH DANH HOÀNH TRÁNG -->
+          <div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #FBBF24 100%); border: 3px solid #F59E0B; border-radius: 24px; padding: 18px 16px; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);">
+            <div style="font-size: 36px; margin-bottom: 4px;">🏆🍬🎉🍭⭐</div>
+            <h2 style="font-size: 22px; font-weight: 900; color: #78350F; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+              BẢNG VINH DANH BÉ NGOAN NHẬN KẸO CUỐI NGÀY
+            </h2>
+            <div style="font-size: 14px; font-weight: 700; color: #92400E;">
+              Lớp 1/8 • Trường Tiểu học Tiểu La • Đã trao kẹo cho <strong style="color: #B45309; font-size: 16px;">${totalAwarded}</strong> bé chăm ngoan hôm nay!
+            </div>
+          </div>
+
+          <!-- THANH ĐIỀU HƯỚNG & HÀNH ĐỘNG NHANH -->
+          <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; align-items: center; background: #F8FAFC; border-radius: 16px; padding: 8px 12px; border: 1.5px solid #E2E8F0;">
+            <button type="button" id="dmgBtnCelebrateSpeak" class="btn-header primary" style="background: linear-gradient(135deg, #8B5CF6, #6D28D9); font-size: 13px; font-weight: 800; padding: 7px 16px; border-radius: 14px;">
+              🎙️ AI Đọc Tuyên Dương Cả Lớp
+            </button>
+            <button type="button" id="dmgBtnCelebrateBurst" class="btn-header primary" style="background: linear-gradient(135deg, #EC4899, #BE185D); font-size: 13px; font-weight: 800; padding: 7px 16px; border-radius: 14px;">
+              🍬 Bắn Thêm Pháo Hoa Kẹo
+            </button>
+            <button type="button" id="dmgBtnCelebrateArena" class="btn-header" style="font-size: 13px; font-weight: 700; padding: 7px 16px; border-radius: 14px;">
+              ⚔️ Đấu Oẳn Tù Tì Từng Bạn
+            </button>
+            <button type="button" id="dmgBtnCelebrateBack" class="btn-header" style="font-size: 13px; font-weight: 700; padding: 7px 16px; border-radius: 14px;">
+              ⬅️ Chọn Lại Danh Sách
+            </button>
+          </div>
+
+          <!-- LƯỚI 4 TỔ KÈM DANH SÁCH BÉ ĐÃ NHẬN KẸO (CHIẾU TV TO RÕ RÀNG) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; text-align: left;">
+            ${[1, 2, 3, 4].map(gId => {
+              const group = this.groups.find(g => g.id === gId) || { name: `Tổ ${gId}`, color: '#4F46E5', mascot: '⭐' };
+              const groupStudents = this.students.filter(s => s.group === gId && this.wonCandyStudentIds.has(s.id));
+              return `
+                <div style="background: #FFFFFF; border-radius: 18px; border: 2px solid ${group.color}40; box-shadow: 0 4px 12px rgba(0,0,0,0.04); overflow: hidden; display: flex; flex-direction: column;">
+                  <div style="background: ${group.color}15; border-bottom: 2px solid ${group.color}30; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 14px; font-weight: 900; color: ${group.color}; display: flex; align-items: center; gap: 6px;">
+                      <span>${group.mascot || '⭐'}</span> ${group.name}
+                    </div>
+                    <span style="font-size: 12px; font-weight: 800; background: ${group.color}; color: #FFF; padding: 2px 8px; border-radius: 10px;">
+                      🍬 ${groupStudents.length} bé
+                    </span>
+                  </div>
+
+                  <div style="padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto;">
+                    ${groupStudents.length === 0 ? `
+                      <div style="color: #94A3B8; font-size: 12px; font-style: italic; text-align: center; padding: 12px;">
+                        Chưa có bạn nào nhận kẹo
+                      </div>
+                    ` : groupStudents.map((s, idx) => `
+                      <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                          <span style="font-size: 11px; font-weight: 800; color: #64748B; width: 16px;">${idx + 1}.</span>
+                          <strong style="font-size: 13px; color: #1E293B;">${s.name}</strong>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 800; color: #D97706; background: #FEF3C7; padding: 2px 6px; border-radius: 8px;">
+                          🍬 Nhận kẹo
+                        </span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      this.modalBody.innerHTML = html;
+
+      // Gắn sự kiện các nút trên màn hình vinh danh
+      document.getElementById('dmgBtnCelebrateSpeak')?.addEventListener('click', () => {
+        if (window.VoiceAssistant && typeof window.VoiceAssistant.speakFeedback === 'function') {
+          window.VoiceAssistant.speakFeedback(`Nhiệt liệt biểu dương ${totalAwarded} bạn học sinh chăm ngoan của Lớp Một Tám hôm nay! Chúc các con nhận kẹo thật vui và luôn chăm ngoan nhé!`);
+        }
+      });
+
+      document.getElementById('dmgBtnCelebrateBurst')?.addEventListener('click', () => {
+        if (window.soundFx && typeof window.soundFx.playCheer === 'function') window.soundFx.playCheer();
+        this.triggerCandyBurst();
+      });
+
+      document.getElementById('dmgBtnCelebrateArena')?.addEventListener('click', () => {
+        this.currentView = 'arena';
+        const list = Array.from(this.selectedStudentIds);
+        this.currentStudentId = list[0] || (this.students[0] && this.students[0].id);
+        this.render();
+      });
+
+      document.getElementById('dmgBtnCelebrateBack')?.addEventListener('click', () => {
+        this.currentView = 'selection';
+        this.render();
+      });
     }
   }
 

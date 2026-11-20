@@ -1531,6 +1531,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!confirmed) return;
 
     state.data.students = (state.data.students || []).filter(s => s.id !== studentId);
+    if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+      window.__INITIAL_DATA__.students = window.__INITIAL_DATA__.students.filter(s => s.id !== studentId);
+    }
     StorageManager.deleteStudent(studentId);
 
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
@@ -2605,6 +2608,37 @@ document.addEventListener('DOMContentLoaded', () => {
     html += '</tbody></table>';
     currentStudentsTableContainer.innerHTML = html;
 
+    // Attach direct name editing (auto save on change / blur / Enter)
+    currentStudentsTableContainer.querySelectorAll('.input-student-name').forEach(input => {
+      const commitNameChange = () => {
+        const studentId = input.dataset.id;
+        const newName = (input.value || '').trim();
+        if (!newName) return;
+        const student = (state.data.students || []).find(s => s.id === studentId);
+        if (student && student.name !== newName) {
+          student.name = newName;
+          StorageManager.updateStudentName(studentId, newName);
+          if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+            window.FirebaseSync.setClassData(state.data);
+          }
+          if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+            const initS = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
+            if (initS) initS.name = newName;
+          }
+          showSyncToast(`✏️ Đã tự động lưu tên bé: <strong>${newName}</strong>`, '💾');
+        }
+      };
+      input.addEventListener('change', commitNameChange);
+      input.addEventListener('blur', commitNameChange);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commitNameChange();
+          input.blur();
+        }
+      });
+    });
+
     // Attach group change
     currentStudentsTableContainer.querySelectorAll('.select-change-group').forEach(select => {
       select.addEventListener('change', (e) => {
@@ -2615,6 +2649,14 @@ document.addEventListener('DOMContentLoaded', () => {
           student.group = newGroup;
         }
         StorageManager.updateStudentGroup(studentId, newGroup);
+        if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+          window.FirebaseSync.setClassData(state.data);
+        }
+        if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+          const initS = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
+          if (initS) initS.group = newGroup;
+        }
+        showSyncToast(`🪑 Đã chuyển bé <strong>${student ? student.name : ''}</strong> sang Tổ ${newGroup}!`, '✅');
       });
     });
 
@@ -2625,6 +2667,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const studentName = btn.dataset.name || 'học sinh';
         if (confirm(`⚠️ Cô có chắc chắn muốn xóa học sinh "${studentName}" khỏi danh sách lớp không?\n\nThao tác này sẽ cập nhật vào trang chủ và đồng bộ lên Đám Mây.`)) {
           state.data.students = (state.data.students || []).filter(s => s.id !== studentId);
+          if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+            window.__INITIAL_DATA__.students = window.__INITIAL_DATA__.students.filter(s => s.id !== studentId);
+          }
           StorageManager.deleteStudent(studentId);
           if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
             window.FirebaseSync.setClassData(state.data);
@@ -2665,6 +2710,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Lưu vào StorageManager (localStorage)
     StorageManager.saveData(state.data);
+
+    // Cập nhật RAM __INITIAL_DATA__
+    if (window.__INITIAL_DATA__) {
+      window.__INITIAL_DATA__ = JSON.parse(JSON.stringify(state.data));
+    }
 
     // 2. Đồng bộ tức thì lên Google Firebase Đám Mây
     if (window.FirebaseSync && typeof window.FirebaseSync.setClassData === 'function') {
