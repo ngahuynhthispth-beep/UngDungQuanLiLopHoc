@@ -2517,6 +2517,56 @@ body {
   }
 }
 
+/* ========================================================
+   MINI-GAME CUỐI NGÀY: OẲN TÙ TÌ NHẬN KẸO (HỌC SINH NGOAN)
+   ======================================================== */
+.dmg-hand-animating {
+  animation: dmgHandShake 0.4s infinite ease-in-out;
+}
+
+@keyframes dmgHandShake {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(-12deg) scale(1.1);
+  }
+}
+
+.dmg-choice-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.dmg-choice-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.dmg-student-item:hover {
+  transform: translateY(-2px);
+}
+
+.dmg-candy-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999999;
+  animation: dmgCandyFall linear forwards;
+}
+
+@keyframes dmgCandyFall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(75vh) rotate(360deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+
 
 
 
