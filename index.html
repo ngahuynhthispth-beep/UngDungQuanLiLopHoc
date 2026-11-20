@@ -1171,14 +1171,48 @@
         <em>Đang lắng nghe cô nói...</em>
       </div>
 
+      <!-- BỘ CHỌN ĐỘNG CƠ NHẬN DIỆN AI -->
+      <div style="background: #F1F5F9; border-radius: 14px; padding: 10px; margin-bottom: 12px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 12px; font-weight: 800; color: #334155;">🧠 Động cơ AI:</span>
+          <span id="voiceEngineStatusBadge" style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 10px; background: #DCFCE7; color: #15803D;">🟢 Web Speech (Tối ưu)</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" id="btnEngineWebSpeech" style="padding: 8px 10px; border-radius: 10px; border: 2px solid #8B5CF6; background: #8B5CF6; color: #FFFFFF; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+            ⚡ Web Speech (Real-time)
+          </button>
+          <button type="button" id="btnEngineWhisper" style="padding: 8px 10px; border-radius: 10px; border: 2px solid #CBD5E1; background: #FFFFFF; color: #475569; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+            🟣 Groq Whisper (Siêu nhạy)
+          </button>
+        </div>
+
+        <!-- Cấu hình Groq Whisper API Key (chỉ hiện khi chọn Whisper) -->
+        <div id="whisperConfigArea" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <label for="inputGroqApiKey" style="font-size: 11px; font-weight: 700; color: #475569;">Groq API Key (Miễn phí):</label>
+            <span id="whisperKeyStatus" style="font-size: 11px; font-weight: 700; color: #B45309;">⚠️ Chưa có Key</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <input type="password" id="inputGroqApiKey" placeholder="gsk_..." style="flex: 1; padding: 6px 10px; font-size: 12px; border: 1.5px solid #CBD5E1; border-radius: 8px; outline: none;" />
+            <button type="button" id="btnSaveGroqApiKey" style="padding: 6px 12px; font-size: 12px; font-weight: 700; background: #7C3AED; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer;">Lưu Key</button>
+          </div>
+          <div style="font-size: 10.5px; color: #64748B; margin-top: 4px; line-height: 1.3;">
+            💡 Lấy key miễn phí trong 10 giây tại: <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color: #7C3AED; font-weight: 700;">console.groq.com/keys</a>. Mô hình <code>whisper-large-v3</code> nhận diện tiếng Việt cực chuẩn, không sợ ồn lớp học!
+          </div>
+        </div>
+      </div>
+
       <!-- Hướng dẫn các câu lệnh mẫu -->
       <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 10px; margin-bottom: 14px; text-align: left; font-size: 12px; color: #1E40AF;">
         <div style="font-weight: 800; margin-bottom: 4px;">💡 Cú pháp đọc chuẩn & nhanh nhất khi đang dạy:</div>
         <div>• <strong>"Cộng + [Tên bé] + [Số điểm]"</strong> (VD: <em>Cộng Gia Hưng 5 điểm</em>, <em>Cộng Minh An 10 điểm</em>)</div>
         <div>• <strong>"Trừ + [Tên bé] + [Số điểm]"</strong> (VD: <em>Trừ Gia Hưng 5 điểm</em>, <em>Trừ Hải Yến 2 điểm</em>)</div>
         <div>• <strong>"Thưởng cả lớp 1 sao"</strong> (cộng điểm cho tất cả 36 bạn)</div>
-        <div style="margin-top: 6px; font-size: 11px; color: #059669; font-weight: 700; border-top: 1px dashed #BFDBFE; pt: 4px;">
+        <div style="margin-top: 6px; font-size: 11px; color: #059669; font-weight: 700; border-top: 1px dashed #BFDBFE; padding-top: 4px;">
           ✨ <em>Đã tích hợp bộ tự sửa lỗi: Kể cả khi Google nghe nhầm thành "Trần Gia Hưng 5 điểm", app vẫn tự động nhận diện chuẩn xác là Trừ 5 điểm cho bé Gia Hưng!</em>
+        </div>
+        <div style="margin-top: 6px; font-size: 11px; color: #4338CA; font-weight: 700; border-top: 1px dashed #BFDBFE; padding-top: 4px;">
+          🎙️ <strong>2 cách dùng Micro:</strong> Nhấn <strong>1 chạm</strong> để bật/tắt nói, hoặc <strong>Nhấn giữ Micro</strong> (kiểu bộ đàm), nói xong thả tay là hệ thống tự chấm ngay!
         </div>
       </div>
 
@@ -1634,7 +1668,7 @@
   <script src="js/noise-meter.js?v=20261118_v9"></script>
   <script src="js/wheel.js?v=20261118_v9"></script>
   <script src="js/card-export.js?v=20261118_v9"></script>
-  <script src="js/voice-assistant.js?v=20261119_v2"></script>
+  <script src="js/voice-assistant.js?v=20261120_v1"></script>
   <script src="js/app.js?v=20261119_v2"></script>
 </body>
 </html>

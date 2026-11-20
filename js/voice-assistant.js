@@ -107,6 +107,17 @@
       this.audioPlayer = null;
       this.lastTranscript = '';
 
+      // Động cơ nhận diện: 'webspeech' (mặc định) hoặc 'whisper' (Groq Whisper AI)
+      this.engine = localStorage.getItem('vltk_voice_engine') || 'webspeech';
+      this.groqApiKey = localStorage.getItem('vltk_groq_api_key') || '';
+      this.mediaRecorder = null;
+      this.audioChunks = [];
+      this.isWhisperRecording = false;
+
+      // Quản lý streaming văn bản thời gian thực và debounce chốt câu
+      this.speechFinalDebounceTimer = null;
+      this.currentInterimText = '';
+
       this.loadVoices();
       if (this.synth && this.synth.onvoiceschanged !== undefined) {
         this.synth.onvoiceschanged = () => this.loadVoices();
@@ -157,6 +168,77 @@
       this.loadVoices();
     }
 
+    setEngine(engine) {
+      this.engine = engine;
+      localStorage.setItem('vltk_voice_engine', engine);
+      this.updateEngineUi();
+    }
+
+    setGroqApiKey(key) {
+      this.groqApiKey = (key || '').trim();
+      localStorage.setItem('vltk_groq_api_key', this.groqApiKey);
+      this.updateEngineUi();
+    }
+
+    updateEngineUi() {
+      const btnWebSpeech = document.getElementById('btnEngineWebSpeech');
+      const btnWhisper = document.getElementById('btnEngineWhisper');
+      const statusBadge = document.getElementById('voiceEngineStatusBadge');
+      const configArea = document.getElementById('whisperConfigArea');
+      const keyStatus = document.getElementById('whisperKeyStatus');
+      const inputKey = document.getElementById('inputGroqApiKey');
+
+      const isWhisper = (this.engine === 'whisper');
+
+      if (btnWebSpeech && btnWhisper) {
+        if (isWhisper) {
+          btnWhisper.style.background = '#7C3AED';
+          btnWhisper.style.color = '#FFFFFF';
+          btnWhisper.style.borderColor = '#7C3AED';
+          btnWebSpeech.style.background = '#FFFFFF';
+          btnWebSpeech.style.color = '#475569';
+          btnWebSpeech.style.borderColor = '#CBD5E1';
+        } else {
+          btnWebSpeech.style.background = '#8B5CF6';
+          btnWebSpeech.style.color = '#FFFFFF';
+          btnWebSpeech.style.borderColor = '#8B5CF6';
+          btnWhisper.style.background = '#FFFFFF';
+          btnWhisper.style.color = '#475569';
+          btnWhisper.style.borderColor = '#CBD5E1';
+        }
+      }
+
+      if (statusBadge) {
+        if (isWhisper) {
+          statusBadge.innerHTML = this.groqApiKey ? '🟣 Groq Whisper (Sẵn sàng)' : '⚠️ Whisper (Chưa nhập Key)';
+          statusBadge.style.background = this.groqApiKey ? '#F3E8FF' : '#FEF3C7';
+          statusBadge.style.color = this.groqApiKey ? '#6B21A8' : '#B45309';
+        } else {
+          statusBadge.innerHTML = '🟢 Web Speech (Tối ưu)';
+          statusBadge.style.background = '#DCFCE7';
+          statusBadge.style.color = '#15803D';
+        }
+      }
+
+      if (configArea) {
+        configArea.style.display = isWhisper ? 'block' : 'none';
+      }
+
+      if (keyStatus) {
+        if (this.groqApiKey) {
+          keyStatus.innerHTML = '✅ Đã lưu Key (' + this.groqApiKey.substring(0, 7) + '...)';
+          keyStatus.style.color = '#15803D';
+        } else {
+          keyStatus.innerHTML = '⚠️ Chưa có Key';
+          keyStatus.style.color = '#B45309';
+        }
+      }
+
+      if (inputKey && !inputKey.value && this.groqApiKey) {
+        inputKey.value = this.groqApiKey;
+      }
+    }
+
     init() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -169,51 +251,69 @@
       try {
         this.recognition = new SpeechRecognition();
         this.recognition.lang = 'vi-VN';
-        this.recognition.continuous = false; // Từng câu lệnh dứt khoát
-        this.recognition.interimResults = false;
+        this.recognition.continuous = true; // Bật continuous để không bị Chrome tự ngắt giữa chừng
+        this.recognition.interimResults = true; // Bật stream thời gian thực để cô thấy chữ ngay khi nói
         this.recognition.maxAlternatives = 5; // Lấy nhiều phương án để bắt lỗi STT tốt nhất
 
         this.recognition.onstart = () => {
           this.isListening = true;
-          this.updateUiState(true);
+          this.updateUiState(true, 'webspeech');
         };
 
         this.recognition.onend = () => {
           this.isListening = false;
-          this.updateUiState(false);
+          this.updateUiState(false, 'webspeech');
         };
 
         this.recognition.onerror = (event) => {
-          console.warn('Lỗi nhận diện giọng nói:', event.error);
+          console.warn('Lỗi nhận diện Web Speech:', event.error);
+          if (event.error === 'no-speech') {
+            // Không phát chuông lỗi khi chỉ là im lặng tạm thời
+            return;
+          }
           this.isListening = false;
-          this.updateUiState(false);
+          this.updateUiState(false, 'webspeech');
           let errMsg = 'Không nhận diện được giọng nói.';
           if (event.error === 'not-allowed') {
             errMsg = 'Trình duyệt chưa được cấp quyền dùng Micro. Cô hãy bấm vào biểu tượng ổ khóa/camera trên thanh địa chỉ để BẬT Micro nhé!';
-          } else if (event.error === 'no-speech') {
-            errMsg = 'Chưa nghe thấy cô nói gì. Hãy nhấn Micro và thử nói lại nhé!';
-          }
-          if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
-            window.soundFx.playPenalty();
+          } else if (event.error === 'network') {
+            errMsg = 'Mạng internet đang chập chờn. Cô hãy thử bấm lại hoặc chuyển sang Whisper AI!';
           }
           this.showStatusToast(errMsg, '⚠️');
         };
 
         this.recognition.onresult = (event) => {
-          const results = event.results;
-          if (!results || results.length === 0) return;
-
-          // Thu thập tất cả các phương án nhận diện được từ Google STT
+          let interimText = '';
+          let finalSegment = '';
           const alternatives = [];
-          for (let i = 0; i < results[0].length; i++) {
-            if (results[0][i] && results[0][i].transcript) {
-              alternatives.push(results[0][i].transcript.trim());
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const res = event.results[i];
+            if (res.isFinal) {
+              finalSegment += res[0].transcript;
+              for (let a = 0; a < res.length; a++) {
+                if (res[a] && res[a].transcript) {
+                  alternatives.push(res[a].transcript.trim());
+                }
+              }
+            } else {
+              interimText += res[0].transcript;
             }
           }
 
-          const primaryTranscript = alternatives[0] || '';
-          this.lastTranscript = primaryTranscript;
-          this.processCommand(primaryTranscript, alternatives);
+          // Cập nhật streaming thời gian thực lên màn hình
+          if (interimText) {
+            this.updateInterimDisplay(interimText);
+          }
+
+          if (finalSegment) {
+            clearTimeout(this.speechFinalDebounceTimer);
+            // Tự động chốt lệnh sau khi cô dứt câu 350ms
+            this.speechFinalDebounceTimer = setTimeout(() => {
+              this.stop();
+              this.processCommand(finalSegment.trim(), alternatives);
+            }, 350);
+          }
         };
       } catch (e) {
         console.error('Không thể khởi tạo SpeechRecognition:', e);
@@ -223,11 +323,6 @@
 
     toggleListening() {
       this.unlockAudio();
-      if (!this.isSupported) {
-        alert('Trình duyệt hiện tại chưa hỗ trợ nhận diện giọng nói Tiếng Việt.\nVui lòng sử dụng Google Chrome, Cốc Cốc hoặc Safari trên iPhone/iPad.');
-        return;
-      }
-
       if (this.isListening) {
         this.stop();
       } else {
@@ -237,20 +332,172 @@
 
     start() {
       this.unlockAudio();
+      if (this.engine === 'whisper') {
+        if (!this.groqApiKey) {
+          this.showStatusToast('Cô chưa nhập Groq API Key. Đang mở hộp cài đặt...', '⚠️');
+          const modal = document.getElementById('voiceAssistantModal');
+          if (modal) modal.classList.add('active');
+          this.setEngine('whisper');
+          return;
+        }
+        this.startWhisper();
+      } else {
+        this.startWebSpeech();
+      }
+    }
+
+    stop() {
+      if (this.engine === 'whisper') {
+        this.stopWhisper();
+      } else {
+        this.stopWebSpeech();
+      }
+    }
+
+    startWebSpeech() {
       if (!this.recognition) return;
       try {
+        this.currentInterimText = '';
         this.recognition.start();
       } catch (e) {
         console.warn('Lỗi start recognition:', e);
       }
     }
 
-    stop() {
+    stopWebSpeech() {
       if (!this.recognition) return;
       try {
         this.recognition.stop();
       } catch (e) {
         console.warn('Lỗi stop recognition:', e);
+      }
+    }
+
+    // --- GHI ÂM VÀ NHẬN DIỆN VỚI GROQ WHISPER AI SIÊU NHẠY ---
+    async startWhisper() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+        this.audioChunks = [];
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4');
+
+        this.mediaRecorder = new MediaRecorder(stream, { mimeType });
+        this.mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            this.audioChunks.push(e.data);
+          }
+        };
+
+        this.mediaRecorder.onstart = () => {
+          this.isListening = true;
+          this.isWhisperRecording = true;
+          this.updateUiState(true, 'whisper');
+        };
+
+        this.mediaRecorder.onstop = async () => {
+          this.isListening = false;
+          this.isWhisperRecording = false;
+          this.updateUiState(false, 'whisper');
+
+          // Dừng track mic
+          stream.getTracks().forEach(t => t.stop());
+
+          if (this.audioChunks.length === 0) return;
+          const audioBlob = new Blob(this.audioChunks, { type: mimeType });
+          this.sendAudioToGroqWhisper(audioBlob);
+        };
+
+        this.mediaRecorder.start(100);
+      } catch (err) {
+        console.error('Lỗi khởi tạo Microphone Whisper:', err);
+        this.showStatusToast('Không thể mở Micro: ' + (err.message || 'Chưa cấp quyền'), '⚠️');
+        this.isListening = false;
+        this.updateUiState(false, 'whisper');
+      }
+    }
+
+    stopWhisper() {
+      if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+        try {
+          this.mediaRecorder.stop();
+        } catch (e) {}
+      }
+    }
+
+    async sendAudioToGroqWhisper(audioBlob) {
+      if (!audioBlob || audioBlob.size < 800) {
+        this.showStatusToast('Âm thanh quá ngắn. Hãy giữ Micro và nói rõ câu lệnh nhé!', '⚠️');
+        return;
+      }
+
+      const liveBar = document.getElementById('floatingVoiceLiveBar');
+      const liveText = document.getElementById('floatingVoiceLiveText');
+      if (liveBar && liveText) {
+        liveBar.classList.add('active');
+        liveText.innerHTML = `⚡ <strong>Whisper AI</strong> đang nhận diện siêu tốc...`;
+      }
+
+      try {
+        const data = (window.StorageManager && window.StorageManager.loadData()) || {};
+        const students = data.students || [];
+        const studentNames = students.map(s => s.name).join(', ');
+
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.webm');
+        formData.append('model', 'whisper-large-v3');
+        formData.append('language', 'vi');
+        formData.append('temperature', '0.0');
+        // Nạp toàn bộ danh sách 36 tên học sinh lớp 1/8 làm prompt mồi ngữ cảnh
+        formData.append('prompt', `Danh sách học sinh Lớp 1/8 Trường Tiểu La: ${studentNames}. Lệnh: Cộng, Trừ, Khen thưởng, sao, điểm.`);
+        formData.append('response_format', 'json');
+
+        const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.groqApiKey}`
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          const errJson = await response.json().catch(() => ({}));
+          throw new Error(errJson.error ? errJson.error.message : `Lỗi HTTP ${response.status}`);
+        }
+
+        const resJson = await response.json();
+        const transcribedText = (resJson && resJson.text) ? resJson.text.trim() : '';
+
+        if (!transcribedText) {
+          this.showStatusToast('Whisper AI chưa nghe rõ. Cô hãy thử lại nhé!', '⚠️');
+          return;
+        }
+
+        this.processCommand(transcribedText);
+      } catch (err) {
+        console.error('Groq Whisper API error:', err);
+        this.showStatusToast(`Lỗi Whisper AI: ${err.message}`, '⚠️');
+        if (liveBar) liveBar.classList.remove('active');
+      }
+    }
+
+    updateInterimDisplay(interimText) {
+      const transcriptEl = document.getElementById('voiceTranscriptResult');
+      const liveBar = document.getElementById('floatingVoiceLiveBar');
+      const liveText = document.getElementById('floatingVoiceLiveText');
+
+      if (transcriptEl) {
+        transcriptEl.innerHTML = `<span style="color: #6D28D9; font-weight: 700;">🎙️ "${interimText}..."</span>`;
+      }
+      if (liveBar && liveText) {
+        liveBar.classList.add('active');
+        liveText.innerHTML = `🔴 <strong>Đang nghe:</strong> <em>"${interimText}..."</em>`;
       }
     }
 
@@ -691,7 +938,9 @@
     }
 
     // Cập nhật giao diện khi Micro Bật / Tắt
-    updateUiState(isListening) {
+    updateUiState(isListening, engineType = null) {
+      const activeEngine = engineType || this.engine;
+      const isWhisper = (activeEngine === 'whisper');
       const btnHeader = document.getElementById('btnVoiceAssistant');
       const btnToolbar = document.getElementById('btnToolbarVoiceMic');
       const btnFloating = document.getElementById('floatingVoiceBtn');
@@ -701,11 +950,14 @@
       const wave = document.getElementById('voiceWaveAnim');
       const statusText = document.getElementById('voiceStatusText');
 
+      const pulseDot = isWhisper ? '<span class="mic-pulse-dot">🟣</span>' : '<span class="mic-pulse-dot">🔴</span>';
+      const listeningText = isWhisper ? 'Đang Thu Âm (Whisper)...' : 'Đang Nghe...';
+
       // 1. Nút trên Header
       if (btnHeader) {
         if (isListening) {
           btnHeader.classList.add('recording-active');
-          btnHeader.innerHTML = `<span class="mic-pulse-dot">🔴</span> Đang Nghe...`;
+          btnHeader.innerHTML = `${pulseDot} ${listeningText}`;
         } else {
           btnHeader.classList.remove('recording-active');
           btnHeader.innerHTML = `🎙️ Mic AI Chấm Điểm`;
@@ -716,7 +968,7 @@
       if (btnToolbar) {
         if (isListening) {
           btnToolbar.classList.add('listening');
-          btnToolbar.innerHTML = `<span class="mic-pulse-dot">🔴</span> Đang Nghe...`;
+          btnToolbar.innerHTML = `${pulseDot} ${listeningText}`;
         } else {
           btnToolbar.classList.remove('listening');
           btnToolbar.innerHTML = `🎙️ <span>Nói Chấm Điểm</span>`;
@@ -727,7 +979,7 @@
       if (btnFloating) {
         if (isListening) {
           btnFloating.classList.add('listening');
-          btnFloating.innerHTML = `<span class="voice-fab-icon mic-pulse-dot">🔴</span> <span class="voice-fab-text">Đang nghe cô nói...</span>`;
+          btnFloating.innerHTML = `<span class="voice-fab-icon mic-pulse-dot">${isWhisper ? '🟣' : '🔴'}</span> <span class="voice-fab-text">${isWhisper ? 'Đang thu âm Whisper...' : 'Đang nghe cô nói...'}</span>`;
         } else {
           btnFloating.classList.remove('listening');
           btnFloating.innerHTML = `<span class="voice-fab-icon">🎙️</span> <span class="voice-fab-text">Nói Chấm Điểm</span>`;
@@ -739,7 +991,10 @@
         if (isListening) {
           liveBar.classList.add('active');
           if (liveText) {
-            liveText.innerHTML = `🔴 <strong>Đang lắng nghe...</strong> <em>(Nói: "Trừ Gia Hưng 5 điểm" hoặc "Cộng Minh An 10 điểm")</em>`;
+            const hint = isWhisper 
+              ? `🟣 <strong>Whisper AI:</strong> Đang thu âm... <em>(Thả tay hoặc bấm dừng để nhận diện siêu tốc)</em>`
+              : `🔴 <strong>Đang lắng nghe...</strong> <em>(Nói: "Trừ Gia Hưng 5 điểm" hoặc "Cộng Minh An 10 điểm")</em>`;
+            liveText.innerHTML = hint;
           }
         } else {
           setTimeout(() => {
@@ -753,7 +1008,11 @@
       // 5. Cập nhật modal (nếu modal đang mở)
       if (modal && modal.classList.contains('active')) {
         if (isListening) {
-          if (statusText) statusText.innerHTML = 'Cô hãy nói: <strong>"Cộng (hoặc Trừ) + Tên học sinh + Số điểm"</strong>...';
+          if (statusText) {
+            statusText.innerHTML = isWhisper
+              ? '🟣 Whisper AI: <strong>Đang thu âm...</strong> Cô hãy nói xong rồi bấm dừng hoặc thả tay!'
+              : 'Cô hãy nói: <strong>"Cộng (hoặc Trừ) + Tên học sinh + Số điểm"</strong>...';
+          }
           if (wave) wave.style.display = 'flex';
         } else {
           if (wave) wave.style.display = 'none';
@@ -866,50 +1125,133 @@
 
   // Khởi tạo các nút bấm giao diện khi DOM sẵn sàng
   document.addEventListener('DOMContentLoaded', () => {
-    function triggerMicAction() {
-      // 1. Mở khóa âm thanh Web Audio và thẻ Audio TTS ngay trong tương tác bấm của người dùng
-      if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
-        window.VoiceAssistant.unlockAudio();
+    // 1. Cập nhật giao diện Động cơ AI từ dữ liệu đã lưu
+    if (window.VoiceAssistant && typeof window.VoiceAssistant.updateEngineUi === 'function') {
+      window.VoiceAssistant.updateEngineUi();
+    }
+
+    // 2. Thiết lập chế độ KÉP: Chạm 1 lần (Tap-to-Talk) HOẶC Nhấn giữ (Push-to-Talk kiểu bộ đàm)
+    function setupDualModeMicBtn(btn) {
+      if (!btn) return;
+
+      let pressTimer = null;
+      let isPushToTalk = false;
+      let startTime = 0;
+
+      function handleStart(e) {
+        startTime = Date.now();
+        isPushToTalk = false;
+
+        if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
+          window.VoiceAssistant.unlockAudio();
+        }
+        if (window.soundFx) {
+          if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
+          if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
+        }
+
+        pressTimer = setTimeout(() => {
+          isPushToTalk = true;
+          if (window.VoiceAssistant && !window.VoiceAssistant.isListening) {
+            window.VoiceAssistant.start();
+          }
+        }, 280);
       }
-      if (window.soundFx) {
-        if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
-        if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
+
+      function handleEnd(e) {
+        clearTimeout(pressTimer);
+        if (isPushToTalk) {
+          if (e && e.cancelable) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          setTimeout(() => {
+            if (window.VoiceAssistant && window.VoiceAssistant.isListening) {
+              window.VoiceAssistant.stop();
+            }
+          }, 120);
+          return;
+        }
       }
-      // 2. Chuyển đổi trạng thái nghe của Micro
-      window.VoiceAssistant.toggleListening();
+
+      if (window.PointerEvent) {
+        btn.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          handleStart(e);
+        });
+        btn.addEventListener('pointerup', handleEnd);
+        btn.addEventListener('pointercancel', handleEnd);
+      } else {
+        btn.addEventListener('touchstart', handleStart, { passive: true });
+        btn.addEventListener('touchend', handleEnd);
+        btn.addEventListener('touchcancel', handleEnd);
+        btn.addEventListener('mousedown', (e) => {
+          if (e.button === 0) handleStart(e);
+        });
+        btn.addEventListener('mouseup', handleEnd);
+      }
+
+      btn.addEventListener('click', (e) => {
+        if (isPushToTalk) {
+          isPushToTalk = false;
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
+          window.VoiceAssistant.unlockAudio();
+        }
+        if (window.soundFx) {
+          if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
+          if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
+        }
+        if (window.VoiceAssistant) {
+          window.VoiceAssistant.toggleListening();
+        }
+      });
     }
 
-    // 1. Nút trên Header
-    const btnVoice = document.getElementById('btnVoiceAssistant');
-    if (btnVoice) {
-      btnVoice.addEventListener('click', triggerMicAction);
-    }
+    // Gắn hỗ trợ cả 2 chế độ (Tap & Push-to-Talk) cho tất cả các nút Micro
+    setupDualModeMicBtn(document.getElementById('btnVoiceAssistant'));
+    setupDualModeMicBtn(document.getElementById('btnToolbarVoiceMic'));
+    setupDualModeMicBtn(document.getElementById('floatingVoiceBtn'));
+    setupDualModeMicBtn(document.getElementById('btnToggleVoiceInModal'));
 
-    // 2. Nút ngay trên thanh tìm kiếm giao diện chính
-    const btnToolbar = document.getElementById('btnToolbarVoiceMic');
-    if (btnToolbar) {
-      btnToolbar.addEventListener('click', triggerMicAction);
-    }
-
-    // 3. Nút Micro nổi cố định ở góc dưới màn hình
-    const btnFloating = document.getElementById('floatingVoiceBtn');
-    if (btnFloating) {
-      btnFloating.addEventListener('click', triggerMicAction);
-    }
-
-    // Nút trong modal
+    // Nút đóng modal
     const btnCloseModal = document.getElementById('btnCloseVoiceModal');
     if (btnCloseModal) {
       btnCloseModal.addEventListener('click', () => {
-        window.VoiceAssistant.stop();
+        if (window.VoiceAssistant) window.VoiceAssistant.stop();
         const modal = document.getElementById('voiceAssistantModal');
         if (modal) modal.classList.remove('active');
       });
     }
 
-    const btnToggleInModal = document.getElementById('btnToggleVoiceInModal');
-    if (btnToggleInModal) {
-      btnToggleInModal.addEventListener('click', triggerMicAction);
+    // Các nút chuyển đổi Động cơ AI trong Modal
+    const btnEngineWebSpeech = document.getElementById('btnEngineWebSpeech');
+    if (btnEngineWebSpeech) {
+      btnEngineWebSpeech.addEventListener('click', () => {
+        if (window.VoiceAssistant) window.VoiceAssistant.setEngine('webspeech');
+      });
+    }
+
+    const btnEngineWhisper = document.getElementById('btnEngineWhisper');
+    if (btnEngineWhisper) {
+      btnEngineWhisper.addEventListener('click', () => {
+        if (window.VoiceAssistant) window.VoiceAssistant.setEngine('whisper');
+      });
+    }
+
+    const btnSaveGroqApiKey = document.getElementById('btnSaveGroqApiKey');
+    if (btnSaveGroqApiKey) {
+      btnSaveGroqApiKey.addEventListener('click', () => {
+        const inputKey = document.getElementById('inputGroqApiKey');
+        const key = inputKey ? inputKey.value.trim() : '';
+        if (window.VoiceAssistant) {
+          window.VoiceAssistant.setGroqApiKey(key);
+          window.VoiceAssistant.showStatusToast(key ? 'Đã lưu Groq API Key thành công!' : 'Đã xóa Groq API Key!', '✅');
+        }
+      });
     }
   });
 
