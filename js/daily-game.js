@@ -16,6 +16,11 @@
       this.countdownTimer = null;
       this.todayLogsSummary = {}; // studentId -> { pos, neg, hasNeg }
 
+      // Trạng thái bộ lọc và chế độ hiển thị danh sách duyệt bé ngoan
+      this.selectedGroupFilter = 'all'; // 'all' | 1 | 2 | 3 | 4
+      this.selectionViewMode = 'list'; // 'list' (danh sách dòng ngang) | 'grid' (thẻ vuông)
+      this.searchQuery = '';
+
       this.choices = [
         { id: 'rock', name: 'BÚA', emoji: '✊', beats: 'scissors', color: '#EF4444' },
         { id: 'scissors', name: 'KÉO', emoji: '✌️', beats: 'paper', color: '#3B82F6' },
@@ -138,21 +143,31 @@
       const totalCount = this.students.length;
       const wonCount = this.wonCandyStudentIds.size;
 
+      // Lọc danh sách học sinh theo Tổ và Từ khóa tìm kiếm
+      let filteredStudents = this.students;
+      if (this.selectedGroupFilter !== 'all') {
+        filteredStudents = filteredStudents.filter(s => String(s.group) === String(this.selectedGroupFilter));
+      }
+      if (this.searchQuery && this.searchQuery.trim()) {
+        const q = this.searchQuery.trim().toLowerCase();
+        filteredStudents = filteredStudents.filter(s => (s.name || '').toLowerCase().includes(q));
+      }
+
       let html = `
-        <div style="display: flex; flex-direction: column; gap: 14px;">
-          <!-- Banner hướng dẫn & Công cụ lọc nhanh -->
-          <div style="background: #FFF5F5; border: 1.5px solid #FED7D7; border-radius: 16px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Banner hướng dẫn & Thống kê -->
+          <div style="background: #FFF5F5; border: 1.5px solid #FED7D7; border-radius: 16px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div>
               <div style="font-size: 14px; font-weight: 800; color: #9B2C2C;">
                 🎯 Bước 1: Duyệt danh sách bé ngoan được chơi hôm nay
               </div>
               <div style="font-size: 12px; color: #742A2A; margin-top: 2px;">
-                Máy đã tự động chọn các bé <strong>không bị trừ điểm hôm nay</strong>. Cô có thể chạm vào từng bé để Bật/Tắt theo thực tế!
+                Máy đã tự động chọn các bé <strong>không bị trừ điểm hôm nay</strong>. Chạm vào bé để Bật/Tắt!
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <span style="font-size: 13px; font-weight: 800; color: #2B6CB0; background: #EBF8FF; padding: 4px 12px; border-radius: 12px; border: 1px solid #BEE3F8;">
-                Đã chọn: <strong style="color: #2B6CB0; font-size: 15px;">${selectedCount}</strong> / ${totalCount} bạn
+                Đã chọn: <strong id="dmgSelectedCountText" style="color: #2B6CB0; font-size: 15px;">${selectedCount}</strong> / ${totalCount} bạn
               </span>
               ${wonCount > 0 ? `
                 <span style="font-size: 13px; font-weight: 800; color: #D69E2E; background: #FEFCBF; padding: 4px 12px; border-radius: 12px; border: 1px solid #FAF089;">
@@ -162,7 +177,7 @@
             </div>
           </div>
 
-          <!-- Thanh nút thao tác nhanh -->
+          <!-- Thanh nút thao tác nhanh toàn lớp -->
           <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
             <div style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button type="button" id="dmgBtnFilterGood" class="btn-header" style="font-size: 12px; font-weight: 800; background: #DCFCE7; color: #15803D; border: 1.5px solid #86EFAC;">
@@ -177,71 +192,196 @@
             </div>
 
             <!-- Nút Bắt đầu thi đấu Oẳn tù tì -->
-            <button type="button" id="dmgBtnStartArena" class="btn-header primary" style="background: linear-gradient(135deg, #FF6B6B, #EE5253); padding: 10px 22px; font-size: 15px; font-weight: 800; border-radius: 20px; box-shadow: 0 4px 15px rgba(238, 82, 83, 0.4);" ${selectedCount === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+            <button type="button" id="dmgBtnStartArena" class="btn-header primary" style="background: linear-gradient(135deg, #FF6B6B, #EE5253); padding: 9px 22px; font-size: 15px; font-weight: 800; border-radius: 20px; box-shadow: 0 4px 15px rgba(238, 82, 83, 0.4);" ${selectedCount === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
               🚀 BẮT ĐẦU VÒNG ĐẤU OẲN TÙ TÌ ▶
             </button>
           </div>
 
-          <!-- Lưới 36 học sinh -->
-          <div class="dmg-student-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; max-height: 52vh; overflow-y: auto; padding-right: 4px;">
+          <!-- THANH LỌC HÀNG NGANG THEO TỔ & TÌM KIẾM (LIST VIEW NHANH) -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: #F1F5F9; border-radius: 14px; padding: 7px 10px; border: 1px solid #E2E8F0;">
+            <!-- Các Tab tổ nằm hàng ngang -->
+            <div style="display: flex; gap: 5px; align-items: center; overflow-x: auto;">
+              <button type="button" class="dmg-tab-filter" data-group="all" style="padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; border: 1.5px solid ${this.selectedGroupFilter === 'all' ? '#4F46E5' : '#CBD5E1'}; background: ${this.selectedGroupFilter === 'all' ? '#4F46E5' : '#FFFFFF'}; color: ${this.selectedGroupFilter === 'all' ? '#FFFFFF' : '#475569'};">
+                👥 Tất Cả (${totalCount})
+              </button>
+              ${[1, 2, 3, 4].map(gId => {
+                const gCount = this.students.filter(s => s.group === gId).length;
+                const isActive = (String(this.selectedGroupFilter) === String(gId));
+                return `
+                  <button type="button" class="dmg-tab-filter" data-group="${gId}" style="padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; border: 1.5px solid ${isActive ? '#4F46E5' : '#CBD5E1'}; background: ${isActive ? '#4F46E5' : '#FFFFFF'}; color: ${isActive ? '#FFFFFF' : '#475569'};">
+                    Tổ ${gId} (${gCount})
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Nút thao tác nhanh theo tổ đang chọn -->
+            ${this.selectedGroupFilter !== 'all' ? `
+              <div style="display: flex; gap: 6px;">
+                <button type="button" id="dmgBtnSelectGroup" class="btn-header" style="font-size: 11.5px; font-weight: 800; padding: 4px 10px; background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;">
+                  ✓ Chọn Hết Tổ ${this.selectedGroupFilter}
+                </button>
+                <button type="button" id="dmgBtnClearGroup" class="btn-header" style="font-size: 11.5px; font-weight: 700; padding: 4px 10px; background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5;">
+                  ✕ Bỏ Chọn Tổ ${this.selectedGroupFilter}
+                </button>
+              </div>
+            ` : ''}
+
+            <!-- Tìm kiếm & chuyển đổi chế độ xem -->
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <input type="text" id="dmgSearchInput" placeholder="🔍 Tìm tên bé..." value="${this.searchQuery}" style="padding: 5px 10px; border-radius: 8px; border: 1.5px solid #CBD5E1; font-size: 12px; width: 120px; outline: none;" />
+              
+              <div style="display: inline-flex; background: #E2E8F0; padding: 2px; border-radius: 8px;">
+                <button type="button" id="dmgBtnViewList" title="Xem dạng danh sách dòng ngang cực nhanh" style="padding: 4px 8px; font-size: 11px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; background: ${this.selectionViewMode === 'list' ? '#FFFFFF' : 'transparent'}; color: ${this.selectionViewMode === 'list' ? '#4F46E5' : '#64748B'};">
+                  📋 Dòng Ngang
+                </button>
+                <button type="button" id="dmgBtnViewGrid" title="Xem dạng thẻ vuông linh thú" style="padding: 4px 8px; font-size: 11px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; background: ${this.selectionViewMode === 'grid' ? '#FFFFFF' : 'transparent'}; color: ${this.selectionViewMode === 'grid' ? '#4F46E5' : '#64748B'};">
+                  🔲 Thẻ Vuông
+                </button>
+              </div>
+            </div>
+          </div>
       `;
 
-      this.students.forEach(student => {
-        const isSelected = this.selectedStudentIds.has(student.id);
-        const hasWonCandy = this.wonCandyStudentIds.has(student.id);
-        const info = this.todayLogsSummary[student.id] || { hasNegative: false, totalNegative: 0, totalPositive: 0 };
-        const group = this.groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#4F46E5' };
+      if (filteredStudents.length === 0) {
+        html += `
+          <div style="text-align: center; padding: 40px 10px; color: #94A3B8; font-size: 14px; font-weight: 700; background: #F8FAFC; border-radius: 16px; border: 1.5px dashed #CBD5E1;">
+            🔍 Không tìm thấy bạn nào phù hợp với bộ lọc!
+          </div>
+        </div>`;
+      } else if (this.selectionViewMode === 'list') {
+        // ==========================================
+        // CHẾ ĐỘ 1: DANH SÁCH DÒNG NGANG (LIST VIEW) - CỰC NHANH & GỌN
+        // ==========================================
+        html += `
+          <div class="dmg-student-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 6px; max-height: 52vh; overflow-y: auto; padding-right: 4px;">
+        `;
 
-        // Badge trạng thái hôm nay
-        let statusBadge = '';
-        if (hasWonCandy) {
-          statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #FEFCBF; color: #B7791F; padding: 2px 6px; border-radius: 8px;">🍬 Đã nhận kẹo</span>`;
-        } else if (info.hasNegative) {
-          statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #FED7D7; color: #C53030; padding: 2px 6px; border-radius: 8px;">⚠️ Bị trừ ${info.totalNegative}⭐</span>`;
-        } else if (info.totalPositive > 0) {
-          statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #C6F6D5; color: #22543D; padding: 2px 6px; border-radius: 8px;">🟢 Ngoan (+${info.totalPositive}⭐)</span>`;
-        } else {
-          statusBadge = `<span style="font-size: 10px; font-weight: 700; background: #E2E8F0; color: #4A5568; padding: 2px 6px; border-radius: 8px;">Ổn định</span>`;
-        }
+        filteredStudents.forEach((student, idx) => {
+          const isSelected = this.selectedStudentIds.has(student.id);
+          const hasWonCandy = this.wonCandyStudentIds.has(student.id);
+          const info = this.todayLogsSummary[student.id] || { hasNegative: false, totalNegative: 0, totalPositive: 0 };
+          const group = this.groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#4F46E5' };
 
-        const borderStyle = isSelected 
-          ? 'border: 2px solid #22C55E; background: #F0FDF4; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);' 
-          : 'border: 1.5px dashed #CBD5E1; background: #F8FAFC; opacity: 0.55;';
+          let statusBadge = '';
+          if (hasWonCandy) {
+            statusBadge = `<span style="font-size: 11px; font-weight: 800; background: #FEFCBF; color: #B7791F; padding: 2px 7px; border-radius: 8px;">🍬 Đã nhận kẹo</span>`;
+          } else if (info.hasNegative) {
+            statusBadge = `<span style="font-size: 11px; font-weight: 800; background: #FED7D7; color: #C53030; padding: 2px 7px; border-radius: 8px;">⚠️ Bị trừ ${info.totalNegative}⭐</span>`;
+          } else if (info.totalPositive > 0) {
+            statusBadge = `<span style="font-size: 11px; font-weight: 800; background: #C6F6D5; color: #22543D; padding: 2px 7px; border-radius: 8px;">🟢 Ngoan (+${info.totalPositive}⭐)</span>`;
+          } else {
+            statusBadge = `<span style="font-size: 11px; font-weight: 700; background: #E2E8F0; color: #4A5568; padding: 2px 7px; border-radius: 8px;">Ổn định</span>`;
+          }
 
-        const checkMark = isSelected 
-          ? `<span style="position: absolute; top: 6px; right: 6px; background: #22C55E; color: #FFF; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900;">✓</span>`
-          : `<span style="position: absolute; top: 6px; right: 6px; background: #CBD5E1; color: #FFF; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px;">✕</span>`;
+          const rowBg = isSelected ? '#F0FDF4' : '#F8FAFC';
+          const rowBorder = isSelected ? '2px solid #22C55E' : '1.5px dashed #CBD5E1';
+          const rowOpacity = isSelected ? '1' : '0.55';
 
-        let avatarSvg = '';
-        if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
-          avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
-        } else {
-          avatarSvg = `<span style="font-size: 26px;">🐣</span>`;
-        }
+          let avatarSvg = '';
+          if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+          } else {
+            avatarSvg = `<span style="font-size: 20px;">🐣</span>`;
+          }
+
+          const stt = String(idx + 1).padStart(2, '0');
+
+          html += `
+            <div class="dmg-student-item dmg-student-row" data-id="${student.id}" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 12px; border-radius: 12px; cursor: pointer; transition: all 0.15s; user-select: none; border: ${rowBorder}; background: ${rowBg}; opacity: ${rowOpacity};">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                <span class="dmg-check-icon" style="width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; background: ${isSelected ? '#22C55E' : '#CBD5E1'}; color: #FFFFFF; flex-shrink: 0;">
+                  ${isSelected ? '✓' : '✕'}
+                </span>
+                <span style="font-size: 12px; font-weight: 800; color: #94A3B8; width: 20px; text-align: center; flex-shrink: 0;">${stt}</span>
+                <div style="width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  ${avatarSvg}
+                </div>
+                <span style="font-size: 14px; font-weight: 800; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${student.name}">
+                  ${student.name}
+                </span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <span style="font-size: 11px; font-weight: 700; color: #4F46E5; background: #EEF2FF; padding: 2px 7px; border-radius: 6px;">
+                  Tổ ${student.group}
+                </span>
+                <span style="font-size: 12px; font-weight: 800; color: #D97706;">
+                  ${student.stars}⭐
+                </span>
+                <div>${statusBadge}</div>
+              </div>
+            </div>
+          `;
+        });
 
         html += `
-          <div class="dmg-student-item" data-id="${student.id}" style="position: relative; border-radius: 14px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.2s; user-select: none; ${borderStyle}">
-            ${checkMark}
-            <div style="width: 44px; height: 44px; margin: 0 auto 6px;">
-              ${avatarSvg}
             </div>
-            <div style="font-size: 13px; font-weight: 800; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${student.name}">
-              ${student.name}
-            </div>
-            <div style="font-size: 10.5px; color: #64748B; margin-bottom: 4px;">Tổ ${student.group} • ${student.stars} ⭐</div>
-            <div>${statusBadge}</div>
           </div>
         `;
-      });
+      } else {
+        // ==========================================
+        // CHẾ ĐỘ 2: THẺ VUÔNG LINH THÚ (GRID VIEW)
+        // ==========================================
+        html += `
+          <div class="dmg-student-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; max-height: 52vh; overflow-y: auto; padding-right: 4px;">
+        `;
 
-      html += `
+        filteredStudents.forEach(student => {
+          const isSelected = this.selectedStudentIds.has(student.id);
+          const hasWonCandy = this.wonCandyStudentIds.has(student.id);
+          const info = this.todayLogsSummary[student.id] || { hasNegative: false, totalNegative: 0, totalPositive: 0 };
+          const group = this.groups.find(g => g.id === student.group) || { name: 'Tổ 1', color: '#4F46E5' };
+
+          let statusBadge = '';
+          if (hasWonCandy) {
+            statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #FEFCBF; color: #B7791F; padding: 2px 6px; border-radius: 8px;">🍬 Đã nhận kẹo</span>`;
+          } else if (info.hasNegative) {
+            statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #FED7D7; color: #C53030; padding: 2px 6px; border-radius: 8px;">⚠️ Bị trừ ${info.totalNegative}⭐</span>`;
+          } else if (info.totalPositive > 0) {
+            statusBadge = `<span style="font-size: 10px; font-weight: 800; background: #C6F6D5; color: #22543D; padding: 2px 6px; border-radius: 8px;">🟢 Ngoan (+${info.totalPositive}⭐)</span>`;
+          } else {
+            statusBadge = `<span style="font-size: 10px; font-weight: 700; background: #E2E8F0; color: #4A5568; padding: 2px 6px; border-radius: 8px;">Ổn định</span>`;
+          }
+
+          const borderStyle = isSelected 
+            ? 'border: 2px solid #22C55E; background: #F0FDF4; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);' 
+            : 'border: 1.5px dashed #CBD5E1; background: #F8FAFC; opacity: 0.55;';
+
+          const checkMark = isSelected 
+            ? `<span class="dmg-check-icon" style="position: absolute; top: 6px; right: 6px; background: #22C55E; color: #FFF; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900;">✓</span>`
+            : `<span class="dmg-check-icon" style="position: absolute; top: 6px; right: 6px; background: #CBD5E1; color: #FFF; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px;">✕</span>`;
+
+          let avatarSvg = '';
+          if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+          } else {
+            avatarSvg = `<span style="font-size: 26px;">🐣</span>`;
+          }
+
+          html += `
+            <div class="dmg-student-item" data-id="${student.id}" style="position: relative; border-radius: 14px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all 0.2s; user-select: none; ${borderStyle}">
+              ${checkMark}
+              <div style="width: 44px; height: 44px; margin: 0 auto 6px;">
+                ${avatarSvg}
+              </div>
+              <div style="font-size: 13px; font-weight: 800; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${student.name}">
+                ${student.name}
+              </div>
+              <div style="font-size: 10.5px; color: #64748B; margin-bottom: 4px;">Tổ ${student.group} • ${student.stars} ⭐</div>
+              <div>${statusBadge}</div>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
 
       this.modalBody.innerHTML = html;
 
-      // Gắn sự kiện cho các nút trong màn chọn
+      // Gắn sự kiện các nút lọc nhanh toàn lớp
       document.getElementById('dmgBtnFilterGood')?.addEventListener('click', () => {
         this.selectedStudentIds.clear();
         this.students.forEach(s => {
@@ -262,17 +402,68 @@
         this.renderSelectionView();
       });
 
+      // Gắn sự kiện các tab lọc hàng ngang theo tổ
+      this.modalBody.querySelectorAll('.dmg-tab-filter').forEach(tab => {
+        tab.addEventListener('click', () => {
+          this.selectedGroupFilter = tab.dataset.group;
+          this.renderSelectionView();
+        });
+      });
+
+      // Gắn sự kiện chọn / bỏ chọn cả tổ đang lọc
+      document.getElementById('dmgBtnSelectGroup')?.addEventListener('click', () => {
+        if (this.selectedGroupFilter === 'all') return;
+        this.students.filter(s => String(s.group) === String(this.selectedGroupFilter)).forEach(s => {
+          this.selectedStudentIds.add(s.id);
+        });
+        this.renderSelectionView();
+      });
+
+      document.getElementById('dmgBtnClearGroup')?.addEventListener('click', () => {
+        if (this.selectedGroupFilter === 'all') return;
+        this.students.filter(s => String(s.group) === String(this.selectedGroupFilter)).forEach(s => {
+          this.selectedStudentIds.delete(s.id);
+        });
+        this.renderSelectionView();
+      });
+
+      // Gắn sự kiện chuyển đổi chế độ xem Dòng Ngang vs Thẻ Vuông
+      document.getElementById('dmgBtnViewList')?.addEventListener('click', () => {
+        this.selectionViewMode = 'list';
+        this.renderSelectionView();
+      });
+
+      document.getElementById('dmgBtnViewGrid')?.addEventListener('click', () => {
+        this.selectionViewMode = 'grid';
+        this.renderSelectionView();
+      });
+
+      // Gắn sự kiện tìm kiếm tên bé (lọc tức thì không giật)
+      const searchInput = document.getElementById('dmgSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          this.searchQuery = e.target.value.toLowerCase().trim();
+          this.modalBody.querySelectorAll('.dmg-student-item').forEach(el => {
+            const studentId = el.dataset.id;
+            const student = this.students.find(s => s.id === studentId);
+            const nameMatch = !this.searchQuery || (student && (student.name || '').toLowerCase().includes(this.searchQuery));
+            const groupMatch = (this.selectedGroupFilter === 'all') || (student && String(student.group) === String(this.selectedGroupFilter));
+            el.style.display = (nameMatch && groupMatch) ? (this.selectionViewMode === 'list' ? 'flex' : 'block') : 'none';
+          });
+        });
+      }
+
+      // Nút Bắt đầu thi đấu
       document.getElementById('dmgBtnStartArena')?.addEventListener('click', () => {
         if (this.selectedStudentIds.size === 0) return;
         this.currentView = 'arena';
-        // Chọn bạn đầu tiên chưa nhận kẹo, nếu đã nhận hết thì chọn bạn đầu tiên
         const list = Array.from(this.selectedStudentIds);
         const unplayed = list.find(id => !this.wonCandyStudentIds.has(id));
         this.currentStudentId = unplayed || list[0];
         this.render();
       });
 
-      // Gắn sự kiện click vào từng thẻ học sinh để toggle
+      // Gắn sự kiện click vào từng học sinh (toggle 1 chạm mượt mà không nhảy cuộn trang)
       this.modalBody.querySelectorAll('.dmg-student-item').forEach(el => {
         el.addEventListener('click', () => {
           const id = el.dataset.id;
@@ -281,7 +472,28 @@
           } else {
             this.selectedStudentIds.add(id);
           }
-          this.renderSelectionView();
+
+          const isSelected = this.selectedStudentIds.has(id);
+          const badgeCountEl = document.getElementById('dmgSelectedCountText');
+          if (badgeCountEl) {
+            badgeCountEl.textContent = this.selectedStudentIds.size;
+          }
+          const btnStart = document.getElementById('dmgBtnStartArena');
+          if (btnStart) {
+            btnStart.disabled = (this.selectedStudentIds.size === 0);
+            btnStart.style.opacity = (this.selectedStudentIds.size === 0) ? '0.5' : '1';
+            btnStart.style.cursor = (this.selectedStudentIds.size === 0) ? 'not-allowed' : 'pointer';
+          }
+
+          // Cập nhật giao diện của item được bấm
+          el.style.border = isSelected ? '2px solid #22C55E' : '1.5px dashed #CBD5E1';
+          el.style.background = isSelected ? '#F0FDF4' : '#F8FAFC';
+          el.style.opacity = isSelected ? '1' : '0.55';
+          const checkEl = el.querySelector('.dmg-check-icon');
+          if (checkEl) {
+            checkEl.style.background = isSelected ? '#22C55E' : '#CBD5E1';
+            checkEl.textContent = isSelected ? '✓' : '✕';
+          }
         });
       });
     }
