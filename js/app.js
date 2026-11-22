@@ -324,7 +324,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const res = StorageManager.addPointsToStudent(studentId, points, reason, icon);
     refreshData(res ? res.data : null);
 
+    // Cập nhật số sao và hình ảnh linh thú trên Action Modal nếu đang mở
+    const modalStudentStars = document.getElementById('modalStudentStars');
+    const modalPetPreview = document.getElementById('modalPetPreview');
     const updated = (state.data.students || []).find(s => s.id === studentId);
+    if (modalStudentStars && updated) {
+      modalStudentStars.textContent = `${updated.stars} ⭐`;
+    }
+    if (modalPetPreview && updated && window.EggEvolution) {
+      const studentGroupObj = (state.data.groups || []).find(g => g.id === updated.group);
+      modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(updated.stars, updated.status, studentGroupObj ? studentGroupObj.color : null, 100, updated.group, updated.id);
+    }
     if (updated && points > 0 && !isStudentAccumulating(updated)) {
       if (updated.stars >= 200 && !updated.accumulateBonus200) {
         showSyncToast(`🏆 Chúc mừng bé <strong>${updated.name}</strong> đã đạt mốc 200 ⭐ SIÊU ĐẶC BIỆT!`, '🏆');
@@ -4951,6 +4961,15 @@ document.addEventListener('DOMContentLoaded', () => {
   window.applyStudentPoints = applyStudentPoints;
   window.refreshData = refreshData;
   window.showSyncToast = showSyncToast;
+  window.getActiveModalStudent = function() {
+    const am = document.getElementById('actionModal');
+    const qm = document.getElementById('quickScoreModal');
+    const isModalActive = (am && am.classList.contains('active')) || (qm && qm.classList.contains('active'));
+    if (isModalActive && state.selectedStudentId) {
+      return (state.data && state.data.students) ? state.data.students.find(s => s.id === state.selectedStudentId) : null;
+    }
+    return null;
+  };
 
   // Initial render
   refreshData();

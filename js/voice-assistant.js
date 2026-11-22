@@ -606,20 +606,91 @@
         points = isNegative ? 2 : 5; // Mặc định: trừ 2 hoặc cộng 5 nếu cô không đọc số điểm
       }
 
-      // 4. Trích xuất lý do (nếu cô có nói thêm lý do)
-      let reason = isNegative ? 'Nhắc nhở qua giọng nói' : 'Khen thưởng qua giọng nói';
-      if (clean.includes('mat trat tu')) reason = 'Mất trật tự trong giờ học';
-      else if (clean.includes('noi chuyen')) reason = 'Nói chuyện riêng trong lớp';
-      else if (clean.includes('khong lam bai') || clean.includes('chua lam bai')) reason = 'Chưa làm bài tập';
-      else if (clean.includes('quen vo')) reason = 'Quên sách vở đồ dùng học tập';
-      else if (clean.includes('phat bieu')) reason = 'Hăng hái phát biểu xây dựng bài';
-      else if (clean.includes('doc to') || clean.includes('doc bai to')) reason = 'Đọc bài to rõ ràng';
-      else if (clean.includes('viet dep') || clean.includes('chu dep')) reason = 'Chữ viết sạch đẹp nắn nót';
-      else if (clean.includes('cham ngoan')) reason = 'Chăm ngoan gương mẫu';
-      else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
+      // 4. Trích xuất lý do tự nhiên từ câu nói (Ví dụ: "vì đọc bài to", "do giúp bạn nhặt bút", "tại nói chuyện riêng")
+      let naturalReason = '';
+
+      // Danh sách liên từ chỉ nguyên nhân / lý do
+      const reasonRegex = /(?:^|[\s,;])(?:vì\s+lý\s+do|vì\s+lí\s+do|với\s+lý\s+do|với\s+lí\s+do|bởi\s+vì|tại\s+vì|lý\s+do|lí\s+do|vì|do|tại|nhờ)\s+(.+)$/iu;
+
+      // 4.1. Thử bóc tách trực tiếp từ câu raw (văn bản gốc tiếng Việt có dấu do Web Speech API / mic trả về)
+      const rawMatch = (raw || '').match(reasonRegex);
+      const normMatch = (normalized || '').match(reasonRegex);
+      let candidateReason = rawMatch && rawMatch[1] ? rawMatch[1] : (normMatch && normMatch[1] ? normMatch[1] : '');
+
+      if (!candidateReason) {
+        // Thử tìm theo biến thể không dấu trong clean
+        const cleanReasonRegex = /(?:^|[\s,;])(?:vi\s+ly\s+do|vi\s+li\s+do|voi\s+ly\s+do|voi\s+li\s+do|boi\s+vi|tai\s+vi|ly\s+do|li\s+do|vi|do|tai|nho)\s+(.+)$/i;
+        const cleanMatch = clean.match(cleanReasonRegex);
+        if (cleanMatch && cleanMatch[1]) {
+          candidateReason = cleanMatch[1];
+        }
+      }
+
+      if (candidateReason) {
+        // Cắt bỏ các trợ từ / hư từ cảm thán hoặc lịch sự ở cuối câu nói của giáo viên
+        candidateReason = candidateReason
+          .replace(/\s+(?:nhé\s+cô|nha\s+cô|ạ\s+cô|cô\s+nhé|nhé\s+em|nha\s+em|nhé\s+con|nha\s+con|nhé\s+các\s+em|nha\s+các\s+em|nhé|nha|nhe|ạ|nè|cô|nghe|nhen|nào)\s*[.!?~;:]*$/iu, '')
+          .replace(/[.,!?~;:]+$/, '')
+          .trim();
+
+        if (candidateReason.length >= 2) {
+          naturalReason = candidateReason.charAt(0).toUpperCase() + candidateReason.slice(1);
+        }
+      }
+
+      // 4.2. Nếu không có từ "vì/do...", kiểm tra phần nội dung phía sau tên học sinh và số điểm
+      if (!naturalReason && raw) {
+        let remnant = raw;
+        remnant = remnant.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+/iu, '');
+        remnant = remnant.replace(/^(?:cộng|khen|thưởng|tặng|thêm|trừ|bớt|phạt|nhắc|nhắc nhở)\s+/iu, '');
+        if (Array.isArray(students)) {
+          students.forEach(s => {
+            remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|của\\s+|bạn\\s+|bé\\s+|em\\s+)?' + s.name + '\\b', 'giu'), '');
+          });
+        }
+        remnant = remnant.replace(/\b\d+\s*(?:điểm|sao|star|d|p)?\b/giu, '');
+        remnant = remnant.replace(/^(?:điểm|sao|star)\s+/iu, '');
+        remnant = remnant
+          .replace(/\s+(?:nhé\s+cô|nha\s+cô|ạ\s+cô|cô\s+nhé|nhé\s+em|nha\s+em|nhé\s+con|nha\s+con|nhé\s+các\s+em|nha\s+các\s+em|nhé|nha|nhe|ạ|nè|cô|nghe|nhen|nào)\s*[.!?~;:]*$/iu, '')
+          .replace(/^[.,!?~;:\s]+|[.,!?~;:\s]+$/g, '')
+          .trim();
+        if (remnant.length >= 3 && !/^\d+$/.test(remnant)) {
+          naturalReason = remnant.charAt(0).toUpperCase() + remnant.slice(1);
+        }
+      }
+
+      let reason = naturalReason;
+
+      // 4.3. Nếu chưa có lý do cụ thể, đối sánh theo các từ khóa hành vi thường gặp
+      if (!reason) {
+        if (clean.includes('mat trat tu')) reason = 'Mất trật tự trong giờ học';
+        else if (clean.includes('noi chuyen')) reason = 'Nói chuyện riêng trong lớp';
+        else if (clean.includes('khong lam bai') || clean.includes('chua lam bai')) reason = 'Chưa làm bài tập';
+        else if (clean.includes('quen vo') || clean.includes('quen sach')) reason = 'Quên sách vở đồ dùng học tập';
+        else if (clean.includes('phat bieu')) reason = 'Hăng hái phát biểu xây dựng bài';
+        else if (clean.includes('doc to') || clean.includes('doc bai to')) reason = 'Đọc bài to rõ ràng';
+        else if (clean.includes('viet dep') || clean.includes('chu dep')) reason = 'Chữ viết sạch đẹp nắn nót';
+        else if (clean.includes('cham ngoan')) reason = 'Chăm ngoan gương mẫu';
+        else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
+        else if (clean.includes('giup ban')) reason = 'Biết giúp đỡ bạn bè';
+        else if (clean.includes('ve sinh') || clean.includes('truc nhat')) reason = 'Vệ sinh trực nhật sạch sẽ';
+        else {
+          reason = isNegative ? 'Nhắc nhở qua giọng nói' : 'Khen thưởng qua giọng nói';
+        }
+      }
 
       // 5. Tìm danh sách học sinh khớp trong câu nói (nếu không phải lệnh cho cả lớp hay cho tổ)
-      const matchedStudents = (isClassWide || targetGroupId) ? [] : this.findAllStudentMatches(clean, students);
+      let matchedStudents = (isClassWide || targetGroupId) ? [] : this.findAllStudentMatches(clean, students);
+
+      // Nếu không tìm thấy tên học sinh trong câu nói, nhưng đang mở bảng Khen thưởng của 1 học sinh cụ thể
+      if (matchedStudents.length === 0 && !isClassWide && !targetGroupId) {
+        if (typeof window.getActiveModalStudent === 'function') {
+          const activeStudent = window.getActiveModalStudent();
+          if (activeStudent) {
+            matchedStudents = [activeStudent];
+          }
+        }
+      }
       const student = matchedStudents.length > 0 ? matchedStudents[0] : null;
 
       return {
@@ -632,6 +703,7 @@
         actionUnknown: !actionFound,
         points,
         reason,
+        naturalReason,
         student,
         students: matchedStudents
       };
@@ -745,7 +817,7 @@
       // 1. Trường hợp áp dụng cho CẢ LỚP
       if (cmd.isClassWide) {
         const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
-        const reason = cmd.isNegative ? 'Nhắc nhở chung cả lớp' : 'Cả lớp cùng chăm ngoan';
+        const reason = cmd.reason || (cmd.isNegative ? 'Nhắc nhở chung cả lớp' : 'Cả lớp cùng chăm ngoan');
         const icon = cmd.isNegative ? '⚠️' : '⭐';
 
         // Luôn phát âm thanh chuông hiệu ứng tức thì
@@ -763,9 +835,10 @@
 
         if (typeof window.refreshData === 'function') window.refreshData();
 
+        const feedbackReason = cmd.naturalReason ? ` vì ${cmd.naturalReason}` : '';
         const feedback = cmd.isNegative 
-          ? `Đã nhắc nhở trừ ${cmd.points} sao của cả lớp!` 
-          : `Đã cộng ${cmd.points} sao cho cả lớp cùng chăm ngoan!`;
+          ? `Đã nhắc nhở trừ ${cmd.points} sao của cả lớp${feedbackReason}!` 
+          : `Đã cộng ${cmd.points} sao cho cả lớp${feedbackReason}!`;
 
         setTimeout(() => {
           this.speakFeedback(feedback);
@@ -793,9 +866,10 @@
         if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
 
         const groupName = (res && res.group && res.group.name) || `Tổ ${cmd.targetGroupId}`;
+        const feedbackReason = cmd.naturalReason ? ` vì ${cmd.naturalReason}` : '';
         const feedback = cmd.isNegative 
-          ? `Đã trừ ${cmd.points} sao của ${groupName}!` 
-          : `Đã cộng ${cmd.points} sao cho ${groupName}!`;
+          ? `Đã trừ ${cmd.points} sao của ${groupName}${feedbackReason}!` 
+          : `Đã cộng ${cmd.points} sao cho ${groupName}${feedbackReason}!`;
 
         setTimeout(() => {
           this.speakFeedback(feedback);
@@ -854,9 +928,10 @@
       this.showStatusToast(`🎙️ Đã ${actionText} ${Math.abs(actualPoints)} ⭐ cho ${toastSubject} (${cmd.reason})`, cmd.isNegative ? '⚠️' : '🌟');
 
       // Phản hồi giọng nói trợ lý AI sau khi hoàn tất hiệu ứng (trì hoãn tương ứng số lượng bé để nghe rõ chuông và giọng nói)
+      const feedbackReason = cmd.naturalReason ? ` vì ${cmd.naturalReason}` : '';
       const feedbackText = cmd.isNegative 
-        ? `Đã trừ ${cmd.points} sao của ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}!`
-        : `Đã cộng ${cmd.points} sao cho ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}!`;
+        ? `Đã trừ ${cmd.points} sao của ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}${feedbackReason}!`
+        : `Đã cộng ${cmd.points} sao cho ${targetStudents.length > 1 ? 'các bạn' : 'bạn'} ${namesText}${feedbackReason}!`;
 
       const voiceDelay = Math.max(500, targetStudents.length * 140 + 250);
       setTimeout(() => {
