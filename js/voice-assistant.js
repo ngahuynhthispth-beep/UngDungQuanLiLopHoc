@@ -28,30 +28,22 @@
     // Loại bỏ ký tự đặc biệt ở đầu câu mà Google STT có thể chèn vào (dấu gạch ngang, ba chấm, ngoặc...)
     text = text.replace(/^[-–—.…,:;!?~"'\s]+/, '');
 
-    // Biến thể đồng âm Google STT tiếng Việt thường nghe nhầm từ "Trừ":
-    // "Trần", "Từ", "Trực", "Chừ", "Chữ", "Trú", "Trúng", "Trả", "Chờ", "Chớ", "Chở", "Chứ", "Chức", "Chưa", "Chửa", "Trợ", "Trở", "Trớ", "Trù", "Trùm", "Trùng", "Thử", "Thứ", "Thừ"
-    const truVariants = 'trần|từ|trực|chừ|chữ|trú|trúng|trả|chờ|chớ|chở|chứ|chức|chưa|chửa|trợ|trở|trớ|trù|trùm|trùng|thử|thứ|thừ';
+    // 1. Chuẩn hóa đại từ mở đầu: "Cô", "Thầy", "Em", "Tôi", "Bạn", "Xin", "Hãy", "Làm ơn"
+    // Ví dụ: "Cô cộng...", "Cô khen...", "Cô cho...", "Cô thưởng..." -> "Cộng..."
+    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:cộng|khen|thưởng|tặng|thêm|cho)\s+/iu, 'Cộng ');
+    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:trừ|bớt|phạt|nhắc\s+nhở|nhắc)\s+/iu, 'Trừ ');
 
-    // 1. Chuẩn hóa đại từ + từ trừ (vd: "Cô trừ", "Cô chờ", "Cô trần", "Em trừ"...) -> thay bằng "Trừ "
-    text = text.replace(new RegExp('^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\\s+(?:' + truVariants + '|trừ|bớt|phạt)(?:\\s+|$)', 'iu'), 'Trừ ');
+    // 2. Chuẩn hóa "cho bạn / cho bé / cho em" ở đầu câu thành "Cộng "
+    text = text.replace(/^cho\s+(?:bạn|bé|em|học sinh)?\s+/iu, 'Cộng ');
 
-    // 2. Chuẩn hóa từ trừ đứng đầu câu (vd: "Trần", "Chờ", "Chớ", "Chứ", "Từ", "Trực", "Thử", "Bớt", "Phạt"...) -> thay bằng "Trừ "
-    text = text.replace(new RegExp('^(?:' + truVariants + '|trừ|bớt|phạt)(?:\\s+|$)', 'iu'), 'Trừ ');
+    // 3. Chuẩn hóa các biến thể đồng âm mà STT thường nghe nhầm từ "Cộng" ở đầu câu
+    text = text.replace(/^(?:cổng|cọng|công|cống|chọn|chọng|cuộn|cũn)\s+/iu, 'Cộng ');
 
-    // 3. Chuẩn hóa từ cộng đứng đầu câu hoặc sau đại từ
-    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:cộng|khen|thưởng|tặng)(?:\s+|$)/iu, 'Cộng ');
-    text = text.replace(/^(?:cổng|cọng|chọn|cộng)(?:\s+|$)/iu, 'Cộng ');
-    // Nếu bắt đầu bằng "Công" nhưng từ tiếp theo KHÔNG PHẢI là "Hậu" (học sinh Công Hậu) -> thực chất là "Cộng"
-    text = text.replace(/^(?:công)\s+(?!hậu(?:\s+|$))/iu, 'Cộng ');
+    // 4. Chuẩn hóa các từ thưởng/khen ở đầu câu thành "Cộng " để thống nhất cú pháp
+    text = text.replace(/^(?:khen\s+thưởng|khen|thưởng|tặng|thêm)\s+/iu, 'Cộng ');
 
-    // 4. Chuẩn hóa "... [từ trừ] + [tên học sinh]" ở bất kỳ vị trí nào trong câu
-    if (Array.isArray(students)) {
-      students.forEach(s => {
-        const sClean = removeVietnameseTones(s.name);
-        const reg = new RegExp('(?:^|[\\s,;!?])(?:' + truVariants + '|trừ|bớt|phạt)\\s+(?:điểm\\s+)?(?:của\\s+|cho\\s+|bạn\\s+|bé\\s+|em\\s+)?(' + s.name + '|' + sClean + ')(?=[\\s,;!?]|$)', 'giu');
-        text = text.replace(reg, ' Trừ $1 ');
-      });
-    }
+    // 5. Chuẩn hóa các từ trừ/phạt ở đầu câu thành "Trừ "
+    text = text.replace(/^(?:nhắc\s+nhở|bớt|phạt|thu\s+lại)\s+/iu, 'Trừ ');
 
     return text.trim().replace(/\s+/g, ' ');
   }
@@ -556,47 +548,92 @@
       let isNegative = false;
       let actionFound = false;
 
-      const firstWord = clean.split(' ')[0];
+      const rawLower = (raw || '').toLowerCase();
+      const words = clean.split(/\s+/).filter(Boolean);
+      const firstWord = words[0] || '';
+      const firstTwoWords = words.slice(0, 2).join(' ');
 
-      // Nhóm từ khoá chỉ hành động TRỪ (bao gồm cả các từ nghe nhầm phổ biến của Google STT)
-      const negativeWords = [
-        'tru', 'tran', 'tu', 'truc', 'chu', 'cho', 'phat', 'nhac nho', 'nhac', 'bot', 'rut', 'ha',
-        'mat trat tu', 'noi chuyen', 'vi pham', 'loi', 'chua ngoan', 'quay cop', 'khong lam bai',
-        'chua lam bai', 'quen vo', 'quen sach'
-      ];
+      // Nhóm động từ CỘNG
+      const positiveVerbs = ['cong', 'khen', 'thuong', 'tang', 'them'];
 
-      // Ưu tiên 1: Kiểm tra hành động Trừ
-      if (['tru', 'bot', 'phat', 'nhac', 'rut', 'ha'].includes(firstWord)) {
+      // Kiểm tra xem từ "phát" có phải là "phát biểu", "phát thưởng" hay không
+      const isPhatBieu = clean.includes('phat bieu') || clean.includes('phat thuong') || rawLower.includes('phát biểu') || rawLower.includes('phát');
+
+      // BƯỚC 2.1: Động từ mở đầu câu lệnh
+      if (positiveVerbs.includes(firstWord) || firstTwoWords === 'khen thuong' || clean.startsWith('phat bieu')) {
+        isNegative = false;
+        actionFound = true;
+      } else if ((firstWord === 'phat' && !isPhatBieu) || ['tru', 'bot', 'nhac', 'rut', 'ha'].includes(firstWord) || firstTwoWords === 'nhac nho' || firstTwoWords === 'thu lai') {
         isNegative = true;
         actionFound = true;
-      } else {
-        for (const nw of negativeWords) {
-          if (new RegExp('(?:^|[\\s,;!?])' + nw + '(?=[\\s,;!?]|$)', 'i').test(clean)) {
+      }
+
+      // BƯỚC 2.2: Nếu từ đầu câu chưa xác định, tìm kiếm vị trí xuất hiện của động từ Cộng vs Trừ trong câu
+      if (!actionFound) {
+        let posIndex = -1;
+        for (const pv of positiveVerbs) {
+          const match = clean.match(new RegExp('(?:^|[\\s,;!?])' + pv + '(?=[\\s,;!?]|$)', 'i'));
+          if (match) {
+            const idx = match.index || 0;
+            if (posIndex === -1 || idx < posIndex) posIndex = idx;
+          }
+        }
+        if (clean.includes('phat bieu')) {
+          const idx = clean.indexOf('phat bieu');
+          if (posIndex === -1 || idx < posIndex) posIndex = idx;
+        }
+
+        let negIndex = -1;
+        const negativeVerbsList = ['tru', 'bot', 'nhac', 'nhac nho', 'rut', 'ha', 'thu lai'];
+        if (!isPhatBieu && (clean.includes('phat ') || rawLower.includes('phạt'))) {
+          negativeVerbsList.push('phat');
+        }
+        for (const nv of negativeVerbsList) {
+          const match = clean.match(new RegExp('(?:^|[\\s,;!?])' + nv + '(?=[\\s,;!?]|$)', 'i'));
+          if (match) {
+            const idx = match.index || 0;
+            if (negIndex === -1 || idx < negIndex) negIndex = idx;
+          }
+        }
+
+        if (posIndex !== -1 && negIndex === -1) {
+          isNegative = false;
+          actionFound = true;
+        } else if (negIndex !== -1 && posIndex === -1) {
+          isNegative = true;
+          actionFound = true;
+        } else if (posIndex !== -1 && negIndex !== -1) {
+          if (posIndex <= negIndex) {
+            isNegative = false;
+            actionFound = true;
+          } else {
             isNegative = true;
             actionFound = true;
-            break;
           }
         }
       }
 
-      // Ưu tiên 2: Nếu không phải hành động Trừ, kiểm tra nhóm CỘNG
+      // BƯỚC 2.3: Nếu vẫn chưa tìm thấy động từ cốt lõi, đối sánh theo ngữ cảnh hành vi rõ rệt
       if (!actionFound) {
-        const positiveWords = [
-          'cong', 'khen', 'thuong', 'tang', 'them', 'cham ngoan', 'phat bieu', 'doc to', 'viet dep',
-          'chu dep', 'lam dung', 'lam nhanh', 'tich cuc', 'gioi', 'xuat sac'
-        ];
+        const hasSpecificViolation = [
+          'mat trat tu', 'noi chuyen', 'chua ngoan', 'quay cop', 'khong lam bai',
+          'chua lam bai', 'quen vo', 'quen sach'
+        ].some(v => new RegExp('(?:^|[\\s,;!?])' + v + '(?=[\\s,;!?]|$)', 'i').test(clean));
 
-        if (['cong', 'khen', 'thuong', 'tang', 'them', 'cham'].includes(firstWord)) {
+        const hasSpecificPraise = [
+          'cham ngoan', 'phat bieu', 'doc to', 'viet dep', 'chu dep', 'lam dung', 'lam nhanh', 'tich cuc', 'gioi', 'xuat sac'
+        ].some(p => new RegExp('(?:^|[\\s,;!?])' + p + '(?=[\\s,;!?]|$)', 'i').test(clean));
+
+        if (hasSpecificViolation && !hasSpecificPraise) {
+          isNegative = true;
+          actionFound = true;
+        } else if (hasSpecificPraise && !hasSpecificViolation) {
           isNegative = false;
           actionFound = true;
         } else {
-          for (const pw of positiveWords) {
-            if (new RegExp('(?:^|[\\s,;!?])' + pw + '(?=[\\s,;!?]|$)', 'i').test(clean)) {
-              isNegative = false;
-              actionFound = true;
-              break;
-            }
-          }
+          // Mặc định an toàn cho giáo viên: Luôn là CỘNG ĐIỂM KHEN THƯỞNG
+          isNegative = false;
+          actionFound = true;
         }
       }
 
@@ -642,7 +679,8 @@
       if (!naturalReason && raw) {
         let remnant = raw;
         remnant = remnant.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+/iu, '');
-        remnant = remnant.replace(/^(?:cộng|khen|thưởng|tặng|thêm|trừ|bớt|phạt|nhắc|nhắc nhở)\s+/iu, '');
+        remnant = remnant.replace(/^(?:cộng|khen|thưởng|tặng|thêm|trừ|bớt|phạt|nhắc|nhắc nhở|cho)\s+/iu, '');
+        remnant = remnant.replace(/^(?:cho\s+)?(?:bạn|bé|em|học sinh)?\s+/iu, '');
         if (Array.isArray(students)) {
           students.forEach(s => {
             remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|của\\s+|bạn\\s+|bé\\s+|em\\s+)?' + s.name + '\\b', 'giu'), '');
@@ -654,6 +692,10 @@
           .replace(/\s+(?:nhé\s+cô|nha\s+cô|ạ\s+cô|cô\s+nhé|nhé\s+em|nha\s+em|nhé\s+con|nha\s+con|nhé\s+các\s+em|nha\s+các\s+em|nhé|nha|nhe|ạ|nè|cô|nghe|nhen|nào)\s*[.!?~;:]*$/iu, '')
           .replace(/^[.,!?~;:\s]+|[.,!?~;:\s]+$/g, '')
           .trim();
+        const remnantClean = removeVietnameseTones(remnant);
+        if (['cho', 'cho ban', 'cho be', 'cho em', 'diem', 'sao'].includes(remnantClean)) {
+          remnant = '';
+        }
         if (remnant.length >= 3 && !/^\d+$/.test(remnant)) {
           naturalReason = remnant.charAt(0).toUpperCase() + remnant.slice(1);
         }
