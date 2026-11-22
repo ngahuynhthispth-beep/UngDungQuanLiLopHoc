@@ -634,8 +634,8 @@ const EggEvolution = {
             <circle cx="84" cy="34" r="5.5" fill="#FEF08A"/>
           `,
           forehead: `
-            <!-- Chữ Vương (王) trên trán hổ dũng mãnh -->
-            <path d="M 53 28 L 67 28 M 55 33 L 65 33 M 60 25 L 60 38 M 52 38 L 68 38" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
+            <!-- Vằn trán dân gian tự nhiên của Hổ Vàng (chuẩn Tranh Dân Gian Việt Nam, không có chữ Vương) -->
+            <path d="M 60 25 L 60 38 M 52 29 Q 57 33 56 37 M 68 29 Q 63 33 64 37" stroke="#1E293B" stroke-width="2.2" stroke-linecap="round" fill="none"/>
           `,
           muzzle: `
             <ellipse cx="60" cy="58" rx="14" ry="9.5" fill="#FFFBEB" stroke="#FDE047" stroke-width="1.2"/>
