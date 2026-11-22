@@ -322,8 +322,8 @@
         btn.classList.add('active');
       }
 
-      const petAvatarSvg = (window.EggEvolution && window.EggEvolution.getSvg) 
-        ? window.EggEvolution.getSvg(st.stars, st.id) 
+      const petAvatarSvg = (window.EggEvolution && window.EggEvolution.renderPetSVG) 
+        ? window.EggEvolution.renderPetSVG(st.stars, 'active', null, 100, st.group, st.id) 
         : '🥚';
 
       btn.innerHTML = `

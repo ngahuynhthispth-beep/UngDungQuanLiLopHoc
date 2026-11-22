@@ -1144,7 +1144,7 @@
   <script src="js/firebase-config.js?v=20261118_v9"></script>
   <script src="js/firebase-sync.js?v=20261118_v9"></script>
   <script src="js/audio.js?v=20261118_v9"></script>
-  <script src="js/egg-evolution.js?v=20261118_v9"></script>
+  <script src="js/egg-evolution.js?v=20261122_v2"></script>
   <script src="js/initial-data.js?v=20261118_v9"></script>
   <script src="js/storage.js?v=20261118_v9"></script>
   <script src="js/wheel.js?v=20261118_v9"></script>
@@ -1846,7 +1846,7 @@
         document.getElementById('parentGroupTag').style.background = group.color;
         document.getElementById('parentStageName').textContent = student.status === 'sleeping' ? '💤 Đang nghỉ tĩnh tâm' : stage.title;
         document.getElementById('parentStarsTotal').textContent = student.stars;
-        document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, hatchThreshold);
+        document.getElementById('parentPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, hatchThreshold, student.group, student.id);
         document.getElementById('parentLikesCount').textContent = student.likes || 0;
 
         // Cập nhật đường link Soi Bài AI kèm mã lớp & id học sinh

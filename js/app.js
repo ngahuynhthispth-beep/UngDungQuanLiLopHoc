@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <span class="compact-stt">${globalIdx}</span>
           <span class="compact-pet-mini" title="${isSleeping ? '💤 Đang tĩnh tâm' : stage.title}">
-            ${isSleeping ? '💤' : window.EggEvolution.renderPetSVG(student.stars, student.status, group.color)}
+            ${isSleeping ? '💤' : window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, 100, student.group, student.id)}
           </span>
           <div class="compact-student-info">
             <div class="compact-name-row">
@@ -622,11 +622,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="pet-avatar-wrapper">
-          ${window.EggEvolution.renderPetSVG(student.stars, student.status, group.color)}
+          ${window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, 100, student.group, student.id)}
         </div>
 
         <div class="student-name">${student.name}</div>
-        <div class="stage-title">${isSleeping ? '💤 Đang tĩnh tâm' : stage.title}</div>
+        <div class="stage-title">${isSleeping ? '💤 Đang tĩnh tâm' : (stage.isHatched && window.EggEvolution.getCreatureName ? `✨ ${window.EggEvolution.getCreatureName(student.stars, student.group, group.color, student.id)}` : stage.title)}</div>
 
         <div class="stars-display card-stars-click" data-id="${student.id}" title="Hiện có: ${student.stars} ⭐ - Chạm để tự gõ số điểm" style="cursor: pointer;">
           <span>⭐</span> <span>${student.stars}</span>
@@ -1042,7 +1042,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     modalTitle.textContent = `Khen thưởng: ${student.name}`;
     modalStudentStars.textContent = `${student.stars} ⭐`;
-    modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status);
+    const studentGroupObj = (state.data.groups || []).find(g => g.id === student.group);
+    modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, studentGroupObj ? studentGroupObj.color : null, 100, student.group, student.id);
 
     if (student.status === 'sleeping') {
       sleepBtn.innerHTML = `
@@ -1240,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (quickScoreStarsBadge) quickScoreStarsBadge.textContent = `${student.stars} ⭐`;
     if (quickScorePetPreview) {
-      quickScorePetPreview.innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+      quickScorePetPreview.innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, 100, student.group, student.id);
     }
 
     if (inputQuickScoreNumber) {
@@ -1394,7 +1395,8 @@ document.addEventListener('DOMContentLoaded', () => {
           modalStudentStars.textContent = `${updatedStudent.stars} ⭐`;
         }
         if (modalPetPreview && updatedStudent) {
-          modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(updatedStudent.stars, updatedStudent.status);
+          const updGroupObj = (state.data.groups || []).find(g => g.id === updatedStudent.group);
+          modalPetPreview.innerHTML = window.EggEvolution.renderPetSVG(updatedStudent.stars, updatedStudent.status, updGroupObj ? updGroupObj.color : null, 100, updatedStudent.group, updatedStudent.id);
         }
 
         if (updatedStudent && !isStudentAccumulating(updatedStudent) && updatedStudent.stars >= 100 && points > 0) {
@@ -2916,7 +2918,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${medal}
             </div>
             <div style="width: 44px; height: 44px; flex-shrink: 0;">
-              ${window.EggEvolution.renderPetSVG(s.stars, s.status, group.color)}
+              ${window.EggEvolution.renderPetSVG(s.stars, s.status, group.color, 100, s.group, s.id)}
             </div>
             <div>
               <div style="font-weight: 800; font-size: 15px; color: #1E293B;">
@@ -3078,11 +3080,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('hatchCelebrationStars').textContent = student.stars;
 
     const stage = window.EggEvolution.getStage(student.stars);
-    document.getElementById('hatchCelebrationStageTitle').textContent = `🦖 ${stage.title}`;
-
     const group = (state.data.groups || []).find(g => g.id === student.group);
     const color = group ? group.color : null;
-    document.getElementById('hatchCelebrationPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, color);
+    const creatureName = window.EggEvolution.getCreatureName ? window.EggEvolution.getCreatureName(student.stars, student.group, color, student.id) : stage.name;
+    document.getElementById('hatchCelebrationStageTitle').textContent = `🐲 ${creatureName} (${stage.title})`;
+    document.getElementById('hatchCelebrationPetAvatar').innerHTML = window.EggEvolution.renderPetSVG(student.stars, student.status, color, 100, student.group, student.id);
 
     if (window.soundFx && typeof window.soundFx.playLevelUp === 'function') {
       window.soundFx.playLevelUp();
@@ -3209,11 +3211,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   <td>
                     <div style="display: flex; align-items: center; gap: 8px;">
                       <div style="width: 36px; height: 36px;">
-                        ${window.EggEvolution.renderPetSVG(s.stars, s.status, group.color)}
+                        ${window.EggEvolution.renderPetSVG(s.stars, s.status, group.color, 100, s.group, s.id)}
                       </div>
                       <div>
-                        <div style="font-weight: 800; font-size: 13px; color: #065F46;">${stage.title}</div>
-                        <div style="font-size: 11px; color: #64748B;">Cấp ${stage.level} • Tiếp tục tiến hóa ✨</div>
+                        <div style="font-weight: 800; font-size: 13px; color: #065F46;">${window.EggEvolution.getCreatureName ? window.EggEvolution.getCreatureName(s.stars, s.group, group.color, s.id) : stage.title}</div>
+                        <div style="font-size: 11px; color: #64748B;">Cấp ${stage.level} • ${stage.name} ✨</div>
                       </div>
                     </div>
                   </td>

@@ -288,7 +288,7 @@
 
           let avatarSvg = '';
           if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
-            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, 100, student.group, student.id);
           } else {
             avatarSvg = `<span style="font-size: 20px;">🐣</span>`;
           }
@@ -361,7 +361,7 @@
 
           let avatarSvg = '';
           if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
-            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color);
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars, student.status, group.color, 100, student.group, student.id);
           } else {
             avatarSvg = `<span style="font-size: 26px;">🐣</span>`;
           }
@@ -541,7 +541,7 @@
 
       let avatarSvg = '';
       if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
-        avatarSvg = window.EggEvolution.renderPetSVG(currentStudent.stars, currentStudent.status, group.color);
+        avatarSvg = window.EggEvolution.renderPetSVG(currentStudent.stars, currentStudent.status, group ? group.color : null, 100, currentStudent.group, currentStudent.id);
       } else {
         avatarSvg = `<span style="font-size: 50px;">🐣</span>`;
       }

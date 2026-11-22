@@ -61,7 +61,10 @@ const CardExporter = {
 
     ctx.fillStyle = '#E53E3E';
     ctx.font = 'bold 18px Arial, sans-serif';
-    ctx.fillText(`Linh thú: ${stage.name} (${student.stars} ⭐)`, 300, 275);
+    const creatureName = (window.EggEvolution && typeof window.EggEvolution.getCreatureName === 'function') 
+      ? window.EggEvolution.getCreatureName(student.stars, student.group, group ? group.color : null, student.id) 
+      : stage.name;
+    ctx.fillText(`Linh thú: ${creatureName} (${student.stars} ⭐)`, 300, 275);
 
     // Section title: Việc tốt hôm nay
     ctx.fillStyle = '#2B6CB0';
