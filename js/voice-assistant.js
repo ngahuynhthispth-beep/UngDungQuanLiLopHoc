@@ -28,21 +28,27 @@
     // Loại bỏ ký tự đặc biệt ở đầu câu mà Google STT có thể chèn vào (dấu gạch ngang, ba chấm, ngoặc...)
     text = text.replace(/^[-–—.…,:;!?~"'\s]+/, '');
 
+    // Biến thể đồng âm Google STT miền Nam/Trung hay nghe nhầm từ "Cộng" thành "cọc", "cộc", "cột", "cọt", "cọng", "công"...
+    const congVariants = 'cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|chổng|chộng|cuộn|cũn|cọp|cộp';
+
     // 1. Chuẩn hóa đại từ mở đầu: "Cô", "Thầy", "Em", "Tôi", "Bạn", "Xin", "Hãy", "Làm ơn"
-    // Ví dụ: "Cô cộng...", "Cô khen...", "Cô cho...", "Cô thưởng..." -> "Cộng..."
-    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:cộng|khen|thưởng|tặng|thêm|cho)\s+/iu, 'Cộng ');
+    // Ví dụ: "Cô cộng...", "Cô cọc...", "Cô cộc...", "Cô khen...", "Cô cho..." -> "Cộng "
+    text = text.replace(new RegExp('^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\\s+(?:cộng|khen|thưởng|tặng|thêm|cho|' + congVariants + ')\\s+', 'iu'), 'Cộng ');
     text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:trừ|bớt|phạt|nhắc\s+nhở|nhắc)\s+/iu, 'Trừ ');
 
     // 2. Chuẩn hóa "cho bạn / cho bé / cho em" ở đầu câu thành "Cộng "
     text = text.replace(/^cho\s+(?:bạn|bé|em|học sinh)?\s+/iu, 'Cộng ');
 
-    // 3. Chuẩn hóa các biến thể đồng âm mà STT thường nghe nhầm từ "Cộng" ở đầu câu
-    text = text.replace(/^(?:cổng|cọng|công|cống|chọn|chọng|cuộn|cũn)\s+/iu, 'Cộng ');
+    // 3. Chuẩn hóa chuỗi các từ nghe nhầm như "cọc", "cọc cọc", "cọc, cọc" ở đầu câu hoặc đứng độc lập
+    text = text.replace(new RegExp('^(?:' + congVariants + ')(?:[\\s,;]+(?:' + congVariants + '))*(?:\\s+|$)', 'iu'), 'Cộng ');
 
-    // 4. Chuẩn hóa các từ thưởng/khen ở đầu câu thành "Cộng " để thống nhất cú pháp
+    // 4. Chuẩn hóa "... [từ nghe nhầm cọc/cộc] + [tên học sinh hoặc số điểm]" ở bất kỳ vị trí nào
+    text = text.replace(new RegExp('(?:^|[\\s,;])(?:' + congVariants + ')(?:[\\s,;]+(?:' + congVariants + '))*\\s+(?=(?:cho\\s+|bạn\\s+|bé\\s+|em\\s+)?[A-ZÀ-Ỹa-zà-ỹ0-9])', 'giu'), ' Cộng ');
+
+    // 5. Chuẩn hóa các từ thưởng/khen ở đầu câu thành "Cộng " để thống nhất cú pháp
     text = text.replace(/^(?:khen\s+thưởng|khen|thưởng|tặng|thêm)\s+/iu, 'Cộng ');
 
-    // 5. Chuẩn hóa các từ trừ/phạt ở đầu câu thành "Trừ "
+    // 6. Chuẩn hóa các từ trừ/phạt ở đầu câu thành "Trừ "
     text = text.replace(/^(?:nhắc\s+nhở|bớt|phạt|thu\s+lại)\s+/iu, 'Trừ ');
 
     return text.trim().replace(/\s+/g, ' ');
@@ -109,6 +115,7 @@
       // Quản lý streaming văn bản thời gian thực và debounce chốt câu
       this.speechFinalDebounceTimer = null;
       this.currentInterimText = '';
+      this.normalizeTranscript = normalizeTranscript;
 
       this.loadVoices();
       if (this.synth && this.synth.onvoiceschanged !== undefined) {
@@ -484,12 +491,17 @@
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
 
+      // Tự động chuẩn hóa các âm nghe nhầm như "cọc", "cộc", "cọc cọc" thành "Cộng" ngay trên giao diện
+      let displayText = interimText || '';
+      const congPattern = '(?:cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|cuộn|cũn)';
+      displayText = displayText.replace(new RegExp('\\b' + congPattern + '(?:[\\s,;]+' + congPattern + ')*\\b', 'giu'), 'Cộng');
+
       if (transcriptEl) {
-        transcriptEl.innerHTML = `<span style="color: #6D28D9; font-weight: 700;">🎙️ "${interimText}..."</span>`;
+        transcriptEl.innerHTML = `<span style="color: #6D28D9; font-weight: 700;">🎙️ "${displayText}..."</span>`;
       }
       if (liveBar && liveText) {
         liveBar.classList.add('active');
-        liveText.innerHTML = `🔴 <strong>Đang nghe:</strong> <em>"${interimText}..."</em>`;
+        liveText.innerHTML = `🔴 <strong>Đang nghe:</strong> <em>"${displayText}..."</em>`;
       }
     }
 
@@ -532,7 +544,9 @@
 
     // Bộ phân tích ngữ pháp tiếng Việt theo cú pháp chuẩn của giáo viên
     parseCommandGrammar(raw, normalized, students) {
-      const clean = removeVietnameseTones(normalized);
+      let clean = removeVietnameseTones(normalized);
+      // Chuẩn hóa biến thể coc, cot, cop, choc trong clean thành cong
+      clean = clean.replace(/\b(?:coc|cot|cop|choc)(?:[\s,;]+(?:coc|cot|cop|choc))*\b/g, 'cong');
 
       // 1. Kiểm tra lệnh cho CẢ LỚP hoặc CHO TỔ
       const isClassWide = clean.includes('ca lop') || clean.includes('toan lop') || clean.includes('tat ca lop') || clean.includes('tat ca cac ban');
@@ -676,11 +690,12 @@
       }
 
       // 4.2. Nếu không có từ "vì/do...", kiểm tra phần nội dung phía sau tên học sinh và số điểm
-      if (!naturalReason && raw) {
-        let remnant = raw;
+      if (!naturalReason && (normalized || raw)) {
+        let remnant = normalized || raw;
+        const congVariants = 'cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|cuộn|cũn|cọp|cộp';
         remnant = remnant.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+/iu, '');
-        remnant = remnant.replace(/^(?:cộng|khen|thưởng|tặng|thêm|trừ|bớt|phạt|nhắc|nhắc nhở|cho)\s+/iu, '');
-        remnant = remnant.replace(/^(?:cho\s+)?(?:bạn|bé|em|học sinh)?\s+/iu, '');
+        remnant = remnant.replace(new RegExp('^(?:' + congVariants + '|cộng|khen|thưởng|tặng|thêm|trừ|bớt|phạt|nhắc|nhắc\\s+nhở|cho)(?:[\\s,;]+(?:' + congVariants + '))*\\s*', 'iu'), '');
+        remnant = remnant.replace(/^(?:cho\\s+)?(?:bạn|bé|em|học sinh)?\s+/iu, '');
         if (Array.isArray(students)) {
           students.forEach(s => {
             remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|của\\s+|bạn\\s+|bé\\s+|em\\s+)?' + s.name + '\\b', 'giu'), '');
@@ -693,7 +708,7 @@
           .replace(/^[.,!?~;:\s]+|[.,!?~;:\s]+$/g, '')
           .trim();
         const remnantClean = removeVietnameseTones(remnant);
-        if (['cho', 'cho ban', 'cho be', 'cho em', 'diem', 'sao'].includes(remnantClean)) {
+        if (['cho', 'cho ban', 'cho be', 'cho em', 'diem', 'sao', 'coc', 'cot', 'choc', 'cong'].includes(remnantClean)) {
           remnant = '';
         }
         if (remnant.length >= 3 && !/^\d+$/.test(remnant)) {
@@ -1142,12 +1157,17 @@
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
 
+      // Tự động chuẩn hóa câu chữ hiển thị nếu Google STT nghe nhầm "cọc", "cộc"
+      let cleanRaw = rawText || '';
+      const congPattern = '(?:cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|cuộn|cũn)';
+      cleanRaw = cleanRaw.replace(new RegExp('\\b' + congPattern + '(?:[\\s,;]+' + congPattern + ')*\\b', 'giu'), 'Cộng');
+
       // 1. Trường hợp không rõ Cộng hay Trừ
       if (parsedCmd && parsedCmd.actionUnknown) {
         if (transcriptEl) {
           transcriptEl.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
-              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
+              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${cleanRaw}"</em></div>
               <div style="font-size: 14px; font-weight: 700; color: #DC2626; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 <span>⚠️ Chưa rõ CỘNG hay TRỪ. Cô hãy nói kèm từ: <strong>"Cộng"</strong> hoặc <strong>"Trừ"</strong> nhé!</span>
               </div>
@@ -1156,7 +1176,7 @@
         }
         if (liveBar && liveText) {
           liveBar.classList.add('active');
-          liveText.innerHTML = `⚠️ Nghe được: <em>"${rawText}"</em> (Chưa rõ lệnh Cộng hay Trừ)`;
+          liveText.innerHTML = `⚠️ Nghe được: <em>"${cleanRaw}"</em> (Chưa rõ lệnh Cộng hay Trừ)`;
           setTimeout(() => {
             if (liveBar) liveBar.classList.remove('active');
           }, 3500);
@@ -1186,7 +1206,7 @@
         if (transcriptEl) {
           transcriptEl.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
-              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${rawText}"</em></div>
+              <div style="font-size: 13px; color: #64748B;">🎙️ Nghe được: <em>"${cleanRaw}"</em></div>
               <div style="font-size: 15px; font-weight: 800; color: #1E293B; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
                 ${actionBadge} <span>${prefix}<strong style="color: #6D28D9;">${targetText}</strong></span>
               </div>
@@ -1203,10 +1223,10 @@
           }, 3500);
         }
       } else {
-        if (transcriptEl) transcriptEl.innerHTML = `💬 <em>"${rawText}"</em>`;
+        if (transcriptEl) transcriptEl.innerHTML = `💬 <em>"${cleanRaw}"</em>`;
         if (liveBar && liveText) {
           liveBar.classList.add('active');
-          liveText.innerHTML = `💬 <em>"${rawText}"</em> (Chưa rõ tên bé)`;
+          liveText.innerHTML = `💬 <em>"${cleanRaw}"</em> (Chưa rõ tên bé)`;
           setTimeout(() => {
             if (liveBar) liveBar.classList.remove('active');
           }, 2500);
