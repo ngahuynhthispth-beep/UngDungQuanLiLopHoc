@@ -3,59 +3,59 @@ const EggEvolution = {
   HATCH_THRESHOLD: 100, // Đạt từ 100 sao trở lên thì trứng sẽ nở thành Linh Thú Dân Gian!
 
   STAGES: [
-    { 
-      level: 0, 
-      minStars: 0, 
-      maxStars: 35, 
-      name: 'Trứng Thần Đông Sơn', 
-      title: 'Đang ấp trứng (0-35 ⭐)', 
+    {
+      level: 0,
+      minStars: 0,
+      maxStars: 35,
+      name: 'Trứng Thần Đông Sơn',
+      title: 'Đang ấp trứng (0-35 ⭐)',
       isHatched: false,
-      desc: 'Quả trứng thần đang được ủ ấm trong đài sen rơm, tích lũy tinh hoa đất trời' 
+      desc: 'Quả trứng thần đang được ủ ấm trong đài sen rơm, tích lũy tinh hoa đất trời'
     },
-    { 
-      level: 1, 
-      minStars: 36, 
-      maxStars: 70, 
-      name: 'Trứng Thức Giấc', 
-      title: 'Trứng cựa quậy (36-70 ⭐)', 
+    {
+      level: 1,
+      minStars: 36,
+      maxStars: 70,
+      name: 'Trứng Thức Giấc',
+      title: 'Trứng cựa quậy (36-70 ⭐)',
       isHatched: false,
-      desc: 'Trứng ấm lên rực rỡ, tỏa ánh sáng hoa văn mây cuộn Đông Sơn ấm áp' 
+      desc: 'Trứng ấm lên rực rỡ, tỏa ánh sáng hoa văn mây cuộn Đông Sơn ấm áp'
     },
-    { 
-      level: 2, 
-      minStars: 71, 
-      maxStars: 99, 
-      name: 'Trứng Nứt Vỏ', 
-      title: 'Sắp nở rồi! (71-99 ⭐)', 
+    {
+      level: 2,
+      minStars: 71,
+      maxStars: 99,
+      name: 'Trứng Nứt Vỏ',
+      title: 'Sắp nở rồi! (71-99 ⭐)',
       isHatched: false,
-      desc: 'Vỏ nứt tia vàng rực rỡ, linh thú dân gian bên trong cựa mình chuẩn bị chào đời!' 
+      desc: 'Vỏ nứt tia vàng rực rỡ, linh thú dân gian bên trong cựa mình chuẩn bị chào đời!'
     },
-    { 
-      level: 3, 
-      minStars: 100, 
-      maxStars: 150, 
-      name: 'Linh Thú Dân Gian (Tí Hon)', 
-      title: '🎉 ĐÃ NỞ! Cấp 1 - Tí Hon (100-150 ⭐)', 
+    {
+      level: 3,
+      minStars: 100,
+      maxStars: 150,
+      name: 'Linh Thú Dân Gian (Tí Hon)',
+      title: '🎉 ĐÃ NỞ! Cấp 1 - Tí Hon (100-150 ⭐)',
       isHatched: true,
-      desc: 'Trứng đã nở thành công! Linh thú thuần Việt chào đời với bờm mây may mắn, cười tít mắt' 
+      desc: 'Trứng đã nở thành công! Linh thú thuần Việt chào đời với bờm mây may mắn, cười tít mắt'
     },
-    { 
-      level: 4, 
-      minStars: 151, 
-      maxStars: 220, 
-      name: 'Linh Thú Thần Thoại', 
-      title: 'Cấp 2 - Dũng Mãnh (151-220 ⭐)', 
+    {
+      level: 4,
+      minStars: 151,
+      maxStars: 220,
+      name: 'Linh Thú Thần Thoại',
+      title: 'Cấp 2 - Dũng Mãnh (151-220 ⭐)',
       isHatched: true,
-      desc: 'Linh thú lớn nhanh, mọc bờm mây lửa, ngậm ngọc minh châu rực sáng' 
+      desc: 'Linh thú lớn nhanh, mọc bờm mây lửa, ngậm ngọc minh châu rực sáng'
     },
-    { 
-      level: 5, 
-      minStars: 221, 
-      maxStars: 9999, 
-      name: 'Thần Thú Thăng Long Hoàng Gia', 
-      title: 'Cấp 3 - Tối Thượng (>220 ⭐)', 
+    {
+      level: 5,
+      minStars: 221,
+      maxStars: 9999,
+      name: 'Thần Thú Thăng Long Hoàng Gia',
+      title: 'Cấp 3 - Tối Thượng (>220 ⭐)',
       isHatched: true,
-      desc: 'Đạt cấp độ tối thượng hoàng gia! Đội vương miện sen vàng, tỏa hào quang rực rỡ bảng vàng' 
+      desc: 'Đạt cấp độ tối thượng hoàng gia! Đội vương miện sen vàng, tỏa hào quang rực rỡ bảng vàng'
     }
   ],
 
@@ -63,13 +63,13 @@ const EggEvolution = {
   getHatchRequirement(student) {
     if (!student) return { threshold: 100, isFastHatcher: false, notice: '' };
 
-    const previousHatchTime = student.firstHatchedAt || 
+    const previousHatchTime = student.firstHatchedAt ||
       (student.lastCompletedGifts && student.lastCompletedGifts[0] && student.lastCompletedGifts[0].timestamp) ||
-      student.lastHatchedAt || 
+      student.lastHatchedAt ||
       student.previousHatchedAt ||
       null;
 
-    const isSecondHatch = (student.hatchCount >= 1) || 
+    const isSecondHatch = (student.hatchCount >= 1) ||
       (student.lastCompletedGifts && student.lastCompletedGifts.length > 0) ||
       (student.previousHatchedAt != null);
 
@@ -280,8 +280,9 @@ const EggEvolution = {
       <svg viewBox="0 0 120 120" class="pet-svg sleeping-anim" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="sleepFolkloreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FCD34D" />
-            <stop offset="100%" stop-color="#FB923C" />
+            <stop offset="0%" stop-color="#FEF08A" />
+            <stop offset="60%" stop-color="#FBBF24" />
+            <stop offset="100%" stop-color="#F59E0B" />
           </linearGradient>
           <linearGradient id="cloudFolkloreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#FFFFFF" />
@@ -295,46 +296,43 @@ const EggEvolution = {
             </feMerge>
           </filter>
         </defs>
-        <!-- Áng mây ngũ sắc thời Lý làm gối ngủ -->
-        <path d="M 24 96 C 14 96 12 84 22 78 C 18 66 34 60 44 68 C 52 58 70 60 74 70 C 86 68 94 80 90 90 C 98 98 88 106 80 102 C 60 106 40 106 24 96 Z" 
-              fill="url(#cloudFolkloreGrad)" stroke="#CBD5E1" stroke-width="1.5" opacity="0.95"/>
-        <path d="M 32 88 Q 44 80 56 86" stroke="#93C5FD" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M 64 86 Q 74 80 84 86" stroke="#C084FC" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Áng mây ngũ sắc êm ái làm gối ngủ -->
+        <path d="M 22 96 C 12 96 10 82 20 76 C 16 64 32 58 42 66 C 50 56 68 58 72 68 C 84 66 92 78 88 88 C 96 96 86 104 78 100 C 58 104 38 104 22 96 Z" 
+              fill="url(#cloudFolkloreGrad)" stroke="#CBD5E1" stroke-width="1.8" opacity="0.95"/>
+        <path d="M 30 88 Q 42 80 54 86" stroke="#93C5FD" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M 62 86 Q 72 80 82 86" stroke="#C084FC" stroke-width="2" fill="none" stroke-linecap="round"/>
         
-        <!-- Thân bé linh thú cuộn tròn ngủ ngoan -->
-        <ellipse cx="60" cy="65" rx="34" ry="28" fill="url(#sleepFolkloreGrad)" filter="url(#folkloreSoftGlow)"/>
+        <!-- Thân bé linh thú cuộn tròn ngủ ngoan mũm mĩm -->
+        <ellipse cx="60" cy="66" rx="30" ry="24" fill="url(#sleepFolkloreGrad)" stroke="#B45309" stroke-width="2" filter="url(#folkloreSoftGlow)"/>
         
-        <!-- Bờm xoăn mây cuộn trên đầu -->
-        <circle cx="48" cy="46" r="7" fill="#F59E0B"/>
-        <circle cx="60" cy="42" r="8" fill="#F59E0B"/>
-        <circle cx="72" cy="46" r="7" fill="#F59E0B"/>
-        <path d="M 54 44 Q 60 40 66 44" stroke="#D97706" stroke-width="1.8" fill="none"/>
-        
-        <!-- Tai búp sen nhỏ gập ngủ -->
-        <path d="M 38 48 Q 30 38 38 34 Q 44 38 42 48 Z" fill="#EA580C"/>
-        <path d="M 82 48 Q 90 38 82 34 Q 76 38 78 48 Z" fill="#EA580C"/>
+        <!-- Đôi tai búp sen gập ngủ hai bên -->
+        <path d="M 36 50 C 26 44 24 54 30 60 C 35 64 38 56 36 50 Z" fill="#FB923C" stroke="#B45309" stroke-width="1.5"/>
+        <path d="M 84 50 C 94 44 96 54 90 60 C 85 64 82 56 84 50 Z" fill="#FB923C" stroke="#B45309" stroke-width="1.5"/>
+
+        <!-- Bờm mây xoắn thời Lý xinh xắn trên trán -->
+        <path d="M 54 44 C 52 36 66 34 68 42 C 68 46 62 48 58 48 Z" fill="#FB923C" stroke="#B45309" stroke-width="1.5"/>
 
         <!-- Đôi mắt nhắm ngủ hình cung ^ ^ cực đáng yêu -->
-        <path d="M 48 55 Q 53 59 58 55" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <path d="M 66 55 Q 71 59 76 55" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 46 56 Q 51 61 56 56" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 64 56 Q 69 61 74 56" stroke="#78350F" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         
-        <!-- Đôi má hồng cam đào -->
-        <ellipse cx="46" cy="62" rx="4.5" ry="2.8" fill="#FB7185" opacity="0.85"/>
-        <ellipse cx="78" cy="62" rx="4.5" ry="2.8" fill="#FB7185" opacity="0.85"/>
+        <!-- Đôi má hồng cam đào phúng phính -->
+        <ellipse cx="42" cy="63" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+        <ellipse cx="78" cy="63" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
 
         <!-- Vòng chỉ đỏ đeo lục lạc vàng chuông leng keng -->
-        <path d="M 46 72 Q 60 78 74 72" stroke="#EF4444" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="60" cy="77" r="5" fill="#FDE047" stroke="#D97706" stroke-width="1.2"/>
-        <line x1="57" y1="78.5" x2="63" y2="78.5" stroke="#92400E" stroke-width="1.2"/>
+        <path d="M 48 72 Q 60 78 72 72" stroke="#EF4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="77" r="6" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+        <line x1="56.5" y1="78.5" x2="63.5" y2="78.5" stroke="#78350F" stroke-width="1.2" stroke-linecap="round"/>
 
         <!-- Đuôi xòe búp sen khẽ vắt ngang thân -->
-        <path d="M 84 66 Q 94 58 90 50 Q 82 54 84 66 Z" fill="#F59E0B"/>
+        <path d="M 84 66 C 96 62 100 52 92 48 C 86 46 82 54 84 66 Z" fill="#FB923C" stroke="#B45309" stroke-width="1.5"/>
 
         <!-- Chùm chữ Zzz bay bổng -->
         <g class="zzz-flight" fill="#8B5CF6" font-family="'Segoe UI', Arial, sans-serif" font-weight="900">
-          <text x="86" y="32" font-size="13">Z</text>
-          <text x="96" y="22" font-size="10">z</text>
-          <text x="104" y="14" font-size="8">z</text>
+          <text x="88" y="32" font-size="14">Z</text>
+          <text x="98" y="22" font-size="11">z</text>
+          <text x="105" y="14" font-size="8">z</text>
         </g>
       </svg>
     `;
@@ -480,7 +478,7 @@ const EggEvolution = {
   },
 
   // -------------------------------------------------------------------------
-  // 5. SVG: BÉ NGHÊ THẦN MAY MẮN (TỔ 2 - THUẦN VIỆT, BỜM XOĂN MÂY, LỤC LẠC VÀNG)
+  // 5. SVG: BÉ NGHÊ THẦN MAY MẮN (TỔ 2 - CÚN THẦN THUẦN VIỆT, CHUÔNG VÀNG, MẶT CƯỜI SIÊU DỄ THƯƠNG)
   // -------------------------------------------------------------------------
   _renderNgheThanSVG(level) {
     const isBaby = (level === 3);
@@ -490,105 +488,131 @@ const EggEvolution = {
     return `
       <svg viewBox="0 0 120 120" class="pet-svg ${isBaby ? 'baby-bounce' : isMaster ? 'magic-hover' : 'royal-glow'}" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="ngheBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FDE047" />
-            <stop offset="60%" stop-color="#F59E0B" />
+          <linearGradient id="ngheBody" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FEF08A" />
+            <stop offset="60%" stop-color="#FBBF24" />
+            <stop offset="100%" stop-color="#F59E0B" />
+          </linearGradient>
+          <linearGradient id="ngheEarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FB923C" />
             <stop offset="100%" stop-color="#EA580C" />
           </linearGradient>
-          <linearGradient id="ngheManeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#FB923C" />
-            <stop offset="100%" stop-color="#C2410C" />
+          <linearGradient id="ngheBell" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFFBEB" />
+            <stop offset="40%" stop-color="#FDE047" />
+            <stop offset="100%" stop-color="#D97706" />
           </linearGradient>
-          <filter id="ngheGlow">
-            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 5 : 3}" flood-color="#F59E0B" flood-opacity="0.5"/>
+          <filter id="ngheSoftGlow">
+            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 5 : 3}" flood-color="#F59E0B" flood-opacity="0.45"/>
           </filter>
         </defs>
 
         ${isRoyal ? `
-          <!-- Hào quang mây ngũ sắc xoay quanh Nghê Hoàng Gia -->
-          <g opacity="0.85">
-            <circle cx="60" cy="60" r="54" stroke="#FBBF24" stroke-width="2.5" stroke-dasharray="6,4" fill="none"/>
-          </g>
+          <!-- Hào quang kim quang ngũ sắc cho Nghê Hoàng Gia -->
+          <circle cx="60" cy="60" r="54" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="6,4" fill="none" opacity="0.85"/>
         ` : ''}
 
         ${isBaby ? `
-          <!-- Hoa giấy confetti chúc mừng nở trứng -->
-          <circle cx="20" cy="22" r="3" fill="#EF4444"/>
-          <circle cx="100" cy="20" r="3" fill="#F59E0B"/>
-          <circle cx="16" cy="46" r="2.5" fill="#10B981"/>
-          <circle cx="104" cy="44" r="2.5" fill="#3B82F6"/>
-          <!-- Nửa vỏ trứng vàng rực bọc dưới chân -->
-          <path d="M 30 78 Q 26 100 60 102 Q 94 100 90 78 L 82 84 L 74 78 L 66 85 L 58 78 L 50 85 L 42 78 Z" 
-                fill="#FEF08A" stroke="#F59E0B" stroke-width="2"/>
-        ` : `
-          <!-- Bệ mây sen thời Lý nâng bước chân Nghê Thần -->
-          <ellipse cx="60" cy="104" rx="38" ry="9" fill="#FEF08A" stroke="#F59E0B" stroke-width="1.8"/>
-          <!-- Chân trước móng ngọc tròn trịa -->
-          <ellipse cx="44" cy="94" rx="8" ry="7" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
-          <ellipse cx="76" cy="94" rx="8" ry="7" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
-          <circle cx="42" cy="96" r="2" fill="#FEF08A"/>
-          <circle cx="46" cy="96" r="2" fill="#FEF08A"/>
-          <circle cx="74" cy="96" r="2" fill="#FEF08A"/>
-          <circle cx="78" cy="96" r="2" fill="#FEF08A"/>
-        `}
-
-        <!-- Đuôi xòe hình búp sen mây cuộn uyển chuyển -->
-        <path d="M 86 64 Q 110 46 98 34 Q 84 44 86 64 Z" fill="url(#ngheManeGrad)" stroke="#B45309" stroke-width="1.5"/>
-        <path d="M 88 54 Q 98 44 94 38" stroke="#FEF08A" stroke-width="1.5" fill="none"/>
-
-        <!-- Thân bé Nghê Chibi tròn trịa -->
-        <ellipse cx="60" cy="62" rx="${isRoyal ? 29 : 27}" ry="${isRoyal ? 27 : 25}" fill="url(#ngheBodyGrad)" filter="url(#ngheGlow)"/>
-
-        <!-- Bờm xoăn mây cuộn thuần Việt thời Lý-Trần (3 xoáy mây đỉnh đầu và quanh má) -->
-        <circle cx="46" cy="38" r="8" fill="url(#ngheManeGrad)"/>
-        <circle cx="60" cy="34" r="9" fill="url(#ngheManeGrad)"/>
-        <circle cx="74" cy="38" r="8" fill="url(#ngheManeGrad)"/>
-        <path d="M 54 36 Q 60 30 66 36" stroke="#FEF08A" stroke-width="2" fill="none"/>
-        <circle cx="36" cy="52" r="6" fill="url(#ngheManeGrad)"/>
-        <circle cx="84" cy="52" r="6" fill="url(#ngheManeGrad)"/>
-
-        <!-- Đôi tai búp sen vểnh tinh nghịch -->
-        <path d="M 38 40 Q 24 24 34 20 Q 42 26 40 40 Z" fill="#EA580C" stroke="#9A3412" stroke-width="1.2"/>
-        <path d="M 82 40 Q 96 24 86 20 Q 78 26 80 40 Z" fill="#EA580C" stroke="#9A3412" stroke-width="1.2"/>
-
-        ${isRoyal ? `
-          <!-- Vương miện đài sen vàng hoàng gia Thăng Long -->
-          <polygon points="44,28 42,12 52,18 60,8 68,18 78,12 76,28" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>
-          <circle cx="42" cy="12" r="2.2" fill="#EF4444"/>
-          <circle cx="60" cy="8" r="2.8" fill="#10B981"/>
-          <circle cx="78" cy="12" r="2.2" fill="#3B82F6"/>
+          <!-- Hoa giấy confetti chúc mừng bé nở trứng -->
+          <circle cx="18" cy="22" r="3" fill="#EF4444"/>
+          <circle cx="102" cy="20" r="3" fill="#F59E0B"/>
+          <circle cx="14" cy="48" r="2.5" fill="#10B981"/>
+          <circle cx="106" cy="46" r="2.5" fill="#3B82F6"/>
         ` : ''}
 
-        <!-- Đôi mắt to tròn long lanh tinh nghịch -->
-        <ellipse cx="49" cy="53" rx="6.5" ry="8" fill="#1E293B"/>
-        <ellipse cx="71" cy="53" rx="6.5" ry="8" fill="#1E293B"/>
-        <circle cx="51.5" cy="50" r="3" fill="#FFFFFF"/>
-        <circle cx="47.5" cy="56" r="1.5" fill="#FFFFFF"/>
-        <circle cx="73.5" cy="50" r="3" fill="#FFFFFF"/>
-        <circle cx="69.5" cy="56" r="1.5" fill="#FFFFFF"/>
+        <!-- Đuôi búp sen xoăn mây vẫy vui vẻ bên hông -->
+        <path d="M 82 72 C 98 70 106 54 96 46 C 88 40 82 48 84 58 C 85 64 80 68 76 72" 
+              fill="url(#ngheEarGrad)" stroke="#B45309" stroke-width="2" stroke-linecap="round"/>
+        <path d="M 94 48 C 96 52 92 56 88 56" stroke="#FEF08A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
 
-        <!-- Chiếc mũi tròn xinh màu đỏ cam -->
-        <ellipse cx="60" cy="59" rx="4.5" ry="3.2" fill="#EA580C"/>
-        <circle cx="59" cy="58" r="1" fill="#FFFFFF"/>
+        ${!isBaby ? `
+          <!-- Thân ngồi mũm mĩm đáng yêu (Level 4, 5) -->
+          <ellipse cx="60" cy="80" rx="22" ry="18" fill="url(#ngheBody)" stroke="#B45309" stroke-width="2"/>
+          <ellipse cx="60" cy="82" rx="14" ry="12" fill="#FFFBEB"/>
+          <!-- Hai bàn chân trước tròn xoe bụ bẫm -->
+          <ellipse cx="46" cy="94" rx="7.5" ry="6.5" fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+          <ellipse cx="74" cy="94" rx="7.5" ry="6.5" fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+          <circle cx="43" cy="96" r="1.5" fill="#B45309"/>
+          <circle cx="46" cy="97" r="1.5" fill="#B45309"/>
+          <circle cx="49" cy="96" r="1.5" fill="#B45309"/>
+          <circle cx="71" cy="96" r="1.5" fill="#B45309"/>
+          <circle cx="74" cy="97" r="1.5" fill="#B45309"/>
+          <circle cx="77" cy="96" r="1.5" fill="#B45309"/>
+        ` : ''}
 
-        <!-- Miệng cười tươi hớn hở chữ W đặc trưng của Nghê -->
-        <path d="M 52 64 Q 56 69 60 66 Q 64 69 68 64" stroke="#7C2D12" stroke-width="2.5" fill="#DC2626" stroke-linecap="round"/>
+        <!-- Đôi tai búp sen vểnh cụp siêu đáng yêu -->
+        <!-- Tai trái -->
+        <path d="M 40 40 C 24 30 20 46 28 56 C 34 62 40 54 38 42 Z" 
+              fill="url(#ngheEarGrad)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 36 44 C 28 38 26 48 31 53" fill="#FDE047" opacity="0.6"/>
+        <!-- Tai phải -->
+        <path d="M 80 40 C 96 30 100 46 92 56 C 86 62 80 54 82 42 Z" 
+              fill="url(#ngheEarGrad)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 84 44 C 92 38 94 48 89 53" fill="#FDE047" opacity="0.6"/>
 
-        <!-- Má hồng cam đào -->
-        <ellipse cx="40" cy="63" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
-        <ellipse cx="80" cy="63" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+        <!-- Đầu Nghê Con Chibi tròn xoe bụ bẫm -->
+        <ellipse cx="60" cy="52" rx="26" ry="22" fill="url(#ngheBody)" stroke="#B45309" stroke-width="2" filter="url(#ngheSoftGlow)"/>
 
-        <!-- Vòng cổ chỉ đỏ đeo LỤC LẠC CHUÔNG VÀNG may mắn -->
-        <path d="M 46 72 Q 60 79 74 72" stroke="#DC2626" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-        <circle cx="60" cy="79" r="6" fill="#FDE047" stroke="#D97706" stroke-width="1.5"/>
-        <line x1="56.5" y1="81" x2="63.5" y2="81" stroke="#92400E" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="60" cy="77" r="1.2" fill="#FFFFFF"/>
+        <!-- Bờm mây xoắn thời Lý duyên dáng trên đỉnh đầu -->
+        <path d="M 52 32 C 50 20 68 18 70 28 C 70 33 62 35 58 35 Z" 
+              fill="url(#ngheEarGrad)" stroke="#B45309" stroke-width="1.8"/>
+        <path d="M 64 26 C 64 23 59 23 57 26 C 56 28 58 30 60 30" 
+              stroke="#FEF08A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+        ${isRoyal ? `
+          <!-- Vương miện hoa sen hoàng gia Thăng Long -->
+          <polygon points="46,24 44,8 52,14 60,4 68,14 76,8 74,24" fill="#FBBF24" stroke="#D97706" stroke-width="1.8"/>
+          <circle cx="44" cy="8" r="2.2" fill="#EF4444"/>
+          <circle cx="60" cy="4" r="2.8" fill="#10B981"/>
+          <circle cx="76" cy="8" r="2.2" fill="#3B82F6"/>
+        ` : ''}
+
+        <!-- Mõm tròn phúng phính màu sữa -->
+        <ellipse cx="60" cy="58" rx="15" ry="10" fill="#FFFBEB" stroke="#FDE047" stroke-width="1.5"/>
+
+        <!-- Mũi cún tròn xinh màu nâu chocolate -->
+        <ellipse cx="60" cy="53" rx="4" ry="3" fill="#78350F"/>
+        <circle cx="58.5" cy="52" r="1" fill="#FFFFFF"/>
+
+        <!-- Miệng cười tít mắt hình chữ W với lưỡi hồng xinh xắn -->
+        <path d="M 53 58 Q 56.5 62 60 59 Q 63.5 62 67 58" 
+              stroke="#78350F" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M 57 60 Q 60 65 63 60 Z" fill="#FB7185"/>
+
+        <!-- Đôi mắt to tròn long lanh cực kỳ có hồn -->
+        <ellipse cx="47" cy="47" rx="5.5" ry="7" fill="#1E293B"/>
+        <ellipse cx="73" cy="47" rx="5.5" ry="7" fill="#1E293B"/>
+        <!-- Đốm sáng phản chiếu mắt long lanh -->
+        <circle cx="45" cy="44.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="48.5" cy="49" r="1.2" fill="#FFFFFF"/>
+        <circle cx="71" cy="44.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="74.5" cy="49" r="1.2" fill="#FFFFFF"/>
+
+        <!-- Đôi má hồng đào phúng phính dễ thương -->
+        <ellipse cx="37" cy="56" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+        <ellipse cx="83" cy="56" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+
+        ${isBaby ? `
+          <!-- Nửa vỏ trứng vàng rực bọc dưới thân (vẽ ĐÈ LÊN THÂN để rõ ràng) -->
+          <path d="M 28 72 Q 24 104 60 106 Q 96 104 92 72 L 84 80 L 76 72 L 68 81 L 60 73 L 52 81 L 44 73 L 36 80 Z" 
+                fill="#FEF08A" stroke="#F59E0B" stroke-width="2.5"/>
+          <!-- Hai bàn chân nhỏ xinh bám trên miệng vỏ trứng -->
+          <ellipse cx="44" cy="74" rx="6" ry="5" fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+          <ellipse cx="76" cy="74" rx="6" ry="5" fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+        ` : ''}
+
+        <!-- VÒNG CỔ CHỈ ĐỎ VÀ LỤC LẠC CHUÔNG VÀNG MAY MẮN TO RÕ -->
+        <path d="M 43 67 Q 60 75 77 67" stroke="#DC2626" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="73" r="7.5" fill="url(#ngheBell)" stroke="#B45309" stroke-width="1.8"/>
+        <circle cx="58" cy="71" r="2" fill="#FFFFFF" opacity="0.8"/>
+        <line x1="55" y1="75" x2="65" y2="75" stroke="#78350F" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="60" cy="77" r="1.2" fill="#78350F"/>
       </svg>
     `;
   },
 
   // -------------------------------------------------------------------------
-  // 6. SVG: CHIM LẠC ĐÔNG SƠN (TỔ 1 - MÀO LÔNG VƯƠN CAO, CÁNH MÂY TIÊN)
+  // 6. SVG: BÉ CHIM LẠC ĐÔNG SƠN (TỔ 1 - CHIM TIÊN CHIBI, CÁNH MÂY, MÀO LÔNG VƯƠN CAO)
   // -------------------------------------------------------------------------
   _renderChimLacSVG(level) {
     const isBaby = (level === 3);
@@ -598,78 +622,103 @@ const EggEvolution = {
     return `
       <svg viewBox="0 0 120 120" class="pet-svg ${isBaby ? 'baby-bounce' : isMaster ? 'magic-hover' : 'royal-glow'}" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="lacBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="lacBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="#FDA4AF" />
-            <stop offset="50%" stop-color="#F43F5E" />
+            <stop offset="60%" stop-color="#F43F5E" />
             <stop offset="100%" stop-color="#E11D48" />
           </linearGradient>
-          <linearGradient id="lacWingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="lacWingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="#FEF08A" />
-            <stop offset="50%" stop-color="#F59E0B" />
-            <stop offset="100%" stop-color="#EA580C" />
+            <stop offset="60%" stop-color="#FBBF24" />
+            <stop offset="100%" stop-color="#F59E0B" />
           </linearGradient>
-          <filter id="lacGlow">
-            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 5 : 3}" flood-color="#F43F5E" flood-opacity="0.5"/>
+          <filter id="lacSoftGlow">
+            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 5 : 3}" flood-color="#F43F5E" flood-opacity="0.45"/>
           </filter>
         </defs>
 
         ${isRoyal ? `
-          <!-- Vầng hào quang mặt trời Đông Sơn 12 cánh bao quanh -->
-          <g opacity="0.8">
-            <circle cx="60" cy="60" r="54" stroke="#F43F5E" stroke-width="2.5" stroke-dasharray="8,4" fill="none"/>
-          </g>
+          <!-- Hào quang mặt trời Đông Sơn 12 cánh rực rỡ -->
+          <circle cx="60" cy="60" r="54" stroke="#F43F5E" stroke-width="2.5" stroke-dasharray="7,4" fill="none" opacity="0.85"/>
         ` : ''}
-
-        <!-- 3 Dải lông đuôi chim Lạc uốn lượn thướt tha -->
-        <path d="M 60 76 Q 80 88 100 80 Q 90 74 76 72" fill="#FBBF24" opacity="0.9"/>
-        <path d="M 60 76 Q 84 96 106 90 Q 94 82 78 74" fill="#F43F5E" opacity="0.85"/>
-        <path d="M 60 76 Q 80 104 102 102 Q 90 92 76 76" fill="#10B981" opacity="0.8"/>
 
         ${isBaby ? `
           <!-- Hoa giấy confetti -->
-          <circle cx="22" cy="22" r="3" fill="#F59E0B"/>
-          <circle cx="98" cy="20" r="3" fill="#EF4444"/>
-          <!-- Nửa vỏ trứng vàng rực bọc dưới chân -->
-          <path d="M 32 80 Q 28 100 60 102 Q 92 100 88 80 L 80 84 L 72 78 L 64 85 L 56 79 L 48 85 L 40 79 Z" 
-                fill="#FEF08A" stroke="#F59E0B" stroke-width="2"/>
-        ` : `
-          <!-- Áng mây sen nâng bước chân Chim Lạc -->
-          <ellipse cx="60" cy="104" rx="34" ry="8" fill="#FEF08A" stroke="#F59E0B" stroke-width="1.5"/>
-        `}
-
-        <!-- Đôi cánh tiên uốn lượn tầng mây ngũ sắc -->
-        <path d="M 32 54 Q 6 36 18 24 Q 28 36 36 50 Z" fill="url(#lacWingGrad)" filter="url(#lacGlow)"/>
-        <path d="M 88 54 Q 114 36 102 24 Q 92 36 84 50 Z" fill="url(#lacWingGrad)" filter="url(#lacGlow)"/>
-
-        <!-- Thân chim Lạc tròn xinh -->
-        <ellipse cx="60" cy="62" rx="${isRoyal ? 27 : 25}" ry="25" fill="url(#lacBodyGrad)" filter="url(#lacGlow)"/>
-
-        <!-- Chiếc mào lông Lạc Việt vươn cao uốn cong duyên dáng (chuẩn văn hoa Trống Đồng) -->
-        <path d="M 55 38 Q 46 10 70 8 Q 80 12 72 26 Q 64 34 58 38 Z" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>
-        <path d="M 58 18 Q 72 15 67 24" stroke="#DC2626" stroke-width="2" fill="none"/>
-
-        ${isRoyal ? `
-          <!-- Vương miện đài sen hoàng gia -->
-          <polygon points="44,28 42,12 52,18 60,8 68,18 78,12 76,28" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>
-          <circle cx="60" cy="8" r="2.8" fill="#EF4444"/>
+          <circle cx="18" cy="22" r="3" fill="#F59E0B"/>
+          <circle cx="102" cy="20" r="3" fill="#EF4444"/>
+          <circle cx="14" cy="48" r="2.5" fill="#10B981"/>
+          <circle cx="106" cy="46" r="2.5" fill="#3B82F6"/>
         ` : ''}
 
-        <!-- Đôi mắt to tròn long lanh tinh anh -->
-        <ellipse cx="50" cy="54" rx="6" ry="7.5" fill="#1E293B"/>
-        <ellipse cx="70" cy="54" rx="6" ry="7.5" fill="#1E293B"/>
-        <circle cx="52" cy="51" r="2.8" fill="#FFFFFF"/>
-        <circle cx="72" cy="51" r="2.8" fill="#FFFFFF"/>
+        <!-- 3 Dải lông đuôi Chim Lạc uốn lượn thướt tha mềm mại -->
+        <path d="M 64 74 C 84 76 106 68 102 54 C 94 48 84 56 72 68" 
+              fill="#FBBF24" stroke="#B45309" stroke-width="1.8"/>
+        <path d="M 62 78 C 82 86 104 84 104 68 C 96 62 84 70 70 74" 
+              fill="#10B981" stroke="#047857" stroke-width="1.8"/>
+        <path d="M 60 82 C 78 96 98 98 98 84 C 90 78 78 84 66 80" 
+              fill="#38BDF8" stroke="#0284C7" stroke-width="1.8"/>
 
-        <!-- Chiếc mỏ nhỏ xinh màu vàng nghệ -->
-        <polygon points="56,58 60,65 64,58" fill="#FBBF24" stroke="#D97706" stroke-width="1.2"/>
+        <!-- Đôi cánh tiên dang rộng chào đón đáng yêu -->
+        <!-- Cánh trái -->
+        <path d="M 38 56 C 18 46 12 32 24 28 C 32 26 38 40 40 54 Z" 
+              fill="url(#lacWingGrad)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 28 34 C 28 42 34 48 38 50" stroke="#FFFFFF" stroke-width="1.5" fill="none" opacity="0.6"/>
+        <!-- Cánh phải -->
+        <path d="M 82 56 C 102 46 108 32 96 28 C 88 26 82 40 80 54 Z" 
+              fill="url(#lacWingGrad)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 92 34 C 92 42 86 48 82 50" stroke="#FFFFFF" stroke-width="1.5" fill="none" opacity="0.6"/>
 
-        <!-- Má hồng rạng rỡ -->
-        <ellipse cx="42" cy="64" rx="4" ry="2.5" fill="#FEF08A" opacity="0.9"/>
-        <ellipse cx="78" cy="64" rx="4" ry="2.5" fill="#FEF08A" opacity="0.9"/>
+        <!-- Thân chim Lạc tròn xinh mũm mĩm -->
+        <ellipse cx="60" cy="60" rx="25" ry="23" fill="url(#lacBodyGrad)" stroke="#9F1239" stroke-width="2" filter="url(#lacSoftGlow)"/>
 
-        <!-- Vòng khánh ngọc đeo cổ cổ kính -->
-        <path d="M 48 72 Q 60 78 72 72" stroke="#FBBF24" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <circle cx="60" cy="78" r="4.5" fill="#10B981" stroke="#FBBF24" stroke-width="1.5"/>
+        <!-- Bụng chim màu hồng kem sữa mềm mại -->
+        <ellipse cx="60" cy="65" rx="16" ry="14" fill="#FFF1F2"/>
+
+        <!-- MÀO LÔNG LẠC VIỆT ĐÔNG SƠN VƯƠN CAO DUYÊN DÁNG (Đặc trưng thuần Việt) -->
+        <path d="M 54 39 C 50 16 70 12 76 18 C 80 23 74 34 62 38 Z" 
+              fill="url(#lacWingGrad)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 50 42 C 44 26 56 22 62 26 C 66 30 60 38 54 41 Z" 
+              fill="#F97316" stroke="#B45309" stroke-width="1.5"/>
+        <circle cx="70" cy="19" r="2.5" fill="#FEF08A"/>
+
+        ${isRoyal ? `
+          <!-- Vương miện hoa sen hoàng gia -->
+          <polygon points="46,24 44,10 52,16 60,6 68,16 76,10 74,24" fill="#FBBF24" stroke="#D97706" stroke-width="1.8"/>
+          <circle cx="60" cy="6" r="2.8" fill="#EF4444"/>
+        ` : ''}
+
+        <!-- Đôi mắt to tròn đen láy long lanh -->
+        <ellipse cx="48" cy="52" rx="5.5" ry="7" fill="#1E293B"/>
+        <ellipse cx="72" cy="52" rx="5.5" ry="7" fill="#1E293B"/>
+        <circle cx="46" cy="49.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="49.5" cy="54" r="1.2" fill="#FFFFFF"/>
+        <circle cx="70" cy="49.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="73.5" cy="54" r="1.2" fill="#FFFFFF"/>
+
+        <!-- Chiếc mỏ chim nhỏ xinh màu vàng cam -->
+        <path d="M 54 57 Q 60 55 66 57 L 60 67 Z" fill="#FBBF24" stroke="#B45309" stroke-width="1.8"/>
+        <line x1="56" y1="59" x2="64" y2="59" stroke="#B45309" stroke-width="1.2"/>
+
+        <!-- Má hồng đào phúng phính -->
+        <ellipse cx="38" cy="60" rx="4.5" ry="3" fill="#FDA4AF" opacity="0.9"/>
+        <ellipse cx="82" cy="60" rx="4.5" ry="3" fill="#FDA4AF" opacity="0.9"/>
+
+        ${isBaby ? `
+          <!-- Nửa vỏ trứng vàng bọc dưới thân -->
+          <path d="M 28 74 Q 24 104 60 106 Q 96 104 92 74 L 84 81 L 76 74 L 68 82 L 60 74 L 52 82 L 44 74 L 36 81 Z" 
+                fill="#FEF08A" stroke="#F59E0B" stroke-width="2.5"/>
+          <circle cx="46" cy="76" r="4" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+          <circle cx="74" cy="76" r="4" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+        ` : `
+          <!-- Đôi chân chim nhỏ xíu màu cam đứng vững vàng -->
+          <path d="M 52 83 L 52 94 M 48 94 L 56 94" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 68 83 L 68 94 M 64 94 L 72 94" stroke="#EA580C" stroke-width="2.5" stroke-linecap="round"/>
+          <ellipse cx="60" cy="100" rx="34" ry="7" fill="#FEF08A" stroke="#F59E0B" stroke-width="1.5"/>
+        `}
+
+        <!-- Khánh ngọc bích đeo cổ cổ kính của Lạc Việt -->
+        <path d="M 47 70 Q 60 76 73 70" stroke="#FBBF24" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="76" r="5" fill="#10B981" stroke="#FBBF24" stroke-width="1.5"/>
       </svg>
     `;
   },
@@ -760,7 +809,7 @@ const EggEvolution = {
   },
 
   // -------------------------------------------------------------------------
-  // 8. SVG: RỒNG VÀNG THĂNG LONG (TỔ 4 - RỒNG THỜI LÝ UỐN LƯỢN, NGẬM NGỌC MINH CHÂU)
+  // 8. SVG: BÉ RỒNG VÀNG THĂNG LONG (TỔ 4 - RỒNG CHIBI THỜI LÝ, NGẬM/ÔM NGỌC MINH CHÂU)
   // -------------------------------------------------------------------------
   _renderRongVangSVG(level) {
     const isBaby = (level === 3);
@@ -770,78 +819,115 @@ const EggEvolution = {
     return `
       <svg viewBox="0 0 120 120" class="pet-svg ${isBaby ? 'baby-bounce' : isMaster ? 'magic-hover' : 'royal-glow'}" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="rongBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="rongBody" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="#FEF08A" />
-            <stop offset="50%" stop-color="#F59E0B" />
-            <stop offset="100%" stop-color="#D97706" />
+            <stop offset="50%" stop-color="#FBBF24" />
+            <stop offset="100%" stop-color="#F59E0B" />
           </linearGradient>
-          <linearGradient id="minhChauGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="rongMane" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F87171" />
+            <stop offset="100%" stop-color="#DC2626" />
+          </linearGradient>
+          <linearGradient id="minhChauGlow" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#FFFFFF" />
             <stop offset="40%" stop-color="#67E8F9" />
             <stop offset="100%" stop-color="#0284C7" />
           </linearGradient>
-          <filter id="rongGlow">
-            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 6 : 4}" flood-color="#F59E0B" flood-opacity="0.6"/>
+          <filter id="rongSoftGlow">
+            <feDropShadow dx="0" dy="2" stdDeviation="${isRoyal ? 6 : 4}" flood-color="#F59E0B" flood-opacity="0.5"/>
           </filter>
         </defs>
 
         ${isRoyal ? `
-          <!-- Vòng hào quang Thần Long Thăng Long ngũ sắc -->
-          <circle cx="60" cy="60" r="54" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="6,4" fill="none"/>
+          <!-- Vầng hào quang Thần Long ngũ sắc -->
+          <circle cx="60" cy="60" r="54" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="6,4" fill="none" opacity="0.85"/>
         ` : ''}
 
-        <!-- Thân Rồng thời Lý uốn lượn chữ S mềm mại như làn sóng -->
-        <path d="M 30 76 Q 16 64 26 50 Q 38 52 38 68 Q 38 88 60 92 Q 86 92 96 74 Q 106 58 92 48" 
-              stroke="url(#rongBodyGrad)" stroke-width="14" fill="none" stroke-linecap="round" filter="url(#rongGlow)"/>
-        <!-- Vảy rồng óng ánh hoa sen -->
-        <path d="M 30 76 Q 16 64 26 50 Q 38 52 38 68 Q 38 88 60 92 Q 86 92 96 74 Q 106 58 92 48" 
-              stroke="#FEF08A" stroke-width="2" stroke-dasharray="3,6" fill="none" stroke-linecap="round"/>
-
         ${isBaby ? `
-          <!-- Nửa vỏ trứng vàng rực bọc dưới chân -->
-          <path d="M 32 80 Q 28 100 60 102 Q 92 100 88 80 L 80 84 L 72 78 L 64 85 L 56 79 L 48 85 L 40 79 Z" 
-                fill="#FEF08A" stroke="#F59E0B" stroke-width="2"/>
-        ` : `
-          <!-- Áng mây sen thời Lý -->
-          <ellipse cx="60" cy="102" rx="36" ry="8" fill="#FEF08A" stroke="#F59E0B" stroke-width="1.5"/>
-        `}
+          <!-- Hoa giấy confetti chúc mừng -->
+          <circle cx="18" cy="22" r="3" fill="#EF4444"/>
+          <circle cx="102" cy="20" r="3" fill="#F59E0B"/>
+          <circle cx="14" cy="48" r="2.5" fill="#10B981"/>
+          <circle cx="106" cy="46" r="2.5" fill="#3B82F6"/>
+        ` : ''}
 
-        <!-- Đầu Rồng Vàng Chibi tròn trịa, hiền hòa -->
-        <ellipse cx="60" cy="56" rx="27" ry="24" fill="url(#rongBodyGrad)" filter="url(#rongGlow)"/>
+        <!-- Đuôi rồng uốn lượn chữ S mềm mại có chóp mây lửa -->
+        <path d="M 76 80 C 96 82 108 68 98 56 C 90 48 84 56 86 66 C 88 72 82 76 76 80" 
+              fill="url(#rongBody)" stroke="#B45309" stroke-width="2"/>
+        <path d="M 98 56 C 106 48 110 56 104 62 Z" fill="url(#rongMane)"/>
 
-        <!-- Bờm mây lửa thời Lý cuộn sóng trên đỉnh đầu -->
-        <path d="M 48 34 Q 38 14 54 16 Q 62 8 68 20 Q 76 12 78 28 Z" fill="#EF4444" stroke="#B91C1C" stroke-width="1.2"/>
-        <!-- Đôi sừng ngọc nhỏ xinh màu vàng kim -->
-        <polygon points="44,38 48,22 52,38" fill="#FBBF24" stroke="#D97706" stroke-width="1.2"/>
-        <polygon points="76,38 72,22 68,38" fill="#FBBF24" stroke="#D97706" stroke-width="1.2"/>
+        ${!isBaby ? `
+          <!-- Thân rồng ngồi mũm mĩm -->
+          <ellipse cx="60" cy="80" rx="22" ry="18" fill="url(#rongBody)" stroke="#B45309" stroke-width="2"/>
+          <!-- Vảy bụng rồng vàng óng -->
+          <ellipse cx="60" cy="82" rx="13" ry="12" fill="#FEF9C3"/>
+          <path d="M 52 78 Q 60 82 68 78" stroke="#F59E0B" stroke-width="1.5" fill="none"/>
+          <path d="M 53 84 Q 60 88 67 84" stroke="#F59E0B" stroke-width="1.5" fill="none"/>
+          <!-- Chân rồng móng tròn xinh -->
+          <ellipse cx="44" cy="94" rx="7" ry="5.5" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+          <ellipse cx="76" cy="94" rx="7" ry="5.5" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+        ` : ''}
+
+        <!-- ĐÔI SỪNG RỒNG THỜI LÝ NHỎ XINH MÀU VÀNG KIM -->
+        <path d="M 44 32 C 38 18 46 14 50 20 C 52 24 48 30 46 34 Z" 
+              fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+        <path d="M 76 32 C 82 18 74 14 70 20 C 68 24 72 30 74 34 Z" 
+              fill="#FDE047" stroke="#B45309" stroke-width="1.8"/>
+
+        <!-- BỜM MÂY LỬA ĐỎ THẮM TRÊN ĐỈNH ĐẦU -->
+        <path d="M 48 26 C 52 14 60 10 64 16 C 68 12 72 16 70 26 Z" 
+              fill="url(#rongMane)" stroke="#991B1B" stroke-width="1.5"/>
+
+        <!-- Đầu Rồng Con Chibi tròn xoe uy nghi mà hiền lành -->
+        <ellipse cx="60" cy="50" rx="26" ry="22" fill="url(#rongBody)" stroke="#B45309" stroke-width="2" filter="url(#rongSoftGlow)"/>
 
         ${isRoyal ? `
           <!-- Vương miện hoa sen hoàng gia Thăng Long -->
-          <polygon points="44,28 42,12 52,18 60,8 68,18 78,12 76,28" fill="#FBBF24" stroke="#D97706" stroke-width="1.5"/>
-          <circle cx="60" cy="8" r="3" fill="#0284C7"/>
+          <polygon points="46,24 44,8 52,14 60,4 68,14 76,8 74,24" fill="#FBBF24" stroke="#D97706" stroke-width="1.8"/>
+          <circle cx="60" cy="4" r="3" fill="#0284C7"/>
         ` : ''}
 
-        <!-- Đôi râu Rồng uốn lượn hình chữ S mềm mại duyên dáng -->
-        <path d="M 44 58 Q 28 54 26 64 Q 24 72 34 70" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <path d="M 76 58 Q 92 54 94 64 Q 96 72 86 70" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Mõm rồng tròn màu vàng nhạt -->
+        <ellipse cx="60" cy="56" rx="16" ry="11" fill="#FEF9C3" stroke="#FDE047" stroke-width="1.5"/>
 
-        <!-- Đôi mắt to tròn long lanh uy nghi mà hiền từ -->
-        <ellipse cx="50" cy="50" rx="6.5" ry="8" fill="#1E293B"/>
-        <ellipse cx="70" cy="50" rx="6.5" ry="8" fill="#1E293B"/>
-        <circle cx="52" cy="47" r="3" fill="#FFFFFF"/>
-        <circle cx="48" cy="53" r="1.5" fill="#FFFFFF"/>
-        <circle cx="72" cy="47" r="3" fill="#FFFFFF"/>
-        <circle cx="68" cy="53" r="1.5" fill="#FFFFFF"/>
+        <!-- ĐÔI RÂU RỒNG UỐN LƯỢN CHỮ S ĐẶC TRƯNG THỜI LÝ -->
+        <path d="M 45 54 C 30 50 24 64 34 66" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M 75 54 C 90 50 96 64 86 66" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
 
-        <!-- Mũi rồng nhỏ xinh -->
-        <ellipse cx="60" cy="56" rx="4" ry="2.8" fill="#EA580C"/>
+        <!-- Hai lỗ mũi rồng nhỏ xinh -->
+        <circle cx="56" cy="53" r="1.5" fill="#78350F"/>
+        <circle cx="64" cy="53" r="1.5" fill="#78350F"/>
 
-        <!-- NGẬM VIÊN NGỌC MINH CHÂU SÁNG CHÓI TRONG MIỆNG -->
-        <circle cx="60" cy="66" r="7.5" fill="url(#minhChauGrad)" stroke="#F59E0B" stroke-width="1.8"/>
-        <circle cx="58" cy="64" r="2.2" fill="#FFFFFF"/>
-        <!-- Má hồng rạng rỡ -->
-        <ellipse cx="40" cy="60" rx="4.5" ry="2.8" fill="#FB7185" opacity="0.85"/>
-        <ellipse cx="80" cy="60" rx="4.5" ry="2.8" fill="#FB7185" opacity="0.85"/>
+        <!-- Miệng cười tươi hiền từ -->
+        <path d="M 53 58 Q 60 63 67 58" stroke="#78350F" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+        <!-- Đôi mắt to tròn long lanh thông minh -->
+        <ellipse cx="47" cy="45" rx="5.5" ry="7" fill="#1E293B"/>
+        <ellipse cx="73" cy="45" rx="5.5" ry="7" fill="#1E293B"/>
+        <!-- Ánh sáng phản chiếu mắt long lanh -->
+        <circle cx="45" cy="42.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="48.5" cy="47" r="1.2" fill="#FFFFFF"/>
+        <circle cx="71" cy="42.5" r="2.5" fill="#FFFFFF"/>
+        <circle cx="74.5" cy="47" r="1.2" fill="#FFFFFF"/>
+
+        <!-- Đôi má hồng đào rạng rỡ -->
+        <ellipse cx="37" cy="54" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+        <ellipse cx="83" cy="54" rx="4.5" ry="3" fill="#FB7185" opacity="0.85"/>
+
+        ${isBaby ? `
+          <!-- Nửa vỏ trứng vàng rực bọc dưới thân -->
+          <path d="M 28 72 Q 24 104 60 106 Q 96 104 92 72 L 84 80 L 76 72 L 68 81 L 60 73 L 52 81 L 44 73 L 36 80 Z" 
+                fill="#FEF08A" stroke="#F59E0B" stroke-width="2.5"/>
+        ` : ''}
+
+        <!-- VIÊN NGỌC MINH CHÂU TO SÁNG RỰC RỠ TRƯỚC NGỰC -->
+        <circle cx="60" cy="72" r="9" fill="url(#minhChauGlow)" stroke="#0284C7" stroke-width="1.8"/>
+        <circle cx="57" cy="69" r="3" fill="#FFFFFF" opacity="0.85"/>
+        <circle cx="63" cy="75" r="1.2" fill="#FFFFFF" opacity="0.85"/>
+
+        <!-- Hai tay rồng con ôm viên ngọc báu -->
+        <ellipse cx="48" cy="72" rx="4.5" ry="4" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
+        <ellipse cx="72" cy="72" rx="4.5" ry="4" fill="#FDE047" stroke="#B45309" stroke-width="1.5"/>
       </svg>
     `;
   }

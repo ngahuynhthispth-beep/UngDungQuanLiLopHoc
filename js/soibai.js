@@ -1,5 +1,5 @@
 // js/soibai.js - Logic Soi Bài & Tự Chấm Điểm Luyện Viết / Toán Lớp 1
-(function() {
+(function () {
   const STORAGE_KEY_SAMPLE_TASK = 'vltk_sample_task_data';
   const STORAGE_KEY_GEMINI_KEY = 'vltk_gemini_api_key';
 
@@ -139,14 +139,14 @@
         }
         return Object.assign({}, DEFAULT_SAMPLE_TASK, parsed);
       }
-    } catch (e) {}
+    } catch (e) { }
     return DEFAULT_SAMPLE_TASK;
   }
 
   function saveSampleTask(data) {
     try {
       localStorage.setItem(STORAGE_KEY_SAMPLE_TASK, JSON.stringify(data));
-    } catch (e) {}
+    } catch (e) { }
   }
 
   let currentTask = loadSampleTask();
@@ -180,8 +180,8 @@
     if (cameraPlaceholder) {
       const descP = cameraPlaceholder.querySelector('p');
       if (descP) {
-        descP.textContent = isMath 
-          ? 'Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài toán đã chụp sẵn' 
+        descP.textContent = isMath
+          ? 'Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài toán đã chụp sẵn'
           : 'Bấm nút bên dưới để mở Camera hoặc chọn ảnh bài viết đã chụp sẵn';
       }
     }
@@ -225,8 +225,8 @@
   function updateClassHeaderUI(classData) {
     const subtitle = document.getElementById('soibaiClassHeaderSubtitle');
     const backBtn = document.getElementById('btnSoibaiBackHome');
-    const curClass = (window.StorageManager && typeof window.StorageManager.getClassId === 'function') 
-      ? window.StorageManager.getClassId() 
+    const curClass = (window.StorageManager && typeof window.StorageManager.getClassId === 'function')
+      ? window.StorageManager.getClassId()
       : ((window.FirebaseSync && typeof window.FirebaseSync.getClassId === 'function') ? window.FirebaseSync.getClassId() : '1/8');
     const isPrimary = (window.StorageManager && typeof window.StorageManager.isPrimaryClass === 'function')
       ? window.StorageManager.isPrimaryClass(curClass)
@@ -262,7 +262,7 @@
             updateClassHeaderUI(sData);
             renderStudentsList(sData.students);
           }
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
 
@@ -294,7 +294,7 @@
             renderStudentsList(parsed.students);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Khởi tạo nhận diện giọng nói cho Trạm Tự Soi Bài Kiosk
@@ -322,8 +322,8 @@
         btn.classList.add('active');
       }
 
-      const petAvatarSvg = (window.EggEvolution && window.EggEvolution.renderPetSVG) 
-        ? window.EggEvolution.renderPetSVG(st.stars, 'active', null, 100, st.group, st.id) 
+      const petAvatarSvg = (window.EggEvolution && window.EggEvolution.renderPetSVG)
+        ? window.EggEvolution.renderPetSVG(st.stars, 'active', null, 100, st.group, st.id)
         : '🥚';
 
       btn.innerHTML = `
@@ -485,8 +485,8 @@
     scanLaserBeam.style.display = 'block';
     if (btnAnalyzeWork) {
       btnAnalyzeWork.disabled = true;
-      btnAnalyzeWork.innerHTML = isMath 
-        ? '<span>⏳</span> ĐANG SOI TỪNG PHÉP TÍNH...' 
+      btnAnalyzeWork.innerHTML = isMath
+        ? '<span>⏳</span> ĐANG SOI TỪNG PHÉP TÍNH...'
         : '<span>⏳</span> ĐANG SOI TỪNG NÉT CHỮ...';
     }
 
@@ -1503,8 +1503,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         const isMath = currentTask && currentTask.type === 'math';
         const strongTitle = annotatedErrorsBox.querySelector('strong');
         if (strongTitle) {
-          strongTitle.textContent = isMath 
-            ? 'Cô đã gạch chân các phép tính cần xem lại:' 
+          strongTitle.textContent = isMath
+            ? 'Cô đã gạch chân các phép tính cần xem lại:'
             : 'Cô đã gạch chân chỗ sai trên ảnh bài viết:';
         }
         res.errors.forEach((err, idx) => {
@@ -1536,8 +1536,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
-      speakVietnamese(isMath 
-        ? `AI chấm bài của ${studentName} đạt xuất sắc 5 sao. Cô hãy xem và xác nhận chuyển điểm cho bé nhé!` 
+      speakVietnamese(isMath
+        ? `AI chấm bài của ${studentName} đạt xuất sắc 5 sao. Cô hãy xem và xác nhận chuyển điểm cho bé nhé!`
         : `AI chấm bài viết của ${studentName} đạt xuất sắc 5 sao. Cô hãy xem và xác nhận chuyển điểm cho bé nhé!`);
 
     } else if (res.tier === 2) {
@@ -1552,8 +1552,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
       resultComment.textContent = `"${res.comment}"`;
       if (btnRewriteWork) btnRewriteWork.style.display = 'none';
 
-      speakVietnamese(isMath 
-        ? `AI chấm bài của ${studentName} đạt 3 sao môn Toán. Cô hãy xem và xác nhận chuyển điểm nhé!` 
+      speakVietnamese(isMath
+        ? `AI chấm bài của ${studentName} đạt 3 sao môn Toán. Cô hãy xem và xác nhận chuyển điểm nhé!`
         : `AI chấm bài của ${studentName} đạt 3 sao. Cô hãy xem và xác nhận chuyển điểm nhé!`);
 
     } else {
@@ -1575,8 +1575,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
 
       speakVietnamese(res.isNotNotebook
         ? `Chưa nhận diện được trang vở bài làm của ${studentName}. Cô hãy kiểm tra lại nhé!`
-        : (isMath 
-          ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng.` 
+        : (isMath
+          ? `Bài toán của ${studentName} cần xem lại. Cô đã gạch chân những phép tính chưa đúng.`
           : `Bài viết của ${studentName} chưa đúng mẫu. Cô đã gạch chân những chỗ con cần rèn lại.`));
     }
 
@@ -1647,7 +1647,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
             localData.lastUpdated = Date.now();
             window.StorageManager.saveData(localData);
             if (typeof window.StorageManager.pushToServer === 'function') {
-              window.StorageManager.pushToServer(localData).catch(() => {});
+              window.StorageManager.pushToServer(localData).catch(() => { });
             }
             if (activeStudent) {
               activeStudent.stars = s.stars;
@@ -1685,8 +1685,8 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
               icon: '📸'
             });
             if (student.logs.length > 30) student.logs = student.logs.slice(0, 30);
-            const hatchReq = (window.EggEvolution && window.EggEvolution.getHatchRequirement) 
-              ? window.EggEvolution.getHatchRequirement(student) 
+            const hatchReq = (window.EggEvolution && window.EggEvolution.getHatchRequirement)
+              ? window.EggEvolution.getHatchRequirement(student)
               : { threshold: 100 };
             if (student.stars >= hatchReq.threshold) {
               if (!student.hatchedAt) student.hatchedAt = Date.now();
@@ -1912,7 +1912,7 @@ TRẢ VỀ DUY NHẤT ĐỊNH DẠNG JSON:
         }
       } catch (err) {
         console.warn('Lỗi kích hoạt micro:', err);
-        try { speechRecognizer.start(); } catch (e) {}
+        try { speechRecognizer.start(); } catch (e) { }
       }
     });
   }
