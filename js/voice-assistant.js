@@ -20,6 +20,18 @@
       .trim();
   }
 
+  // Chuyển đổi âm vị học tiếng Việt (Fuzzy Phonetic Key)
+  // Xử lý các lỗi nhận diện STT điển hình: m/n cuối từ (Lam -> Lan, Trân -> Trâm, Tâm -> Tân), c/k/kh đầu từ, d/gi/r đầu từ
+  function toPhoneticKey(str) {
+    if (!str) return '';
+    let s = removeVietnameseTones(str).toLowerCase();
+    s = s.replace(/\bkh/g, 'c');
+    s = s.replace(/\b(?:k|c)/g, 'c');
+    s = s.replace(/\b(?:d|gi|r)/g, 'd');
+    s = s.replace(/(?:m|n)\b/g, 'n');
+    return s;
+  }
+
   // Chuẩn hóa lỗi nhận diện âm thanh thường gặp của Google Web Speech API
   function normalizeTranscript(rawTranscript, students) {
     if (!rawTranscript) return '';
@@ -55,11 +67,14 @@
   }
 
   // Chuyển đổi từ ngữ chỉ số lượng tiếng Việt thành số
-  function parseVietnameseNumber(text) {
+  function parseVietnameseNumber(text, targetGroupId = null) {
     if (!text) return null;
-    const clean = removeVietnameseTones(text);
+    let clean = removeVietnameseTones(text);
 
-    // Tìm số dạng chữ số trực tiếp: 1, 2, 5, 10, ... (kèm từ điểm/sao/diem)
+    // Loại bỏ số của tổ/nhóm (ví dụ: "tổ 1", "tổ 2", "nhóm 3") để không bắt nhầm số tổ thành số điểm
+    clean = clean.replace(/\b(?:to|nhom)\s+[1-4]\b/gi, ' ');
+
+    // Tìm số dạng chữ số trực tiếp: 1, 2, 5, 10, ... (kèm từ điểm/sao/diem hoặc đứng độc lập)
     const digitMatch = clean.match(/\b(\d+)\s*(diem|sao|star|d|p)?\b/);
     if (digitMatch) {
       return parseInt(digitMatch[1], 10);
@@ -67,10 +82,10 @@
 
     const numMap = {
       'muoi lam': 15, 'mười lăm': 15, 'hai muoi': 20, 'hai mươi': 20,
-      'nua': 1, 'nửa': 1, 'mot': 1, 'một': 1, 'mot': 1, 'mốt': 1,
+      'nua': 1, 'nửa': 1, 'mot': 1, 'một': 1, 'mốt': 1,
       'hai': 2, 'ba': 3, 'bon': 4, 'bốn': 4,
-      'nam': 5, 'năm': 5, 'lam': 5, 'lăm': 5, 'sau': 6, 'sáu': 6,
-      'bay': 7, 'bảy': 7, 'bay': 7, 'bẩy': 7, 'tam': 8, 'tám': 8,
+      'nam': 5, 'năm': 5, 'sau': 6, 'sáu': 6,
+      'bay': 7, 'bảy': 7, 'bẩy': 7, 'tam': 8, 'tám': 8,
       'chin': 9, 'chín': 9, 'muoi': 10, 'mười': 10
     };
 
@@ -283,35 +298,65 @@
 
         this.recognition.onresult = (event) => {
           let interimText = '';
-          let finalSegment = '';
+          let fullFinal = '';
           const alternatives = [];
 
-          for (let i = event.resultIndex; i < event.results.length; i++) {
+          // Gom toàn bộ kết quả final từ đầu phiên ghi âm (từ i = 0), không bỏ sót từ khi Chrome chia nhỏ chunk
+          for (let i = 0; i < event.results.length; i++) {
             const res = event.results[i];
             if (res.isFinal) {
-              finalSegment += res[0].transcript;
+              const t = res[0].transcript.trim();
+              if (t) {
+                fullFinal += (fullFinal ? ' ' : '') + t;
+              }
               for (let a = 0; a < res.length; a++) {
                 if (res[a] && res[a].transcript) {
                   alternatives.push(res[a].transcript.trim());
                 }
               }
             } else {
-              interimText += res[0].transcript;
+              interimText += (interimText ? ' ' : '') + res[0].transcript.trim();
             }
           }
 
           // Cập nhật streaming thời gian thực lên màn hình
-          if (interimText) {
-            this.updateInterimDisplay(interimText);
+          const liveText = interimText ? (fullFinal ? `${fullFinal} ${interimText}` : interimText) : fullFinal;
+          if (liveText) {
+            this.updateInterimDisplay(liveText);
           }
 
-          if (finalSegment) {
+          // Xử lý thông minh khi cô đang nói:
+          // Nếu vẫn đang có interimText (cô đang nói dở), xóa timer để không bao giờ bị ngắt câu giữa chừng.
+          if (interimText) {
             clearTimeout(this.speechFinalDebounceTimer);
-            // Tự động chốt lệnh sau khi cô dứt câu 350ms
+            return;
+          }
+
+          if (fullFinal) {
+            clearTimeout(this.speechFinalDebounceTimer);
+
+            // Kiểm tra xem câu đã đủ cấu trúc (hành động + đối tượng + điểm) hay chưa
+            let isComplete = false;
+            try {
+              const data = (window.StorageManager && window.StorageManager.loadData()) || {};
+              const students = data.students || [];
+              const norm = normalizeTranscript(fullFinal, students);
+              const parsed = this.parseCommandGrammar(fullFinal, norm, students);
+              const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide || parsed.targetGroupId;
+              if (parsed.actionFound && hasTarget && parsed.points) {
+                isComplete = true;
+              }
+            } catch (err) {}
+
+            // Debounce thông minh:
+            // Nếu câu đã hoàn chỉnh: chờ 700ms im lặng (để cô có thể nói tiếp lý do "vì...") rồi chốt lệnh.
+            // Nếu câu chưa đủ (cô mới nói "Cộng..." hoặc mới nói tên): chờ tối đa 2500ms để cô đọc tiếp.
+            const debounceMs = isComplete ? 700 : 2500;
+
             this.speechFinalDebounceTimer = setTimeout(() => {
               this.stop();
-              this.processCommand(finalSegment.trim(), alternatives);
-            }, 350);
+              this.processCommand(fullFinal.trim(), alternatives);
+            }, debounceMs);
           }
         };
       } catch (e) {
@@ -356,6 +401,7 @@
     startWebSpeech() {
       if (!this.recognition) return;
       try {
+        clearTimeout(this.speechFinalDebounceTimer);
         this.currentInterimText = '';
         this.recognition.start();
       } catch (e) {
@@ -366,6 +412,7 @@
     stopWebSpeech() {
       if (!this.recognition) return;
       try {
+        clearTimeout(this.speechFinalDebounceTimer);
         this.recognition.stop();
       } catch (e) {
         console.warn('Lỗi stop recognition:', e);
@@ -651,19 +698,44 @@
         }
       }
 
-      // 3. Trích xuất số điểm
-      let points = parseVietnameseNumber(normalized);
+      // 3. Tìm danh sách học sinh khớp trong câu nói trước (để loại trừ tên học sinh trước khi trích xuất số điểm & lý do)
+      let matchedStudents = (isClassWide || targetGroupId) ? [] : this.findAllStudentMatches(clean, students);
+
+      // Nếu không tìm thấy tên học sinh trong câu nói, nhưng đang mở bảng Khen thưởng của 1 học sinh cụ thể
+      if (matchedStudents.length === 0 && !isClassWide && !targetGroupId) {
+        if (typeof window.getActiveModalStudent === 'function') {
+          const activeStudent = window.getActiveModalStudent();
+          if (activeStudent) {
+            matchedStudents = [activeStudent];
+          }
+        }
+      }
+      const student = matchedStudents.length > 0 ? matchedStudents[0] : null;
+
+      // 4. Trích xuất số điểm (đã loại bỏ tên học sinh đã khớp khỏi văn bản để tránh bắt nhầm chữ trong tên thành số)
+      let numberSearchText = normalized || raw;
+      if (matchedStudents && matchedStudents.length > 0) {
+        matchedStudents.forEach(s => {
+          if (s && s.name) {
+            numberSearchText = numberSearchText.replace(new RegExp('\\b' + s.name + '\\b', 'giu'), ' ');
+            const sClean = removeVietnameseTones(s.name);
+            if (sClean) numberSearchText = numberSearchText.replace(new RegExp('\\b' + sClean + '\\b', 'giu'), ' ');
+          }
+        });
+      }
+
+      let points = parseVietnameseNumber(numberSearchText, targetGroupId);
       if (!points || points <= 0 || points > 100) {
         points = isNegative ? 2 : 5; // Mặc định: trừ 2 hoặc cộng 5 nếu cô không đọc số điểm
       }
 
-      // 4. Trích xuất lý do tự nhiên từ câu nói (Ví dụ: "vì đọc bài to", "do giúp bạn nhặt bút", "tại nói chuyện riêng")
+      // 5. Trích xuất lý do tự nhiên từ câu nói (Ví dụ: "vì đọc bài to", "do giúp bạn nhặt bút", "tại nói chuyện riêng")
       let naturalReason = '';
 
       // Danh sách liên từ chỉ nguyên nhân / lý do
       const reasonRegex = /(?:^|[\s,;])(?:vì\s+lý\s+do|vì\s+lí\s+do|với\s+lý\s+do|với\s+lí\s+do|bởi\s+vì|tại\s+vì|lý\s+do|lí\s+do|vì|do|tại|nhờ)\s+(.+)$/iu;
 
-      // 4.1. Thử bóc tách trực tiếp từ câu raw (văn bản gốc tiếng Việt có dấu do Web Speech API / mic trả về)
+      // 5.1. Thử bóc tách trực tiếp từ câu raw (văn bản gốc tiếng Việt có dấu do Web Speech API / mic trả về)
       const rawMatch = (raw || '').match(reasonRegex);
       const normMatch = (normalized || '').match(reasonRegex);
       let candidateReason = rawMatch && rawMatch[1] ? rawMatch[1] : (normMatch && normMatch[1] ? normMatch[1] : '');
@@ -689,7 +761,7 @@
         }
       }
 
-      // 4.2. Nếu không có từ "vì/do...", kiểm tra phần nội dung phía sau tên học sinh và số điểm
+      // 5.2. Nếu không có từ "vì/do...", kiểm tra phần nội dung phía sau tên học sinh và số điểm
       if (!naturalReason && (normalized || raw)) {
         let remnant = normalized || raw;
         const congVariants = 'cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|cuộn|cũn|cọp|cộp';
@@ -699,6 +771,27 @@
         if (Array.isArray(students)) {
           students.forEach(s => {
             remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|của\\s+|bạn\\s+|bé\\s+|em\\s+)?' + s.name + '\\b', 'giu'), '');
+            const sClean = removeVietnameseTones(s.name);
+            if (sClean) remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|cua\\s+|ban\\s+|be\\s+|em\\s+)?' + sClean + '\\b', 'giu'), '');
+          });
+        }
+        // Xóa sạch mọi từ hoặc cụm từ trong remnant trùng âm vị (toPhoneticKey) với học sinh đã khớp
+        if (Array.isArray(matchedStudents)) {
+          matchedStudents.forEach(s => {
+            if (!s || !s.name) return;
+            const sKey = toPhoneticKey(s.name);
+            const sParts = removeVietnameseTones(s.name).split(' ');
+            const sTwoLastKey = sParts.length >= 3 ? toPhoneticKey(sParts.slice(-2).join(' ')) : null;
+            const words = remnant.split(/\s+/).filter(Boolean);
+            for (let len = Math.min(3, words.length); len >= 1; len--) {
+              for (let i = 0; i <= words.length - len; i++) {
+                const phrase = words.slice(i, i + len).join(' ');
+                const pKey = toPhoneticKey(phrase);
+                if (pKey === sKey || (sTwoLastKey && pKey === sTwoLastKey)) {
+                  remnant = (' ' + remnant + ' ').replace(' ' + phrase + ' ', ' ').trim();
+                }
+              }
+            }
           });
         }
         remnant = remnant.replace(/\b\d+\s*(?:điểm|sao|star|d|p)?\b/giu, '');
@@ -718,7 +811,7 @@
 
       let reason = naturalReason;
 
-      // 4.3. Nếu chưa có lý do cụ thể, đối sánh theo các từ khóa hành vi thường gặp
+      // 5.3. Nếu chưa có lý do cụ thể, đối sánh theo các từ khóa hành vi thường gặp
       if (!reason) {
         if (clean.includes('mat trat tu')) reason = 'Mất trật tự trong giờ học';
         else if (clean.includes('noi chuyen')) reason = 'Nói chuyện riêng trong lớp';
@@ -735,20 +828,6 @@
           reason = isNegative ? 'Nhắc nhở qua giọng nói' : 'Khen thưởng qua giọng nói';
         }
       }
-
-      // 5. Tìm danh sách học sinh khớp trong câu nói (nếu không phải lệnh cho cả lớp hay cho tổ)
-      let matchedStudents = (isClassWide || targetGroupId) ? [] : this.findAllStudentMatches(clean, students);
-
-      // Nếu không tìm thấy tên học sinh trong câu nói, nhưng đang mở bảng Khen thưởng của 1 học sinh cụ thể
-      if (matchedStudents.length === 0 && !isClassWide && !targetGroupId) {
-        if (typeof window.getActiveModalStudent === 'function') {
-          const activeStudent = window.getActiveModalStudent();
-          if (activeStudent) {
-            matchedStudents = [activeStudent];
-          }
-        }
-      }
-      const student = matchedStudents.length > 0 ? matchedStudents[0] : null;
 
       return {
         raw,
@@ -835,6 +914,43 @@
             matchedWithIndex.push({ student: s, index: match.index });
             matchedIds.add(s.id);
             workingText = workingText.replace(reg, ' ___ ');
+          }
+        }
+      }
+
+      // Bước 4: Khớp mờ ngữ âm (Fuzzy Phonetic Matching) cho trường hợp Google STT nghe lệch âm
+      // Ví dụ: Bảo Lam nghe thành "Bảo Lan", Bảo Trân thành "Bảo Trâm", Tuệ Tâm thành "Tuệ Tân", Hà Kha thành "Hà Ca", Đăng Khôi thành "Đăng Côi", Ánh Dương thành "Ánh Giương"
+      let phoneticWorkingText = ' ' + toPhoneticKey(workingText) + ' ';
+
+      // Bước 4.1: Khớp cả họ tên theo mã ngữ âm (toPhoneticKey)
+      for (const s of sortedStudents) {
+        if (matchedIds.has(s.id)) continue;
+        const sKey = toPhoneticKey(s.name);
+        if (!sKey) continue;
+        const reg = new RegExp('\\b' + sKey + '\\b', 'i');
+        const match = phoneticWorkingText.match(reg);
+        if (match) {
+          matchedWithIndex.push({ student: s, index: match.index });
+          matchedIds.add(s.id);
+          phoneticWorkingText = phoneticWorkingText.replace(reg, ' ___ ');
+        }
+      }
+
+      // Bước 4.2: Khớp 2 từ cuối theo mã ngữ âm cho tên từ 3 từ trở lên
+      for (const s of sortedStudents) {
+        if (matchedIds.has(s.id)) continue;
+        const parts = removeVietnameseTones(s.name).split(' ');
+        if (parts.length >= 3) {
+          const twoLastKey = toPhoneticKey(parts.slice(-2).join(' '));
+          const isConflict = students.some(other => other.id !== s.id && toPhoneticKey(other.name) === twoLastKey);
+          if (!isConflict) {
+            const reg = new RegExp('\\b' + twoLastKey + '\\b', 'i');
+            const match = phoneticWorkingText.match(reg);
+            if (match) {
+              matchedWithIndex.push({ student: s, index: match.index });
+              matchedIds.add(s.id);
+              phoneticWorkingText = phoneticWorkingText.replace(reg, ' ___ ');
+            }
           }
         }
       }
