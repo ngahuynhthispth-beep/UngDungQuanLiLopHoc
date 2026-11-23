@@ -10,6 +10,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" href="css/main.css?v=20261119_v2">
+  <link rel="stylesheet" href="css/water-station.css?v=20261123_v1">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥚</text></svg>">
   <script>
     function openClassManageModal() {
@@ -124,6 +125,10 @@
 
       <button id="btnDailyMiniGame" class="btn-header" style="background: linear-gradient(135deg, #FF6B6B, #EE5253); color: #FFFFFF; border: none; box-shadow: 0 4px 12px rgba(238, 82, 83, 0.35); font-weight: 800;" title="Trò chơi Oẳn Tù Tì nhận kẹo cuối ngày dành cho học sinh ngoan">
         🍬 <span>Oẳn Tù Tì Nhận Kẹo</span>
+      </button>
+
+      <button id="btnWaterStation" class="btn-header btn-water-station" title="Trạm Nước Uống Tuần - Bình nước dâng 5 nấc để vinh danh Hiệp Sĩ Nước Sạch">
+        💧 <span>Trạm Nước</span> <span class="water-badge-full water-full-badge-count" style="display: none;">0</span>
       </button>
 
       <button id="btnTimer" class="btn-header" title="Đồng hồ đếm ngược làm nhiệm vụ">
@@ -1253,6 +1258,136 @@
     </div>
   </div>
 
+  <!-- MODAL: Trạm Nước Uống Tuần (Bình nước dâng 5 nấc - Hiệp Sĩ Nước Sạch) -->
+  <div id="waterStationModal" class="modal-backdrop">
+    <div class="modal-card water-modal-card">
+      <!-- Modal Header -->
+      <div class="water-modal-header">
+        <div class="water-header-title">
+          <div class="water-header-icon">💧</div>
+          <div class="water-header-text">
+            <h2>TRẠM NƯỚC UỐNG TUẦN • HIỆP SĨ NƯỚC SẠCH</h2>
+            <p id="waterModalWeekRange">Tuần học: Thứ 2 đến Thứ 6 • Đầy bình nhận 5⭐ mỗi ngày</p>
+          </div>
+        </div>
+        <div class="water-header-actions">
+          <button type="button" class="btn-water-header-action" onclick="window.WaterStation.showHonorModal()" title="Xem bảng vàng các bạn đã đạt danh hiệu Hiệp Sĩ Nước Sạch">
+            🏆 Bảng Vinh Danh
+          </button>
+          <button type="button" class="btn-water-header-action" onclick="window.WaterStation.showRulesModal()" title="Luật chơi và hướng dẫn">
+            ℹ️ Luật Chơi
+          </button>
+          <button type="button" class="btn-water-header-action" onclick="window.WaterStation.resetWeekManual()" title="Bắt đầu tuần mới thủ công" style="background: rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.4);">
+            🔄 Tuần Mới
+          </button>
+          <button id="btnCloseWaterStationModal" type="button" class="water-close-btn" aria-label="Đóng">&times;</button>
+        </div>
+      </div>
+
+      <!-- Thanh Tiến Độ Chung Cả Lớp -->
+      <div class="water-class-progress-bar">
+        <div class="water-stats-box">
+          <span style="font-size: 20px;">🌊</span>
+          <div class="water-progress-track">
+            <div id="waterProgressFill" class="water-progress-fill" style="width: 0%;"></div>
+          </div>
+          <span id="waterStatsLabel" class="water-stats-label">Đang tải tiến độ...</span>
+        </div>
+      </div>
+
+      <!-- Thanh Lọc & Nạp Nhanh Hàng Loạt -->
+      <div class="water-filter-toolbar">
+        <div class="water-filter-chips">
+          <button type="button" class="water-chip active" onclick="window.WaterStation.currentFilter='all'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tất Cả</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=1; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 1</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=2; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 2</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=3; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 3</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=4; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 4</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='not_today'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">⏳ Chưa Uống Hôm Nay</button>
+          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='full'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">👑 Đã Đầy Bình</button>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="water-toolbar-quick-btn" onclick="const sIds = Array.from(document.querySelectorAll('.water-student-card:not(.done-today)')).map(el=>el.dataset.id); window.WaterStation.bulkLogWater(sIds);" title="Nạp nước nhanh cho tất cả các bé đang hiển thị trong bộ lọc">
+            ⚡ Nạp Nước Hàng Loạt (+5⭐)
+          </button>
+        </div>
+      </div>
+
+      <!-- Danh Sách Các Bình Nước -->
+      <div class="water-modal-body">
+        <div id="waterBottlesGrid" class="water-bottles-grid">
+          <!-- Rendered dynamically by WaterStation -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Bảng Vinh Danh Hiệp Sĩ Nước Sạch -->
+  <div id="waterHonorModal" class="modal-backdrop">
+    <div class="modal-card water-honor-modal-card">
+      <div style="font-size: 48px; margin-bottom: 6px;">🏆👑💧</div>
+      <h2 style="font-size: 22px; font-weight: 900; color: #0369A1; margin: 0 0 4px 0;">BẢNG VÀNG HIỆP SĨ NƯỚC SẠCH</h2>
+      <p id="waterHonorWeekRange" style="font-size: 13px; font-weight: 700; color: #0284C7; margin: 0 0 16px 0;">Tuần này</p>
+      
+      <div id="waterHonorKnightsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 48vh; overflow-y: auto; padding: 4px; margin-bottom: 18px;">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn-header" style="background: linear-gradient(135deg, #0EA5E9, #0284C7); color: #FFFFFF; font-weight: 800; padding: 10px 18px; border-radius: 20px;" onclick="window.WaterStation.exportHonorZaloCard()">
+          📸 Xuất Ảnh Thiệp Gửi Zalo
+        </button>
+        <button type="button" class="btn-header" style="background: #E2E8F0; color: #475569; font-weight: 800; padding: 10px 18px; border-radius: 20px;" onclick="document.getElementById('waterHonorModal').classList.remove('active')">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Hướng Dẫn & Luật Chơi Trạm Nước -->
+  <div id="waterRulesModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 520px; width: 95%; border-radius: 24px; padding: 22px; text-align: left;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 28px;">💧📘</span>
+          <h2 style="font-size: 18px; font-weight: 900; color: #0369A1; margin: 0;">LUẬT THI ĐUA TRẠM NƯỚC</h2>
+        </div>
+        <button type="button" class="modal-close-btn" style="position: static;" onclick="document.getElementById('waterRulesModal').classList.remove('active')">&times;</button>
+      </div>
+
+      <div style="font-size: 13px; color: #334155; line-height: 1.6; display: flex; flex-direction: column; gap: 10px;">
+        <div style="background: #F0F9FF; border-left: 4px solid #0EA5E9; padding: 10px 12px; border-radius: 0 12px 12px 0;">
+          <strong>🎯 Mục tiêu:</strong> Rèn luyện cho các con thói quen uống đủ nước mỗi ngày để cơ thể khỏe mạnh, mắt sáng và thông minh.
+        </div>
+        <div>
+          <strong>1. Quy định 5 ngày trong tuần:</strong> Mỗi ngày học (từ Thứ 2 đến Thứ 6), khi bé uống hết bình nước mang theo, cô sẽ bấm <em>"💧 Nạp Nước"</em>.<br>
+          👉 Bình nước của bé sẽ dâng lên <strong>1 nấc (20%)</strong> và được cộng ngay <strong>+5 ⭐</strong>.
+        </div>
+        <div>
+          <strong>2. Đầy bình 100% (Thứ 6):</strong> Bé nào hoàn thành trọn vẹn cả 5 ngày sẽ đạt <strong>5/5 nấc (100%)</strong> và trở thành <strong>HIỆP SĨ NƯỚC SẠCH</strong> của tuần!
+        </div>
+        <div>
+          <strong>3. Quyền lợi Hiệp Sĩ Nước Sạch:</strong>
+          <ul style="margin: 4px 0 0 18px; padding: 0;">
+            <li>Được vinh danh trên Bảng Vàng và nhận Thiệp Vinh Danh gửi Zalo Phụ Huynh.</li>
+            <li>Được ưu tiên làm Tổ Trưởng Nước Uống hoặc làm người phát vở giúp cô vào tuần sau.</li>
+            <li>Được chọn chỗ ngồi yêu thích vào tiết sinh hoạt cuối tuần.</li>
+          </ul>
+        </div>
+        <div>
+          <strong>4. Chu kỳ tuần mới:</strong> Sang sáng Thứ 2 tuần sau, bình nước sẽ tự động rỗng lại để lớp bắt đầu tuần thi đua mới tươi vui!
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 18px;">
+        <button type="button" class="btn-header" style="background: #0284C7; color: #FFFFFF; font-weight: 800; padding: 9px 24px; border-radius: 20px;" onclick="document.getElementById('waterRulesModal').classList.remove('active')">
+          Đã Hiểu
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Thông Báo Chúc Mừng Trứng Nở (Popup khi bé đạt >= 100 sao) -->
   <div id="hatchCelebrationModal" class="modal-backdrop">
     <div class="modal-card" style="text-align: center; max-width: 460px; background: linear-gradient(180deg, #FFFFFF 0%, #F0FDF4 100%); border: 3px solid #34D399; box-shadow: 0 20px 40px rgba(16, 185, 129, 0.25);">
@@ -1696,6 +1831,7 @@
   <script src="js/card-export.js?v=20261122_v2"></script>
   <script src="js/voice-assistant.js?v=20261123_v1"></script>
   <script src="js/daily-game.js?v=20261122_v2"></script>
+  <script src="js/water-station.js?v=20261123_v1"></script>
   <script src="js/app.js?v=20261122_v9"></script>
 </body>
 </html>

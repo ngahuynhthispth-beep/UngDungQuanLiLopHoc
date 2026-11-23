@@ -615,7 +615,7 @@
       const firstTwoWords = words.slice(0, 2).join(' ');
 
       // Nhóm động từ CỘNG
-      const positiveVerbs = ['cong', 'khen', 'thuong', 'tang', 'them'];
+      const positiveVerbs = ['cong', 'khen', 'thuong', 'tang', 'them', 'nap', 'uong'];
 
       // Kiểm tra xem từ "phát" có phải là "phát biểu", "phát thưởng" hay không
       const isPhatBieu = clean.includes('phat bieu') || clean.includes('phat thuong') || rawLower.includes('phát biểu') || rawLower.includes('phát');
@@ -824,6 +824,7 @@
         else if (clean.includes('lam dung') || clean.includes('lam nhanh')) reason = 'Làm bài nhanh và chính xác';
         else if (clean.includes('giup ban')) reason = 'Biết giúp đỡ bạn bè';
         else if (clean.includes('ve sinh') || clean.includes('truc nhat')) reason = 'Vệ sinh trực nhật sạch sẽ';
+        else if (clean.includes('uong nuoc') || clean.includes('nap nuoc') || clean.includes('nuoc')) reason = 'Uống đủ nước mỗi ngày';
         else {
           reason = isNegative ? 'Nhắc nhở qua giọng nói' : 'Khen thưởng qua giọng nói';
         }
@@ -1091,6 +1092,13 @@
             }
             const res = window.StorageManager.addPointsToStudent(student.id, actualPoints, cmd.reason, icon);
             if (typeof window.refreshData === 'function') window.refreshData(res ? res.data : null);
+          }
+
+          // Tự động nâng mực nước trong bình Trạm Nước nếu câu lệnh là uống nước / nạp nước
+          if (window.WaterStation && typeof window.WaterStation.recordWaterOnly === 'function' && !cmd.isNegative) {
+            if ((cmd.reason && cmd.reason.toLowerCase().includes('nước')) || (cmd.raw && /nước|nuoc/i.test(cmd.raw))) {
+              window.WaterStation.recordWaterOnly(student.id);
+            }
           }
         }, idx * 140);
       });
