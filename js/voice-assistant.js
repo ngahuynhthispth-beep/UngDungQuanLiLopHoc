@@ -21,7 +21,7 @@
   }
 
   // Chuyển đổi âm vị học tiếng Việt (Fuzzy Phonetic Key)
-  // Xử lý các lỗi nhận diện STT điển hình: m/n cuối từ (Lam -> Lan, Trân -> Trâm, Tâm -> Tân), c/k/kh đầu từ, d/gi/r đầu từ
+  // Xử lý các lỗi nhận diện STT điển hình: m/n cuối từ (Lam -> Lan, Trân -> Trâm, Tâm -> Tân), c/k/kh đầu từ, d/gi/r đầu từ, i/y đồng âm
   function toPhoneticKey(str) {
     if (!str) return '';
     let s = removeVietnameseTones(str).toLowerCase();
@@ -29,6 +29,7 @@
     s = s.replace(/\b(?:k|c)/g, 'c');
     s = s.replace(/\b(?:d|gi|r)/g, 'd');
     s = s.replace(/(?:m|n)\b/g, 'n');
+    s = s.replace(/y/g, 'i');
     return s;
   }
 
@@ -42,17 +43,20 @@
 
     // Biến thể đồng âm Google STT miền Nam/Trung hay nghe nhầm từ "Cộng" thành "cọc", "cộc", "cột", "cọt", "cọng", "công"...
     const congVariants = 'cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|chổng|chộng|cuộn|cũn|cọp|cộp';
+    // Biến thể đồng âm Google STT hay nghe nhầm từ "Trừ" thành "trần", "từ", "trực", "chừ", "chữ", "trú", "trúng", "trả", "chờ"...
+    const truVariants = 'trần|từ|trực|chừ|chữ|trú|trúng|trả|chờ';
 
     // 1. Chuẩn hóa đại từ mở đầu: "Cô", "Thầy", "Em", "Tôi", "Bạn", "Xin", "Hãy", "Làm ơn"
     // Ví dụ: "Cô cộng...", "Cô cọc...", "Cô cộc...", "Cô khen...", "Cô cho..." -> "Cộng "
     text = text.replace(new RegExp('^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\\s+(?:cộng|khen|thưởng|tặng|thêm|cho|' + congVariants + ')\\s+', 'iu'), 'Cộng ');
-    text = text.replace(/^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\s+(?:trừ|bớt|phạt|nhắc\s+nhở|nhắc)\s+/iu, 'Trừ ');
+    text = text.replace(new RegExp('^(?:cô|thầy|em|tôi|bạn|xin|hãy|vui lòng|làm ơn)\\s+(?:trừ|bớt|phạt|nhắc\\s+nhở|nhắc|' + truVariants + ')\\s+', 'iu'), 'Trừ ');
 
     // 2. Chuẩn hóa "cho bạn / cho bé / cho em" ở đầu câu thành "Cộng "
     text = text.replace(/^cho\s+(?:bạn|bé|em|học sinh)?\s+/iu, 'Cộng ');
 
     // 3. Chuẩn hóa chuỗi các từ nghe nhầm như "cọc", "cọc cọc", "cọc, cọc" ở đầu câu hoặc đứng độc lập
     text = text.replace(new RegExp('^(?:' + congVariants + ')(?:[\\s,;]+(?:' + congVariants + '))*(?:\\s+|$)', 'iu'), 'Cộng ');
+    text = text.replace(new RegExp('^(?:' + truVariants + ')\\s+(?=(?:cho\\s+|bạn\\s+|bé\\s+|em\\s+)?[A-ZÀ-Ỹa-zà-ỹ0-9])', 'iu'), 'Trừ ');
 
     // 4. Chuẩn hóa "... [từ nghe nhầm cọc/cộc] + [tên học sinh hoặc số điểm]" ở bất kỳ vị trí nào
     text = text.replace(new RegExp('(?:^|[\\s,;])(?:' + congVariants + ')(?:[\\s,;]+(?:' + congVariants + '))*\\s+(?=(?:cho\\s+|bạn\\s+|bé\\s+|em\\s+)?[A-ZÀ-Ỹa-zà-ỹ0-9])', 'giu'), ' Cộng ');
@@ -563,12 +567,22 @@
       const candidates = [transcript, ...(alternatives || [])];
       let bestCommand = null;
 
+      // Kiểm tra xem câu gốc (candidate 0) có ý định TRỪ rõ ràng hay không
+      const rawFirstCand = (candidates[0] || '').toLowerCase();
+      const normFirstCand = normalizeTranscript(candidates[0] || '', students).toLowerCase();
+      const firstCandIsNegative = /^(?:trừ|bớt|phạt|nhắc|rút|hạ)\b/i.test(normFirstCand) ||
+        /\b(?:trừ|bớt|phạt|thu lại)\b/i.test(rawFirstCand);
+
       for (const cand of candidates) {
         if (!cand) continue;
         const normalized = normalizeTranscript(cand, students);
         const parsed = this.parseCommandGrammar(cand, normalized, students);
         const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide || parsed.targetGroupId;
         if (hasTarget) {
+          // Nếu câu gốc ban đầu là lệnh TRỪ, tuyệt đối không chấp nhận candidate phụ đảo ngược thành CỘNG
+          if (firstCandIsNegative && !parsed.isNegative) {
+            continue;
+          }
           // Ưu tiên phương án nhận diện có hành động rõ ràng (Cộng hoặc Trừ)
           if (parsed.actionFound) {
             bestCommand = parsed;
@@ -678,7 +692,8 @@
       if (!actionFound) {
         const hasSpecificViolation = [
           'mat trat tu', 'noi chuyen', 'chua ngoan', 'quay cop', 'khong lam bai',
-          'chua lam bai', 'quen vo', 'quen sach'
+          'chua lam bai', 'quen vo', 'quen sach', 'choi trong lop', 'choi', 'nghich',
+          'nghich ngom', 'lam viec rieng', 'khong tap trung', 'khong chu y', 'an qua vat', 'ngu gat'
         ].some(v => new RegExp('(?:^|[\\s,;!?])' + v + '(?=[\\s,;!?]|$)', 'i').test(clean));
 
         const hasSpecificPraise = [
@@ -720,6 +735,8 @@
             numberSearchText = numberSearchText.replace(new RegExp('\\b' + s.name + '\\b', 'giu'), ' ');
             const sClean = removeVietnameseTones(s.name);
             if (sClean) numberSearchText = numberSearchText.replace(new RegExp('\\b' + sClean + '\\b', 'giu'), ' ');
+            const sVowel = sClean.replace(/y/g, 'i');
+            if (sVowel) numberSearchText = numberSearchText.replace(new RegExp('\\b' + sVowel + '\\b', 'giu'), ' ');
           }
         });
       }
@@ -773,6 +790,8 @@
             remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|của\\s+|bạn\\s+|bé\\s+|em\\s+)?' + s.name + '\\b', 'giu'), '');
             const sClean = removeVietnameseTones(s.name);
             if (sClean) remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|cua\\s+|ban\\s+|be\\s+|em\\s+)?' + sClean + '\\b', 'giu'), '');
+            const sVowel = sClean.replace(/y/g, 'i');
+            if (sVowel) remnant = remnant.replace(new RegExp('\\b(?:cho\\s+|cua\\s+|ban\\s+|be\\s+|em\\s+)?' + sVowel + '\\b', 'giu'), '');
           });
         }
         // Xóa sạch mọi từ hoặc cụm từ trong remnant trùng âm vị (toPhoneticKey) với học sinh đã khớp
@@ -853,13 +872,15 @@
       // Sắp xếp theo độ dài họ tên giảm dần (để "Phạm Bảo Hân" được ưu tiên trước "Bảo Hân")
       const sortedStudents = [...students].sort((a, b) => b.name.length - a.name.length);
 
-      let workingText = ' ' + cleanTranscript.toLowerCase() + ' ';
+      // Chuẩn hóa đồng âm i và y (Huyền Mi <=> Huyền My, Vy Lê <=> Vi Lê, Hải Yến <=> Hải Iến)
+      const normVowels = (str) => removeVietnameseTones(str).toLowerCase().replace(/y/g, 'i');
+      let workingText = ' ' + normVowels(cleanTranscript) + ' ';
       const matchedWithIndex = [];
       const matchedIds = new Set();
 
-      // Bước 1: Khớp chính xác cả họ tên (vd: 'pham bao han', 'minh an', 'gia hung', 'quoc an')
+      // Bước 1: Khớp chính xác cả họ tên (vd: 'pham bao han', 'minh an', 'gia hung', 'quoc an', 'huyen my' / 'huyen mi')
       for (const s of sortedStudents) {
-        const sClean = removeVietnameseTones(s.name);
+        const sClean = normVowels(s.name);
         if (!sClean) continue;
         const reg = new RegExp('\\b' + sClean + '\\b', 'i');
         const match = workingText.match(reg);
@@ -876,10 +897,10 @@
       // Chỉ khớp nếu 2 từ cuối này KHÔNG trùng với tên đầy đủ của bạn khác đã có
       for (const s of sortedStudents) {
         if (matchedIds.has(s.id)) continue;
-        const parts = removeVietnameseTones(s.name).split(' ');
+        const parts = normVowels(s.name).split(' ');
         if (parts.length >= 3) {
           const twoLast = parts.slice(-2).join(' ');
-          const isConflict = students.some(other => other.id !== s.id && removeVietnameseTones(other.name) === twoLast);
+          const isConflict = students.some(other => other.id !== s.id && normVowels(other.name) === twoLast);
           if (!isConflict) {
             const reg = new RegExp('\\b' + twoLast + '\\b', 'i');
             const match = workingText.match(reg);
@@ -894,17 +915,21 @@
 
       // Bước 3: Khớp tên gọi đơn duy nhất trong lớp (nếu trong lớp chỉ có 1 bạn mang tên này)
       // Ví dụ: chỉ có 1 bạn tên Hưng (Gia Hưng), 1 bạn tên Yến (Hải Yến), 1 bạn tên Thảo (Hương Thảo)
-      const stopwords = new Set(['di', 'cho', 'va', 'ra', 'co', 'em', 'ban', 'con', 'lop', 'to', 'cac', 'nhe', 'nha', 'mot', 'hai', 'ba', 'bon', 'nam', 'sau', 'bay', 'tam', 'chin', 'muoi']);
+      const stopwords = new Set([
+        'di', 'cho', 'va', 'ra', 'co', 'em', 'ban', 'con', 'lop', 'to', 'cac', 'nhe', 'nha',
+        'mot', 'hai', 'ba', 'bon', 'nam', 'sau', 'bay', 'tam', 'chin', 'muoi',
+        'bot', 'khen', 'thuong', 'phat', 'nhac', 'ha', 'rut'
+      ]);
       const lastNameCounts = {};
       students.forEach(s => {
-        const parts = removeVietnameseTones(s.name).split(' ');
+        const parts = normVowels(s.name).split(' ');
         const l = parts[parts.length - 1];
         if (l) lastNameCounts[l] = (lastNameCounts[l] || 0) + 1;
       });
 
       for (const s of sortedStudents) {
         if (matchedIds.has(s.id)) continue;
-        const parts = removeVietnameseTones(s.name).split(' ');
+        const parts = normVowels(s.name).split(' ');
         const l = parts[parts.length - 1];
         if (!l || stopwords.has(l)) continue;
 
@@ -912,6 +937,10 @@
           const reg = new RegExp('\\b' + l + '\\b', 'i');
           const match = workingText.match(reg);
           if (match) {
+            // Nếu từ trùng là 'tran' hoặc 'tru' hoặc 'cong' nhưng lại nằm ngay đầu câu lệnh (vị trí của động từ Trừ/Cộng bị nghe nhầm), bỏ qua
+            if ((l === 'tran' || l === 'tru' || l === 'cong') && match.index <= 2) {
+              continue;
+            }
             matchedWithIndex.push({ student: s, index: match.index });
             matchedIds.add(s.id);
             workingText = workingText.replace(reg, ' ___ ');
@@ -940,7 +969,7 @@
       // Bước 4.2: Khớp 2 từ cuối theo mã ngữ âm cho tên từ 3 từ trở lên
       for (const s of sortedStudents) {
         if (matchedIds.has(s.id)) continue;
-        const parts = removeVietnameseTones(s.name).split(' ');
+        const parts = normVowels(s.name).split(' ');
         if (parts.length >= 3) {
           const twoLastKey = toPhoneticKey(parts.slice(-2).join(' '));
           const isConflict = students.some(other => other.id !== s.id && toPhoneticKey(other.name) === twoLastKey);

@@ -17,7 +17,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <link rel="stylesheet" href="css/main.css?v=20261119_v2">
-  <link rel="stylesheet" href="css/water-station.css?v=20261123_v1">
+  <link rel="stylesheet" href="css/water-station.css?v=20261123_v3">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
   <script>
@@ -1550,20 +1550,39 @@
 
       <!-- Thanh Lọc & Nạp Nhanh Hàng Loạt -->
       <div class="water-filter-toolbar">
-        <div class="water-filter-chips">
-          <button type="button" class="water-chip active" onclick="window.WaterStation.currentFilter='all'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tất Cả</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=1; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 1</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=2; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 2</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=3; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 3</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=4; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 4</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='not_today'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">⏳ Chưa Uống Hôm Nay</button>
-          <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='full'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">👑 Đã Đầy Bình</button>
+        <div class="water-filter-row-top">
+          <div class="water-filter-chips">
+            <button type="button" class="water-chip active" onclick="window.WaterStation.currentFilter='all'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tất Cả</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=1; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 1</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=2; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 2</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=3; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 3</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter=4; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">Tổ 4</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='not_today'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">⏳ Chưa Uống Hôm Nay</button>
+            <button type="button" class="water-chip" onclick="window.WaterStation.currentFilter='full'; window.WaterStation.render(); this.parentElement.querySelectorAll('.water-chip').forEach(c=>c.classList.remove('active')); this.classList.add('active');">👑 Đã Đầy Bình</button>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="water-toolbar-quick-btn" onclick="window.WaterStation.bulkLogFiltered()" title="Nạp nước nhanh cho tất cả các bé đang hiển thị trong bộ lọc">
+              ⚡ Nạp Nước Hàng Loạt (+5⭐)
+            </button>
+          </div>
         </div>
 
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="water-toolbar-quick-btn" onclick="const sIds = Array.from(document.querySelectorAll('.water-student-card:not(.done-today)')).map(el=>el.dataset.id); window.WaterStation.bulkLogWater(sIds);" title="Nạp nước nhanh cho tất cả các bé đang hiển thị trong bộ lọc">
-            ⚡ Nạp Nước Hàng Loạt (+5⭐)
-          </button>
+        <!-- Thanh Tìm Kiếm & Chuyển Chế Độ List / Grid -->
+        <div class="water-search-and-view">
+          <div class="water-search-box">
+            <span class="water-search-icon">🔍</span>
+            <input type="text" class="water-search-input" placeholder="🔍 Gõ tên học sinh để tìm nhanh (vd: Hân, Kha, My, An...)" autocomplete="off">
+            <button type="button" class="water-clear-search-btn" title="Xóa tìm kiếm" style="display: none;">&times;</button>
+          </div>
+          <div class="water-view-mode-toggle">
+            <button type="button" class="btn-water-view-toggle btn-water-view-list active" title="Xem dạng danh sách dòng ngang siêu nhanh">
+              📋 Danh Sách Nhanh
+            </button>
+            <button type="button" class="btn-water-view-toggle btn-water-view-grid" title="Xem dạng thẻ bình nước hoạt hình">
+              🔲 Thẻ Bình Nước
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2148,8 +2167,8 @@
   <script src="js/card-export.js?v=20261122_v2"></script>
   <script src="js/voice-assistant.js?v=20261123_v1"></script>
   <script src="js/daily-game.js?v=20261122_v2"></script>
-  <script src="js/water-station.js?v=20261123_v1"></script>
-  <script src="js/app.js?v=20261122_v9"></script>
+  <script src="js/water-station.js?v=20261123_v3"></script>
+  <script src="js/app.js?v=20261123_v2"></script>
 </body>
 
 </html>

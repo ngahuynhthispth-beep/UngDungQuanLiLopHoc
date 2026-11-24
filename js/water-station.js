@@ -54,7 +54,16 @@
       this.modal = null;
       this.currentFilter = 'all'; // 'all' | 1 | 2 | 3 | 4 | 'not_today' | 'full'
       this.searchQuery = '';
+      this.viewMode = 'list'; // Mặc định luôn là Danh Sách dòng ngang siêu tốc, dễ tìm kiếm
       this.init();
+    }
+
+    setViewMode(mode) {
+      this.viewMode = mode === 'grid' ? 'grid' : 'list';
+      try {
+        localStorage.setItem('water_station_view_mode', this.viewMode);
+      } catch (e) {}
+      this.render();
     }
 
     init() {
@@ -89,6 +98,40 @@
           if (e.target === this.modal) this.closeModal();
         });
       }
+
+      // Ô tìm kiếm tên học sinh (hỗ trợ cả Desktop và Mobile)
+      document.querySelectorAll('.water-search-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+          this.searchQuery = (e.target.value || '').trim();
+          document.querySelectorAll('.water-search-input').forEach(other => {
+            if (other !== input) other.value = e.target.value;
+          });
+          document.querySelectorAll('.water-clear-search-btn').forEach(btn => {
+            btn.style.display = this.searchQuery ? 'flex' : 'none';
+          });
+          this.render();
+        });
+      });
+
+      // Nút xóa nhanh ô tìm kiếm
+      document.querySelectorAll('.water-clear-search-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.searchQuery = '';
+          document.querySelectorAll('.water-search-input').forEach(input => {
+            input.value = '';
+          });
+          btn.style.display = 'none';
+          this.render();
+        });
+      });
+
+      // Nút chuyển chế độ xem: Dòng Ngang (List) vs Thẻ Bình Nước (Grid)
+      document.querySelectorAll('.btn-water-view-list').forEach(btn => {
+        btn.addEventListener('click', () => this.setViewMode('list'));
+      });
+      document.querySelectorAll('.btn-water-view-grid').forEach(btn => {
+        btn.addEventListener('click', () => this.setViewMode('grid'));
+      });
 
       // Cập nhật số lượng bình đầy trên badge của nút Header
       this.updateHeaderBadge();
@@ -372,6 +415,30 @@
       }, targetStudentIds.length * 60 + 100);
     }
 
+    // Nạp nước hàng loạt cho các bé đang hiển thị trong bộ lọc & tìm kiếm
+    bulkLogFiltered() {
+      const data = this.getWaterData();
+      const todayStr = getTodayDateStr();
+      const records = data.waterStation.records || {};
+      let filtered = (data.students || []).filter(s => {
+        const r = records[s.id] || { count: 0, days: [] };
+        if (this.currentFilter === 'all') return true;
+        if (['1', '2', '3', '4'].includes(String(this.currentFilter))) return String(s.group) === String(this.currentFilter);
+        if (this.currentFilter === 'not_today') return !r.days.includes(todayStr);
+        if (this.currentFilter === 'full') return r.count >= 5;
+        return true;
+      });
+      if (this.searchQuery) {
+        const q = this.searchQuery.toLowerCase();
+        filtered = filtered.filter(s => s.name.toLowerCase().includes(q));
+      }
+      const unloggedIds = filtered.filter(s => {
+        const r = records[s.id] || { count: 0, days: [] };
+        return !r.days.includes(todayStr);
+      }).map(s => s.id);
+      this.bulkLogWater(unloggedIds);
+    }
+
     // Bắt đầu chu kỳ tuần mới thủ công
     resetWeekManual() {
       const data = this.getWaterData();
@@ -624,6 +691,26 @@
         statsLabel.innerHTML = `🏆 <strong>${fullBottlesCount}/${totalStudents}</strong> bình đầy (Hôm nay: <strong>${todayLoggedCount}</strong> bé đã uống)`;
       }
 
+      // Cập nhật trạng thái nút Toggle View List / Grid
+      document.querySelectorAll('.btn-water-view-list').forEach(btn => {
+        btn.classList.toggle('active', this.viewMode === 'list');
+      });
+      document.querySelectorAll('.btn-water-view-grid').forEach(btn => {
+        btn.classList.toggle('active', this.viewMode === 'grid');
+      });
+
+      // Cập nhật nhãn nút nạp nước hàng loạt theo bộ lọc đang chọn
+      document.querySelectorAll('.water-toolbar-quick-btn').forEach(btn => {
+        let label = '⚡ Nạp Nước Hàng Loạt (+5⭐)';
+        if (String(this.currentFilter) === '1') label = '⚡ Nạp Nước Cả Tổ 1 (+5⭐)';
+        else if (String(this.currentFilter) === '2') label = '⚡ Nạp Nước Cả Tổ 2 (+5⭐)';
+        else if (String(this.currentFilter) === '3') label = '⚡ Nạp Nước Cả Tổ 3 (+5⭐)';
+        else if (String(this.currentFilter) === '4') label = '⚡ Nạp Nước Cả Tổ 4 (+5⭐)';
+        else if (this.currentFilter === 'not_today') label = '⚡ Nạp Các Bé Chưa Uống (+5⭐)';
+        else if (this.currentFilter === 'all') label = '⚡ Nạp Nước Cả Lớp (+5⭐)';
+        btn.textContent = label;
+      });
+
       // Lọc danh sách học sinh
       let filteredStudents = students.filter(s => {
         const r = records[s.id] || { count: 0, days: [] };
@@ -641,13 +728,28 @@
       });
 
       if (this.searchQuery) {
-        const q = this.searchQuery.toLowerCase();
-        filteredStudents = filteredStudents.filter(s => s.name.toLowerCase().includes(q));
+        const normalize = (str) => {
+          return (str || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D')
+            .toLowerCase()
+            .replace(/y/g, 'i')
+            .trim();
+        };
+        const qNorm = normalize(this.searchQuery);
+        filteredStudents = filteredStudents.filter(s => {
+          const sNorm = normalize(s.name);
+          return sNorm.includes(qNorm) || s.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        });
       }
 
-      // Render danh sách các bình nước
+      // Container danh sách bình nước / dòng học sinh
       const container = document.getElementById('waterBottlesGrid');
       if (!container) return;
+
+      container.className = this.viewMode === 'list' ? 'water-students-list' : 'water-bottles-grid';
 
       if (filteredStudents.length === 0) {
         container.innerHTML = `
@@ -659,76 +761,155 @@
         return;
       }
 
-      container.innerHTML = filteredStudents.map(student => {
-        const groupObj = groups.find(g => g.id === student.group) || { color: '#0EA5E9', name: `Tổ ${student.group || 1}` };
-        const record = records[student.id] || { count: 0, days: [] };
-        const count = record.count || 0;
-        const isFull = count >= 5;
-        const isDoneToday = Array.isArray(record.days) && record.days.includes(todayStr);
-        const waterHeightPercent = Math.min(100, count * 20);
+      if (this.viewMode === 'list') {
+        // ==========================================
+        // CHẾ ĐỘ 1: DANH SÁCH DÒNG NGANG (LIST VIEW) - TÌM NHANH, NẠP 1 CHẠM
+        // ==========================================
+        container.innerHTML = filteredStudents.map((student, idx) => {
+          const groupObj = groups.find(g => g.id === student.group) || { color: '#0EA5E9', name: `Tổ ${student.group || 1}` };
+          const record = records[student.id] || { count: 0, days: [] };
+          const count = record.count || 0;
+          const isFull = count >= 5;
+          const isDoneToday = Array.isArray(record.days) && record.days.includes(todayStr);
+          const stt = String(idx + 1).padStart(2, '0');
 
-        let avatarSvg = '🦖';
-        if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
-          avatarSvg = window.EggEvolution.renderPetSVG(student.stars || 0, student.status || 'active', groupObj.color, 40, student.group, student.id);
-        }
+          let avatarSvg = '🦖';
+          if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars || 0, student.status || 'active', groupObj.color, 36, student.group, student.id);
+          }
 
-        return `
-          <div class="water-student-card ${isFull ? 'is-full' : ''}" data-id="${student.id}">
-            <!-- Avatar & Tên bé -->
-            <div style="width: 40px; height: 40px; margin-bottom: 2px;">${avatarSvg}</div>
-            <div class="water-card-student-name" title="${student.name}">${student.name}</div>
-            <span class="water-card-group-tag" style="background: ${groupObj.color};">${groupObj.name}</span>
+          const daySlots = [
+            { day: 'T2', name: 'Thứ 2' },
+            { day: 'T3', name: 'Thứ 3' },
+            { day: 'T4', name: 'Thứ 4' },
+            { day: 'T5', name: 'Thứ 5' },
+            { day: 'T6', name: 'Thứ 6' }
+          ];
 
-            <!-- CHIẾC BÌNH NƯỚC HOẠT HÌNH TRONG SUỐT -->
-            <div class="water-tumbler">
-              <!-- Nắp bình theo màu tổ -->
-              <div class="tumbler-cap" style="background: ${groupObj.color};">
-                <div class="tumbler-handle"></div>
-              </div>
-              <div class="tumbler-neck"></div>
-
-              <!-- Thân bình trong suốt -->
-              <div class="tumbler-body">
-                <!-- Vệt bóng kính -->
-                <div class="tumbler-shine"></div>
-
-                <!-- Vạch chia 5 ngày (Thứ 2 đến Thứ 6) -->
-                <div class="tumbler-ticks">
-                  <div class="tumbler-tick"><span class="tumbler-tick-label">T6</span><div class="tumbler-tick-line"></div></div>
-                  <div class="tumbler-tick"><span class="tumbler-tick-label">T5</span><div class="tumbler-tick-line"></div></div>
-                  <div class="tumbler-tick"><span class="tumbler-tick-label">T4</span><div class="tumbler-tick-line"></div></div>
-                  <div class="tumbler-tick"><span class="tumbler-tick-label">T3</span><div class="tumbler-tick-line"></div></div>
-                  <div class="tumbler-tick"><span class="tumbler-tick-label">T2</span><div class="tumbler-tick-line"></div></div>
-                </div>
-
-                <!-- Mực nước dâng theo ngày -->
-                <div class="tumbler-water" style="height: ${waterHeightPercent}%;">
-                  <div class="tumbler-wave"></div>
-                  <div class="tumbler-bubble b1"></div>
-                  <div class="tumbler-bubble b2"></div>
-                  <div class="tumbler-bubble b3"></div>
+          return `
+            <div class="water-student-row ${isFull ? 'is-full' : ''}" data-id="${student.id}">
+              <div class="water-row-left">
+                <span class="water-row-stt">${stt}</span>
+                <div class="water-row-avatar">${avatarSvg}</div>
+                <div class="water-row-info">
+                  <div class="water-row-name" title="${student.name}">${student.name}</div>
+                  <span class="water-row-group" style="background: ${groupObj.color};">${groupObj.name}</span>
                 </div>
               </div>
-            </div>
 
-            <!-- Nhãn Trạng Thái -->
-            <div class="water-status-pill ${isFull ? 'full' : ''}">
-              ${isFull ? '👑 5/5 ĐẦY BÌNH!' : `Đã uống: ${count}/5 ngày`}
-            </div>
+              <!-- Thanh 5 nấc nước ngang (Thứ 2 - Thứ 6) -->
+              <div class="water-row-progress-container">
+                <div class="water-row-bars">
+                  ${daySlots.map((d, dIdx) => {
+                    const isFilled = dIdx < count;
+                    return `
+                      <div class="water-row-day-bar ${isFilled ? 'filled' : ''}" title="${d.name}: ${isFilled ? 'Đã uống đủ nước (+5⭐)' : 'Chưa uống'}">
+                        <span class="water-day-text">${d.day}</span>
+                        <span class="water-day-drop">${isFilled ? '💧' : '○'}</span>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+                <div class="water-row-status-pill ${isFull ? 'full' : ''}">
+                  ${isFull ? '👑 5/5 ĐẦY BÌNH!' : `${count}/5 ngày`}
+                </div>
+              </div>
 
-            <!-- Nút Nạp Nước Hôm Nay -->
-            ${isDoneToday ? `
-              <button type="button" class="btn-log-water done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay đã uống đủ (+5⭐). Bấm vào đây nếu cô muốn hoàn tác khi bấm nhầm.">
-                ✅ Đã nạp hôm nay
-              </button>
-            ` : `
-              <button type="button" class="btn-log-water" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm để nạp nước hôm nay và cộng 5 sao cho bé">
-                💧 Nạp Nước (+5⭐)
-              </button>
-            `}
-          </div>
-        `;
-      }).join('');
+              <!-- Nút Nạp Nước Hôm Nay -->
+              <div class="water-row-actions">
+                ${isDoneToday ? `
+                  <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="btn-log-water-row done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay bé đã uống đủ (+5⭐). Bấm để hoàn tác nếu lỡ bấm nhầm.">
+                      ✅ Đã nạp
+                    </button>
+                    <button type="button" class="btn-water-undo-tiny" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hoàn tác lượt nạp hôm nay">
+                      ↩
+                    </button>
+                  </div>
+                ` : `
+                  <button type="button" class="btn-log-water-row" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm nạp nước hôm nay cho bé (+5⭐)">
+                    💧 Nạp (+5⭐)
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        // ==========================================
+        // CHẾ ĐỘ 2: THẺ BÌNH NƯỚC HOẠT HÌNH (GRID VIEW)
+        // ==========================================
+        container.innerHTML = filteredStudents.map(student => {
+          const groupObj = groups.find(g => g.id === student.group) || { color: '#0EA5E9', name: `Tổ ${student.group || 1}` };
+          const record = records[student.id] || { count: 0, days: [] };
+          const count = record.count || 0;
+          const isFull = count >= 5;
+          const isDoneToday = Array.isArray(record.days) && record.days.includes(todayStr);
+          const waterHeightPercent = Math.min(100, count * 20);
+
+          let avatarSvg = '🦖';
+          if (window.EggEvolution && typeof window.EggEvolution.renderPetSVG === 'function') {
+            avatarSvg = window.EggEvolution.renderPetSVG(student.stars || 0, student.status || 'active', groupObj.color, 40, student.group, student.id);
+          }
+
+          return `
+            <div class="water-student-card ${isFull ? 'is-full' : ''}" data-id="${student.id}">
+              <!-- Avatar & Tên bé -->
+              <div style="width: 40px; height: 40px; margin-bottom: 2px;">${avatarSvg}</div>
+              <div class="water-card-student-name" title="${student.name}">${student.name}</div>
+              <span class="water-card-group-tag" style="background: ${groupObj.color};">${groupObj.name}</span>
+
+              <!-- CHIẾC BÌNH NƯỚC HOẠT HÌNH TRONG SUỐT -->
+              <div class="water-tumbler">
+                <!-- Nắp bình theo màu tổ -->
+                <div class="tumbler-cap" style="background: ${groupObj.color};">
+                  <div class="tumbler-handle"></div>
+                </div>
+                <div class="tumbler-neck"></div>
+
+                <!-- Thân bình trong suốt -->
+                <div class="tumbler-body">
+                  <!-- Vệt bóng kính -->
+                  <div class="tumbler-shine"></div>
+
+                  <!-- Vạch chia 5 ngày (Thứ 2 đến Thứ 6) -->
+                  <div class="tumbler-ticks">
+                    <div class="tumbler-tick"><span class="tumbler-tick-label">T6</span><div class="tumbler-tick-line"></div></div>
+                    <div class="tumbler-tick"><span class="tumbler-tick-label">T5</span><div class="tumbler-tick-line"></div></div>
+                    <div class="tumbler-tick"><span class="tumbler-tick-label">T4</span><div class="tumbler-tick-line"></div></div>
+                    <div class="tumbler-tick"><span class="tumbler-tick-label">T3</span><div class="tumbler-tick-line"></div></div>
+                    <div class="tumbler-tick"><span class="tumbler-tick-label">T2</span><div class="tumbler-tick-line"></div></div>
+                  </div>
+
+                  <!-- Mực nước dâng theo ngày -->
+                  <div class="tumbler-water" style="height: ${waterHeightPercent}%;">
+                    <div class="tumbler-wave"></div>
+                    <div class="tumbler-bubble b1"></div>
+                    <div class="tumbler-bubble b2"></div>
+                    <div class="tumbler-bubble b3"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nhãn Trạng Thái -->
+              <div class="water-status-pill ${isFull ? 'full' : ''}">
+                ${isFull ? '👑 5/5 ĐẦY BÌNH!' : `Đã uống: ${count}/5 ngày`}
+              </div>
+
+              <!-- Nút Nạp Nước Hôm Nay -->
+              ${isDoneToday ? `
+                <button type="button" class="btn-log-water done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay đã uống đủ (+5⭐). Bấm vào đây nếu cô muốn hoàn tác khi bấm nhầm.">
+                  ✅ Đã nạp hôm nay
+                </button>
+              ` : `
+                <button type="button" class="btn-log-water" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm để nạp nước hôm nay và cộng 5 sao cho bé">
+                  💧 Nạp Nước (+5⭐)
+                </button>
+              `}
+            </div>
+          `;
+        }).join('');
+      }
     }
   }
 

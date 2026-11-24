@@ -4692,6 +4692,19 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             }
 
+            // Bảo vệ dữ liệu: Kiểm tra nếu local data mới hơn dữ liệu từ Firebase (ví dụ cô vừa chỉnh sửa tổ/tên gần đây)
+            const currentLocal = StorageManager.loadData();
+            const localUpdated = (currentLocal && currentLocal.lastUpdated) || 0;
+            const remoteUpdated = (fbData && fbData.lastUpdated) || 0;
+
+            if (localUpdated > remoteUpdated && (localUpdated - remoteUpdated) < 86400000 * 7) {
+              console.log('🛡️ Dữ liệu trên máy mới hơn Đám Mây. Giữ nguyên dữ liệu trên máy và cập nhật lên Firebase...');
+              if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+                window.FirebaseSync.setClassData(currentLocal);
+              }
+              return;
+            }
+
             state.data = fbData;
             localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(fbData));
             refreshData(fbData);
