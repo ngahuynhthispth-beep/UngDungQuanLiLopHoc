@@ -651,7 +651,7 @@
       "stars": 2143
     }
   ],
-  "lastUpdated": 1795153075734,
+  "lastUpdated": 1795492192817,
   "schoolName": "Trường Tiểu học Tiểu La",
   "schoolYear": "2026 - 2027",
   "students": [
@@ -659,7 +659,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791552717466,
-      "group": 3,
+      "group": 1,
       "hatchedAt": 1791552717466,
       "homeworkRecords": {
         "2026-09-29": {
@@ -923,7 +923,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1792065542023,
-      "group": 3,
+      "group": 2,
       "hatchCount": 3,
       "homeworkRecords": {
         "2026-09-29": {
@@ -1399,7 +1399,7 @@
     {
       "accumulateBonus": false,
       "firstHatchedAt": 1792059060774,
-      "group": 2,
+      "group": 3,
       "hatchCount": 1,
       "homeworkRecords": {
         "2026-09-28": {
@@ -1535,7 +1535,7 @@
     {
       "accumulateBonus": true,
       "firstHatchedAt": 1792679626163,
-      "group": 4,
+      "group": 2,
       "hatchedAt": 1792679626163,
       "homeworkRecords": {
         "2026-10-15": {
@@ -1663,7 +1663,7 @@
       "status": "active"
     },
     {
-      "group": 4,
+      "group": 2,
       "homeworkRecords": {
         "2026-09-24": {
           "choresDone": false,
@@ -1697,7 +1697,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1792331059109,
-      "group": 3,
+      "group": 2,
       "hatchCount": 2,
       "homeworkRecords": {
         "2026-09-28": {
@@ -1912,7 +1912,7 @@
       "accumulateBonus": true,
       "firstHatchedAt": 1791891474314,
       "giftSessionSource": "parent",
-      "group": 4,
+      "group": 1,
       "hatchCount": 1,
       "hatchedAt": 1792590359546,
       "homeworkRecords": {
@@ -2414,7 +2414,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791798843905,
-      "group": 2,
+      "group": 4,
       "hatchCount": 2,
       "homeworkRecords": {
         "2026-10-03": {
@@ -2546,7 +2546,7 @@
     {
       "accumulateBonus": false,
       "firstHatchedAt": 1791900823804,
-      "group": 1,
+      "group": 3,
       "hatchCount": 1,
       "homeworkRecords": {
         "2026-10-03": {
@@ -2844,7 +2844,7 @@
     },
     {
       "firstHatchedAt": 1792714786456,
-      "group": 1,
+      "group": 4,
       "hatchedAt": 1792714786456,
       "homeworkRecords": {
         "2026-09-26": {
@@ -3268,7 +3268,7 @@
     {
       "accumulateBonus": false,
       "firstHatchedAt": 1792238334722,
-      "group": 1,
+      "group": 2,
       "hatchCount": 1,
       "hatchedAt": 1793945163098,
       "homeworkRecords": {
@@ -3614,7 +3614,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791858813282,
-      "group": 2,
+      "group": 3,
       "hatchCount": 2,
       "homeworkRecords": {
         "2026-10-02": {
@@ -3987,7 +3987,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791818679569,
-      "group": 3,
+      "group": 2,
       "hatchCount": 1,
       "hatchedAt": 1792507867565,
       "homeworkRecords": {
@@ -4144,7 +4144,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1792076990532,
-      "group": 2,
+      "group": 3,
       "hatchCount": 3,
       "homeworkRecords": {
         "2026-10-10": {
@@ -4511,7 +4511,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791898096503,
-      "group": 2,
+      "group": 1,
       "hatchCount": 2,
       "hatchedAt": 1794410605883,
       "homeworkRecords": {
@@ -4826,7 +4826,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791551043124,
-      "group": 1,
+      "group": 4,
       "hatchCount": 4,
       "homeworkRecords": {
         "2026-09-30": {
@@ -5302,7 +5302,7 @@
       "status": "active"
     },
     {
-      "group": 3,
+      "group": 2,
       "id": "hs-1790097391777-21",
       "likes": 0,
       "logs": [
@@ -5330,7 +5330,7 @@
     },
     {
       "firstHatchedAt": 1792724461379,
-      "group": 1,
+      "group": 3,
       "hatchedAt": 1792724461379,
       "homeworkRecords": {
         "2026-10-02": {
@@ -5405,7 +5405,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1794208321291,
-      "group": 2,
+      "group": 3,
       "hatchCount": 1,
       "id": "hs-1790097391777-23",
       "lastCompletedGifts": [
@@ -5474,7 +5474,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791727543807,
-      "group": 3,
+      "group": 2,
       "hatchCount": 1,
       "hatchedAt": 1794925021626,
       "homeworkRecords": {
@@ -5677,7 +5677,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1794930780306,
-      "group": 2,
+      "group": 3,
       "hatchCount": 1,
       "homeworkRecords": {
         "2026-10-01": {
@@ -5770,7 +5770,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791815439626,
-      "group": 1,
+      "group": 4,
       "hatchCount": 3,
       "homeworkRecords": {
         "2026-10-02": {
@@ -6170,7 +6170,7 @@
     {
       "accumulateBonus": false,
       "firstHatchedAt": 1792596717630,
-      "group": 4,
+      "group": 1,
       "hatchCount": 1,
       "homeworkRecords": {
         "2026-09-30": {
@@ -6774,7 +6774,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791536979518,
-      "group": 1,
+      "group": 2,
       "hatchCount": 2,
       "homeworkRecords": {
         "2026-09-28": {
@@ -7207,7 +7207,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791551725552,
-      "group": 2,
+      "group": 3,
       "hatchCount": 3,
       "hatchedAt": 1795152869338,
       "homeworkRecords": {
@@ -7621,7 +7621,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791720410551,
-      "group": 3,
+      "group": 4,
       "hatchCount": 2,
       "hatchedAt": 1793893257734,
       "homeworkRecords": {
@@ -7799,7 +7799,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791899246262,
-      "group": 3,
+      "group": 1,
       "hatchCount": 4,
       "hatchedAt": 1794407921457,
       "homeworkRecords": {
@@ -8202,7 +8202,7 @@
       "accumulateBonus": true,
       "accumulateBonus200": true,
       "firstHatchedAt": 1791820602324,
-      "group": 2,
+      "group": 3,
       "hatchedAt": 1791820602324,
       "homeworkRecords": {
         "2026-10-09": {
@@ -8506,7 +8506,7 @@
     },
     {
       "firstHatchedAt": 1791858960551,
-      "group": 3,
+      "group": 1,
       "homeworkRecords": {
         "2026-10-18": {
           "choresDone": true,
@@ -8548,7 +8548,7 @@
       "accumulateBonus": false,
       "accumulateBonus200": false,
       "firstHatchedAt": 1791726480338,
-      "group": 1,
+      "group": 4,
       "hatchCount": 2,
       "homeworkRecords": {
         "2026-09-24": {
