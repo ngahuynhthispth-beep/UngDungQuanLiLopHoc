@@ -1571,7 +1571,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (formEditStudent) {
-    formEditStudent.addEventListener('submit', (e) => {
+    formEditStudent.addEventListener('submit', async (e) => {
       e.preventDefault();
       const studentId = editStudentId ? editStudentId.value : null;
       const newName = (editStudentNameInput ? editStudentNameInput.value : '').trim();
@@ -1591,8 +1591,19 @@ document.addEventListener('DOMContentLoaded', () => {
       StorageManager.updateStudentName(studentId, newName);
       StorageManager.updateStudentGroup(studentId, newGroup);
 
+      if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
+        const initS = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
+        if (initS) {
+          initS.name = newName;
+          initS.group = newGroup;
+        }
+      }
+
       if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
-        window.FirebaseSync.setClassData(state.data);
+        if (typeof window.FirebaseSync.updateStudentGroup === 'function') {
+          await window.FirebaseSync.updateStudentGroup(studentId, newGroup);
+        }
+        await window.FirebaseSync.setClassData(state.data);
       }
 
       closeEditStudentModal();
@@ -2653,7 +2664,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attach group change
     currentStudentsTableContainer.querySelectorAll('.select-change-group').forEach(select => {
-      select.addEventListener('change', (e) => {
+      select.addEventListener('change', async (e) => {
         const studentId = e.target.dataset.id;
         const newGroup = parseInt(e.target.value, 10) || 1;
         const student = (state.data.students || []).find(s => s.id === studentId);
@@ -2661,14 +2672,18 @@ document.addEventListener('DOMContentLoaded', () => {
           student.group = newGroup;
         }
         StorageManager.updateStudentGroup(studentId, newGroup);
-        if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
-          window.FirebaseSync.setClassData(state.data);
-        }
         if (window.__INITIAL_DATA__ && window.__INITIAL_DATA__.students) {
           const initS = window.__INITIAL_DATA__.students.find(s => s.id === studentId);
           if (initS) initS.group = newGroup;
         }
-        showSyncToast(`🪑 Đã chuyển bé <strong>${student ? student.name : ''}</strong> sang Tổ ${newGroup}!`, '✅');
+        if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
+          if (typeof window.FirebaseSync.updateStudentGroup === 'function') {
+            await window.FirebaseSync.updateStudentGroup(studentId, newGroup);
+          }
+          await window.FirebaseSync.setClassData(state.data);
+        }
+        refreshData(state.data);
+        showSyncToast(`🪑 Đã chuyển bé <strong>${student ? student.name : ''}</strong> sang Tổ ${newGroup}! Đã đồng bộ lên Đám Mây.`, '✅');
       });
     });
 
@@ -2757,8 +2772,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', handleSaveCurrentListToHome);
   });
 
-  // Action: Xoay vòng tổ hàng tháng (1 ➔ 2 ➔ 3 ➔ 4 ➔ 1)
-  function handleRotateGroups() {
+  // Action: Xoay vòng tổ hàng tháng (1 ➔ 2 ➔ 3 ➔ 4 ➔ 1) - Tự động lưu & đồng bộ tức thì
+  async function handleRotateGroups() {
     const students = state.data.students || [];
     if (students.length === 0) {
       alert('Lớp chưa có học sinh nào để xoay vòng tổ!');
@@ -2771,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       '• Tổ 2 ➔ chuyển sang Tổ 3\n' +
       '• Tổ 3 ➔ chuyển sang Tổ 4\n' +
       '• Tổ 4 ➔ chuyển về Tổ 1\n\n' +
-      '(Số sao và lịch sử rèn luyện của các em vẫn được giữ nguyên trọn vẹn)'
+      '(Hệ thống sẽ TỰ ĐỘNG LƯU và ĐỒNG BỘ NGAY LÊN ĐÁM MÂY)'
     );
     if (!confirmed) return;
 
@@ -2781,15 +2796,35 @@ document.addEventListener('DOMContentLoaded', () => {
       s.group = (curGroup % 4) + 1;
     });
 
+    // 1. Tự động lưu vào StorageManager (localStorage)
+    StorageManager.saveData(state.data);
+
+    // 2. Cập nhật RAM __INITIAL_DATA__
+    if (window.__INITIAL_DATA__) {
+      window.__INITIAL_DATA__ = JSON.parse(JSON.stringify(state.data));
+    }
+
+    // 3. Tự động đồng bộ ngay lên Google Firebase Đám Mây
+    if (window.FirebaseSync && typeof window.FirebaseSync.setClassData === 'function') {
+      try {
+        await window.FirebaseSync.setClassData(state.data);
+      } catch (err) {
+        console.warn('Lỗi đồng bộ Firebase khi xoay vòng tổ:', err);
+      }
+    }
+
+    // 4. Cập nhật lại bảng học sinh & toàn bộ trang chủ
     renderCurrentStudentsTable();
+    refreshData(state.data);
+
     if (window.soundFx && typeof window.soundFx.playStar === 'function') {
       window.soundFx.playStar();
     }
-    showSyncToast('🔄 Đã xoay vòng tổ thành công! Cô hãy bấm "💾 Lưu Danh Sách" để hoàn tất cập nhật vào trang chủ.', '🔄');
+    showSyncToast('🔄 Đã xoay vòng tổ thành công! Đã tự động lưu và đồng bộ lên Đám Mây.', '✅');
   }
 
-  // Action: Bốc thăm ngẫu nhiên chia đều 4 tổ
-  function handleShuffleGroups() {
+  // Action: Bốc thăm ngẫu nhiên chia đều 4 tổ - Tự động lưu & đồng bộ tức thì
+  async function handleShuffleGroups() {
     const students = state.data.students || [];
     if (students.length === 0) {
       alert('Lớp chưa có học sinh nào để bốc thăm tổ!');
@@ -2799,7 +2834,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmed = confirm(
       '🎲 Cô có muốn BỐC THĂM NGẪU NHIÊN chia đều học sinh vào 4 Tổ không?\n\n' +
       'Hệ thống sẽ xáo trộn ngẫu nhiên và chia đều học sinh vào mỗi tổ (khoảng 9 em/tổ).\n' +
-      '(Số sao và lịch sử rèn luyện của các em vẫn được giữ nguyên)'
+      '(Hệ thống sẽ TỰ ĐỘNG LƯU và ĐỒNG BỘ NGAY LÊN ĐÁM MÂY)'
     );
     if (!confirmed) return;
 
@@ -2815,11 +2850,31 @@ document.addEventListener('DOMContentLoaded', () => {
       students[studentIdx].group = (rank % 4) + 1;
     });
 
+    // 1. Tự động lưu vào StorageManager (localStorage)
+    StorageManager.saveData(state.data);
+
+    // 2. Cập nhật RAM __INITIAL_DATA__
+    if (window.__INITIAL_DATA__) {
+      window.__INITIAL_DATA__ = JSON.parse(JSON.stringify(state.data));
+    }
+
+    // 3. Tự động đồng bộ ngay lên Google Firebase Đám Mây
+    if (window.FirebaseSync && typeof window.FirebaseSync.setClassData === 'function') {
+      try {
+        await window.FirebaseSync.setClassData(state.data);
+      } catch (err) {
+        console.warn('Lỗi đồng bộ Firebase khi bốc thăm tổ:', err);
+      }
+    }
+
+    // 4. Cập nhật lại bảng học sinh & toàn bộ trang chủ
     renderCurrentStudentsTable();
+    refreshData(state.data);
+
     if (window.soundFx && typeof window.soundFx.playCheer === 'function') {
       window.soundFx.playCheer();
     }
-    showSyncToast('🎲 Đã bốc thăm ngẫu nhiên 4 tổ! Cô hãy bấm "💾 Lưu Danh Sách" để cập nhật vào trang chủ.', '🎲');
+    showSyncToast('🎲 Đã bốc thăm ngẫu nhiên 4 tổ! Đã tự động lưu và đồng bộ lên Đám Mây.', '✅');
   }
 
   // Gắn sự kiện đổi chỗ hàng tháng
@@ -4707,6 +4762,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             state.data = fbData;
             localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(fbData));
+            if (window.__INITIAL_DATA__) {
+              window.__INITIAL_DATA__ = JSON.parse(JSON.stringify(fbData));
+            }
             refreshData(fbData);
 
             // Tự động vẽ lại Bảng Tổng Hợp Quà Đã Quay nếu đang mở

@@ -147,11 +147,16 @@
             return false;
           }
 
+          // Bảo vệ dữ liệu thực tế trên Cloud: Nếu Firebase đã có dữ liệu thật (>= 30 em và >= 100 sao),
+          // tuyệt đối KHÔNG cho phép dữ liệu khởi tạo local đẩy đè lên Cloud làm mất cấu hình tổ hay điểm của cô!
+          if (remoteData && remoteData.students && remoteData.students.length >= 30 && remoteStars >= 100) {
+            return false;
+          }
+
           const needsSync = !snapshot.exists() || !remoteData || !remoteData.students ||
             (localData.students.length > remoteData.students.length) ||
             (remoteIsSample && localIsReal) ||
-            (remoteStars < 100 && localStars >= 100) ||
-            ((localData.lastUpdated || 0) > (remoteData.lastUpdated || 0));
+            (remoteStars < 100 && localStars >= 100);
 
           if (needsSync && localStars >= 100) {
             console.log('Đang đẩy dữ liệu lớp 1/8 mới nhất lên Firebase Cloud...');
@@ -223,6 +228,30 @@
         console.error('Lỗi cập nhật Firebase:', e);
         return false;
       }
+    },
+
+    // Cập nhật tổ cho học sinh trực tiếp lên Firebase (Lưu tức thì và thông báo realtime cho mọi thiết bị)
+    async updateStudentGroup(studentId, newGroupId) {
+      if (!this.isInitialized || !this.db) return false;
+      const newG = parseInt(newGroupId, 10) || 1;
+      try {
+        const ref = this.getClassRef();
+        const snap = await ref.once('value');
+        let classData = snap.val();
+        if (classData && classData.students) {
+          const student = classData.students.find(s => s.id === studentId);
+          if (student) {
+            student.group = newG;
+            classData.lastUpdated = Date.now();
+            await ref.set(classData);
+            console.log(`☁️ Firebase: Đã lưu chuyển tổ bé ${student.name} sang Tổ ${newG}`);
+            return true;
+          }
+        }
+      } catch (e) {
+        console.error('Lỗi cập nhật tổ học sinh lên Firebase:', e);
+      }
+      return false;
     },
 
     // Phụ huynh nộp điểm bài tập về nhà trực tiếp lên Firebase 24/24
