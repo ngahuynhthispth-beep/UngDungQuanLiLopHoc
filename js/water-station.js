@@ -282,23 +282,23 @@
       // Phát âm thanh rót nước
       this.playWaterSound();
 
-      // Cộng 5 sao kèm lý do minh chứng cho phụ huynh
-      const cardEl = document.querySelector(`.water-student-card[data-id="${studentId}"]`);
-      const reason = `Uống đủ bình nước (Nấc ${record.count}/5 tuần này)`;
-      if (typeof window.applyStudentPoints === 'function') {
-        window.applyStudentPoints(studentId, 5, reason, '💧', cardEl, true);
-      } else if (window.StorageManager) {
-        window.StorageManager.addPointsToStudent(studentId, 5, reason, '💧');
-        if (typeof window.refreshData === 'function') window.refreshData();
+      // Lưu dữ liệu vào storage
+      this.saveWaterData(data);
+
+      // Phát âm thanh rót nước
+      this.playWaterSound();
+
+      if (typeof window.showSyncToast === 'function') {
+        window.showSyncToast(`Đã nạp nước hôm nay cho bé <strong>${student.name}</strong> (Nấc ${record.count}/5)!`, '💧');
       }
 
-      // Nếu đạt 5/5 ngày: Vinh danh Hiệp Sĩ Nước Sạch
+      // Nếu đạt 5/5 ngày: Vinh danh Hiệp Sĩ Nước Sạch và chuẩn bị nhận quà
       if (record.count === 5) {
         setTimeout(() => {
           this.playCelebrationSound();
           this.launchConfetti();
           if (typeof window.showSyncToast === 'function') {
-            window.showSyncToast(`🏆 Chúc mừng bé <strong>${student.name}</strong> đã đầy 5/5 nấc nước và trở thành <strong>HIỆP SĨ NƯỚC SẠCH</strong> tuần này!`, '👑');
+            window.showSyncToast(`🏆 Chúc mừng bé <strong>${student.name}</strong> đã đầy 5/5 nấc nước tuần này! Bé đạt danh hiệu <strong>HIỆP SĨ NƯỚC SẠCH</strong> và sẽ được nhận quà cuối tuần!`, '👑');
           }
         }, 300);
       }
@@ -333,7 +333,7 @@
       const record = records[studentId];
       if (!record || !record.days.includes(todayStr)) return;
 
-      if (!window.confirm(`Bạn có chắc muốn hoàn tác lượt uống nước hôm nay của bé "${student.name}" không? (-5 ⭐)`)) {
+      if (!window.confirm(`Bạn có chắc muốn hoàn tác lượt nạp nước hôm nay của bé "${student.name}" không?`)) {
         return;
       }
 
@@ -345,12 +345,8 @@
 
       this.saveWaterData(data);
 
-      const cardEl = document.querySelector(`.water-student-card[data-id="${studentId}"]`);
-      if (typeof window.applyStudentPoints === 'function') {
-        window.applyStudentPoints(studentId, -5, `Hoàn tác nước uống (bấm nhầm)`, '⚠️', cardEl, true);
-      } else if (window.StorageManager) {
-        window.StorageManager.addPointsToStudent(studentId, -5, `Hoàn tác nước uống (bấm nhầm)`, '⚠️');
-        if (typeof window.refreshData === 'function') window.refreshData();
+      if (typeof window.showSyncToast === 'function') {
+        window.showSyncToast(`Đã hoàn tác lượt nạp nước của bé <strong>${student.name}</strong>.`, '↩️');
       }
 
       this.render();
@@ -370,7 +366,7 @@
       const records = data.waterStation.records || {};
       let loggedCount = 0;
 
-      targetStudentIds.forEach((sId, idx) => {
+      targetStudentIds.forEach((sId) => {
         const student = (data.students || []).find(s => s.id === sId);
         if (!student) return;
         const record = records[sId] || { days: [], count: 0 };
@@ -381,16 +377,6 @@
           record.updatedAt = Date.now();
           records[sId] = record;
           loggedCount++;
-
-          // Thực hiện cộng điểm với độ trễ nhẹ để hiển thị âm thanh
-          setTimeout(() => {
-            const reason = `Uống đủ bình nước (Nấc ${record.count}/5 tuần này)`;
-            if (typeof window.applyStudentPoints === 'function') {
-              window.applyStudentPoints(sId, 5, reason, '💧', null, true);
-            } else if (window.StorageManager) {
-              window.StorageManager.addPointsToStudent(sId, 5, reason, '💧');
-            }
-          }, idx * 60);
         }
       });
 
@@ -406,13 +392,10 @@
       this.playWaterSound();
 
       if (typeof window.showSyncToast === 'function') {
-        window.showSyncToast(`⚡ Đã nạp nước thành công cho <strong>${loggedCount}</strong> học sinh (+5 ⭐/bé)!`, '💧');
+        window.showSyncToast(`⚡ Đã nạp nước thành công cho <strong>${loggedCount}</strong> học sinh!`, '💧');
       }
 
-      setTimeout(() => {
-        if (typeof window.refreshData === 'function') window.refreshData();
-        this.render();
-      }, targetStudentIds.length * 60 + 100);
+      this.render();
     }
 
     // Nạp nước hàng loạt cho các bé đang hiển thị trong bộ lọc & tìm kiếm
@@ -701,13 +684,13 @@
 
       // Cập nhật nhãn nút nạp nước hàng loạt theo bộ lọc đang chọn
       document.querySelectorAll('.water-toolbar-quick-btn').forEach(btn => {
-        let label = '⚡ Nạp Nước Hàng Loạt (+5⭐)';
-        if (String(this.currentFilter) === '1') label = '⚡ Nạp Nước Cả Tổ 1 (+5⭐)';
-        else if (String(this.currentFilter) === '2') label = '⚡ Nạp Nước Cả Tổ 2 (+5⭐)';
-        else if (String(this.currentFilter) === '3') label = '⚡ Nạp Nước Cả Tổ 3 (+5⭐)';
-        else if (String(this.currentFilter) === '4') label = '⚡ Nạp Nước Cả Tổ 4 (+5⭐)';
-        else if (this.currentFilter === 'not_today') label = '⚡ Nạp Các Bé Chưa Uống (+5⭐)';
-        else if (this.currentFilter === 'all') label = '⚡ Nạp Nước Cả Lớp (+5⭐)';
+        let label = '⚡ Nạp Nước Hàng Loạt';
+        if (String(this.currentFilter) === '1') label = '⚡ Nạp Nước Cả Tổ 1';
+        else if (String(this.currentFilter) === '2') label = '⚡ Nạp Nước Cả Tổ 2';
+        else if (String(this.currentFilter) === '3') label = '⚡ Nạp Nước Cả Tổ 3';
+        else if (String(this.currentFilter) === '4') label = '⚡ Nạp Nước Cả Tổ 4';
+        else if (this.currentFilter === 'not_today') label = '⚡ Nạp Các Bé Chưa Uống';
+        else if (this.currentFilter === 'all') label = '⚡ Nạp Nước Cả Lớp';
         btn.textContent = label;
       });
 
@@ -803,7 +786,7 @@
                   ${daySlots.map((d, dIdx) => {
                     const isFilled = dIdx < count;
                     return `
-                      <div class="water-row-day-bar ${isFilled ? 'filled' : ''}" title="${d.name}: ${isFilled ? 'Đã uống đủ nước (+5⭐)' : 'Chưa uống'}">
+                      <div class="water-row-day-bar ${isFilled ? 'filled' : ''}" title="${d.name}: ${isFilled ? 'Đã uống đủ nước' : 'Chưa uống'}">
                         <span class="water-day-text">${d.day}</span>
                         <span class="water-day-drop">${isFilled ? '💧' : '○'}</span>
                       </div>
@@ -819,7 +802,7 @@
               <div class="water-row-actions">
                 ${isDoneToday ? `
                   <div style="display: flex; align-items: center; gap: 4px;">
-                    <button type="button" class="btn-log-water-row done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay bé đã uống đủ (+5⭐). Bấm để hoàn tác nếu lỡ bấm nhầm.">
+                    <button type="button" class="btn-log-water-row done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay bé đã nạp nước. Bấm nút hoàn tác nhỏ bên cạnh nếu lỡ bấm nhầm.">
                       ✅ Đã nạp
                     </button>
                     <button type="button" class="btn-water-undo-tiny" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hoàn tác lượt nạp hôm nay">
@@ -827,8 +810,8 @@
                     </button>
                   </div>
                 ` : `
-                  <button type="button" class="btn-log-water-row" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm nạp nước hôm nay cho bé (+5⭐)">
-                    💧 Nạp (+5⭐)
+                  <button type="button" class="btn-log-water-row" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm nạp nước hôm nay cho bé">
+                    💧 Nạp Nước
                   </button>
                 `}
               </div>
@@ -898,12 +881,12 @@
 
               <!-- Nút Nạp Nước Hôm Nay -->
               ${isDoneToday ? `
-                <button type="button" class="btn-log-water done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay đã uống đủ (+5⭐). Bấm vào đây nếu cô muốn hoàn tác khi bấm nhầm.">
+                <button type="button" class="btn-log-water done-today" onclick="window.WaterStation.unlogWater('${student.id}')" title="Hôm nay bé đã nạp nước. Bấm vào đây nếu muốn hoàn tác.">
                   ✅ Đã nạp hôm nay
                 </button>
               ` : `
-                <button type="button" class="btn-log-water" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm để nạp nước hôm nay và cộng 5 sao cho bé">
-                  💧 Nạp Nước (+5⭐)
+                <button type="button" class="btn-log-water" onclick="window.WaterStation.logWater('${student.id}')" title="Bấm để nạp nước hôm nay cho bé">
+                  💧 Nạp Nước
                 </button>
               `}
             </div>
