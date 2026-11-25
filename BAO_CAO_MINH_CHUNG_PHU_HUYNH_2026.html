@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo Cáo Minh Chứng Thực Nghiệm: Sự Tham Gia Đồng Hành Của Phụ Huynh - SKKN 2026</title>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --primary-dark: #1E3A8A;
+      --secondary: #0D9488;
+      --accent: #E11D48;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --border: #CBD5E1;
+      --text: #0F172A;
+      --text-muted: #475569;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 16px;
+    }
+
+    .report-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 44px 50px;
+      border-radius: 16px;
+      box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+      border: 1px solid var(--border);
+    }
+
+    /* Print Controls Bar */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1E40AF, #3B82F6);
+      color: #FFFFFF;
+      padding: 14px 22px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+
+    .action-bar h3 {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action {
+      background: #FFFFFF;
+      color: #1E40AF;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #EFF6FF;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    /* Document Header */
+    .doc-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      gap: 20px;
+    }
+
+    .header-left { text-align: left; }
+    .header-right { text-align: right; }
+
+    .school-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .award-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .report-main-title {
+      text-align: center;
+      margin: 20px 0 25px;
+    }
+
+    .report-badge {
+      display: inline-block;
+      background: #EFF6FF;
+      color: var(--primary);
+      border: 1px solid #BFDBFE;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #0F172A;
+      line-height: 1.35;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .report-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Meta Information Box */
+    .meta-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-left: 5px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    /* Metric Grid Cards */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .metric-card.highlight {
+      background: linear-gradient(135deg, #EFF6FF, #F0FDF4);
+      border-color: #93C5FD;
+    }
+
+    .metric-card.accent {
+      background: #FFF1F2;
+      border-color: #FECDD3;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 3px 0;
+    }
+
+    .metric-card.accent .metric-value { color: var(--accent); }
+    .metric-card.highlight .metric-value { color: #047857; }
+
+    .metric-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .metric-desc {
+      font-size: 11px;
+      color: #64748B;
+      margin-top: 3px;
+    }
+
+    /* Section Styling */
+    .section-title {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: #1E3A8A;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 6px;
+      margin: 28px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .section-title .section-num {
+      background: var(--primary);
+      color: #FFFFFF;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    p, li {
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.65;
+    }
+
+    ul { padding-left: 18px; margin-bottom: 14px; }
+    li { margin-bottom: 5px; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 14px 0 20px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th {
+      background: #F1F5F9;
+      color: #1E293B;
+      font-weight: 800;
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 2px solid #CBD5E1;
+      border-right: 1px solid #E2E8F0;
+    }
+
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #E2E8F0;
+      border-right: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) { background: #F8FAFC; }
+    tr:hover { background: #F1F5F9; }
+
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+
+    .tag-success { background: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
+    .tag-primary { background: #DBEAFE; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .tag-warning { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+
+    .callout-box {
+      background: #F0FDF4;
+      border: 1.5px solid #86EFAC;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 18px 0;
+      color: #166534;
+    }
+
+    .callout-box h4 {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .signature-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px dashed #CBD5E1;
+      text-align: center;
+    }
+
+    .sig-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #0F172A;
+      margin-bottom: 3px;
+    }
+
+    .sig-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 60px;
+    }
+
+    .sig-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    @media print {
+      body { background: #FFFFFF; padding: 0; }
+      .report-container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+      table { page-break-inside: auto; }
+      tr { page-break-inside: avoid; page-break-after: auto; }
+      thead { display: table-header-group; }
+      .section-title { page-break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-container">
+
+    <div class="action-bar no-print">
+      <h3>📑 Báo Cáo Minh Chứng Thực Nghiệm SKKN: Sự Đồng Hành Của Phụ Huynh Qua Ứng Dụng</h3>
+      <button type="button" class="btn-action" onclick="window.print()">
+        🖨️ In Báo Cáo / Xuất File PDF (A4)
+      </button>
+    </div>
+
+    <div class="doc-header">
+      <div class="header-left">
+        <div class="school-title">TRƯỜNG TIỂU HỌC TIỂU LA</div>
+        <div style="font-size: 12px; color: #64748B; margin-top: 2px;">Lớp 1/8 — Năm học 2026 - 2027</div>
+      </div>
+      <div class="header-right">
+        <div class="award-title">HỒ SƠ MINH CHỨNG SÁNG KIẾN KINH NGHIỆM</div>
+        <div style="font-size: 11.5px; font-style: italic; color: #94A3B8;">Dữ liệu tự động từ Firebase Cloud 24/24</div>
+      </div>
+    </div>
+
+    <div class="report-main-title">
+      <span class="report-badge">BÁO CÁO THỰC NGHIỆM ĐỊNH LƯỢNG KHOA HỌC</span>
+      <h1>MINH CHỨNG HIỆU QUẢ VÀ SỰ ĐỒNG HÀNH CỦA PHỤ HUYNH QUA ỨNG DỤNG "VƯỜN THÚ KỲ DIỆU"</h1>
+      <div class="report-subtitle">
+        Khảo sát tiến trình chuyển biến hành vi tự giác học tập & rèn luyện của học sinh lớp 1 qua 3 tháng (Tháng 9, 10, 11/2026)
+      </div>
+    </div>
+
+    <div class="meta-box">
+      <div class="meta-item"><strong>Đối tượng khảo sát:</strong> 35 học sinh Lớp 1/8 & Gia đình</div>
+      <div class="meta-item"><strong>Thời gian đo lường:</strong> 24/09/2026 đến 24/11/2026 (9 tuần)</div>
+      <div class="meta-item"><strong>Hệ thống trích xuất:</strong> Google Firebase Realtime Database</div>
+      <div class="meta-item"><strong>Tính xác thực:</strong> Dữ liệu thời gian thực không qua can thiệp thủ công</div>
+    </div>
+
+    <!-- 4 Khối Chỉ số ấn tượng -->
+    <div class="metric-grid">
+      <div class="metric-card highlight">
+        <div class="metric-label">Tỷ lệ PH đồng hành cao nhất</div>
+        <div class="metric-value">91.4%</div>
+        <div class="metric-desc">32 / 35 phụ huynh nộp bài đều đặn</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Tổng lượt nộp bài ở nhà</div>
+        <div class="metric-value">437</div>
+        <div class="metric-desc">Xuyên suốt 3 tháng thực nghiệm</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Tổng lượt đọc bài PH nghe</div>
+        <div class="metric-value">4,489</div>
+        <div class="metric-desc">Trung bình 128 lượt đọc / học sinh</div>
+      </div>
+      <div class="metric-card highlight">
+        <div class="metric-label">Hoàn thành việc nhà & dặn dò</div>
+        <div class="metric-value">433 / 437</div>
+        <div class="metric-desc">Tỷ lệ đạt 99.1% tự giác giúp đỡ cha mẹ</div>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Điểm rèn chữ viết đạt chuẩn</div>
+        <div class="metric-value">3,288 ⭐</div>
+        <div class="metric-desc">Theo 3 mức quy định Thông tư 27</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Tổng sao phụ huynh chấm</div>
+        <div class="metric-value">13,992 ⭐</div>
+        <div class="metric-desc">Khích lệ tích lũy nuôi trứng linh thú</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Hoa điểm 10 & Sticker tặng</div>
+        <div class="metric-value">318 🌸</div>
+        <div class="metric-desc">Phụ huynh thưởng khi con tiến bộ vượt bậc</div>
+      </div>
+      <div class="metric-card accent">
+        <div class="metric-label">Chu kỳ nở trứng & Quà trao</div>
+        <div class="metric-value">53 chu kỳ (106 quà)</div>
+        <div class="metric-desc">27 / 35 học sinh (77.1%) đã nở trứng</div>
+      </div>
+    </div>
+
+    <!-- PHẦN 1: BẢNG SO SÁNH 3 THÁNG -->
+    <div class="section-title">
+      <span class="section-num">1</span> BẢNG TỔNG HỢP SO SÁNH SỰ TIẾN BỘ ĐỊNH LƯỢNG QUA 3 THÁNG
+    </div>
+    <p>
+      Dữ liệu chứng minh sự bùng nổ vượt bậc từ tháng khởi động (Tháng 9) đến giai đoạn thi đua cao điểm (Tháng 10) và duy trì nền nếp tự giác bền vững (Tháng 11):
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Chỉ Số Đo Lường Sư Phạm</th>
+          <th class="text-center">Tháng 09/2026<br><span style="font-weight:400;font-size:11px;">(Khởi động - 1 tuần)</span></th>
+          <th class="text-center">Tháng 10/2026<br><span style="font-weight:400;font-size:11px;">(Bùng nổ thi đua)</span></th>
+          <th class="text-center">Tháng 11/2026<br><span style="font-weight:400;font-size:11px;">(Duy trì & gặt hái)</span></th>
+          <th class="text-center font-bold">Tổng Cộng (3 Tháng)</th>
+          <th class="text-center">Đánh Giá Xu Hướng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="font-bold">Số lượt phụ huynh gửi bài rèn luyện</td>
+          <td class="text-center">34 lượt</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">249 lượt</td>
+          <td class="text-center">154 lượt</td>
+          <td class="text-center font-bold">437 lượt</td>
+          <td class="text-center"><span class="tag-badge tag-success">Tăng 7.3 lần ở T10</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Số gia đình tham gia đồng hành</td>
+          <td class="text-center">21 / 35 (60.0%)</td>
+          <td class="text-center font-bold" style="color:#15803D;">32 / 35 (91.4%)</td>
+          <td class="text-center">27 / 35 (77.1%)</td>
+          <td class="text-center font-bold">34 / 35 (97.1%)</td>
+          <td class="text-center"><span class="tag-badge tag-success">Lan tỏa gần 100% lớp</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Tổng lượt đọc bài phụ huynh nghe con đọc</td>
+          <td class="text-center">262 lượt</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">2,893 lượt</td>
+          <td class="text-center">1,334 lượt</td>
+          <td class="text-center font-bold">4,489 lượt</td>
+          <td class="text-center"><span class="tag-badge tag-success">Tăng 11 lần</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Điểm chữ viết nắn nót đạt chuẩn</td>
+          <td class="text-center">80 ⭐</td>
+          <td class="text-center">1,938 ⭐</td>
+          <td class="text-center">1,270 ⭐</td>
+          <td class="text-center font-bold">3,288 ⭐</td>
+          <td class="text-center"><span class="tag-badge tag-primary">Nề nếp viết giữ vững</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Số ngày con hoàn thành việc nhà & dặn dò</td>
+          <td class="text-center">33 ngày (97.1%)</td>
+          <td class="text-center">246 ngày (98.8%)</td>
+          <td class="text-center font-bold" style="color:#15803D;">154 ngày (100%)</td>
+          <td class="text-center font-bold">433 ngày (99.1%)</td>
+          <td class="text-center"><span class="tag-badge tag-success">Tự lập đạt 100%</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Hoa điểm 10 / Sticker PH thưởng riêng</td>
+          <td class="text-center">0 sticker</td>
+          <td class="text-center">218 sticker</td>
+          <td class="text-center">100 sticker</td>
+          <td class="text-center font-bold">318 sticker</td>
+          <td class="text-center"><span class="tag-badge tag-primary">Tương tác sâu sắc</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Tổng số sao phụ huynh khen thưởng</td>
+          <td class="text-center">583 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">8,970 ⭐</td>
+          <td class="text-center">4,439 ⭐</td>
+          <td class="text-center font-bold">13,992 ⭐</td>
+          <td class="text-center"><span class="tag-badge tag-success">Động lực học bùng nổ</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Tổng số chu kỳ nở trứng hoàn thành</td>
+          <td class="text-center">0 chu kỳ</td>
+          <td class="text-center">22 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">31 chu kỳ</td>
+          <td class="text-center font-bold">53 chu kỳ</td>
+          <td class="text-center"><span class="tag-badge tag-success">53 chu kỳ nở thành công</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Tổng phần quà mốc sao đã trao (2 quà/chu kỳ)</td>
+          <td class="text-center">0 quà</td>
+          <td class="text-center">44 quà</td>
+          <td class="text-center font-bold" style="color:#E11D48;">62 quà</td>
+          <td class="text-center font-bold" style="color:#E11D48;">106 phần quà</td>
+          <td class="text-center"><span class="tag-badge tag-success">106 món quà đã trao</span></td>
+        </tr>
+        <tr>
+          <td class="font-bold">Số học sinh nở trứng thành công</td>
+          <td class="text-center">0 / 35 (0%)</td>
+          <td class="text-center">15 / 35 (42.9%)</td>
+          <td class="text-center font-bold" style="color:#15803D;">27 / 35 (77.1%)</td>
+          <td class="text-center font-bold">27 / 35 (77.1%)</td>
+          <td class="text-center"><span class="tag-badge tag-success">77.1% lớp đạt mốc</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box">
+      <h4>💡 Nhận Định Sư Phạm Quan Trọng Cho Sáng Kiến:</h4>
+      <p>
+        1. <strong>Tác động tâm lý tích cực:</strong> Tỷ lệ phụ huynh đồng hành tăng vọt từ <strong>60% lên 91.4%</strong> chỉ sau 4 tuần áp dụng. Điều này chứng minh ứng dụng không tạo gánh nặng mà biến việc học buổi tối thành hoạt động tương tác gắn kết vui vẻ giữa cha mẹ và con cái.<br>
+        2. <strong>Hình thành năng lực tự học và tự phục vụ:</strong> Chỉ số hoàn thành việc nhà đạt <strong>100% trong Tháng 11</strong> chứng minh học sinh lớp 1 đã chuyển biến từ việc "bị ép học" sang "chủ động hoàn thành việc nhà và tự giác đọc bài" để tích sao phát triển linh thú của mình.
+      </p>
+    </div>
+
+    <!-- PHẦN 2: DANH SÁCH 35 HỌC SINH -->
+    <div class="page-break"></div>
+    <div class="section-title">
+      <span class="section-num">2</span> BẢNG CHI TIẾT KẾT QUẢ ĐỒNG HÀNH CỦA 35 HỌC SINH QUA TỪNG THÁNG
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="text-center" style="width: 40px;">STT</th>
+          <th>Họ và tên học sinh</th>
+          <th class="text-center">Tổ</th>
+          <th class="text-center">Tháng 9<br><span style="font-weight:400;font-size:10px;">Lượt/Đọc</span></th>
+          <th class="text-center">Tháng 10<br><span style="font-weight:400;font-size:10px;">Lượt/Đọc</span></th>
+          <th class="text-center">Tháng 11<br><span style="font-weight:400;font-size:10px;">Lượt/Đọc</span></th>
+          <th class="text-center font-bold">Tổng lượt nộp</th>
+          <th class="text-center font-bold">Tổng lượt đọc</th>
+          <th class="text-center">⭐ Từ nhà</th>
+          <th class="text-center font-bold">Tổng ⭐ hiện có</th>
+          <th class="text-center">Trạng thái linh thú</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">1</td>
+          <td class="font-bold">Minh An</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">1n (5đ)</td>
+          <td class="text-center">10n (84đ)</td>
+          <td class="text-center">5n (100đ)</td>
+          <td class="text-center font-bold">16 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">189 lượt</td>
+          <td class="text-center">1620 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">1984 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">👑 Siêu sao (1984⭐)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">2</td>
+          <td class="font-bold">Nhã Uyên</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">10n (230đ)</td>
+          <td class="text-center">6n (111đ)</td>
+          <td class="text-center font-bold">16 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">341 lượt</td>
+          <td class="text-center">803 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">821 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">👑 Siêu sao (821⭐)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">3</td>
+          <td class="font-bold">Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">2n (8đ)</td>
+          <td class="text-center">10n (92đ)</td>
+          <td class="text-center">6n (60đ)</td>
+          <td class="text-center font-bold">18 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">160 lượt</td>
+          <td class="text-center">634 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">562 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">4</td>
+          <td class="font-bold">Đăng Khôi</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">2n (53đ)</td>
+          <td class="text-center">6n (324đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">8 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">377 lượt</td>
+          <td class="text-center">487 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">354 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">5</td>
+          <td class="font-bold">Gia Khánh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">1n (3đ)</td>
+          <td class="text-center">13n (133đ)</td>
+          <td class="text-center">7n (70đ)</td>
+          <td class="text-center font-bold">21 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">206 lượt</td>
+          <td class="text-center">447 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">229 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">6</td>
+          <td class="font-bold">Ánh Dương</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">2n (22đ)</td>
+          <td class="text-center">7n (35đ)</td>
+          <td class="text-center">2n (8đ)</td>
+          <td class="text-center font-bold">11 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">65 lượt</td>
+          <td class="text-center">248 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">206 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">7</td>
+          <td class="font-bold">Thanh Bình</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">-</td>
+          <td class="text-center">5n (24đ)</td>
+          <td class="text-center">2n (2đ)</td>
+          <td class="text-center font-bold">7 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">26 lượt</td>
+          <td class="text-center">147 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">190 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">8</td>
+          <td class="font-bold">Gia Hưng</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">1n (25đ)</td>
+          <td class="text-center">3n (15đ)</td>
+          <td class="text-center">3n (8đ)</td>
+          <td class="text-center font-bold">7 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">48 lượt</td>
+          <td class="text-center">364 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">190 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">9</td>
+          <td class="font-bold">Bảo Trân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center">11n (122đ)</td>
+          <td class="text-center">9n (62đ)</td>
+          <td class="text-center font-bold">21 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">194 lượt</td>
+          <td class="text-center">605 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">173 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 4 lần (8 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">10</td>
+          <td class="font-bold">Anh Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">3n (7đ)</td>
+          <td class="text-center">14n (78đ)</td>
+          <td class="text-center">8n (40đ)</td>
+          <td class="text-center font-bold">25 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">125 lượt</td>
+          <td class="text-center">588 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">166 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">11</td>
+          <td class="font-bold">Bảo Lam</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">3n (21đ)</td>
+          <td class="text-center">10n (100đ)</td>
+          <td class="text-center">7n (70đ)</td>
+          <td class="text-center font-bold">20 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">191 lượt</td>
+          <td class="text-center">446 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">150 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">12</td>
+          <td class="font-bold">Minh Nhật</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">1n (1đ)</td>
+          <td class="text-center">7n (185đ)</td>
+          <td class="text-center">3n (70đ)</td>
+          <td class="text-center font-bold">11 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">256 lượt</td>
+          <td class="text-center">437 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">149 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">13</td>
+          <td class="font-bold">Hà Kha</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">1n (5đ)</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">2 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">15 lượt</td>
+          <td class="text-center">79 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">130 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">14</td>
+          <td class="font-bold">Anh Thư</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center">7n (182đ)</td>
+          <td class="text-center">1n (15đ)</td>
+          <td class="text-center font-bold">9 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">207 lượt</td>
+          <td class="text-center">471 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">117 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">15</td>
+          <td class="font-bold">Uyên Phương</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">1n (7đ)</td>
+          <td class="text-center">3n (23đ)</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center font-bold">5 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">40 lượt</td>
+          <td class="text-center">149 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">109 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">16</td>
+          <td class="font-bold">Huyền My</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">3n (35đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">3 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">35 lượt</td>
+          <td class="text-center">66 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">104 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">17</td>
+          <td class="font-bold">Hương Thảo</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">12n (69đ)</td>
+          <td class="text-center">12n (91đ)</td>
+          <td class="text-center font-bold">24 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">160 lượt</td>
+          <td class="text-center">460 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">103 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 3 lần (6 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">18</td>
+          <td class="font-bold">Công Hậu</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">2n (6đ)</td>
+          <td class="text-center">1n (2đ)</td>
+          <td class="text-center font-bold">3 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">8 lượt</td>
+          <td class="text-center">144 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">98 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">19</td>
+          <td class="font-bold">Phúc Anh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center">13n (142đ)</td>
+          <td class="text-center">14n (155đ)</td>
+          <td class="text-center font-bold">28 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">307 lượt</td>
+          <td class="text-center">841 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">96 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 3 lần (6 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">20</td>
+          <td class="font-bold">Bảo Đăng</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">1n (1đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">1 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">1 lượt</td>
+          <td class="text-center">3 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">89 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">21</td>
+          <td class="font-bold">Minh Khang</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">-</td>
+          <td class="text-center">14n (119đ)</td>
+          <td class="text-center">8n (62đ)</td>
+          <td class="text-center font-bold">22 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">181 lượt</td>
+          <td class="text-center">608 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">86 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🏆 Nở 5 lần (10 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">22</td>
+          <td class="font-bold">Minh Khuê</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">14n (177đ)</td>
+          <td class="text-center">8n (80đ)</td>
+          <td class="text-center font-bold">22 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">257 lượt</td>
+          <td class="text-center">524 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">75 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 3 lần (6 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">23</td>
+          <td class="font-bold">Minh Khôi</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">14n (78đ)</td>
+          <td class="text-center">8n (35đ)</td>
+          <td class="text-center font-bold">22 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">113 lượt</td>
+          <td class="text-center">517 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">73 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">24</td>
+          <td class="font-bold">Phạm Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">-</td>
+          <td class="text-center">4n (45đ)</td>
+          <td class="text-center">2n (20đ)</td>
+          <td class="text-center font-bold">6 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">65 lượt</td>
+          <td class="text-center">256 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">71 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">25</td>
+          <td class="font-bold">Hoàng Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">1n (3đ)</td>
+          <td class="text-center">6n (21đ)</td>
+          <td class="text-center">2n (5đ)</td>
+          <td class="text-center font-bold">9 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">29 lượt</td>
+          <td class="text-center">171 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">69 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">26</td>
+          <td class="font-bold">Ngọc Uyên</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center">-</td>
+          <td class="text-center">1n (1đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">1 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">1 lượt</td>
+          <td class="text-center">8 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">56 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">27</td>
+          <td class="font-bold">Yên Di</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">2n (12đ)</td>
+          <td class="text-center">4n (20đ)</td>
+          <td class="text-center">5n (21đ)</td>
+          <td class="text-center font-bold">11 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">53 lượt</td>
+          <td class="text-center">210 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">40 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">28</td>
+          <td class="font-bold">Nguyên Bình</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">1n (1đ)</td>
+          <td class="text-center">4n (6đ)</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">5 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">7 lượt</td>
+          <td class="text-center">106 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">30 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">29</td>
+          <td class="font-bold">Bảo Long</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">-</td>
+          <td class="text-center">-</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">0 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">0 lượt</td>
+          <td class="text-center">0 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">27 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-warning">🥚 Đang ấp lứa đầu</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">30</td>
+          <td class="font-bold">Hoàng Phúc</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">-</td>
+          <td class="text-center">10n (236đ)</td>
+          <td class="text-center">4n (65đ)</td>
+          <td class="text-center font-bold">14 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">301 lượt</td>
+          <td class="text-center">507 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">19 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 3 lần (6 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">31</td>
+          <td class="font-bold">Hoàng Ngân</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">-</td>
+          <td class="text-center">-</td>
+          <td class="text-center font-bold">0 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">0 lượt</td>
+          <td class="text-center">0 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">16 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">32</td>
+          <td class="font-bold">An Nhiên</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center">-</td>
+          <td class="text-center">1n (14đ)</td>
+          <td class="text-center">1n (8đ)</td>
+          <td class="text-center font-bold">2 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">22 lượt</td>
+          <td class="text-center">101 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">15 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🐣 Nở 1 lần (2 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">33</td>
+          <td class="font-bold">Vy Lê</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">1n (10đ)</td>
+          <td class="text-center">14n (141đ)</td>
+          <td class="text-center">12n (96đ)</td>
+          <td class="text-center font-bold">27 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">247 lượt</td>
+          <td class="text-center">740 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">0 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-success">🌟 Nở 4 lần (8 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">34</td>
+          <td class="font-bold">Tuệ Tâm</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center">2n (20đ)</td>
+          <td class="text-center">11n (124đ)</td>
+          <td class="text-center">11n (56đ)</td>
+          <td class="text-center font-bold">24 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">200 lượt</td>
+          <td class="text-center">629 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">0 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+        
+        <tr>
+          <td class="text-center">35</td>
+          <td class="font-bold">Hải Yến</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center">5n (28đ)</td>
+          <td class="text-center">5n (22đ)</td>
+          <td class="text-center">6n (12đ)</td>
+          <td class="text-center font-bold">16 ngày</td>
+          <td class="text-center font-bold" style="color:#1E40AF;">62 lượt</td>
+          <td class="text-center">576 ⭐</td>
+          <td class="text-center font-bold" style="color:#E11D48;">0 ⭐</td>
+          <td class="text-center">
+            <span class="tag-badge tag-primary">🎉 Nở 2 lần (4 quà)</span>
+          </td></tr>
+      </tbody>
+    </table>
+
+    <!-- PHẦN 3: MINH CHỨNG 53 CHU KỲ NỞ TRỨNG & NHẬT KÝ TRAO THƯỞNG -->
+    <div class="section-title">
+      <span class="section-num">3</span> BẢNG TỔNG HỢP 53 CHU KỲ NỞ TRỨNG (106 PHẦN QUÀ) & NHẬT KÝ MỞ QUÀ THỜI GIAN THỰC
+    </div>
+    
+    <p>
+      Hệ thống dữ liệu ghi nhận xuyên suốt 3 tháng thực nghiệm đã có <strong>27 / 35 học sinh (77.1%)</strong> đạt mốc thi đua và hoàn thành xuất sắc <strong>53 chu kỳ nở trứng</strong>. Mỗi khi đạt các mốc (100⭐, 200⭐, 300⭐), các em được tự tay mở nhận 2 phần quà (Quà 1 + Quà 2) ➔ <strong>Tổng cộng 106 phần quà mốc sao đã được trao</strong> đến tận tay học sinh với sự chứng kiến và đồng hành của phụ huynh và giáo viên.
+    </p>
+
+    <!-- Bảng 3.1: Tổng hợp 27 học sinh đạt 53 chu kỳ -->
+    <h4 style="font-size:13.5px; font-weight:800; color:#1E40AF; margin: 18px 0 8px;">
+      3.1. Danh sách 27 học sinh hoàn thành 53 chu kỳ nở trứng & 106 phần quà mốc sao (Từ 08/10 đến 20/11/2026):
+    </h4>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="text-center" style="width: 40px;">STT</th>
+          <th>Họ và tên học sinh</th>
+          <th class="text-center">Tổ</th>
+          <th class="text-center">Số chu kỳ</th>
+          <th class="text-center">Quà đã nhận</th>
+          <th class="text-center">Giai đoạn nở trứng</th>
+          <th>Phần quà tiêu biểu đã trao</th>
+          <th class="text-center">Đánh giá thi đua</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">1</td>
+          <td class="font-bold">Minh Khang</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">5 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">10 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 10/11/2026</td>
+          <td style="font-size:11.5px;">🎨 Tranh cát sắc màu + 🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏆 Kỷ lục gia lớp học</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">2</td>
+          <td class="font-bold">Bảo Trân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">4 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">8 phần quà</td>
+          <td class="text-center" style="font-size:11px;">13/10/2026 ➔ 5/11/2026</td>
+          <td style="font-size:11.5px;">🎁 Phần quà em yêu thích + ✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🌟 Xuất sắc vượt bậc</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">3</td>
+          <td class="font-bold">Vy Lê</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">4 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">8 phần quà</td>
+          <td class="text-center" style="font-size:11px;">9/10/2026 ➔ 9/11/2026</td>
+          <td style="font-size:11.5px;">✏️ Bút chì siêu đẹp + 🎀 Kẹp tóc công chúa</td>
+          <td class="text-center"><span class="tag-badge tag-success">🌟 Xuất sắc vượt bậc</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">4</td>
+          <td class="font-bold">Phúc Anh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">3 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">6 phần quà</td>
+          <td class="text-center" style="font-size:11px;">15/10/2026 ➔ 13/11/2026</td>
+          <td style="font-size:11.5px;">🧸 Gấu bông xinh xắn + 👑 Được làm lớp trưởng 3 ngày</td>
+          <td class="text-center"><span class="tag-badge tag-success">✨ Tích cực rèn luyện</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">5</td>
+          <td class="font-bold">Minh Khuê</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">3 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">6 phần quà</td>
+          <td class="text-center" style="font-size:11px;">15/10/2026 ➔ 9/11/2026</td>
+          <td style="font-size:11.5px;">🎀 Kẹp tóc công chúa + 🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-success">✨ Tích cực rèn luyện</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">6</td>
+          <td class="font-bold">Hương Thảo</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">3 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">6 phần quà</td>
+          <td class="text-center" style="font-size:11px;">9/10/2026 ➔ 12/11/2026</td>
+          <td style="font-size:11.5px;">📓 Sổ tay mini đáng yêu + ✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">✨ Tích cực rèn luyện</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">7</td>
+          <td class="font-bold">Hoàng Phúc</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">3 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">6 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 16/11/2026</td>
+          <td style="font-size:11.5px;">🎁 Phần quà em yêu thích + 🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">✨ Tích cực rèn luyện</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">8</td>
+          <td class="font-bold">Bảo Lam</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">13/10/2026 ➔ 30/10/2026</td>
+          <td style="font-size:11.5px;">🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích + 🧩 Bộ xếp hình Lê gô cao cấp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">9</td>
+          <td class="font-bold">Anh Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">9/10/2026 ➔ 4/11/2026</td>
+          <td style="font-size:11.5px;">📓 Sổ tay mini đáng yêu + ✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">10</td>
+          <td class="font-bold">Yên Di</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">18/10/2026 ➔ 9/11/2026</td>
+          <td style="font-size:11.5px;">📓 Sổ tay mini đáng yêu + 📓 Sổ tay mini đáng yêu</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">11</td>
+          <td class="font-bold">Tuệ Tâm</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">9/10/2026 ➔ 22/10/2026</td>
+          <td style="font-size:11.5px;">🍦 Được ăn một món ăn em yêu thích + 👑 Được làm lớp trưởng 3 ngày</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">12</td>
+          <td class="font-bold">Minh Khôi</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">13/10/2026 ➔ 12/11/2026</td>
+          <td style="font-size:11.5px;">📓 Sổ tay mini đáng yêu + 🎁 Phần quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">13</td>
+          <td class="font-bold">Phạm Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 28/10/2026</td>
+          <td style="font-size:11.5px;">📓 Sổ tay mini đáng yêu + ✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">14</td>
+          <td class="font-bold">Anh Thư</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">11/10/2026 ➔ 28/10/2026</td>
+          <td style="font-size:11.5px;">♟️ Bộ cờ vua thông minh + 🧸 Gấu bông xinh xắn</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">15</td>
+          <td class="font-bold">Hải Yến</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">2 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">4 phần quà</td>
+          <td class="text-center" style="font-size:11px;">11/10/2026 ➔ 17/11/2026</td>
+          <td style="font-size:11.5px;">👑 Được làm lớp trưởng 3 ngày + 🧩 Bộ xếp hình Lê gô cao cấp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🎉 Chăm ngoan tiến bộ</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">16</td>
+          <td class="font-bold">Ánh Dương</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">13/10/2026 ➔ 13/10/2026</td>
+          <td style="font-size:11.5px;">🧩 Bộ lắp ráp Lê gô + 🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">17</td>
+          <td class="font-bold">Hoàng Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">21/10/2026 ➔ 21/10/2026</td>
+          <td style="font-size:11.5px;">🧼 Cục tẩy ngộ nghĩnh + 🎀 Kẹp tóc công chúa</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">18</td>
+          <td class="font-bold">Gia Khánh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">17/10/2026 ➔ 23/10/2026</td>
+          <td style="font-size:11.5px;">🎁 Phần quà đặc biệt tự chọn + 🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">19</td>
+          <td class="font-bold">Đăng Khôi</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 12/10/2026</td>
+          <td style="font-size:11.5px;">🧩 Bộ lắp ráp Lê gô + 🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">20</td>
+          <td class="font-bold">Minh Nhật</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">11/10/2026 ➔ 23/10/2026</td>
+          <td style="font-size:11.5px;">🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích + 🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">21</td>
+          <td class="font-bold">Uyên Phương</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 13/10/2026</td>
+          <td style="font-size:11.5px;">🧼 Cục tẩy ngộ nghĩnh + 🧩 Bộ lắp ráp Lê gô</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">22</td>
+          <td class="font-bold">Nguyên Bình</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">15/10/2026 ➔ 22/10/2026</td>
+          <td style="font-size:11.5px;">♟️ Bộ cờ vua thông minh + 🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">23</td>
+          <td class="font-bold">Công Hậu</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">13/10/2026 ➔ 18/10/2026</td>
+          <td style="font-size:11.5px;">🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích + 🧸 Gấu bông xinh xắn</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">24</td>
+          <td class="font-bold">Gia Hưng</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">8/10/2026 ➔ 3/11/2026</td>
+          <td style="font-size:11.5px;">🐴 Bộ cờ cá ngựa vui nhộn + 🍦 Được ăn một món ăn em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">25</td>
+          <td class="font-bold">Hoàng Ngân</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">9/11/2026 ➔ 9/11/2026</td>
+          <td style="font-size:11.5px;">🧼 Cục tẩy ngộ nghĩnh + 🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">26</td>
+          <td class="font-bold">An Nhiên</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">17/11/2026 ➔ 17/11/2026</td>
+          <td style="font-size:11.5px;">✏️ Bút chì siêu đẹp + 🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">27</td>
+          <td class="font-bold">Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#1E40AF; font-size:13px;">1 chu kỳ</td>
+          <td class="text-center font-bold" style="color:#E11D48; font-size:13px;">2 phần quà</td>
+          <td class="text-center" style="font-size:11px;">12/10/2026 ➔ 12/10/2026</td>
+          <td style="font-size:11.5px;">🎨 Tranh cát sắc màu + ✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🐣 Đạt chuẩn thi đua</span></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:#F1F5F9; font-weight:800;">
+          <td colspan="3" class="text-center">TỔNG CỘNG TOÀN LỚP</td>
+          <td class="text-center" style="color:#1E40AF; font-size:13.5px;">53 chu kỳ</td>
+          <td class="text-center" style="color:#E11D48; font-size:13.5px;">106 phần quà</td>
+          <td class="text-center" colspan="3" style="color:#15803D;">27 / 35 học sinh đạt mốc thi đua (77.1%)</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Bảng 3.2: Nhật ký các đợt mở quà có log thời gian chi tiết -->
+    <h4 style="font-size:13.5px; font-weight:800; color:#1E40AF; margin: 26px 0 8px;">
+      3.2. Trích xuất nhật ký tự động 30 đợt mở quà có dấu thời gian chi tiết (Timestamp thời gian thực):
+    </h4>
+    <p style="font-size:12.5px; color:#64748B; margin-bottom:10px;">
+      <em>* Dữ liệu trích xuất trực tiếp từ máy chủ Firebase Cloud ghi nhận các lần học sinh quay quà tại lớp (dưới sự chủ trì của Giáo viên) và tại nhà (khi phụ huynh mở ứng dụng cùng con vào buổi tối).</em>
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="text-center" style="width: 40px;">STT</th>
+          <th>Thời gian ghi nhận</th>
+          <th>Họ và tên học sinh</th>
+          <th class="text-center">Tổ</th>
+          <th class="text-center">Mốc khen thưởng</th>
+          <th>Phần quà thứ 1</th>
+          <th>Phần quà thứ 2</th>
+          <th class="text-center">Chủ trì quay quà</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-center">1</td>
+          <td style="white-space:nowrap;">20/11/2026 (10:28)</td>
+          <td class="font-bold">Vy Lê</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td>🎀 Kẹp tóc công chúa</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">2</td>
+          <td style="white-space:nowrap;">18/11/2026 (21:14)</td>
+          <td class="font-bold">Hương Thảo</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">3</td>
+          <td style="white-space:nowrap;">18/11/2026 (16:00)</td>
+          <td class="font-bold">Tuệ Tâm</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🍦 Được ăn một món ăn em yêu thích</td>
+          <td>👑 Được làm lớp trưởng 3 ngày</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">4</td>
+          <td style="white-space:nowrap;">17/11/2026 (23:20)</td>
+          <td class="font-bold">An Nhiên</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">5</td>
+          <td style="white-space:nowrap;">17/11/2026 (21:01)</td>
+          <td class="font-bold">Hải Yến</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>👑 Được làm lớp trưởng 3 ngày</td>
+          <td>🧩 Bộ xếp hình Lê gô cao cấp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">6</td>
+          <td style="white-space:nowrap;">16/11/2026 (22:13)</td>
+          <td class="font-bold">Hoàng Phúc</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">300 ⭐</td>
+          <td>🎁 Phần quà em yêu thích</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">7</td>
+          <td style="white-space:nowrap;">13/11/2026 (06:52)</td>
+          <td class="font-bold">Phúc Anh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🧸 Gấu bông xinh xắn</td>
+          <td>👑 Được làm lớp trưởng 3 ngày</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">8</td>
+          <td style="white-space:nowrap;">12/11/2026 (21:34)</td>
+          <td class="font-bold">Hương Thảo</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🎁 Phần quà em yêu thích</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">9</td>
+          <td style="white-space:nowrap;">12/11/2026 (20:45)</td>
+          <td class="font-bold">Minh Khôi</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td>🎁 Phần quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">10</td>
+          <td style="white-space:nowrap;">10/11/2026 (20:40)</td>
+          <td class="font-bold">Minh Khang</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">11</td>
+          <td style="white-space:nowrap;">09/11/2026 (22:06)</td>
+          <td class="font-bold">Yên Di</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">12</td>
+          <td style="white-space:nowrap;">09/11/2026 (20:46)</td>
+          <td class="font-bold">Vy Lê</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">13</td>
+          <td style="white-space:nowrap;">09/11/2026 (18:54)</td>
+          <td class="font-bold">Minh Khuê</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🎀 Kẹp tóc công chúa</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">14</td>
+          <td style="white-space:nowrap;">09/11/2026 (14:13)</td>
+          <td class="font-bold">Hoàng Ngân</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">15</td>
+          <td style="white-space:nowrap;">05/11/2026 (22:14)</td>
+          <td class="font-bold">Bảo Trân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#E11D48;">300 ⭐</td>
+          <td>🎁 Phần quà em yêu thích</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">16</td>
+          <td style="white-space:nowrap;">04/11/2026 (20:02)</td>
+          <td class="font-bold">Vy Lê</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">17</td>
+          <td style="white-space:nowrap;">04/11/2026 (20:01)</td>
+          <td class="font-bold">Anh Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#E11D48;">300 ⭐</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">18</td>
+          <td style="white-space:nowrap;">03/11/2026 (20:55)</td>
+          <td class="font-bold">Gia Hưng</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🐴 Bộ cờ cá ngựa vui nhộn</td>
+          <td>🍦 Được ăn một món ăn em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">19</td>
+          <td style="white-space:nowrap;">30/10/2026 (19:18)</td>
+          <td class="font-bold">Bảo Lam</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td>🧩 Bộ xếp hình Lê gô cao cấp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">20</td>
+          <td style="white-space:nowrap;">28/10/2026 (09:27)</td>
+          <td class="font-bold">Anh Thư</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>♟️ Bộ cờ vua thông minh</td>
+          <td>🧸 Gấu bông xinh xắn</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">21</td>
+          <td style="white-space:nowrap;">28/10/2026 (09:24)</td>
+          <td class="font-bold">Phạm Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>📓 Sổ tay mini đáng yêu</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">22</td>
+          <td style="white-space:nowrap;">23/10/2026 (10:18)</td>
+          <td class="font-bold">Gia Khánh</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🎁 Phần quà đặc biệt tự chọn</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">23</td>
+          <td style="white-space:nowrap;">23/10/2026 (10:16)</td>
+          <td class="font-bold">Minh Nhật</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">24</td>
+          <td style="white-space:nowrap;">22/10/2026 (16:01)</td>
+          <td class="font-bold">Nguyên Bình</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>♟️ Bộ cờ vua thông minh</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">25</td>
+          <td style="white-space:nowrap;">21/10/2026 (22:32)</td>
+          <td class="font-bold">Hoàng Quân</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td>🎀 Kẹp tóc công chúa</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">26</td>
+          <td style="white-space:nowrap;">18/10/2026 (11:17)</td>
+          <td class="font-bold">Công Hậu</td>
+          <td class="text-center font-bold">Tổ 3</td>
+          <td class="text-center font-bold" style="color:#E11D48;">200 ⭐</td>
+          <td>🛒 Được ba mẹ dắt đi siêu thị mua món quà em yêu thích</td>
+          <td>🧸 Gấu bông xinh xắn</td>
+          <td class="text-center"><span class="tag-badge tag-primary">🏫 Giáo viên tại lớp</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">27</td>
+          <td style="white-space:nowrap;">13/10/2026 (18:38)</td>
+          <td class="font-bold">Ánh Dương</td>
+          <td class="text-center font-bold">Tổ 1</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🧩 Bộ lắp ráp Lê gô</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">28</td>
+          <td style="white-space:nowrap;">13/10/2026 (06:45)</td>
+          <td class="font-bold">Uyên Phương</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🧼 Cục tẩy ngộ nghĩnh</td>
+          <td>🧩 Bộ lắp ráp Lê gô</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">29</td>
+          <td style="white-space:nowrap;">12/10/2026 (22:25)</td>
+          <td class="font-bold">Đăng Khôi</td>
+          <td class="text-center font-bold">Tổ 2</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🧩 Bộ lắp ráp Lê gô</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+        <tr>
+          <td class="text-center">30</td>
+          <td style="white-space:nowrap;">12/10/2026 (19:46)</td>
+          <td class="font-bold">Bảo Hân</td>
+          <td class="text-center font-bold">Tổ 4</td>
+          <td class="text-center font-bold" style="color:#E11D48;">100 ⭐</td>
+          <td>🎨 Tranh cát sắc màu</td>
+          <td>✏️ Bút chì siêu đẹp</td>
+          <td class="text-center"><span class="tag-badge tag-success">🏡 Phụ huynh tại nhà</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box" style="margin-top: 14px;">
+      <h4>🎁 Ý Nghĩa Sư Phạm Của Cơ Chế Tặng Quà Nở Trứng:</h4>
+      <p>
+        Cơ chế Gamification gắn việc tích điểm đọc bài với việc "ấp nở trứng linh thú" và nhận hộp quà bí mật đã tạo cú hích tâm lý cực lớn đối với học sinh lớp 1. Việc các em nhận được <strong>106 món quà thiết thực</strong> (dụng cụ học tập, tranh cát, sticker, sổ tay mini, kẹp tóc...) dưới sự chứng kiến của cha mẹ đã chuyển hóa việc học tập từ nghĩa vụ bắt buộc thành niềm vui tự thân mỗi ngày.
+      </p>
+    </div>
+<!-- PHẦN 4: KẾT LUẬN SƯ PHẠM VÀ CHỮ KÝ -->
+    <div class="section-title">
+      <span class="section-num">4</span> KẾT LUẬN VỀ HIỆU QUẢ CỦA GIẢI PHÁP TRONG SÁNG KIẾN KINH NGHIỆM
+    </div>
+    <ul style="font-size: 13.5px; line-height: 1.7;">
+      <li><strong>1. Khắc phục triệt để đứt gãy thông tin giữa Gia đình và Nhà trường:</strong> Phụ huynh không còn đứng ngoài cuộc mà trở thành "người trợ giảng đắc lực" của giáo viên mỗi tối. Việc phụ huynh tham gia nghe con đọc <strong>4.489 lượt</strong> là con số minh chứng sống động nhất cho sự gắn kết này.</li>
+      <li><strong>2. Chuyển hóa động lực ngoại tại thành nội tại:</strong> Nhờ cơ chế Gamification nuôi linh thú và nạp nước sạch, học sinh lớp 1 chuyển từ việc miễn cưỡng học sang chủ động đòi ba mẹ mở bài cho đọc và tự giác làm việc nhà.</li>
+      <li><strong>3. Chi phí 0 đồng - Khả năng nhân rộng cao:</strong> Hệ thống hoạt động hoàn toàn trên nền tảng web mã nguồn mở, không phát sinh chi phí duy trì, dễ dàng áp dụng cho mọi lớp tiểu học trên địa bàn.</li>
+    </ul>
+
+    <div class="signature-section">
+      <div>
+        <div class="sig-title">ĐẠI DIỆN BAN ĐẠI DIỆN CMHS LỚP 1/8</div>
+        <div class="sig-sub">(Ký và ghi rõ họ tên)</div>
+        <div class="sig-name">......................................................</div>
+      </div>
+      <div>
+        <div class="sig-title">GIÁO VIÊN CHỦ NHIỆM / TÁC GIẢ SÁNG KIẾN</div>
+        <div class="sig-sub">(Ký và ghi rõ họ tên)</div>
+        <div class="sig-name">Huỳnh Thị Nga</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

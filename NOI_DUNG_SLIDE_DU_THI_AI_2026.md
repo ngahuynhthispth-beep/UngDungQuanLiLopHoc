@@ -189,3 +189,4 @@
    *"Thay vì cô giáo phải cầm từng cuốn vở, học sinh chỉ cần giơ trang vở lên camera. Trí tuệ nhân tạo Gemini Vision của chúng tôi sẽ quét từng con chữ, tự động vẽ nét gạch chân màu đỏ ngay dưới chữ sai và cộng điểm vào con vật nuôi của bé trong 1.5 giây."*
 3. **Chốt hạ bằng tính hiệu quả và chi phí 0 đồng:** 
    *"Dự án này không phải là một mô hình lý thuyết trên giấy. Nó đã và đang vận hành hàng ngày tại lớp 1A của chúng tôi với 36 học sinh thực tế, chi phí đầu tư 0 đồng và có thể chuyển giao cho bất kỳ trường tiểu học nào trên cả nước ngay ngày mai."*
+![alt text]({BFA6403D-FAE7-42C1-B20B-054706C4BEA8}.png)

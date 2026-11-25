@@ -16,7 +16,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="css/main.css?v=20261119_v2">
+  <link rel="stylesheet" href="css/main.css?v=20261125_v3">
   <link rel="stylesheet" href="css/water-station.css?v=20261124_v1">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
@@ -2134,17 +2134,34 @@
 
   <!-- THANH TRẠNG THÁI NỔI THÔNG MINH KHI ĐỌC LỆNH (DYNAMIC ISLAND) -->
   <div id="floatingVoiceLiveBar" class="floating-voice-live-bar">
-    <span class="mic-pulse-dot" style="font-size: 16px;">🔴</span>
-    <span id="floatingVoiceLiveText" style="font-size: 14px; font-weight: 700;">Đang nghe cô nói...</span>
+    <div class="floating-voice-live-main">
+      <span class="mic-pulse-dot" style="font-size: 16px;">🔴</span>
+      <div class="floating-voice-text-wrap">
+        <span id="floatingVoiceLiveText" style="font-size: 14px; font-weight: 700;">Đang nghe cô nói...</span>
+        <div id="floatingVoiceChips" class="floating-voice-chips" style="display:none;"></div>
+      </div>
+    </div>
+    <!-- Nút Hủy / Xóa từ sai ngay lúc nói -->
+    <div class="floating-voice-live-actions">
+      <button type="button" id="btnCancelVoiceLive" class="btn-voice-cancel-live" title="Xóa bỏ / Hủy lệnh nói ngay lập tức (phím Esc)">
+        ✖ Hủy (Xóa)
+      </button>
+      <button type="button" id="btnConfirmVoiceLive" class="btn-voice-confirm-live" style="display:none;" title="Chốt áp dụng điểm ngay">
+        ✔ Chốt
+      </button>
+    </div>
   </div>
 
-  <!-- NÚT MICRO NỔI TRỰC TIẾP TRÊN MÀN HÌNH (BẤM NÓI NGAY MỌI LÚC) -->
-  <div id="floatingVoiceContainer" class="floating-voice-container">
+  <!-- NÚT MICRO NỔI TRỰC TIẾP TRÊN MÀN HÌNH (KÉO THẢ TỰ DO, KHÔNG CHE NÚT CỘNG 5, 10) -->
+  <div id="floatingVoiceContainer" class="floating-voice-container" title="Có thể giữ kéo rê đi bất cứ đâu trên màn hình">
+    <div id="floatingVoiceDragHandle" class="floating-voice-drag-handle" title="Giữ để kéo rê vị trí nút">⋮⋮</div>
     <button type="button" id="floatingVoiceBtn" class="floating-voice-btn"
       title="Bấm vào để nói ngay: 'Cộng/Trừ + Tên bé + Số điểm'">
       <span class="voice-fab-icon">🎙️</span>
       <span class="voice-fab-text">Nói Chấm Điểm</span>
     </button>
+    <button type="button" id="btnCancelVoiceFab" class="btn-voice-cancel-fab" style="display:none;" title="Xóa bỏ / Hủy lệnh ngay (Esc)">✖</button>
+    <button type="button" id="btnMinimizeFloatingVoice" class="btn-voice-minimize" title="Thu nhỏ / Mở rộng nút Micro">−</button>
   </div>
 
   <!-- Khung thông báo đồng bộ realtime khi học sinh/phụ huynh gửi điểm -->
@@ -2166,7 +2183,7 @@
   <script src="js/noise-meter.js?v=20261118_v9"></script>
   <script src="js/wheel.js?v=20261118_v9"></script>
   <script src="js/card-export.js?v=20261122_v2"></script>
-  <script src="js/voice-assistant.js?v=20261123_v1"></script>
+  <script src="js/voice-assistant.js?v=20261125_v3"></script>
   <script src="js/daily-game.js?v=20261122_v2"></script>
   <script src="js/water-station.js?v=20261124_v1"></script>
   <script src="js/app.js?v=20261124_v1"></script>

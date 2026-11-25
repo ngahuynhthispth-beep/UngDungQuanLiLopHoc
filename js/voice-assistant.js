@@ -134,6 +134,10 @@
       // Quản lý streaming văn bản thời gian thực và debounce chốt câu
       this.speechFinalDebounceTimer = null;
       this.currentInterimText = '';
+      this.isManualStop = false;
+      this.pendingExecutionCmd = null;
+      this.pendingExecutionStudents = null;
+      this.pendingExecutionTimer = null;
       this.normalizeTranscript = normalizeTranscript;
 
       this.loadVoices();
@@ -279,6 +283,12 @@
         };
 
         this.recognition.onend = () => {
+          if (this.isListening && !this.isManualStop) {
+            try {
+              this.recognition.start();
+              return;
+            } catch (err) {}
+          }
           this.isListening = false;
           this.updateUiState(false, 'webspeech');
         };
@@ -379,6 +389,7 @@
     }
 
     start() {
+      this.isManualStop = false;
       this.unlockAudio();
       if (this.engine === 'whisper') {
         if (!this.groqApiKey) {
@@ -395,6 +406,7 @@
     }
 
     stop() {
+      this.isManualStop = true;
       if (this.engine === 'whisper') {
         this.stopWhisper();
       } else {
@@ -541,11 +553,24 @@
       const transcriptEl = document.getElementById('voiceTranscriptResult');
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
+      const chipsEl = document.getElementById('floatingVoiceChips');
+      const cancelBtn = document.getElementById('btnCancelVoiceLive');
+      const confirmBtn = document.getElementById('btnConfirmVoiceLive');
+
+      // Khi có giọng nói mới, hủy mọi lệnh đang đếm ngược chờ chốt
+      if (this.pendingExecutionTimer) {
+        clearTimeout(this.pendingExecutionTimer);
+        this.pendingExecutionTimer = null;
+        this.pendingExecutionCmd = null;
+      }
+      if (confirmBtn) confirmBtn.style.display = 'none';
 
       // Tự động chuẩn hóa các âm nghe nhầm như "cọc", "cộc", "cọc cọc" thành "Cộng" ngay trên giao diện
       let displayText = interimText || '';
       const congPattern = '(?:cọc|cộc|cột|cọt|cọng|cổng|công|cống|chọn|chọng|chọc|cuộn|cũn)';
       displayText = displayText.replace(new RegExp('\\b' + congPattern + '(?:[\\s,;]+' + congPattern + ')*\\b', 'giu'), 'Cộng');
+
+      this.currentInterimText = displayText;
 
       if (transcriptEl) {
         transcriptEl.innerHTML = `<span style="color: #6D28D9; font-weight: 700;">🎙️ "${displayText}..."</span>`;
@@ -553,7 +578,81 @@
       if (liveBar && liveText) {
         liveBar.classList.add('active');
         liveText.innerHTML = `🔴 <strong>Đang nghe:</strong> <em>"${displayText}..."</em>`;
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
+        // Tách từng từ ra thành thẻ có dấu ✖ để cô có thể xóa ngay từ bị AI nghe sai
+        if (chipsEl) {
+          const words = displayText.trim().split(/\s+/).filter(Boolean);
+          if (words.length > 0) {
+            chipsEl.style.display = 'flex';
+            chipsEl.innerHTML = words.map((w, idx) =>
+              `<span class="voice-word-chip" data-word-idx="${idx}" title="Bấm để xóa từ '${w}'">${w} <span class="chip-delete-x">✖</span></span>`
+            ).join('');
+          } else {
+            chipsEl.style.display = 'none';
+            chipsEl.innerHTML = '';
+          }
+        }
       }
+    }
+
+    // Xóa 1 từ cụ thể tại vị trí idx khi cô bấm vào dấu ✖ của từ đó
+    deleteWordAt(idx) {
+      if (!this.currentInterimText) return;
+      const words = this.currentInterimText.trim().split(/\s+/).filter(Boolean);
+      if (idx >= 0 && idx < words.length) {
+        const deletedWord = words[idx];
+        words.splice(idx, 1);
+        this.currentInterimText = words.join(' ');
+        this.showStatusToast(`Đã xóa từ: "${deletedWord}"`, '🗑️');
+
+        if (words.length > 0) {
+          this.updateInterimDisplay(this.currentInterimText);
+          clearTimeout(this.speechFinalDebounceTimer);
+          this.speechFinalDebounceTimer = setTimeout(() => {
+            this.processCommand(this.currentInterimText);
+          }, 1400);
+        } else {
+          this.cancelCommand('Đã xóa hết câu lệnh.');
+        }
+      }
+    }
+
+    // Hủy bỏ hoàn toàn câu lệnh đang nói hoặc đang chờ chốt (khi cô bấm ✖ hoặc ấn Esc)
+    cancelCommand(reason = 'Cô đã hủy lệnh.') {
+      clearTimeout(this.speechFinalDebounceTimer);
+      if (this.pendingExecutionTimer) {
+        clearTimeout(this.pendingExecutionTimer);
+        this.pendingExecutionTimer = null;
+        this.pendingExecutionCmd = null;
+        this.pendingExecutionStudents = null;
+      }
+      this.stop();
+      this.currentInterimText = '';
+
+      const liveBar = document.getElementById('floatingVoiceLiveBar');
+      const liveText = document.getElementById('floatingVoiceLiveText');
+      const chipsEl = document.getElementById('floatingVoiceChips');
+      const cancelBtn = document.getElementById('btnCancelVoiceLive');
+      const confirmBtn = document.getElementById('btnConfirmVoiceLive');
+      const cancelFab = document.getElementById('btnCancelVoiceFab');
+
+      if (chipsEl) {
+        chipsEl.style.display = 'none';
+        chipsEl.innerHTML = '';
+      }
+      if (confirmBtn) confirmBtn.style.display = 'none';
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (cancelFab) cancelFab.style.display = 'none';
+
+      if (liveText) {
+        liveText.innerHTML = `⚠️ <em>${reason}</em>`;
+      }
+      setTimeout(() => {
+        if (liveBar) liveBar.classList.remove('active');
+      }, 1000);
+
+      this.showStatusToast(reason, '⚠️');
     }
 
     // Xử lý câu lệnh nhận diện theo cấu trúc chuẩn: [Cộng / Trừ] + [Tên học sinh] + [Số điểm]
@@ -996,16 +1095,13 @@
       return matches.length > 0 ? matches[0] : null;
     }
 
-    // Thực thi câu lệnh đã phân tích
+    // Thực thi câu lệnh đã phân tích (có vùng đệm xác nhận 1.8s để cô có thể bấm [✖ Xóa / Hủy])
     executeParsedCommand(cmd, students) {
       if (!cmd) return;
 
-      // Hiển thị câu lệnh trên popup & Dynamic Island
-      this.updateTranscriptDisplay(cmd.raw, cmd);
-
       // 0. Trường hợp KHÔNG XÁC ĐỊNH ĐƯỢC HÀNH ĐỘNG CỘNG HAY TRỪ
-      // (Bảo vệ tuyệt đối: Tránh trường hợp máy nghe bập bõm rồi tự động cộng điểm nhầm)
       if (cmd.actionUnknown) {
+        this.updateTranscriptDisplay(cmd.raw, cmd, false);
         if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
           window.soundFx.playPenalty();
         }
@@ -1017,6 +1113,58 @@
         return;
       }
 
+      // Kiểm tra xem có đối tượng hay không
+      const hasTarget = cmd.isClassWide || cmd.targetGroupId || (cmd.students && cmd.students.length > 0) || cmd.student;
+      if (!hasTarget) {
+        this.updateTranscriptDisplay(cmd.raw, cmd, false);
+        if (window.soundFx && typeof window.soundFx.playPenalty === 'function') {
+          window.soundFx.playPenalty();
+        }
+        const msg = `Không tìm thấy học sinh trong câu nói: "${cmd.raw}". Cô hãy đọc rõ theo cú pháp: "Cộng [Tên] [Số điểm]".`;
+        this.showStatusToast(msg, '❓');
+        setTimeout(() => {
+          this.speakFeedback('Không tìm thấy học sinh. Cô vui lòng đọc lại nhé.');
+        }, 400);
+        return;
+      }
+
+      // Hiển thị câu lệnh kèm thời gian đếm ngược 1.8s
+      this.updateTranscriptDisplay(cmd.raw, cmd, true);
+
+      // Lưu lại lệnh đang chờ xác nhận
+      clearTimeout(this.pendingExecutionTimer);
+      this.pendingExecutionCmd = cmd;
+      this.pendingExecutionStudents = students;
+
+      // Đếm ngược 1.8s trước khi chốt áp dụng điểm (nếu cô bấm [✖ Hủy] hoặc Esc sẽ bị hủy ngay lập tức)
+      this.pendingExecutionTimer = setTimeout(() => {
+        this.confirmPendingCommand();
+      }, 1800);
+    }
+
+    // Chốt lệnh áp dụng điểm ngay
+    confirmPendingCommand() {
+      if (this.pendingExecutionTimer) {
+        clearTimeout(this.pendingExecutionTimer);
+        this.pendingExecutionTimer = null;
+      }
+      if (!this.pendingExecutionCmd) return;
+
+      const cmd = this.pendingExecutionCmd;
+      const students = this.pendingExecutionStudents || [];
+      this.pendingExecutionCmd = null;
+      this.pendingExecutionStudents = null;
+
+      const confirmBtn = document.getElementById('btnConfirmVoiceLive');
+      const cancelBtn = document.getElementById('btnCancelVoiceLive');
+      if (confirmBtn) confirmBtn.style.display = 'none';
+      if (cancelBtn) cancelBtn.style.display = 'none';
+
+      this.applyCommandToDatabase(cmd, students);
+    }
+
+    // Áp dụng câu lệnh vào cơ sở dữ liệu
+    applyCommandToDatabase(cmd, students) {
       // 1. Trường hợp áp dụng cho CẢ LỚP
       if (cmd.isClassWide) {
         const actualPoints = cmd.isNegative ? -cmd.points : cmd.points;
@@ -1264,11 +1412,17 @@
       if (btnFloating) {
         if (isListening) {
           btnFloating.classList.add('listening');
-          btnFloating.innerHTML = `<span class="voice-fab-icon mic-pulse-dot">${isWhisper ? '🟣' : '🔴'}</span> <span class="voice-fab-text">${isWhisper ? 'Đang thu âm Whisper...' : 'Đang nghe cô nói...'}</span>`;
+          btnFloating.innerHTML = `<span class="voice-fab-icon mic-pulse-dot">${isWhisper ? '🟣' : '🔴'}</span> <span class="voice-fab-text">${isWhisper ? 'Đang thu...' : 'Đang nghe...'}</span>`;
         } else {
           btnFloating.classList.remove('listening');
           btnFloating.innerHTML = `<span class="voice-fab-icon">🎙️</span> <span class="voice-fab-text">Nói Chấm Điểm</span>`;
         }
+      }
+
+      // Nút Xóa / Hủy nhanh ngay trên cụm Micro nổi
+      const btnCancelFab = document.getElementById('btnCancelVoiceFab');
+      if (btnCancelFab) {
+        btnCancelFab.style.display = isListening ? 'flex' : 'none';
       }
 
       // 4. Thanh trạng thái nổi thông minh Dynamic Island trên đầu màn hình
@@ -1305,10 +1459,18 @@
       }
     }
 
-    updateTranscriptDisplay(rawText, parsedCmd = null) {
+    updateTranscriptDisplay(rawText, parsedCmd = null, isPending = false) {
       const transcriptEl = document.getElementById('voiceTranscriptResult');
       const liveBar = document.getElementById('floatingVoiceLiveBar');
       const liveText = document.getElementById('floatingVoiceLiveText');
+      const chipsEl = document.getElementById('floatingVoiceChips');
+      const cancelBtn = document.getElementById('btnCancelVoiceLive');
+      const confirmBtn = document.getElementById('btnConfirmVoiceLive');
+
+      if (chipsEl) {
+        chipsEl.style.display = 'none';
+        chipsEl.innerHTML = '';
+      }
 
       // Tự động chuẩn hóa câu chữ hiển thị nếu Google STT nghe nhầm "cọc", "cộc"
       let cleanRaw = rawText || '';
@@ -1370,10 +1532,18 @@
         // Cập nhật trên thanh trạng thái nổi Dynamic Island
         if (liveBar && liveText) {
           liveBar.classList.add('active');
-          liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong>`;
-          setTimeout(() => {
-            if (liveBar) liveBar.classList.remove('active');
-          }, 3500);
+          if (isPending) {
+            liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong> <span style="font-size: 11.5px; color: #F59E0B; margin-left: 6px;">(tự chốt sau 1.8s...)</span>`;
+            if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+            if (confirmBtn) confirmBtn.style.display = 'inline-flex';
+          } else {
+            liveText.innerHTML = `✨ <strong>Đã thực hiện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong>`;
+            if (cancelBtn) cancelBtn.style.display = 'none';
+            if (confirmBtn) confirmBtn.style.display = 'none';
+            setTimeout(() => {
+              if (liveBar) liveBar.classList.remove('active');
+            }, 3000);
+          }
         }
       } else {
         if (transcriptEl) transcriptEl.innerHTML = `💬 <em>"${cleanRaw}"</em>`;
@@ -1420,74 +1590,116 @@
       window.VoiceAssistant.updateEngineUi();
     }
 
-    // 2. Thiết lập chế độ KÉP: Chạm 1 lần (Tap-to-Talk) HOẶC Nhấn giữ (Push-to-Talk kiểu bộ đàm)
+    // Kéo thả tự do nút Micro nổi và thu nhỏ/mở rộng để không bao giờ che nút +5, +10
+    function initDraggableFab() {
+      const container = document.getElementById('floatingVoiceContainer');
+      if (!container) return;
+
+      // Khôi phục vị trí đã lưu của cô giáo
+      const savedPos = localStorage.getItem('floating_voice_pos');
+      if (savedPos) {
+        try {
+          const { left, top } = JSON.parse(savedPos);
+          if (typeof left === 'number' && typeof top === 'number') {
+            const maxLeft = window.innerWidth - 60;
+            const maxTop = window.innerHeight - 60;
+            container.style.left = Math.max(10, Math.min(left, maxLeft)) + 'px';
+            container.style.top = Math.max(10, Math.min(top, maxTop)) + 'px';
+            container.style.bottom = 'auto';
+            container.style.right = 'auto';
+          }
+        } catch (e) {}
+      }
+
+      // Khôi phục chế độ thu nhỏ (compact)
+      const isCompact = localStorage.getItem('floating_voice_compact') === 'true';
+      if (isCompact) {
+        container.classList.add('compact');
+      }
+
+      // Nút thu nhỏ / mở rộng
+      const minBtn = document.getElementById('btnMinimizeFloatingVoice');
+      if (minBtn) {
+        minBtn.innerText = isCompact ? '+' : '−';
+        minBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          container.classList.toggle('compact');
+          const nowCompact = container.classList.contains('compact');
+          minBtn.innerText = nowCompact ? '+' : '−';
+          localStorage.setItem('floating_voice_compact', nowCompact ? 'true' : 'false');
+        });
+      }
+
+      // Kéo thả mượt mà trên cả máy tính lẫn màn hình cảm ứng
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initLeft = 0, initTop = 0;
+      let hasMoved = false;
+
+      function onPointerDown(e) {
+        if (e.target && e.target.closest('#btnMinimizeFloatingVoice')) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+        const rect = container.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        initLeft = rect.left;
+        initTop = rect.top;
+        isDragging = true;
+        hasMoved = false;
+      }
+
+      function onPointerMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (!hasMoved && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+          hasMoved = true;
+          container.classList.add('dragging');
+        }
+        if (hasMoved) {
+          e.preventDefault();
+          let newLeft = initLeft + dx;
+          let newTop = initTop + dy;
+          const maxLeft = window.innerWidth - container.offsetWidth - 10;
+          const maxTop = window.innerHeight - container.offsetHeight - 10;
+          newLeft = Math.max(10, Math.min(newLeft, maxLeft));
+          newTop = Math.max(10, Math.min(newTop, maxTop));
+          container.style.left = newLeft + 'px';
+          container.style.top = newTop + 'px';
+          container.style.bottom = 'auto';
+          container.style.right = 'auto';
+        }
+      }
+
+      function onPointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        container.classList.remove('dragging');
+        if (hasMoved) {
+          container.dataset.wasDragged = 'true';
+          setTimeout(() => { container.dataset.wasDragged = 'false'; }, 200);
+          const rect = container.getBoundingClientRect();
+          localStorage.setItem('floating_voice_pos', JSON.stringify({ left: rect.left, top: rect.top }));
+        }
+      }
+
+      container.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove, { passive: false });
+      window.addEventListener('pointerup', onPointerUp);
+      window.addEventListener('pointercancel', onPointerUp);
+    }
+
+    // Thiết lập nút Micro ổn định (1 chạm là bật/tắt dứt khoát, không bị tự ngắt nhầm)
     function setupDualModeMicBtn(btn) {
       if (!btn) return;
 
-      let pressTimer = null;
-      let isPushToTalk = false;
-      let startTime = 0;
-
-      function handleStart(e) {
-        startTime = Date.now();
-        isPushToTalk = false;
-
-        if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
-          window.VoiceAssistant.unlockAudio();
-        }
-        if (window.soundFx) {
-          if (typeof window.soundFx.unmute === 'function') window.soundFx.unmute();
-          if (typeof window.soundFx.playMicBeep === 'function') window.soundFx.playMicBeep();
-        }
-
-        pressTimer = setTimeout(() => {
-          isPushToTalk = true;
-          if (window.VoiceAssistant && !window.VoiceAssistant.isListening) {
-            window.VoiceAssistant.start();
-          }
-        }, 280);
-      }
-
-      function handleEnd(e) {
-        clearTimeout(pressTimer);
-        if (isPushToTalk) {
-          if (e && e.cancelable) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          setTimeout(() => {
-            if (window.VoiceAssistant && window.VoiceAssistant.isListening) {
-              window.VoiceAssistant.stop();
-            }
-          }, 120);
-          return;
-        }
-      }
-
-      if (window.PointerEvent) {
-        btn.addEventListener('pointerdown', (e) => {
-          if (e.pointerType === 'mouse' && e.button !== 0) return;
-          handleStart(e);
-        });
-        btn.addEventListener('pointerup', handleEnd);
-        btn.addEventListener('pointercancel', handleEnd);
-      } else {
-        btn.addEventListener('touchstart', handleStart, { passive: true });
-        btn.addEventListener('touchend', handleEnd);
-        btn.addEventListener('touchcancel', handleEnd);
-        btn.addEventListener('mousedown', (e) => {
-          if (e.button === 0) handleStart(e);
-        });
-        btn.addEventListener('mouseup', handleEnd);
-      }
-
       btn.addEventListener('click', (e) => {
-        if (isPushToTalk) {
-          isPushToTalk = false;
-          e.preventDefault();
-          e.stopPropagation();
+        const container = document.getElementById('floatingVoiceContainer');
+        if (container && container.dataset.wasDragged === 'true') {
           return;
         }
+
         if (window.VoiceAssistant && typeof window.VoiceAssistant.unlockAudio === 'function') {
           window.VoiceAssistant.unlockAudio();
         }
@@ -1506,6 +1718,53 @@
     setupDualModeMicBtn(document.getElementById('btnToolbarVoiceMic'));
     setupDualModeMicBtn(document.getElementById('floatingVoiceBtn'));
     setupDualModeMicBtn(document.getElementById('btnToggleVoiceInModal'));
+
+    // Khởi tạo kéo thả nút Micro nổi
+    initDraggableFab();
+
+    // Nút [✖ Hủy (Xóa)] trên thanh Live Bar
+    const btnCancelVoiceLive = document.getElementById('btnCancelVoiceLive');
+    if (btnCancelVoiceLive) {
+      btnCancelVoiceLive.addEventListener('click', () => {
+        if (window.VoiceAssistant) window.VoiceAssistant.cancelCommand('Cô đã bấm hủy lệnh.');
+      });
+    }
+
+    // Nút [✖] Xóa / Hủy nhanh ngay cạnh Micro nổi
+    const btnCancelVoiceFab = document.getElementById('btnCancelVoiceFab');
+    if (btnCancelVoiceFab) {
+      btnCancelVoiceFab.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window.VoiceAssistant) window.VoiceAssistant.cancelCommand('Cô đã bấm hủy lệnh.');
+      });
+    }
+
+    // Nút [✔ Chốt] trên thanh Live Bar
+    const btnConfirmVoiceLive = document.getElementById('btnConfirmVoiceLive');
+    if (btnConfirmVoiceLive) {
+      btnConfirmVoiceLive.addEventListener('click', () => {
+        if (window.VoiceAssistant) window.VoiceAssistant.confirmPendingCommand();
+      });
+    }
+
+    // Bấm vào dấu ✖ trên từng từ để xóa từ nhận diện sai
+    const floatingVoiceChips = document.getElementById('floatingVoiceChips');
+    if (floatingVoiceChips) {
+      floatingVoiceChips.addEventListener('click', (e) => {
+        const chip = e.target.closest('.voice-word-chip');
+        if (chip && chip.dataset.wordIdx !== undefined && window.VoiceAssistant) {
+          const idx = parseInt(chip.dataset.wordIdx, 10);
+          window.VoiceAssistant.deleteWordAt(idx);
+        }
+      });
+    }
+
+    // Nhấn phím Escape để hủy ngay lập tức câu lệnh đang nói hoặc đang đếm ngược
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && window.VoiceAssistant && (window.VoiceAssistant.isListening || window.VoiceAssistant.pendingExecutionCmd)) {
+        window.VoiceAssistant.cancelCommand('Đã bấm phím Esc để hủy lệnh.');
+      }
+    });
 
     // Nút đóng modal
     const btnCloseModal = document.getElementById('btnCloseVoiceModal');
