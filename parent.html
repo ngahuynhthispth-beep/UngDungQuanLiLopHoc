@@ -1141,13 +1141,13 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="js/firebase-config.js?v=20261118_v9"></script>
-  <script src="js/firebase-sync.js?v=20261118_v9"></script>
-  <script src="js/audio.js?v=20261118_v9"></script>
-  <script src="js/egg-evolution.js?v=20261122_v5"></script>
-  <script src="js/initial-data.js?v=20261124_v2"></script>
-  <script src="js/storage.js?v=20261124_v2"></script>
-  <script src="js/wheel.js?v=20261118_v9"></script>
+  <script src="js/firebase-config.js?v=20261128_v1"></script>
+  <script src="js/firebase-sync.js?v=20261128_v1"></script>
+  <script src="js/audio.js?v=20261128_v1"></script>
+  <script src="js/egg-evolution.js?v=20261128_v1"></script>
+  <script src="js/initial-data.js?v=20261128_v1"></script>
+  <script src="js/storage.js?v=20261128_v1"></script>
+  <script src="js/wheel.js?v=20261128_v1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       StorageManager.init();
@@ -2294,19 +2294,17 @@
             }
           }
 
-          const gifts = (updatedStudent && updatedStudent.giftHistory) ? updatedStudent.giftHistory : [];
-          const isCompleted = (updatedStudent && updatedStudent.stars === 0 && (!updatedStudent.giftHistory || updatedStudent.giftHistory.length === 0));
-          const completedGifts = (updatedStudent && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length > 0) 
-            ? updatedStudent.lastCompletedGifts 
-            : (gifts.length > 0 ? gifts : [wonGift]);
+          const currentGifts = (updatedStudent && Array.isArray(updatedStudent.giftHistory)) ? updatedStudent.giftHistory : [];
+          // Chỉ coi là hoàn thành chu kỳ KHI đã nhận đủ 2 lượt quà
+          const isCompleted = (currentGifts.length >= 2) || (updatedStudent && updatedStudent.stars === 0 && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length >= 2 && currentGifts.length === 0);
 
-          renderParentClaimHistory(isCompleted ? completedGifts : gifts);
+          if (!isCompleted && currentGifts.length === 1) {
+            // ĐÚNG 1 LƯỢT: Tuyệt đối chỉ hiển thị 1 quà lượt 1, đợi quay lượt 2
+            renderParentClaimHistory(currentGifts);
+            parentGiftResultBox.style.display = 'block';
+            parentGiftResultIcon.textContent = wonGift.icon || '🎁';
+            parentGiftResultTitle.textContent = `Bé đã trúng: ${wonGift.name}!`;
 
-          parentGiftResultBox.style.display = 'block';
-          parentGiftResultIcon.textContent = wonGift.icon || '🎁';
-          parentGiftResultTitle.textContent = `Bé đã trúng: ${wonGift.name}!`;
-
-          if (!isCompleted && gifts.length === 1) {
             parentGiftTurnBadge.textContent = `Lượt mở quà: 2 / 2`;
             if (btnParentSpinWheel) {
               btnParentSpinWheel.textContent = '🚀 BẮT ĐẦU QUAY LƯỢT 2!';
@@ -2333,7 +2331,15 @@
               }
             });
           } else {
-            // TỰ ĐỘNG HOÀN VỀ 0 SAO KHI XONG 2 LƯỢT MÀ KHÔNG CẦN THAO TÁC, KHÔNG CHO QUAY NỮA
+            // ĐÃ HOÀN TẤT ĐỦ 2 LƯỢT: Hiển thị 2 quà và kết thúc chu kỳ
+            const completedGifts = (updatedStudent && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length > 0)
+              ? updatedStudent.lastCompletedGifts
+              : currentGifts;
+            renderParentClaimHistory(completedGifts);
+            parentGiftResultBox.style.display = 'block';
+            parentGiftResultIcon.textContent = '🏆';
+            parentGiftResultTitle.textContent = `Bé đã mở đủ 2 phần quà!`;
+
             parentGiftTurnBadge.textContent = '✅ Đã hoàn thành 2 / 2 lượt';
             const g1Text = completedGifts[0] ? `${completedGifts[0].icon || '🎁'} ${completedGifts[0].name}` : 'Quà lượt 1';
             const g2Text = completedGifts[1] ? `${completedGifts[1].icon || '🎁'} ${completedGifts[1].name}` : `${wonGift.icon || '🎁'} ${wonGift.name}`;

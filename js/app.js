@@ -4007,9 +4007,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // THÔNG BÁO CHO GIÁO VIÊN BIẾT ĐỂ CHUẨN BỊ QUÀ NGAY
       const curStudent = (state.data.students || []).find(s => s.id === activeGiftStudentId);
-      const allCurrentGifts = (updatedStudent && updatedStudent.lastCompletedGifts && updatedStudent.lastCompletedGifts.length > 0)
-        ? updatedStudent.lastCompletedGifts
-        : gifts;
+      const isCycleFinished = updatedStudent && updatedStudent.stars === 0 && (!updatedStudent.giftHistory || updatedStudent.giftHistory.length === 0);
+      const allCurrentGifts = isCycleFinished 
+        ? (updatedStudent.lastCompletedGifts || gifts)
+        : (gifts.length > 0 ? gifts : [giftData]);
       showTeacherGiftNotification({
         studentName: curStudent ? curStudent.name : 'Học sinh',
         gift: giftData,
@@ -4747,19 +4748,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             }
 
-            // Bảo vệ dữ liệu: Kiểm tra nếu local data mới hơn dữ liệu từ Firebase (ví dụ cô vừa chỉnh sửa tổ/tên gần đây)
-            const currentLocal = StorageManager.loadData();
-            const localUpdated = (currentLocal && currentLocal.lastUpdated) || 0;
-            const remoteUpdated = (fbData && fbData.lastUpdated) || 0;
-
-            if (localUpdated > remoteUpdated && (localUpdated - remoteUpdated) < 86400000 * 7) {
-              console.log('🛡️ Dữ liệu trên máy mới hơn Đám Mây. Giữ nguyên dữ liệu trên máy và cập nhật lên Firebase...');
-              if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
-                window.FirebaseSync.setClassData(currentLocal);
-              }
-              return;
-            }
-
+            // Cập nhật dữ liệu thời gian thực từ Cloud Firebase về máy
             state.data = fbData;
             localStorage.setItem(StorageManager.getStorageKey(), JSON.stringify(fbData));
             if (window.__INITIAL_DATA__) {

@@ -312,16 +312,16 @@
 
         this.recognition.onresult = (event) => {
           let interimText = '';
-          let fullFinal = '';
+          let currentFinal = '';
           const alternatives = [];
 
-          // Gom toàn bộ kết quả final từ đầu phiên ghi âm (từ i = 0), không bỏ sót từ khi Chrome chia nhỏ chunk
-          for (let i = 0; i < event.results.length; i++) {
+          // Chỉ lấy kết quả từ lượt nói hiện tại (từ event.resultIndex), tuyệt đối không gom câu cũ của các lượt trước
+          for (let i = event.resultIndex; i < event.results.length; i++) {
             const res = event.results[i];
             if (res.isFinal) {
               const t = res[0].transcript.trim();
               if (t) {
-                fullFinal += (fullFinal ? ' ' : '') + t;
+                currentFinal += (currentFinal ? ' ' : '') + t;
               }
               for (let a = 0; a < res.length; a++) {
                 if (res[a] && res[a].transcript) {
@@ -334,7 +334,7 @@
           }
 
           // Cập nhật streaming thời gian thực lên màn hình
-          const liveText = interimText ? (fullFinal ? `${fullFinal} ${interimText}` : interimText) : fullFinal;
+          const liveText = interimText || currentFinal;
           if (liveText) {
             this.updateInterimDisplay(liveText);
           }
@@ -346,7 +346,7 @@
             return;
           }
 
-          if (fullFinal) {
+          if (currentFinal) {
             clearTimeout(this.speechFinalDebounceTimer);
 
             // Kiểm tra xem câu đã đủ cấu trúc (hành động + đối tượng + điểm) hay chưa
@@ -354,22 +354,20 @@
             try {
               const data = (window.StorageManager && window.StorageManager.loadData()) || {};
               const students = data.students || [];
-              const norm = normalizeTranscript(fullFinal, students);
-              const parsed = this.parseCommandGrammar(fullFinal, norm, students);
+              const norm = normalizeTranscript(currentFinal, students);
+              const parsed = this.parseCommandGrammar(currentFinal, norm, students);
               const hasTarget = (parsed.students && parsed.students.length > 0) || parsed.student || parsed.isClassWide || parsed.targetGroupId;
               if (parsed.actionFound && hasTarget && parsed.points) {
                 isComplete = true;
               }
             } catch (err) {}
 
-            // Debounce thông minh:
-            // Nếu câu đã hoàn chỉnh: chờ 700ms im lặng (để cô có thể nói tiếp lý do "vì...") rồi chốt lệnh.
-            // Nếu câu chưa đủ (cô mới nói "Cộng..." hoặc mới nói tên): chờ tối đa 2500ms để cô đọc tiếp.
-            const debounceMs = isComplete ? 700 : 2500;
+            // Debounce thông minh: chờ hoàn tất câu rồi mới chốt lệnh
+            const debounceMs = isComplete ? 600 : 1800;
 
             this.speechFinalDebounceTimer = setTimeout(() => {
               this.stop();
-              this.processCommand(fullFinal.trim(), alternatives);
+              this.processCommand(currentFinal.trim(), alternatives);
             }, debounceMs);
           }
         };
@@ -1128,7 +1126,7 @@
         return;
       }
 
-      // Hiển thị câu lệnh kèm thời gian đếm ngược 1.8s
+      // Hiển thị câu lệnh kèm thời gian đếm ngược 3.2s để cô có toàn quyền kiểm soát và hủy nếu cần
       this.updateTranscriptDisplay(cmd.raw, cmd, true);
 
       // Lưu lại lệnh đang chờ xác nhận
@@ -1136,10 +1134,10 @@
       this.pendingExecutionCmd = cmd;
       this.pendingExecutionStudents = students;
 
-      // Đếm ngược 1.8s trước khi chốt áp dụng điểm (nếu cô bấm [✖ Hủy] hoặc Esc sẽ bị hủy ngay lập tức)
+      // Đếm ngược 3.2s trước khi chốt áp dụng điểm (nếu cô bấm [✖ Hủy] hoặc Esc sẽ bị hủy ngay lập tức, hoặc bấm [✔ Chốt] để thực hiện ngay)
       this.pendingExecutionTimer = setTimeout(() => {
         this.confirmPendingCommand();
-      }, 1800);
+      }, 3200);
     }
 
     // Chốt lệnh áp dụng điểm ngay
@@ -1300,6 +1298,9 @@
     // Phát âm thanh phản hồi giọng nói (Ưu tiên Google Cloud TTS Tiếng Việt, dự phòng WebSpeech)
     speakFeedback(text) {
       if (!text) return;
+      // Dừng nhận diện ngay lập tức khi loa phát âm thanh phản hồi để mic không tự nghe lại tiếng từ loa
+      this.stop();
+
       const cleanText = text.replace(/[!⭐⚠️🎙️✨🎉]/g, '').trim();
       const player = this.getAudioPlayer();
 
@@ -1324,7 +1325,6 @@
             p.then(() => {
               isPlaying = true;
             }).catch(err => {
-              console.warn(`TTS source ${idx} lỗi:`, err);
               playNextSource();
             });
           }
@@ -1334,6 +1334,9 @@
         }
       };
 
+      player.onended = () => {
+        isPlaying = false;
+      };
       player.onerror = () => {
         if (!isPlaying) playNextSource();
       };
@@ -1533,7 +1536,7 @@
         if (liveBar && liveText) {
           liveBar.classList.add('active');
           if (isPending) {
-            liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong> <span style="font-size: 11.5px; color: #F59E0B; margin-left: 6px;">(tự chốt sau 1.8s...)</span>`;
+            liveText.innerHTML = `✨ <strong>Đã nhận diện:</strong> ${actionBadge} ${prefix}<strong>${targetText}</strong> <span style="font-size: 11.5px; color: #F59E0B; margin-left: 6px;">(tự chốt sau 3s, hoặc bấm ✔ Chốt / ✖ Hủy)</span>`;
             if (cancelBtn) cancelBtn.style.display = 'inline-flex';
             if (confirmBtn) confirmBtn.style.display = 'inline-flex';
           } else {

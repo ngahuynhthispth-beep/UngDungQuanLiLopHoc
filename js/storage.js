@@ -1043,7 +1043,17 @@ const StorageManager = {
     if (window.FirebaseSync && window.FirebaseSync.isInitialized) {
       try {
         const fbStudent = await window.FirebaseSync.claimStudentGift(studentId, gift, source, milestone);
-        if (fbStudent) return fbStudent;
+        if (fbStudent) {
+          const currentLocal = this.loadData();
+          if (currentLocal && currentLocal.students) {
+            const idx = currentLocal.students.findIndex(s => s.id === studentId);
+            if (idx !== -1) {
+              currentLocal.students[idx] = fbStudent;
+              this.saveData(currentLocal);
+            }
+          }
+          return fbStudent;
+        }
       } catch (e) {
         console.warn('Lỗi nhận quà qua Firebase:', e);
         if (e.message && e.message.includes('quay')) throw e;
